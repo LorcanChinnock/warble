@@ -1,0 +1,15 @@
+---
+import Prose from '../../layouts/Prose.astro';
+import { Content } from '../../../../CHANGELOG.md';
+---
+
+<Prose title="Changelog" description="What changed in each Warble release.">
+  <div class="changelog"><Content /></div>
+</Prose>
+
+<style is:global>
+  .changelog h2 { font-size: 24px; }
+  .changelog h2 a { font-weight: inherit; text-decoration: none; }
+  .changelog h3 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 20px; }
+  .changelog li { font-size: 15px; }
+</style>

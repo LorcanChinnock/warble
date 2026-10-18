@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleIdentifier</key>
+	<string>dev.lorcan.Warble</string>
+	<key>CFBundleName</key>
+	<string>Warble</string>
+	<key>CFBundleExecutable</key>
+	<string>Warble</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<!-- The languages Resources/*.xcstrings translate into, so macOS shows the app in the first one the user prefers. -->
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+	</array>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.1.0-beta.0</string> <!-- x-release-please-version -->
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
+	<key>CFBundleDisplayName</key>
+	<string>Warble</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.music</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>© 2026 Lorcan Chinnock</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>15.0</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://github.com/LorcanChinnock/warble/releases/latest/download/appcast.xml</string>
+	<!-- Generate with Sparkle's generate_keys before the first release: CONTRIBUTING.md › Release secrets. -->
+	<key>SUPublicEDKey</key>
+	<string></string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>dev.lorcan.Warble</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>warble</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

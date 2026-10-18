@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(make lint)",
+      "Bash(make test)",
+      "Bash(defaults read *)",
+      "Bash(log show *)",
+      "Bash(lsappinfo info *)",
+      "Bash(lsappinfo front)",
+      "Bash(gh run watch *)",
+      "Bash(swift test --filter *)",
+      "Bash(make test-linux)",
+      "Bash(security find-identity *)",
+      "Bash(log stream *)",
+      "Bash(gh label list *)",
+      "Bash(brew list *)",
+      "Bash(plutil -p *)",
+      "Bash(mdfind *)",
+      "Bash(system_profiler *)",
+      "Bash(ffprobe *)"
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+name: Bug report
+description: Something in Warble doesn't work as expected
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Warble version
+      description: The release you downloaded, or `defaults read /Applications/Warble.app/Contents/Info CFBundleShortVersionString`.
+    validations:
+      required: true
+  - type: input
+    id: player
+    attributes:
+      label: Which app was playing?
+      placeholder: Spotify, Apple Music, YouTube in Safari, Overcast
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version and Mac
+      placeholder: macOS 26.1, MacBook Pro M3, one external display
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: |
+        Reproduce the problem, then run this in Terminal and paste the output.
+        File paths are redacted by default.
+        `log show --last 5m --predicate 'subsystem == "dev.lorcan.Warble"'`
+      render: text
