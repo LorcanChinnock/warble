@@ -30,8 +30,9 @@ public enum NotchLayout {
     public static let wing: CGFloat = 50
     /// How far Peek reaches below the camera housing: the title, the artist and a thin progress line.
     public static let peekDrop: CGFloat = 44
-    /// How far Expanded reaches below the camera housing: the art beside three lines of text, then the controls.
-    public static let expandedDrop: CGFloat = 132
+    /// How far Expanded reaches below the camera housing: the art beside three lines of text, then the position, the
+    /// controls and the volume.
+    public static let expandedDrop: CGFloat = 160
     /// Room either side of the notch once expanded, for the art beside the text. Measured from the notch, so the card
     /// keeps its proportion to each Mac's camera housing.
     public static let expandedWing: CGFloat = 70

@@ -32,6 +32,8 @@ final class NotchController {
     }
 
     private let model = NotchModel()
+    private let volume = SystemVolume()
+    private var followsVolume = false
     private let panel: NotchPanel
     private var hover = HoverIntent()
     private var deadlineTimer: Timer?
@@ -51,6 +53,8 @@ final class NotchController {
         model.onClick = { [weak self] in self?.handle(.click) }
         model.onCommand = { [weak self] in self?.perform($0) }
         model.onOpenApp = { [weak self] in self?.openApp() }
+        model.onVolume = { [weak self] in self?.setVolume($0) }
+        panel.onScroll = { [weak self] in self?.scroll($0) }
         // Posted when a display is plugged in or removed, its resolution changes, or the lid closes.
         screenObserver = NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.update(animated: false) }
@@ -78,6 +82,43 @@ final class NotchController {
         guard let bundleIdentifier = playback?.bundleIdentifier,
               let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) else { return }
         NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
+    }
+
+    /// Scrolling over the notch changes the volume, with a light tick on a Force Touch trackpad at each tenth.
+    private func scroll(_ event: NSEvent) {
+        guard let current = volume.volume, event.scrollingDeltaY != 0 else { return }
+        let from = volume.isMuted ? 0 : current
+        let to = VolumeScroll.volume(
+            after: event.scrollingDeltaY, from: from,
+            precise: event.hasPreciseScrollingDeltas, inverted: event.isDirectionInvertedFromDevice
+        )
+        guard to != from else { return }
+        setVolume(to)
+        if VolumeScroll.crossesTick(from: from, to: to) {
+            NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .now)
+        }
+    }
+
+    private func setVolume(_ value: Double) {
+        volume.set(value)
+        readVolume()
+    }
+
+    private func readVolume() {
+        model.volume = volume.volume
+        model.isMuted = volume.isMuted
+    }
+
+    /// Reads the volume, and follows changes from the volume keys and elsewhere, only while the slider shows.
+    private func followVolume(_ follow: Bool) {
+        guard follow != followsVolume else { return }
+        followsVolume = follow
+        if follow {
+            readVolume()
+            volume.startListening { [weak self] in self?.readVolume() }
+        } else {
+            volume.stopListening()
+        }
     }
 
     private func pointer(inside: Bool) {
@@ -119,10 +160,12 @@ final class NotchController {
             panelFrame = nil
             model.state = .hidden
             listen(open: false)
+            followVolume(false)
             log.notice("Notch hidden (\(self.state.rawValue, privacy: .public))")
             return
         }
         listen(open: state == .peek || state == .expanded)
+        followVolume(state == .expanded)
         guard shown?.state != state || shown?.frame != frame else { return }
         let previous = shown
         shown = (state, frame)

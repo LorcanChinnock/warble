@@ -26,6 +26,10 @@ final class NotchModel {
     @ObservationIgnored var onCommand: (PlaybackCommand) -> Void = { _ in }
     /// Brings the app that's playing to the front.
     @ObservationIgnored var onOpenApp: () -> Void = {}
+    /// The output's volume from 0 to 1, read while Expanded shows; `nil` when it can't be changed.
+    var volume: Double?
+    var isMuted = false
+    @ObservationIgnored var onVolume: (Double) -> Void = { _ in }
 
     func size(_ state: NotchState) -> CGSize {
         NotchLayout.frame(state, notch: notch)?.size ?? .zero
@@ -146,6 +150,10 @@ private struct ExpandedContent: View {
             Scrubber(playback: playback) { model.onCommand(.seek(to: $0)) }
             Spacer(minLength: 0)
             PlaybackControls(playback: playback, send: model.onCommand)
+            if let volume = model.volume {
+                Spacer(minLength: 0)
+                VolumeSlider(volume: model.isMuted ? 0 : volume, isMuted: model.isMuted, set: model.onVolume)
+            }
         }
         .padding(.horizontal, 16)
         .padding(.top, 6)
@@ -218,6 +226,42 @@ private struct Scrubber: View {
                         dragged = nil
                     }
             )
+        }
+    }
+}
+
+/// The output's volume between a quiet and a loud speaker, set as the pointer drags.
+private struct VolumeSlider: View {
+    let volume: Double
+    let isMuted: Bool
+    let set: (Double) -> Void
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: isMuted ? "speaker.slash.fill" : "speaker.fill")
+                .frame(width: 34, alignment: .trailing)
+            GeometryReader { geometry in
+                let width = geometry.size.width
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Color.white.opacity(0.2))
+                    Capsule().fill(.white).frame(width: width * volume)
+                }
+                .frame(height: 4)
+                .frame(maxHeight: .infinity)
+                .contentShape(Rectangle())
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { set(min(max($0.location.x / width, 0), 1)) }
+                )
+            }
+            Image(systemName: "speaker.wave.3.fill")
+                .frame(width: 34, alignment: .leading)
+        }
+        .font(.system(size: 10))
+        .foregroundStyle(Native.secondary)
+        .frame(height: 24)
+        .accessibilityRepresentation {
+            Slider(value: Binding(get: { volume }, set: set), in: 0...1) { Text("Volume") }
         }
     }
 }
