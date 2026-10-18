@@ -28,6 +28,33 @@ for exe in Warble; do
 done
 binary="$universal/Warble"
 
+# Since macOS 15.4, MediaRemote answers only Apple-signed processes, so the now-playing source runs
+# ungive/mediaremote-adapter's script under /usr/bin/perl, which loads the adapter's framework. Both come from the
+# Vendor/mediaremote-adapter submodule (CONTRIBUTING.md › Updating the adapter) and are only bundled, never linked.
+adapter_src=Vendor/mediaremote-adapter
+case "$(git submodule status "$adapter_src")" in
+    -*)
+        echo "error: $adapter_src is empty; run git submodule update --init." >&2
+        exit 1
+        ;;
+    +*)
+        if [ "${WARBLE_RELEASE:-}" = 1 ]; then
+            echo "error: $adapter_src isn't at the commit Warble pins; run git submodule update." >&2
+            exit 1
+        fi
+        echo "warning: $adapter_src isn't at the commit Warble pins; building it as it is." >&2
+        ;;
+esac
+if ! command -v cmake >/dev/null; then
+    echo "error: building the adapter needs CMake; install it with brew install cmake." >&2
+    exit 1
+fi
+# CMake would otherwise target the Mac doing the build, and the framework wouldn't load on older macOS.
+# The adapter's CMakeLists.txt builds both architectures itself.
+adapter_build=build/mediaremote-adapter
+cmake -S "$adapter_src" -B "$adapter_build" -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0
+cmake --build "$adapter_build" --parallel
+
 if [ "${WARBLE_RELEASE:-}" = 1 ]; then
     name=Warble
 else
@@ -40,8 +67,13 @@ cp "$binary" "$app/Contents/MacOS/$name"
 ditto "$bin_path/Sparkle.framework" "$app/Contents/Frameworks/Sparkle.framework"
 cp Resources/Info.plist "$app/Contents/Info.plist"
 cp Resources/AppIcon.icns "$app/Contents/Resources/AppIcon.icns"
-# Sparkle's MIT licence requires its notice in copies of the app. Settings › About opens this file.
+# Sparkle's MIT and the adapter's BSD licences require their notices in copies of the app. Settings › About opens this file.
 cp Resources/Acknowledgements.txt "$app/Contents/Resources/Acknowledgements.txt"
+# The now-playing source runs `/usr/bin/perl <script> <framework> <test client> <command>` with these absolute paths.
+# The test client is only for the `test` command, which fakes playback to check the adapter still works.
+cp "$adapter_src/bin/mediaremote-adapter.pl" "$app/Contents/Resources/mediaremote-adapter.pl"
+ditto "$adapter_build/MediaRemoteAdapter.framework" "$app/Contents/Resources/MediaRemoteAdapter.framework"
+cp "$adapter_build/MediaRemoteAdapterTestClient" "$app/Contents/Resources/MediaRemoteAdapterTestClient"
 # One .lproj folder per language, where Bundle.main finds the app's strings and the permission prompts' text.
 for catalog in Resources/*.xcstrings; do
     xcrun xcstringstool compile "$catalog" --output-directory "$app/Contents/Resources"
@@ -77,6 +109,9 @@ for part in XPCServices/Installer.xpc XPCServices/Downloader.xpc Autoupdate Upda
     codesign --force --sign "$identity" --preserve-metadata=entitlements "$sparkle/$part"
 done
 codesign --force --sign "$identity" "$app/Contents/Frameworks/Sparkle.framework"
+# The adapter's build signs it ad hoc; sign it again with the app's identity, before the app seals its resources.
+codesign --force --sign "$identity" "$app/Contents/Resources/MediaRemoteAdapterTestClient"
+codesign --force --sign "$identity" "$app/Contents/Resources/MediaRemoteAdapter.framework"
 codesign --force --sign "$identity" "$app"
 version="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$app/Contents/Info.plist")"
 echo "Built $app $version ($build_number) for $(lipo -archs "$app/Contents/MacOS/$name")"

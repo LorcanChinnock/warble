@@ -8,10 +8,10 @@ The default is the simplest state. Extra features start off, and the user turns 
 
 ## Set up
 
-You need a Mac with macOS 15 or later, and either Xcode or the Xcode Command Line Tools. Warble is a SwiftPM package whose only dependency is [Sparkle](https://sparkle-project.org), for updates.
+You need a Mac with macOS 15 or later, either Xcode or the Xcode Command Line Tools, and [CMake](https://cmake.org) (`brew install cmake`). Warble is a SwiftPM package whose only Swift dependency is [Sparkle](https://sparkle-project.org), for updates. It also bundles [MediaRemote Adapter](https://github.com/ungive/mediaremote-adapter), which reads what's playing; `make bundle` builds it with CMake from the `Vendor/mediaremote-adapter` submodule.
 
 ```bash
-git clone https://github.com/LorcanChinnock/warble.git
+git clone --recurse-submodules https://github.com/LorcanChinnock/warble.git   # in an existing clone: git submodule update --init
 cd warble
 scripts/make-dev-cert.sh   # once: a stable signing identity, so permissions survive rebuilds
 make run                   # build, install to /Applications/WarbleDev.app, and launch
@@ -39,6 +39,27 @@ Only `make dist` builds `Warble.app` with the update feed. Every other build is 
 
 **Command Line Tools only:** the CLT's default SDK (27) makes SwiftUI's `@State` a macro whose compiler plugin ships only with Xcode. When Xcode isn't selected, the Makefile pins the newest 26.x SDK the CLT has and points the tests at the CLT's testing plugin, so use `make` rather than a bare `swift build`. With Xcode, nothing is pinned.
 
+### Updating the adapter
+
+Since macOS 15.4, only Apple-signed processes can read what's playing through MediaRemote. MediaRemote Adapter gets round this: Warble runs the adapter's Perl script under `/usr/bin/perl`, which is Apple-signed, and the script loads the adapter's framework. `make bundle` builds the framework and the adapter's test client from the `Vendor/mediaremote-adapter` submodule, puts them and the script in `Contents/Resources`, and signs them with the app's identity. The app never links the framework.
+
+The submodule is pinned to a tagged commit, and Dependabot doesn't update it. To move to a new release of the adapter:
+
+1. Read the [adapter's releases](https://github.com/ungive/mediaremote-adapter/releases) for changes to its commands or JSON output.
+2. Check out the new tag in the submodule, then stage it:
+   ```bash
+   git -C Vendor/mediaremote-adapter fetch --tags
+   git -C Vendor/mediaremote-adapter checkout v0.7.8   # the new tag
+   git add Vendor/mediaremote-adapter
+   ```
+3. If the adapter's `LICENSE` changed, update its section in `Resources/Acknowledgements.txt`.
+4. Run `make bundle`, then check the adapter still works. An exit code of 0 means it does:
+   ```bash
+   r="$PWD/build/WarbleDev.app/Contents/Resources"
+   /usr/bin/perl "$r/mediaremote-adapter.pl" "$r/MediaRemoteAdapter.framework" "$r/MediaRemoteAdapterTestClient" test; echo $?
+   ```
+5. Open a pull request titled `build(deps): bump mediaremote-adapter to v0.7.8`. CI's `adapter` job runs the same check on macOS 15 and 26.
+
 ## Project layout
 
 ```
@@ -49,6 +70,7 @@ Tests/WarbleModelTests/ WarbleModel's Swift Testing suite
 Tests/WarbleCoreTests/  WarbleCore's Swift Testing suite
 Resources/              Info.plist, the app icon and the string catalog
 scripts/                Bundling, install, signing certificate, icon, lint and the Homebrew cask
+Vendor/                 MediaRemote Adapter, as a git submodule
 docs/                   The roadmap, performance budgets, and images for the README and the user guide
 site/                   The website (see site/README.md)
 ```

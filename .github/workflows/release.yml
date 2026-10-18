@@ -67,6 +67,7 @@ jobs:
         with:
           ref: ${{ needs.release-please.outputs.tag_name }}
           fetch-depth: 0 # The build number counts commits.
+          submodules: true # make dist builds mediaremote-adapter from Vendor/.
           persist-credentials: false # Later steps run scripts with every secret, and none of them pushes to this repo.
       # The release PR's gate tested its own head, but a docs:, test: or ci: commit merged after it doesn't update that
       # PR, so the tagged commit may be one the gate never ran. Test it here, before any secret is in reach, with the
@@ -94,6 +95,11 @@ jobs:
         run: make dist
         env:
           WARBLE_SIGN_IDENTITY: Warble Release
+      # The now-playing source can't work without the adapter, so don't publish a build whose adapter fails its test.
+      - name: Test the adapter
+        run: |
+          r="$PWD/build/Warble.app/Contents/Resources"
+          /usr/bin/perl "$r/mediaremote-adapter.pl" "$r/MediaRemoteAdapter.framework" "$r/MediaRemoteAdapterTestClient" test
       - name: Build the update feed
         env:
           GH_TOKEN: ${{ github.token }}

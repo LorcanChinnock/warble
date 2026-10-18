@@ -48,4 +48,4 @@ Warble is free software under the [GNU General Public License v3.0](LICENSE).
 
 ## Acknowledgements
 
-Warble updates itself with [Sparkle](https://sparkle-project.org), under the MIT license. See [Acknowledgements](Resources/Acknowledgements.txt).
+Warble updates itself with [Sparkle](https://sparkle-project.org), under the MIT license, and reads what's playing with [MediaRemote Adapter](https://github.com/ungive/mediaremote-adapter), under the BSD 3-Clause license. See [Acknowledgements](Resources/Acknowledgements.txt).
