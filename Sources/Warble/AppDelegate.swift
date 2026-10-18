@@ -12,10 +12,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         Preferences.registerDefaults()
         _ = Updater.shared
         let notch = NotchController()
-        // Nothing sets the state until playback is read (#9). To see a state now, launch with
-        // `open build/WarbleDev.app --args -notchPreviewState resting`; the argument lasts only for that launch.
+        // Nothing is playing until playback is read (#9). To see the notch now, launch with
+        // `open build/WarbleDev.app --args -notchPreviewState resting` and hover or click it to open it; the argument
+        // lasts only for that launch.
         let preview = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)["notchPreviewState"] as? String
-        notch.state = preview.flatMap(NotchState.init(rawValue:)) ?? .hidden
+        if preview.flatMap(NotchState.init(rawValue:)) == .resting {
+            notch.playback = PlaybackState(
+                bundleIdentifier: "com.apple.Music",
+                title: "Preview track with a title long enough to scroll",
+                artist: "Preview artist",
+                album: "Preview album",
+                duration: 240,
+                elapsed: 60,
+                elapsedTimestamp: .now,
+                rate: 1
+            )
+        }
         self.notch = notch
         if let launch = Perf.millisecondsSinceLaunch() {
             Perf.signposter.emitEvent("Ready", "launch ms=\(launch)")
