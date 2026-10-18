@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "%lld percent" : {
-
-    },
     "Cancel" : {
 
     },
@@ -17,12 +14,6 @@
 
     },
     "Later" : {
-
-    },
-    "Off" : {
-
-    },
-    "On" : {
 
     },
     "Quit Warble" : {

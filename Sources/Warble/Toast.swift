@@ -11,8 +11,7 @@ enum Toast {
     private static var undoable: PendingAction?
     private static var shown: ToastText?
     private static var actionTitle: String?
-    fileprivate static let font = ScaledFont.scaled(13, weight: .bold)
-    private static let shadow: CGFloat = 4
+    fileprivate static let font = ScaledFont.scaled(13, weight: .semibold)
 
     /// Shows `message` for something that didn't happen or went wrong, long enough to read.
     static func error(_ message: LocalizedStringResource) {
@@ -99,11 +98,11 @@ enum Toast {
 
     private static func size(of message: String, actionTitle: String?) -> NSSize {
         let textSize = Preferences().textSize
-        var textWidth = (message as NSString).size(withAttributes: [.font: NSFont.systemFont(ofSize: font.points(textSize), weight: .bold)]).width.rounded(.up)
+        var textWidth = (message as NSString).size(withAttributes: [.font: NSFont.systemFont(ofSize: font.points(textSize), weight: .semibold)]).width.rounded(.up)
         if let actionTitle {
             textWidth += (actionTitle as NSString).size(withAttributes: [.font: NSFont.systemFont(ofSize: textSize.points(12), weight: .bold)]).width.rounded(.up) + 36
         }
-        return NSSize(width: textWidth + 32 + shadow, height: 38 + shadow)
+        return NSSize(width: textWidth + 32, height: 38)
     }
 
     private static func hold(_ holding: Bool) {
@@ -178,18 +177,17 @@ private struct ToastView: View {
         HStack(spacing: 12) {
             Text(text.message)
                 .font(Toast.font)
-                .foregroundStyle(Brutal.ink)
+                .foregroundStyle(.primary)
                 .lineLimit(1)
             if let action {
                 Button(action.title, action: action.perform)
-                    .buttonStyle(BrutalButtonStyle(compact: true))
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .brutalSurface(Brutal.paper.opacity(0.75), glass: true, radius: Brutal.Radius.panel, shadow: 4)
-        .padding(.trailing, 4)
-        .padding(.bottom, 4)
-        .contentShape(Rectangle())
+        .background(.regularMaterial, in: Capsule())
+        .contentShape(Capsule())
         .onHover(perform: hold)
         .onTapGesture(perform: dismiss)
     }
