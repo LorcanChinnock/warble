@@ -37,6 +37,8 @@ public struct HoverIntent: Equatable, Sendable {
     public private(set) var state = HoverState.resting
     /// When `state` changes next if nothing else happens, or `nil` when nothing is due.
     public private(set) var deadline: Date?
+    private var pointerInside = false
+    /// When the pointer started its stay on the notch; `nil` while it's away, and after a dismiss.
     private var enteredAt: Date?
     private var leftAt: Date?
 
@@ -46,11 +48,13 @@ public struct HoverIntent: Equatable, Sendable {
         advance(to: date)
         switch event {
         case .pointerEntered:
-            guard enteredAt == nil else { return }
+            guard !pointerInside else { return }
+            pointerInside = true
             enteredAt = date
             leftAt = nil
         case .pointerLeft:
-            guard enteredAt != nil else { return }
+            guard pointerInside else { return }
+            pointerInside = false
             enteredAt = nil
             leftAt = date
         case .click:
@@ -58,10 +62,10 @@ public struct HoverIntent: Equatable, Sendable {
         case .pinButton:
             state = state == .pinned ? .expanded : .pinned
             // Unpinned with the pointer away: the wait to close starts now, not when it left.
-            if enteredAt == nil { leftAt = date }
+            if !pointerInside { leftAt = date }
         case .dismiss:
             state = .resting
-            // The pointer has to leave and come back before the notch opens again.
+            // Resting on the notch doesn't open it again until the pointer leaves and comes back; a click still does.
             enteredAt = nil
             leftAt = nil
         }
@@ -85,7 +89,7 @@ public struct HoverIntent: Equatable, Sendable {
         switch state {
         case .resting: enteredAt.map { $0 + Self.peekDelay }
         case .peeking: enteredAt.map { $0 + Self.expandDelay } ?? leftAt.map { $0 + Self.collapseDelay }
-        case .expanded: enteredAt == nil ? leftAt.map { $0 + Self.collapseDelay } : nil
+        case .expanded: pointerInside ? nil : leftAt.map { $0 + Self.collapseDelay }
         case .pinned: nil
         }
     }

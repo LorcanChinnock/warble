@@ -135,3 +135,19 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
     dismissed.handle(.pointerEntered, at: entered + 7)
     #expect(dismissed.deadline == entered + 7.12)
 }
+
+@Test func aClickAfterDismissingStillClosesWhenThePointerLeaves() {
+    var reopened = intent((.pointerEntered, 0), (.click, 0.1), (.dismiss, 1), (.click, 2))
+    #expect(reopened.state == .expanded)
+    #expect(reopened.deadline == nil)
+    reopened.handle(.pointerLeft, at: entered + 3)
+    #expect(reopened.deadline == entered + 3.4)
+    reopened.advance(to: entered + 3.4)
+    #expect(reopened.state == .resting)
+}
+
+@Test func unpinningAfterDismissingKnowsThePointerIsStillOnTheNotch() {
+    let unpinned = intent((.pointerEntered, 0), (.click, 0.1), (.dismiss, 1), (.click, 2), (.pinButton, 3), (.pinButton, 4))
+    #expect(unpinned.state == .expanded)
+    #expect(unpinned.deadline == nil)
+}
