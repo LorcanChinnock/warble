@@ -43,7 +43,7 @@ Only `make dist` builds `Warble.app` with the update feed. Every other build is 
 
 Since macOS 15.4, only Apple-signed processes can read what's playing through MediaRemote. MediaRemote Adapter gets round this: Warble runs the adapter's Perl script under `/usr/bin/perl`, which is Apple-signed, and the script loads the adapter's framework. `make bundle` builds the framework and the adapter's test client from the `Vendor/mediaremote-adapter` submodule, puts them and the script in `Contents/Resources`, and signs them with the app's identity. The app never links the framework.
 
-The submodule is pinned to a tagged commit, and Dependabot doesn't update it. To move to a new release of the adapter:
+The submodule is pinned to a tagged commit. Dependabot checks it weekly, but it follows the adapter's `main` branch, not its tags, so its pull request may point at an untagged commit. If the new commit is a release, check it as in step 4 and merge. Otherwise close the pull request, or move to a tag by hand:
 
 1. Read the [adapter's releases](https://github.com/ungive/mediaremote-adapter/releases) for changes to its commands or JSON output.
 2. Check out the new tag in the submodule, then stage it:
