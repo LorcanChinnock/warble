@@ -26,11 +26,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 duration: 240,
                 elapsed: 60,
                 elapsedTimestamp: .now,
-                rate: 1
+                rate: 1,
+                shuffle: .off,
+                repeatMode: .off
             )
         } else if let paths = Bundle.main.resourceURL.flatMap(AdapterSource.Paths.init(resources:)) {
             let source = AdapterSource(paths: paths)
             source.start()
+            notch.send = { command in Task { await source.send(command) } }
             Task {
                 for await state in source.states {
                     notch.playback = state

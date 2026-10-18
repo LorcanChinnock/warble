@@ -14,10 +14,18 @@ final class NotchModel {
             if playback?.artwork != oldValue?.artwork {
                 artwork = playback?.artwork.flatMap(NSImage.init(data:))
             }
+            if playback?.bundleIdentifier != oldValue?.bundleIdentifier {
+                appName = playback.flatMap { NSRunningApplication.runningApplications(withBundleIdentifier: $0.bundleIdentifier).first?.localizedName }
+            }
         }
     }
     private(set) var artwork: NSImage?
+    /// The name of the app that's playing, for VoiceOver.
+    private(set) var appName: String?
     @ObservationIgnored var onClick: () -> Void = {}
+    @ObservationIgnored var onCommand: (PlaybackCommand) -> Void = { _ in }
+    /// Brings the app that's playing to the front.
+    @ObservationIgnored var onOpenApp: () -> Void = {}
 
     func size(_ state: NotchState) -> CGSize {
         NotchLayout.frame(state, notch: notch)?.size ?? .zero
@@ -38,7 +46,7 @@ struct NotchView: View {
                 .frame(width: size.width, height: size.height)
                 .transaction(snapWithReduceMotion)
             // Each state's content keeps its own size while the shape morphs, so it fades rather than reflows.
-            NotchContent(state: state, playback: model.playback, artwork: model.artwork, notchHeight: model.notch.height)
+            NotchContent(state: state, model: model)
                 .frame(width: size.width, height: size.height, alignment: .top)
                 .id(state)
                 .transition(.opacity)
@@ -63,18 +71,16 @@ struct NotchView: View {
 
 private struct NotchContent: View {
     let state: NotchState
-    let playback: PlaybackState?
-    let artwork: NSImage?
-    let notchHeight: CGFloat
+    let model: NotchModel
 
     var body: some View {
-        switch (state, playback) {
+        switch (state, model.playback) {
         case (.peek, let playback?):
             PeekContent(playback: playback)
-                .padding(.top, notchHeight)
+                .padding(.top, model.notch.height)
         case (.expanded, let playback?):
-            ExpandedContent(playback: playback, artwork: artwork)
-                .padding(.top, notchHeight)
+            ExpandedContent(playback: playback, model: model)
+                .padding(.top, model.notch.height)
         default:
             // Empty until the art and play-state bars arrive (#19), so there's nothing to read yet.
             Color.clear.accessibilityHidden(true)
@@ -107,32 +113,157 @@ private struct PeekContent: View {
     }
 }
 
-/// The full card: art, title, artist and album, with room below for the controls (#11).
+/// The full card: art, title, artist and album, then the position and the controls.
 private struct ExpandedContent: View {
     let playback: PlaybackState
-    let artwork: NSImage?
+    let model: NotchModel
 
     var body: some View {
-        HStack(spacing: 12) {
-            Artwork(image: artwork)
-                .frame(width: 72, height: 72)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(playback.title)
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(.white)
-                Group {
-                    if let artist = playback.artist { Text(artist) }
-                    if let album = playback.album { Text(album) }
+        VStack(spacing: 0) {
+            HStack(spacing: 12) {
+                Button(action: model.onOpenApp) {
+                    Artwork(image: model.artwork)
+                        .frame(width: 56, height: 56)
                 }
-                .font(.system(size: 13))
-                .foregroundStyle(Native.secondary)
+                .buttonStyle(.plain)
+                .accessibilityLabel(model.appName.map { Text("Open \($0)") } ?? Text("Open the app that's playing"))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(playback.title)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(.white)
+                    Group {
+                        if let artist = playback.artist { Text(artist) }
+                        if let album = playback.album { Text(album) }
+                    }
+                    .font(.system(size: 13))
+                    .foregroundStyle(Native.secondary)
+                }
+                .lineLimit(1)
+                .accessibilityElement(children: .combine)
+                Spacer(minLength: 0)
             }
-            .lineLimit(1)
-            .accessibilityElement(children: .combine)
             Spacer(minLength: 0)
+            Scrubber(playback: playback) { model.onCommand(.seek(to: $0)) }
+            Spacer(minLength: 0)
+            PlaybackControls(playback: playback, send: model.onCommand)
         }
         .padding(.horizontal, 16)
-        .frame(maxHeight: .infinity, alignment: .top)
+        .padding(.top, 6)
+        .padding(.bottom, 10)
+    }
+}
+
+/// The elapsed and remaining time either side of a bar that seeks where it's released. While dragging, the bar and the
+/// time follow the pointer and nothing is sent; a live stream, which has no end, shows only the elapsed time.
+private struct Scrubber: View {
+    let playback: PlaybackState
+    let seek: (TimeInterval) -> Void
+    /// The position the pointer is dragging to, as a fraction of the track.
+    @State private var dragged: Double?
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 0.5, paused: !playback.isPlaying || dragged != nil)) { context in
+            let duration = playback.duration ?? 0
+            let position = dragged.map { $0 * duration } ?? playback.elapsed(at: context.date)
+            HStack(spacing: 8) {
+                time(PlaybackState.positionLabel(position), alignment: .trailing)
+                if duration > 0 {
+                    bar(fraction: position / duration, duration: duration)
+                    time("-" + PlaybackState.positionLabel(duration - position), alignment: .leading)
+                } else {
+                    Spacer(minLength: 0)
+                }
+            }
+            .accessibilityRepresentation {
+                // A slider, so VoiceOver reads it as one and its adjust gestures seek.
+                if duration > 0 {
+                    Slider(value: Binding(get: { position }, set: { seek($0) }), in: 0...duration) { Text("Position") }
+                        .accessibilityValue(Text("\(PlaybackState.positionLabel(position)) of \(PlaybackState.positionLabel(duration))"))
+                } else {
+                    Text(verbatim: PlaybackState.positionLabel(position))
+                        .accessibilityLabel("Position")
+                }
+            }
+        }
+        // Taller than the bar, so it's an easy target.
+        .frame(height: 24)
+    }
+
+    private func time(_ text: String, alignment: Alignment) -> some View {
+        Text(verbatim: text)
+            .font(.system(size: 11).monospacedDigit())
+            .foregroundStyle(Native.secondary)
+            .frame(minWidth: 34, alignment: alignment)
+    }
+
+    private func bar(fraction: Double, duration: TimeInterval) -> some View {
+        GeometryReader { geometry in
+            let width = geometry.size.width
+            let fraction = min(max(fraction, 0), 1)
+            ZStack(alignment: .leading) {
+                Capsule().fill(Color.white.opacity(0.2))
+                Capsule().fill(.white).frame(width: width * fraction)
+                Circle().fill(.white)
+                    .frame(width: 9, height: 9)
+                    .offset(x: width * fraction - 4.5)
+            }
+            .frame(height: 4)
+            .frame(maxHeight: .infinity)
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { dragged = min(max($0.location.x / width, 0), 1) }
+                    .onEnded { value in
+                        seek(min(max(value.location.x / width, 0), 1) * duration)
+                        dragged = nil
+                    }
+            )
+        }
+    }
+}
+
+/// Previous, play or pause, and next in the middle, with shuffle and repeat either side when the app reports them.
+private struct PlaybackControls: View {
+    let playback: PlaybackState
+    let send: (PlaybackCommand) -> Void
+
+    var body: some View {
+        // Shuffle and repeat sit at the edges, over the middle three, so those stay centred whichever shows.
+        ZStack {
+            HStack(spacing: 12) {
+                control("backward.fill", size: 16) { send(.previousTrack) }
+                    .accessibilityLabel("Previous track")
+                control(playback.isPlaying ? "pause.fill" : "play.fill", size: 22) { send(.togglePlayPause) }
+                    .accessibilityLabel(playback.isPlaying ? "Pause" : "Play")
+                control("forward.fill", size: 16) { send(.nextTrack) }
+                    .accessibilityLabel("Next track")
+            }
+            HStack(spacing: 0) {
+                if let shuffle = playback.shuffle {
+                    control("shuffle", size: 13, on: shuffle != .off) { send(.setShuffle(shuffle.next)) }
+                        .accessibilityLabel("Shuffle")
+                        .accessibilityValue(shuffle == .off ? "Off" : "On")
+                }
+                Spacer(minLength: 0)
+                if let repeatMode = playback.repeatMode {
+                    control(repeatMode == .one ? "repeat.1" : "repeat", size: 13, on: repeatMode != .off) { send(.setRepeat(repeatMode.next)) }
+                        .accessibilityLabel("Repeat")
+                        .accessibilityValue(repeatMode == .off ? "Off" : repeatMode == .one ? "One" : "All")
+                }
+            }
+        }
+    }
+
+    /// A white symbol, or grey for a mode that's off, on a target at least 30 points square.
+    private func control(_ symbol: String, size: CGFloat, on: Bool = true, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.system(size: size, weight: .semibold))
+                .foregroundStyle(on ? AnyShapeStyle(.white) : AnyShapeStyle(Native.secondary))
+                .frame(width: 30, height: 30)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }
 

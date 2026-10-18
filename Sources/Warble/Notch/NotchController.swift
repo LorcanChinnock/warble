@@ -24,6 +24,9 @@ final class NotchController {
         }
     }
 
+    /// Sends a command to the app that's playing. Unset, as in the preview, a command only changes what the notch shows.
+    var send: (PlaybackCommand) -> Void = { _ in }
+
     var state: NotchState {
         playback == nil ? .hidden : NotchState(hover.state)
     }
@@ -46,10 +49,35 @@ final class NotchController {
         panel = NotchPanel(model: model)
         panel.onPointer = { [weak self] inside in self?.pointer(inside: inside) }
         model.onClick = { [weak self] in self?.handle(.click) }
+        model.onCommand = { [weak self] in self?.perform($0) }
+        model.onOpenApp = { [weak self] in self?.openApp() }
         // Posted when a display is plugged in or removed, its resolution changes, or the lid closes.
         screenObserver = NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.update(animated: false) }
         }
+    }
+
+    /// Shows what a command will do before the app reports back, so a click on play/pause answers at once. Skipping waits
+    /// for the app, since only it knows the next track. The app's next report replaces the guess either way.
+    private func perform(_ command: PlaybackCommand) {
+        if let current = playback {
+            switch command {
+            case .play: playback = current.playing(true, at: .now)
+            case .pause: playback = current.playing(false, at: .now)
+            case .togglePlayPause: playback = current.playing(!current.isPlaying, at: .now)
+            case .seek(let position): playback = current.seeked(to: position, at: .now)
+            case .setShuffle(let mode): playback?.shuffle = mode
+            case .setRepeat(let mode): playback?.repeatMode = mode
+            case .nextTrack, .previousTrack: break
+            }
+        }
+        send(command)
+    }
+
+    private func openApp() {
+        guard let bundleIdentifier = playback?.bundleIdentifier,
+              let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) else { return }
+        NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
     }
 
     private func pointer(inside: Bool) {
