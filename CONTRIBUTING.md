@@ -124,20 +124,23 @@ Each release also attaches `SHA256SUMS` and a build provenance attestation. To c
 
 ```bash
 make build                                                     # fetches Sparkle's tools
-.build/artifacts/sparkle/Sparkle/bin/generate_keys             # prints the public key for SUPublicEDKey
-.build/artifacts/sparkle/Sparkle/bin/generate_keys -x sparkle.key
-gh secret set SPARKLE_PRIVATE_KEY < sparkle.key
+# --account keeps Warble's key apart from other apps' keys in the keychain; without it you get the default account's key.
+.build/artifacts/sparkle/Sparkle/bin/generate_keys --account warble     # prints the public key for SUPublicEDKey
+.build/artifacts/sparkle/Sparkle/bin/generate_keys --account warble -x sparkle.key
+gh secret set --env release SPARKLE_PRIVATE_KEY < sparkle.key
 
 scripts/make-dev-cert.sh "Warble Release" release.p12            # prints the .p12 password
-base64 -i release.p12 | gh secret set WARBLE_SIGNING_CERT_P12
-gh secret set WARBLE_SIGNING_CERT_PASSWORD                       # paste the password
+base64 -i release.p12 | gh secret set --env release WARBLE_SIGNING_CERT_P12
+gh secret set --env release WARBLE_SIGNING_CERT_PASSWORD         # paste the password
 
 rm sparkle.key release.p12                                     # both stay in your login keychain
 
 ssh-keygen -t ed25519 -N "" -C "warble release workflow" -f tap_key
 gh repo deploy-key add tap_key.pub -R LorcanChinnock/homebrew-tap --allow-write --title "warble release workflow"
-gh secret set HOMEBREW_TAP_DEPLOY_KEY < tap_key
+gh secret set --env release HOMEBREW_TAP_DEPLOY_KEY < tap_key
 rm tap_key tap_key.pub                                         # make a new key if you lose it
 
-gh secret set SITE_DEPLOY_HOOK                                 # paste the hook URL from Cloudflare
+gh secret set --env release SITE_DEPLOY_HOOK                   # paste the hook URL from Cloudflare
 ```
+
+Until the website is on Cloudflare, leave `SITE_DEPLOY_HOOK` unset: the release skips the website step and still updates the Homebrew cask.
