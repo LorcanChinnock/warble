@@ -58,13 +58,14 @@ The submodule is pinned to a tagged commit. Dependabot checks it weekly, but it 
    r="$PWD/build/WarbleDev.app/Contents/Resources"
    /usr/bin/perl "$r/mediaremote-adapter.pl" "$r/MediaRemoteAdapter.framework" "$r/MediaRemoteAdapterTestClient" test; echo $?
    ```
+   If the release notes change the `stream` output, play something in Safari, record a few lines with `stream --micros` in place of `test`, and update the fixtures in `Tests/WarbleModelTests/Fixtures`, which `make test` replays. Swap each `artworkData` value for a short stand-in, as the existing files do.
 5. Open a pull request titled `build(deps): bump mediaremote-adapter to v0.7.8`. CI's `adapter` job runs the same check on macOS 15 and 26.
 
 ## Project layout
 
 ```
-Sources/WarbleModel/    Pure logic that needs only Foundation, tested on Linux: notch geometry
-Sources/WarbleCore/     Logic that needs Apple frameworks but no window: preferences
+Sources/WarbleModel/    Pure logic that needs only Foundation, tested on Linux: notch geometry, playback state, the adapter's output
+Sources/WarbleCore/     Logic that needs Apple frameworks but no window: preferences, running the adapter
 Sources/Warble/         The app: the menu bar menu and updates
 Tests/WarbleModelTests/ WarbleModel's Swift Testing suite
 Tests/WarbleCoreTests/  WarbleCore's Swift Testing suite
