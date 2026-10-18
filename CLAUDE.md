@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Warble is a macOS 15+ app that shows what's playing in the notch and controls it. It's a SwiftPM package (Swift 6 language mode, strict concurrency) whose only dependency is Sparkle. Its repository layout, tooling and release pipeline come from Shot (`LorcanChinnock/shot`); when you need a pattern this repo doesn't have yet, look there first. `docs/roadmap.md` lists the planned work, one GitHub issue per change.
+Warble is a macOS 15+ app that shows what's playing in the notch and controls it. It's a SwiftPM package (Swift 6 language mode, strict concurrency) whose only Swift dependency is Sparkle; it also bundles mediaremote-adapter, a git submodule built with CMake. Its repository layout, tooling and release pipeline come from Shot (`LorcanChinnock/shot`); when you need a pattern this repo doesn't have yet, look there first. `docs/roadmap.md` lists the planned work, one GitHub issue per change.
 
 ## Mantra
 
@@ -66,7 +66,7 @@ Three targets:
 
 **If logic can be tested without a window, it goes in WarbleModel with a test, or in WarbleCore if it needs an Apple framework.** Tests are top-level `@Test func` with sentence-style names: `Tests/WarbleModelTests` (run on Linux) and `Tests/WarbleCoreTests` (macOS). The app target has no tests.
 
-Now playing: since macOS 15.4, only Apple-signed processes can read now-playing information through the private MediaRemote framework. The plan (#8) runs ungive/mediaremote-adapter, BSD-3-licensed, under `/usr/bin/perl`, which is Apple-signed, and reads its JSON stream. Keep everything that touches it behind the `NowPlayingSource` protocol, so a macOS change means replacing one implementation. The protocol, `PlaybackState` and `PlaybackCommand` live in WarbleModel; `PlaybackState.elapsed(at:)` runs the position on from the last report, so the progress bar needs no timer of its own.
+Now playing: since macOS 15.4, only Apple-signed processes can read now-playing information through the private MediaRemote framework. Warble bundles ungive/mediaremote-adapter, BSD-3-licensed: `scripts/bundle.sh` builds it with CMake from the `Vendor/mediaremote-adapter` submodule and puts `mediaremote-adapter.pl`, `MediaRemoteAdapter.framework` and `MediaRemoteAdapterTestClient` in `Contents/Resources`, signed but never linked. The source (#9) runs `/usr/bin/perl <script> <framework> <test client> stream` with absolute paths, since `/usr/bin/perl` is Apple-signed, and reads its JSON; the `test` command exits 0 when the adapter still works. CONTRIBUTING.md › Updating the adapter explains how to bump the pin. Keep everything that touches it behind the `NowPlayingSource` protocol, so a macOS change means replacing one implementation. The protocol, `PlaybackState` and `PlaybackCommand` live in WarbleModel; `PlaybackState.elapsed(at:)` runs the position on from the last report, so the progress bar needs no timer of its own.
 
 Settings: keys and defaults live in WarbleCore `Preferences`. Views read them with `@Setting(PreferenceKey.x)`, which takes the default `Preferences` registers, from `SettingsStore` (`Sources/Warble/Settings`). A test checks every such key has a registered default.
 

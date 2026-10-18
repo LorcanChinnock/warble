@@ -1,7 +1,8 @@
 name: CI
 
-# Every pull request runs two jobs. `test` lints and runs WarbleModel's tests on Linux, which keeps it portable.
-# `macos` builds the app and runs every macOS test, so an Apple-side break can't reach main. release-please opens its
+# Every pull request runs two required jobs. `test` lints and runs WarbleModel's tests on Linux, which keeps it portable.
+# `macos` builds the app and runs every macOS test, so an Apple-side break can't reach main. `adapter` and
+# `adapter-macos-15` check the bundled mediaremote-adapter still works, but aren't required. release-please opens its
 # release PR as the repository's GitHub App (release.yml), so that PR's runs start without approval.
 # There's no run on push to main: PRs are squash-merged, and their merge commit was already tested. warm-cache.yml
 # builds there instead, to save the Linux build cache the pull request check restores.
@@ -59,3 +60,73 @@ jobs:
         run: swift build --arch x86_64 --force-resolved-versions
       - name: Test on macOS
         run: make test ARGS=--skip-build
+
+  # Not a required check. The now-playing source runs mediaremote-adapter under /usr/bin/perl, and a macOS update could
+  # stop that working, so this builds both apps as `make bundle` and `make dist` do and runs the adapter's own `test`
+  # in each. Releases build on macOS 26, so adapter-macos-15 runs those same builds on the oldest macOS Warble supports.
+  adapter:
+    # macOS: builds and signs the app, and the adapter needs MediaRemote.
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: true
+      - name: Build WarbleDev.app
+        run: |
+          make bundle
+          ditto -c -k --keepParent build/WarbleDev.app build/WarbleDev.zip
+      # `make dist` refuses to sign ad hoc, so give it a self-signed identity that lasts only for this run.
+      - name: Create a signing identity
+        run: |
+          keychain="$RUNNER_TEMP/signing.keychain-db"
+          keychain_password="$(openssl rand -hex 16)"
+          security create-keychain -p "$keychain_password" "$keychain"
+          security set-keychain-settings -lut 21600 "$keychain"
+          security unlock-keychain -p "$keychain_password" "$keychain"
+          printf '[req]\ndistinguished_name=dn\nx509_extensions=ext\nprompt=no\n[dn]\nCN=Warble CI\n[ext]\nbasicConstraints=critical,CA:false\nkeyUsage=critical,digitalSignature\nextendedKeyUsage=critical,codeSigning\n' > "$RUNNER_TEMP/cert.cnf"
+          /usr/bin/openssl req -x509 -newkey rsa:2048 -nodes -keyout "$RUNNER_TEMP/key.pem" -out "$RUNNER_TEMP/cert.pem" -days 1 -config "$RUNNER_TEMP/cert.cnf"
+          /usr/bin/openssl pkcs12 -export -inkey "$RUNNER_TEMP/key.pem" -in "$RUNNER_TEMP/cert.pem" -name "Warble CI" -out "$RUNNER_TEMP/cert.p12" -passout pass:ci
+          security import "$RUNNER_TEMP/cert.p12" -k "$keychain" -P ci -T /usr/bin/codesign
+          rm "$RUNNER_TEMP/key.pem" "$RUNNER_TEMP/cert.p12"
+          security set-key-partition-list -S apple-tool:,apple: -k "$keychain_password" "$keychain" > /dev/null
+          security list-keychains -d user -s "$keychain" login.keychain-db
+      - name: Build Warble.zip
+        run: make dist
+        env:
+          WARBLE_SIGN_IDENTITY: Warble CI
+      - name: Test the adapter
+        run: |
+          for zip in build/WarbleDev.zip build/Warble.zip; do
+            dir="$RUNNER_TEMP/$(basename "$zip" .zip)"
+            ditto -x -k "$zip" "$dir"
+            r="$(echo "$dir"/*.app)/Contents/Resources"
+            /usr/bin/perl "$r/mediaremote-adapter.pl" "$r/MediaRemoteAdapter.framework" "$r/MediaRemoteAdapterTestClient" test
+            echo "The adapter in $zip works."
+          done
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: apps
+          path: build/*.zip
+          retention-days: 1
+
+  adapter-macos-15:
+    needs: adapter
+    # macOS: runs the adapter, which needs MediaRemote, on macOS 15.
+    runs-on: macos-15
+    timeout-minutes: 10
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: apps
+          path: build
+      - name: Test the adapter
+        run: |
+          sw_vers
+          for zip in build/WarbleDev.zip build/Warble.zip; do
+            dir="$RUNNER_TEMP/$(basename "$zip" .zip)"
+            ditto -x -k "$zip" "$dir"
+            r="$(echo "$dir"/*.app)/Contents/Resources"
+            /usr/bin/perl "$r/mediaremote-adapter.pl" "$r/MediaRemoteAdapter.framework" "$r/MediaRemoteAdapterTestClient" test
+            echo "The adapter in $zip works."
+          done
