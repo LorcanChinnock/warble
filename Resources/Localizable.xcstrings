@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Cancel" : {
+
+    },
     "Check for Updates…" : {
 
     },
@@ -20,6 +23,15 @@
 
     },
     "Relaunch" : {
+
+    },
+    "Shortcut unavailable: %@. Another app may use it, so choose a different one in Settings › Shortcuts." : {
+
+    },
+    "Show" : {
+
+    },
+    "Undo" : {
 
     },
     "Update to %@…" : {
