@@ -1,6 +1,12 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%lld percent" : {
+
+    },
+    "Cancel" : {
+
+    },
     "Check for Updates…" : {
 
     },
@@ -13,6 +19,12 @@
     "Later" : {
 
     },
+    "Off" : {
+
+    },
+    "On" : {
+
+    },
     "Quit Warble" : {
 
     },
@@ -20,6 +32,15 @@
 
     },
     "Relaunch" : {
+
+    },
+    "Shortcut unavailable: %@. Another app may use it, so choose a different one in Settings › Shortcuts." : {
+
+    },
+    "Show" : {
+
+    },
+    "Undo" : {
 
     },
     "Update to %@…" : {

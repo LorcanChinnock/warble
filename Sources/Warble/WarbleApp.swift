@@ -4,8 +4,7 @@ import WarbleCore
 @main
 struct WarbleApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    // Swap for @Setting when Shot's SettingsStore is ported.
-    @AppStorage(PreferenceKey.showMenuBarIcon) private var showMenuBarIcon = true
+    @Setting(PreferenceKey.showMenuBarIcon) private var showMenuBarIcon: Bool
 
     var body: some Scene {
         MenuBarExtra(isInserted: $showMenuBarIcon) {

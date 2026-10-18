@@ -68,7 +68,9 @@ Three targets:
 
 Now playing: since macOS 15.4, only Apple-signed processes can read now-playing information through the private MediaRemote framework. The plan (#8) runs ungive/mediaremote-adapter, BSD-3-licensed, under `/usr/bin/perl`, which is Apple-signed, and reads its JSON stream. Keep everything that touches it behind the `NowPlayingSource` protocol, so a macOS change means replacing one implementation.
 
-Settings: keys and defaults live in WarbleCore `Preferences`. Until Shot's `SettingsStore` and `@Setting` are ported (#3), the app reads the one setting with `@AppStorage`.
+Settings: keys and defaults live in WarbleCore `Preferences`. Views read them with `@Setting(PreferenceKey.x)`, which takes the default `Preferences` registers, from `SettingsStore` (`Sources/Warble/Settings`). A test checks every such key has a registered default.
+
+Design: `Sources/Warble/Design` holds Shot's design system: the `Brutal` tokens, `brutalSurface` and `inkBorder`, `GlassWindow` with `NSView(hosting:)`, `brutalTip` hover tips and `BrutalSlider`. `Toast` shows a short message near the bottom of the screen under the pointer. `HotkeyCenter` registers the global shortcuts of `WarbleAction`, none of which has one by default.
 
 Website: `site/` is the Astro site for warble.lorcanchinnock.com, built and deployed by Cloudflare Workers Builds (see `site/README.md`). The user guide lives in `site/src/guide/`, one Markdown file per page at `/docs/<slug>/`, in file name order. Each file's front matter gives its `title`, a one-line `summary` and its `group` (the groups are in `site/src/lib/guide-files.ts`). Write pages as tasks, in second person: numbered steps, `<kbd>⌘⇧4</kbd>` for keys, and `> [!TIP]` or `> [!NOTE]` callouts. The site also renders `CHANGELOG.md` directly. release-please ignores `site/`.
 
@@ -76,10 +78,13 @@ Concurrency: UI and model types are `@MainActor`. Heavy work runs in `Task.detac
 
 ## Rules enforced by `make lint`
 
+- Use `NSView(hosting:)`, never `NSHostingView(rootView:)`/`NSHostingController`; a plain hosting view crashes when content changes under a visible window. `GlassWindow.swift`, which defines the helper, is exempt.
+- Use `@Setting`, never `@AppStorage`; `@AppStorage` updates late, so views show inconsistent state.
+- Use `inkBorder(_:width:color:)` rather than `strokeBorder` with any `Brutal` colour (a ternary included), and only whole-point ink widths and line widths. `BrutalStyle.swift`, which defines `inkBorder`, is exempt.
+- Use `style: .circular`, never `.continuous`, for rounded corners; continuous corners leave steps under ink borders.
+- Don't use `onTapGesture(count: 2)` next to a single tap; every single click waits out the double-click interval. Use one `onTapGesture` and read `NSApp.currentEvent?.clickCount`.
 - WarbleModel and its tests import only Foundation, Synchronization and Testing, plus CoreGraphics inside `#if canImport(CoreGraphics)`.
 - Every `runs-on: macos-*` needs a `# macOS: <reason>` comment on the line above.
-
-Shot's other rules (`NSView(hosting:)`, `@Setting`, `inkBorder`, `.circular` corners, no `onTapGesture(count: 2)`) come back with the port of its design system.
 
 ## CI
 

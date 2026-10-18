@@ -9,6 +9,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         Preferences.registerDefaults()
         _ = Updater.shared
+        if let launch = Perf.millisecondsSinceLaunch() {
+            Perf.signposter.emitEvent("Ready", "launch ms=\(launch)")
+        }
         log.notice("Ready")
     }
 
