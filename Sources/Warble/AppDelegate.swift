@@ -6,9 +6,17 @@ private let log = Logger.warble("app")
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    private var notch: NotchController?
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         Preferences.registerDefaults()
         _ = Updater.shared
+        let notch = NotchController()
+        // Nothing sets the state until playback is read (#9). To see a state now, launch with
+        // `open build/WarbleDev.app --args -notchPreviewState resting`; the argument lasts only for that launch.
+        let preview = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)["notchPreviewState"] as? String
+        notch.state = preview.flatMap(NotchState.init(rawValue:)) ?? .hidden
+        self.notch = notch
         if let launch = Perf.millisecondsSinceLaunch() {
             Perf.signposter.emitEvent("Ready", "launch ms=\(launch)")
         }
