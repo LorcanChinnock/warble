@@ -37,9 +37,9 @@
 	<true/>
 	<key>SUFeedURL</key>
 	<string>https://github.com/LorcanChinnock/warble/releases/latest/download/appcast.xml</string>
-	<!-- Generate with Sparkle's generate_keys before the first release: CONTRIBUTING.md › Release secrets. -->
+	<!-- Sparkle's generate_keys --account warble: CONTRIBUTING.md › Release secrets. -->
 	<key>SUPublicEDKey</key>
-	<string></string>
+	<string>c1GBjC8bB3xx0Em++xPuUuOFRQZP0LfCsLgoiir/sP0=</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
