@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base>
+  <section class="hero">
+    <div class="wrap">
+      <h1>Your music, in the notch</h1>
+      <p class="lede">Warble shows what's playing in your Mac's notch. Hover to see the song, click to play, pause or skip. When nothing's playing, it stays out of sight.</p>
+      <p class="meta">Free and open source, for macOS 15 or later. Warble is still being built, and the first beta isn't out yet.</p>
+      <div class="cta">
+        <a class="button big" href="https://github.com/LorcanChinnock/warble">Follow it on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="small">
+    <div class="wrap narrow-text">
+      <p>It works with Apple Music, Spotify, podcasts and video in your browser, and on Macs without a notch too. There's no account and nothing to set up. The <a href="https://github.com/LorcanChinnock/warble/blob/main/docs/roadmap.md">roadmap</a> lists what's coming in each release.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding-top: clamp(40px, 6vw, 72px); }
+  .hero .wrap { justify-items: start; }
+  .hero h1 { font-size: clamp(44px, 7vw, 80px); margin: 0; }
+  .lede { font-size: clamp(19px, 2.2vw, 22px); margin: 0; max-width: 30em; }
+  .cta { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; width: 100%; }
+  .button.big { min-height: 52px; padding: 12px 22px; font-size: 18px; }
+  .meta { margin: 0; font-size: 15px; color: var(--muted); }
+
+  section { padding-block: clamp(28px, 4vw, 48px); }
+  .wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .narrow-text p { max-width: 36em; }
+  .small p { font-size: 19px; margin: 0; }
+  .small a { font-weight: 700; }
+</style>

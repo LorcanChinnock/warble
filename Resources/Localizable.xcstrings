@@ -1,0 +1,33 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Check for Updates…" : {
+
+    },
+    "Couldn't relaunch Warble" : {
+
+    },
+    "It was installed while Warble was running. Relaunch to use it." : {
+
+    },
+    "Later" : {
+
+    },
+    "Quit Warble" : {
+
+    },
+    "Quit Warble and open it again." : {
+
+    },
+    "Relaunch" : {
+
+    },
+    "Update to %@…" : {
+
+    },
+    "Warble %@ is installed" : {
+
+    }
+  },
+  "version" : "1.0"
+}
