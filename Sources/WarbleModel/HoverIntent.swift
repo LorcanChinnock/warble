@@ -4,8 +4,7 @@ import Foundation
 public enum HoverState: String, CaseIterable, Sendable {
     /// The pointer is elsewhere, or only passing.
     case resting
-    /// The pointer has stayed on the notch long enough to mean it.
-    case peeking
+    /// The pointer has stayed on the notch long enough to mean it, or the notch was clicked.
     case expanded
     /// Expanded, and stays open when the pointer leaves.
     case pinned
@@ -27,10 +26,8 @@ public enum HoverEvent: Sendable {
 /// Warble. It holds no timers: after each call the owner schedules one for `deadline`, if any, and calls
 /// `advance(to:)` when it fires.
 public struct HoverIntent: Equatable, Sendable {
-    /// How long the pointer stays on the notch before it peeks.
-    public static let peekDelay: TimeInterval = 0.12
-    /// How long the pointer stays on the notch before it expands, counted from when it entered.
-    public static let expandDelay: TimeInterval = 0.6
+    /// How long the pointer stays on the notch before it expands.
+    public static let expandDelay: TimeInterval = 0.25
     /// How long after the pointer leaves the notch closes, unless pinned.
     public static let collapseDelay: TimeInterval = 0.4
 
@@ -76,9 +73,8 @@ public struct HoverIntent: Equatable, Sendable {
     public mutating func advance(to date: Date) {
         while let due = deadline, due <= date {
             switch state {
-            case .resting: state = .peeking
-            case .peeking where enteredAt != nil: state = .expanded
-            case .peeking, .expanded: state = .resting; leftAt = nil
+            case .resting: state = .expanded
+            case .expanded: state = .resting; leftAt = nil
             case .pinned: break
             }
             deadline = nextDeadline()
@@ -87,8 +83,7 @@ public struct HoverIntent: Equatable, Sendable {
 
     private func nextDeadline() -> Date? {
         switch state {
-        case .resting: enteredAt.map { $0 + Self.peekDelay }
-        case .peeking: enteredAt.map { $0 + Self.expandDelay } ?? leftAt.map { $0 + Self.collapseDelay }
+        case .resting: enteredAt.map { $0 + Self.expandDelay }
         case .expanded: pointerInside ? nil : leftAt.map { $0 + Self.collapseDelay }
         case .pinned: nil
         }

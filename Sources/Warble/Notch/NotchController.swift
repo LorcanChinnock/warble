@@ -187,7 +187,7 @@ final class NotchController {
             log.notice("Notch hidden (\(self.state.rawValue, privacy: .public))")
             return
         }
-        listen(open: state == .peek || state == .expanded)
+        listen(open: state == .expanded)
         followVolume(state == .expanded)
         guard shown?.state != state || shown?.frame != frame else { return }
         let previous = shown
