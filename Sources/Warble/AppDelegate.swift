@@ -8,6 +8,7 @@ private let log = Logger.warble("app")
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var notch: NotchController?
     private var source: AdapterSource?
+    private var fallback: ScriptSource?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Preferences.registerDefaults()
@@ -38,10 +39,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 for await state in source.states {
                     notch.playback = state
                 }
+                // The states end only when the adapter gives up.
+                startFallback(notch)
             }
             self.source = source
         } else {
-            log.error("The adapter isn't in the app's resources, so nothing will show; build with make bundle")
+            log.error("The adapter isn't in the app's resources; build with make bundle")
+            startFallback(notch)
         }
         self.notch = notch
         if let launch = Perf.millisecondsSinceLaunch() {
@@ -52,6 +56,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         source?.stop()
+        fallback?.stop()
+    }
+
+    /// Follows Music and Spotify with AppleScript when the adapter can't run, so the two most common players still work.
+    private func startFallback(_ notch: NotchController) {
+        let fallback = ScriptSource()
+        fallback.start()
+        notch.send = { command in Task { await fallback.send(command) } }
+        Task {
+            for await state in fallback.states {
+                notch.playback = state
+            }
+        }
+        self.fallback = fallback
     }
 
     /// Opening Warble again from Finder or Spotlight brings back a menu bar icon that was turned off, so it can always
