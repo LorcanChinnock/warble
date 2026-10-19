@@ -93,7 +93,8 @@ private func state(_ player: ScriptedPlayer, title: String = "Song", playing: Bo
     #expect(ScriptedPlayer.music.script(for: .setRepeat(.all)).contains("set song repeat to all\n"))
     #expect(ScriptedPlayer.music.script(for: .setShuffle(.albums)).contains("set shuffle mode to albums\n        set shuffle enabled to true\n"))
     #expect(ScriptedPlayer.spotify.script(for: .setShuffle(.albums)).contains("set shuffling to true\n"))
-    #expect(ScriptedPlayer.spotify.script(for: .setRepeat(.one)).contains("set repeating to true\n"))
+    #expect(ScriptedPlayer.spotify.script(for: .setRepeat(.all)).contains("set repeating to true\n"))
+    #expect(ScriptedPlayer.spotify.script(for: .setRepeat(.one)).contains("set repeating to false\n"))
     #expect(ScriptedPlayer.spotify.script(for: .setRepeat(.off)).contains("set repeating to false\n"))
 }
 
@@ -132,4 +133,11 @@ private func state(_ player: ScriptedPlayer, title: String = "Song", playing: Bo
     #expect(players.state(of: .spotify) == nil)
     players.update(.music, nil)
     #expect(players.current == nil)
+}
+
+@Test func spotifysRepeatButtonTurnsRepeatOnThenOff() {
+    // Spotify reads back as off or all, so two presses of the button, which steps off, all, one, must end where they began.
+    let on = RepeatMode.off.next
+    #expect(ScriptedPlayer.spotify.script(for: .setRepeat(on)).contains("set repeating to true\n"))
+    #expect(ScriptedPlayer.spotify.script(for: .setRepeat(on.next)).contains("set repeating to false\n"))
 }

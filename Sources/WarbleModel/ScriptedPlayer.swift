@@ -65,8 +65,9 @@ public enum ScriptedPlayer: String, CaseIterable, Sendable {
         }
     }
 
-    /// Spotify's scripting has only on and off for shuffle and repeat, so any shuffle turns it on, and so does repeating
-    /// one track, which repeats the whole list there.
+    /// Spotify's scripting has only on and off for shuffle and repeat, so any shuffle turns it on. Repeat reads back as
+    /// all, so repeating one, the step after all on the repeat button, turns it off; otherwise the button could never
+    /// turn it off.
     public func script(for command: PlaybackCommand) -> String {
         switch command {
         case .play: tell("play")
@@ -85,7 +86,7 @@ public enum ScriptedPlayer: String, CaseIterable, Sendable {
         case .setRepeat(let mode):
             switch self {
             case .music: tell("set song repeat to \(mode.rawValue)")
-            case .spotify: tell("set repeating to \(mode != .off)")
+            case .spotify: tell("set repeating to \(mode == .all)")
             }
         }
     }
