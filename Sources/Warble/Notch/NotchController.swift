@@ -206,10 +206,11 @@ final class NotchController {
         morphs += 1
         let morph = morphs
         if animated, previous == nil {
-            // Draw Hidden, the housing's own size, over the housing first, so the wings slide out from behind it.
+            // Draw Hidden, the housing's own size, over the housing first, so the wings slide out from behind it. A hide
+            // still sliding in keeps its larger panel until the shape has caught up.
             model.notch = notch
             model.state = .hidden
-            show(in: frame)
+            show(in: panelFrame.map { $0.union(frame) } ?? frame)
             panel.displayIfNeeded()
         }
         model.notch = notch
