@@ -11,6 +11,9 @@ enum Native {
     /// Bottom corner radius of the notch at rest. Expanded rounds more as it grows.
     static let restingRadius: CGFloat = 12
 
+    /// Space above and below the art in a resting wing.
+    static let restingInset: CGFloat = 6
+
     static func radius(_ state: NotchState) -> CGFloat {
         switch state {
         case .hidden, .resting: restingRadius

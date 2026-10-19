@@ -176,15 +176,26 @@ final class NotchController {
     private func update(animated: Bool = true) {
         let state = state
         // Only a built-in display has a notch; screens without one get a virtual notch later (#22).
-        guard let notch = NSScreen.screens.lazy.compactMap(\.notch).first, let frame = NotchLayout.frame(state, notch: notch) else {
-            morphs += 1
-            panel.orderOut(nil)
-            shown = nil
-            panelFrame = nil
-            model.state = .hidden
+        let notch = NSScreen.screens.lazy.compactMap(\.notch).first
+        guard let notch, let frame = NotchLayout.frame(state, notch: notch) else {
             listen(open: false)
             followVolume(false)
+            guard shown != nil else { return }
+            shown = nil
+            morphs += 1
+            let morph = morphs
             log.notice("Notch hidden (\(self.state.rawValue, privacy: .public))")
+            // The wings slide back behind the housing before the panel goes, unless the notch itself has gone.
+            guard animated, notch != nil, panelFrame != nil else {
+                hide()
+                return
+            }
+            withAnimation(NSWorkspace.shared.accessibilityDisplayShouldReduceMotion ? Native.fade : Native.morph, completionCriteria: .removed) {
+                model.state = .hidden
+            } completion: { [weak self] in
+                guard let self, morph == self.morphs else { return }
+                self.hide()
+            }
             return
         }
         listen(open: state == .expanded)
@@ -194,8 +205,16 @@ final class NotchController {
         shown = (state, frame)
         morphs += 1
         let morph = morphs
+        if animated, previous == nil {
+            // Draw Hidden, the housing's own size, over the housing first, so the wings slide out from behind it. A hide
+            // still sliding in keeps its larger panel until the shape has caught up.
+            model.notch = notch
+            model.state = .hidden
+            show(in: panelFrame.map { $0.union(frame) } ?? frame)
+            panel.displayIfNeeded()
+        }
         model.notch = notch
-        if animated, let previous, let panelFrame, previous.frame != frame {
+        if animated, let panelFrame, (previous?.frame ?? .zero) != frame {
             // Grow the panel before the shape does, so nothing is clipped, and shrink it once the shape has.
             let union = panelFrame.union(frame)
             if union != panelFrame {
@@ -214,6 +233,12 @@ final class NotchController {
         }
         panel.track(NotchLayout.hoverArea(state, notch: notch) ?? .zero)
         log.notice("Notch \(state.rawValue, privacy: .public) at \(NSStringFromRect(frame), privacy: .public) over \(NSStringFromRect(notch), privacy: .public)")
+    }
+
+    private func hide() {
+        panel.orderOut(nil)
+        panelFrame = nil
+        model.state = .hidden
     }
 
     private func show(in frame: CGRect) {

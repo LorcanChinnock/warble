@@ -31,8 +31,9 @@ final class NotchModel {
     var isMuted = false
     @ObservationIgnored var onVolume: (Double) -> Void = { _ in }
 
+    /// Hidden draws at the housing's size, black on black, so the wings slide out from behind it and back in.
     func size(_ state: NotchState) -> CGSize {
-        NotchLayout.frame(state, notch: notch)?.size ?? .zero
+        NotchLayout.frame(state, notch: notch)?.size ?? notch.size
     }
 }
 
@@ -82,9 +83,146 @@ private struct NotchContent: View {
         case (.expanded, let playback?):
             ExpandedContent(playback: playback, model: model)
                 .padding(.top, model.notch.height)
+        case (.resting, let playback?):
+            RestingContent(playback: playback, artwork: model.artwork, height: model.notch.height)
         default:
-            // Empty until the art and play-state bars arrive (#19), so there's nothing to read yet.
             Color.clear.accessibilityHidden(true)
+        }
+    }
+}
+
+/// The art in the left wing and the play-state bars in the right, either side of the camera housing.
+private struct RestingContent: View {
+    let playback: PlaybackState
+    let artwork: NSImage?
+    let height: CGFloat
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        let art = height - 2 * Native.restingInset
+        HStack(spacing: 0) {
+            Artwork(image: artwork, radius: 6, symbolSize: 12)
+                .frame(width: art, height: art)
+                .frame(width: NotchLayout.wing)
+            Spacer(minLength: 0)
+            PlayStateBars(isPlaying: playback.isPlaying, reduceMotion: reduceMotion)
+                .frame(width: 18, height: art * 0.6)
+                .frame(width: NotchLayout.wing)
+        }
+        .frame(maxHeight: .infinity)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(playback.artist.map { Text("\(playback.title) by \($0)") } ?? Text(playback.title))
+        .accessibilityValue(playback.isPlaying ? Text("Playing") : Text("Paused"))
+    }
+}
+
+/// Four bars that rise and fall while something plays and settle when it pauses. They follow the play state, not the
+/// audio. Core Animation runs them in the window server, so the app does no work per frame; with Reduce Motion they
+/// stand still.
+private struct PlayStateBars: NSViewRepresentable {
+    let isPlaying: Bool
+    let reduceMotion: Bool
+
+    func makeNSView(context: Context) -> BarsView {
+        BarsView()
+    }
+
+    func updateNSView(_ view: BarsView, context: Context) {
+        view.show(isPlaying ? (reduceMotion ? .still : .moving) : .settled)
+    }
+
+    final class BarsView: NSView {
+        enum Look { case settled, still, moving }
+
+        /// Each bar's heights, as fractions of the view's, which it loops through. Different lengths keep the bars from
+        /// falling into step.
+        private static let heights: [[CGFloat]] = [
+            [0.35, 0.9, 0.5, 1, 0.4],
+            [0.8, 0.3, 1, 0.45],
+            [0.5, 1, 0.3, 0.75, 0.6, 0.95],
+            [0.9, 0.4, 0.7, 0.3],
+        ]
+        /// A paused bar, a rounded dot.
+        private static let settled: CGFloat = 3
+        private static let barWidth: CGFloat = 3
+        private let bars = heights.map { _ in CALayer() }
+        private var look = Look.settled
+
+        init() {
+            super.init(frame: .zero)
+            wantsLayer = true
+            for bar in bars {
+                bar.backgroundColor = NSColor.white.cgColor
+                bar.cornerRadius = Self.barWidth / 2
+                // Grows up from its foot.
+                bar.anchorPoint = CGPoint(x: 0.5, y: 0)
+                layer?.addSublayer(bar)
+            }
+        }
+
+        required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+        override func layout() {
+            super.layout()
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            let gap = (bounds.width - CGFloat(bars.count) * Self.barWidth) / CGFloat(bars.count - 1)
+            for (index, bar) in bars.enumerated() {
+                bar.position = CGPoint(x: CGFloat(index) * (Self.barWidth + gap) + Self.barWidth / 2, y: 0)
+                bar.bounds.size = CGSize(width: Self.barWidth, height: height(of: index))
+            }
+            CATransaction.commit()
+            if look == .moving {
+                startMoving()
+            }
+        }
+
+        func show(_ look: Look) {
+            guard look != self.look else { return }
+            let wasMoving = self.look == .moving
+            self.look = look
+            CATransaction.begin()
+            if wasMoving {
+                // Hold each bar where it is before the animation goes, so it settles from there rather than jumping.
+                CATransaction.setDisableActions(true)
+                for bar in bars {
+                    if let height = bar.presentation()?.bounds.height { bar.bounds.size.height = height }
+                    bar.removeAnimation(forKey: "height")
+                }
+                CATransaction.commit()
+                CATransaction.begin()
+            }
+            CATransaction.setAnimationDuration(0.25)
+            for (index, bar) in bars.enumerated() {
+                bar.bounds.size.height = height(of: index)
+            }
+            CATransaction.commit()
+            if look == .moving {
+                startMoving()
+            }
+        }
+
+        private func height(of index: Int) -> CGFloat {
+            switch look {
+            case .settled, .moving: Self.settled
+            case .still: Self.heights[index][0] * bounds.height
+            }
+        }
+
+        private func startMoving() {
+            guard bounds.height > 0 else { return }
+            for (index, bar) in bars.enumerated() {
+                let values = Self.heights[index].map { max($0 * bounds.height, Self.settled) }
+                let animation = CAKeyframeAnimation(keyPath: "bounds.size.height")
+                animation.values = values + [values[0]]
+                animation.calculationMode = .cubic
+                // Slow enough that 8 frames a second reads as motion rather than steps. Each frame costs the window
+                // server a redraw of the notch: about 1.7% of a core at 8, against about 21% at the display's rate.
+                animation.duration = Double(values.count) * 0.35
+                animation.repeatCount = .infinity
+                animation.preferredFrameRateRange = CAFrameRateRange(minimum: 6, maximum: 8, preferred: 8)
+                bar.add(animation, forKey: "height")
+            }
         }
     }
 }
@@ -285,9 +423,12 @@ private struct PlaybackControls: View {
 
 private struct Artwork: View {
     let image: NSImage?
+    var radius: CGFloat = 8
+    /// The placeholder note's size, when there's no art.
+    var symbolSize: CGFloat = 24
 
     var body: some View {
-        let shape = RoundedRectangle(cornerRadius: 8, style: .continuous)
+        let shape = RoundedRectangle(cornerRadius: radius, style: .continuous)
         Group {
             if let image {
                 // Clear takes the size the caller gives, so artwork that isn't square, such as a video's, fills it and
@@ -299,7 +440,7 @@ private struct Artwork: View {
                 shape.fill(Color(white: 0.15))
                     .overlay {
                         Image(systemName: "music.note")
-                            .font(.system(size: 24))
+                            .font(.system(size: symbolSize))
                             .foregroundStyle(Native.secondary)
                     }
             }
