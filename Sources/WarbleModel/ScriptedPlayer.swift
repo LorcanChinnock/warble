@@ -57,10 +57,14 @@ public enum ScriptedPlayer: String, CaseIterable, Sendable {
         }
     }
 
-    /// Returns the current track's artwork as its encoded bytes, for a player whose `stateScript` can't give a URL.
+    /// Returns the current track's artwork as its encoded bytes, for a player whose `stateScript` can't give a URL, or
+    /// `missing value` for a track without any, such as an imported file, rather than failing.
     public var artworkScript: String? {
         switch self {
-        case .music: tell("return raw data of artwork 1 of current track")
+        case .music: tell("""
+            if (count of artworks of current track) is 0 then return missing value
+            return raw data of artwork 1 of current track
+            """)
         case .spotify: nil
         }
     }

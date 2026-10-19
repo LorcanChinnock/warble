@@ -100,6 +100,7 @@ private func state(_ player: ScriptedPlayer, title: String = "Song", playing: Bo
 
 @Test func onlyMusicNeedsAScriptForArtwork() {
     #expect(ScriptedPlayer.music.artworkScript?.contains("raw data of artwork 1 of current track") == true)
+    #expect(ScriptedPlayer.music.artworkScript?.contains("if (count of artworks of current track) is 0 then return missing value\n") == true)
     #expect(ScriptedPlayer.spotify.artworkScript == nil)
 }
 
