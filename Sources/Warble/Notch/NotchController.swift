@@ -84,9 +84,10 @@ final class NotchController {
     }
 
     /// Shows what a command will do before the app reports back, so a click on play/pause answers at once. Skipping waits
-    /// for the app, since only it knows the next track. The app's next report replaces the guess either way.
+    /// for the app, since only it knows the next track. The app's next report replaces the guess either way. While a hide
+    /// is pending there's no guess, since setting one would cancel the hide and keep a stopped track on screen.
     private func perform(_ command: PlaybackCommand) {
-        if let current = playback {
+        if hideTimer == nil, let current = playback {
             switch command {
             case .play: playback = current.playing(true, at: .now)
             case .pause: playback = current.playing(false, at: .now)
