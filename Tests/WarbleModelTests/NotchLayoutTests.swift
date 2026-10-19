@@ -21,12 +21,6 @@ private let notch = CGRect(x: 856, y: 1205.5, width: 208, height: 37.5)
     #expect(frame.maxY == notch.maxY)
 }
 
-@Test func peekGrowsRestingDownwardFromTheTopOfTheHousing() throws {
-    let frame = try #require(NotchLayout.frame(.peek, notch: notch))
-    #expect(frame == CGRect(x: 806, y: 1161.5, width: 308, height: 81.5))
-    #expect(frame.maxY == notch.maxY)
-}
-
 @Test func expandedIsCentredOnTheNotchAndReachesFurtherDown() throws {
     let frame = try #require(NotchLayout.frame(.expanded, notch: notch))
     #expect(frame == CGRect(x: 786, y: 1045.5, width: 348, height: 197.5))
@@ -41,25 +35,21 @@ private let notch = CGRect(x: 856, y: 1205.5, width: 208, height: 37.5)
     #expect(expanded.midX == wide.midX)
 }
 
-@Test func eachStateContainsTheOneBeforeIt() throws {
+@Test func expandedContainsResting() throws {
     let resting = try #require(NotchLayout.frame(.resting, notch: notch))
-    let peek = try #require(NotchLayout.frame(.peek, notch: notch))
     let expanded = try #require(NotchLayout.frame(.expanded, notch: notch))
     // So the panel only grows on the way open, and the shape morphs without jumping sideways.
-    #expect(peek.contains(resting))
-    #expect(expanded.contains(peek))
+    #expect(expanded.contains(resting))
 }
 
 @Test func onlyTheHousingCountsAsOnTheNotchWhileResting() throws {
     #expect(NotchLayout.hoverArea(.hidden, notch: notch) == nil)
     #expect(NotchLayout.hoverArea(.resting, notch: notch) == notch)
-    #expect(NotchLayout.hoverArea(.peek, notch: notch) == NotchLayout.frame(.peek, notch: notch))
     #expect(NotchLayout.hoverArea(.expanded, notch: notch) == NotchLayout.frame(.expanded, notch: notch))
 }
 
 @Test func hoverStatesMapToTheShapesTheyDraw() {
     #expect(NotchState(.resting) == .resting)
-    #expect(NotchState(.peeking) == .peek)
     #expect(NotchState(.expanded) == .expanded)
     #expect(NotchState(.pinned) == .expanded)
 }

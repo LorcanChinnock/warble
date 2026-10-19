@@ -79,9 +79,6 @@ private struct NotchContent: View {
 
     var body: some View {
         switch (state, model.playback) {
-        case (.peek, let playback?):
-            PeekContent(playback: playback)
-                .padding(.top, model.notch.height)
         case (.expanded, let playback?):
             ExpandedContent(playback: playback, model: model)
                 .padding(.top, model.notch.height)
@@ -89,31 +86,6 @@ private struct NotchContent: View {
             // Empty until the art and play-state bars arrive (#19), so there's nothing to read yet.
             Color.clear.accessibilityHidden(true)
         }
-    }
-}
-
-/// The title and artist under the notch, and how far through the track it is.
-private struct PeekContent: View {
-    let playback: PlaybackState
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            VStack(alignment: .leading, spacing: 1) {
-                Marquee(text: playback.title, font: .system(size: 13, weight: .semibold))
-                    .foregroundStyle(.white)
-                if let artist = playback.artist {
-                    Text(artist)
-                        .font(.system(size: 11))
-                        .foregroundStyle(Native.secondary)
-                        .lineLimit(1)
-                }
-            }
-            .accessibilityElement(children: .combine)
-            Spacer(minLength: 0)
-            ProgressLine(playback: playback)
-        }
-        .padding(.horizontal, 16)
-        .padding(.bottom, 7)
     }
 }
 
@@ -334,78 +306,5 @@ private struct Artwork: View {
         }
         .clipShape(shape)
         .accessibilityHidden(true)
-    }
-}
-
-/// A thin line filled as far as the track has played. It redraws only while it's on screen and playing.
-private struct ProgressLine: View {
-    let playback: PlaybackState
-
-    var body: some View {
-        TimelineView(.animation(minimumInterval: 0.5, paused: !playback.isPlaying)) { context in
-            let fraction = playback.duration.map { $0 > 0 ? playback.elapsed(at: context.date) / $0 : 0 } ?? 0
-            Capsule()
-                .fill(Color.white.opacity(0.2))
-                .overlay(alignment: .leading) {
-                    GeometryReader { geometry in
-                        Capsule().fill(.white).frame(width: geometry.size.width * fraction)
-                    }
-                }
-        }
-        .frame(height: 2)
-        .accessibilityHidden(true)
-    }
-}
-
-/// One line of text that scrolls when it's too long to fit, and is cut short instead while Reduce Motion is on.
-private struct Marquee: View {
-    let text: String
-    let font: Font
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var available: CGFloat = 0
-    @State private var needed: CGFloat = 0
-    @State private var offset: CGFloat = 0
-
-    private static let gap: CGFloat = 32
-    /// Points per second.
-    private static let speed: CGFloat = 30
-
-    private var scrolls: Bool { !reduceMotion && needed > available }
-
-    var body: some View {
-        Text(text)
-            .font(font)
-            .lineLimit(1)
-            .opacity(scrolls ? 0 : 1)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .onGeometryChange(for: CGFloat.self, of: \.size.width) { available = $0 }
-            .background {
-                Text(text).font(font).fixedSize().hidden()
-                    .onGeometryChange(for: CGFloat.self, of: \.size.width) { needed = $0 }
-            }
-            .overlay(alignment: .leading) {
-                if scrolls {
-                    HStack(spacing: Self.gap) {
-                        Text(text)
-                        Text(text)
-                    }
-                    .font(font)
-                    .fixedSize()
-                    .offset(x: offset)
-                    .accessibilityHidden(true)
-                }
-            }
-            .clipped()
-            .accessibilityLabel(text)
-            .onChange(of: scrolls, initial: true) { _, scrolls in
-                var reset = Transaction()
-                reset.disablesAnimations = true
-                withTransaction(reset) { offset = 0 }
-                guard scrolls else { return }
-                let distance = needed + Self.gap
-                withAnimation(.linear(duration: distance / Self.speed).delay(1.5).repeatForever(autoreverses: false)) {
-                    offset = -distance
-                }
-            }
     }
 }

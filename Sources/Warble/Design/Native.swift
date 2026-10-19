@@ -8,13 +8,12 @@ enum Native {
     static let panel = Color.black
     /// Text and marks that matter less than the title, such as the artist.
     static let secondary = ContrastAware(standard: Color(white: 0.6), increased: Color(white: 0.8))
-    /// Bottom corner radius of the notch at rest. Peek and Expanded round more as they grow.
+    /// Bottom corner radius of the notch at rest. Expanded rounds more as it grows.
     static let restingRadius: CGFloat = 12
 
     static func radius(_ state: NotchState) -> CGFloat {
         switch state {
         case .hidden, .resting: restingRadius
-        case .peek: 16
         case .expanded: 24
         }
     }

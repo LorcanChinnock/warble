@@ -25,38 +25,43 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
     #expect(crossing.state == .resting)
 }
 
-@Test func stayingOnTheNotchPeeksAfter120Milliseconds() {
+@Test func stayingOnTheNotchExpandsAfter250Milliseconds() {
     var hovering = intent((.pointerEntered, 0))
-    #expect(hovering.deadline == entered + 0.12)
-    hovering.advance(to: entered + 0.119)
+    #expect(hovering.deadline == entered + 0.25)
+    hovering.advance(to: entered + 0.249)
     #expect(hovering.state == .resting)
-    hovering.advance(to: entered + 0.12)
-    #expect(hovering.state == .peeking)
-}
-
-@Test func stayingLongerExpands600MillisecondsAfterEntering() {
-    var hovering = intent((.pointerEntered, 0))
-    hovering.advance(to: entered + 0.12)
-    #expect(hovering.deadline == entered + 0.6)
-    hovering.advance(to: entered + 0.6)
+    hovering.advance(to: entered + 0.25)
     #expect(hovering.state == .expanded)
     #expect(hovering.deadline == nil)
 }
 
-@Test func aLateTimerAppliesEveryDeadlineThatPassed() {
+@Test func aPointerThatLeavesJustBeforeTheDelayNeverOpensTheNotch() {
+    var crossing = intent((.pointerEntered, 0), (.pointerLeft, 0.2))
+    #expect(crossing.deadline == nil)
+    crossing.advance(to: entered + 5)
+    #expect(crossing.state == .resting)
+}
+
+@Test func comingBackToTheNotchWaitsTheFullDelayAgain() {
+    var back = intent((.pointerEntered, 0), (.pointerLeft, 0.2), (.pointerEntered, 0.3))
+    #expect(back.deadline == entered + 0.55)
+    back.advance(to: entered + 0.549)
+    #expect(back.state == .resting)
+    back.advance(to: entered + 0.55)
+    #expect(back.state == .expanded)
+}
+
+@Test func aLateTimerStillOpensTheNotch() {
     var hovering = intent((.pointerEntered, 0))
     hovering.advance(to: entered + 2)
     #expect(hovering.state == .expanded)
+    #expect(hovering.deadline == nil)
 }
 
-@Test func aClickExpandsWithoutWaitingToPeek() {
+@Test func aClickExpandsWithoutWaitingForTheDelay() {
     let clicked = intent((.pointerEntered, 0), (.click, 0.03))
     #expect(clicked.state == .expanded)
     #expect(clicked.deadline == nil)
-}
-
-@Test func aClickWhilePeekingExpands() {
-    #expect(intent((.pointerEntered, 0), (.click, 0.3)).state == .expanded)
 }
 
 @Test func leavingTheExpandedNotchClosesIt400MillisecondsLater() {
@@ -77,20 +82,13 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
     #expect(back.state == .expanded)
 }
 
-@Test func leavingAPeekClosesIt400MillisecondsLater() {
-    var leaving = intent((.pointerEntered, 0), (.pointerLeft, 0.25))
-    #expect(leaving.state == .peeking)
-    #expect(leaving.deadline == entered + 0.65)
-    leaving.advance(to: entered + 0.65)
+@Test func aLateTimerAfterLeavingTheHoveredNotchClosesItAgain() {
+    var leaving = intent((.pointerEntered, 0), (.pointerLeft, 1))
+    #expect(leaving.state == .expanded)
+    #expect(leaving.deadline == entered + 1.4)
+    leaving.advance(to: entered + 5)
     #expect(leaving.state == .resting)
-}
-
-@Test func comingBackToAPeekWaitsTheFullTimeAgainBeforeExpanding() {
-    var back = intent((.pointerEntered, 0), (.pointerLeft, 0.25), (.pointerEntered, 0.5))
-    #expect(back.state == .peeking)
-    #expect(back.deadline == entered + 1.1)
-    back.advance(to: entered + 1.1)
-    #expect(back.state == .expanded)
+    #expect(leaving.deadline == nil)
 }
 
 @Test func aClickInsideTheExpandedNotchPinsIt() {
@@ -133,7 +131,7 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
     #expect(dismissed.state == .resting)
     dismissed.handle(.pointerLeft, at: entered + 6)
     dismissed.handle(.pointerEntered, at: entered + 7)
-    #expect(dismissed.deadline == entered + 7.12)
+    #expect(dismissed.deadline == entered + 7.25)
 }
 
 @Test func aClickAfterDismissingStillClosesWhenThePointerLeaves() {
