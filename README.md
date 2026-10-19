@@ -22,7 +22,7 @@
   <a href="CHANGELOG.md">Changelog</a>
 </p>
 
-Warble shows what's playing in the notch at the top of your Mac's screen. Hover over the notch or click it to see the song, then play, pause, skip, scrub, change the volume or switch speakers. When nothing is playing, Warble draws nothing and uses no CPU.
+Warble shows what's playing in the notch at the top of your Mac's screen: the album art on one side, and on the other a few bars that move while it plays. Hover over the notch or click it to see the song, then play, pause, skip, scrub, change the volume or switch speakers. When nothing is playing, Warble draws nothing and uses no CPU.
 
 It works with Apple Music, Spotify, podcasts and video in your browser. Macs without a notch, and external displays, get a virtual one.
 

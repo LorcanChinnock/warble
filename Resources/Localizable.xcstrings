@@ -1,6 +1,16 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ by %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ by %2$@"
+          }
+        }
+      }
+    },
     "%@ of %@" : {
       "localizations" : {
         "en" : {
@@ -50,7 +60,13 @@
     "Pause" : {
 
     },
+    "Paused" : {
+
+    },
     "Play" : {
+
+    },
+    "Playing" : {
 
     },
     "Position" : {
