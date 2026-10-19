@@ -43,6 +43,11 @@ final class NotchPanel: NSPanel {
         retrack()
     }
 
+    /// Reports whether the pointer is in the tracked area now, for when AppKit may have missed it crossing.
+    func recheckPointer() {
+        onPointer?(hoverArea.contains(NSEvent.mouseLocation))
+    }
+
     /// A tracking area is in window space, so it moves with every change of frame or area. A pointer already inside the
     /// new area is reported at once, since AppKit only reports crossings.
     private func retrack() {

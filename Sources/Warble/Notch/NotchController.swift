@@ -56,6 +56,7 @@ final class NotchController {
     private let model = NotchModel()
     private let volume = SystemVolume()
     private var followsVolume = false
+    private let outputs = AudioOutputs()
     private let panel: NotchPanel
     private var hover = HoverIntent()
     private var deadlineTimer: Timer?
@@ -76,6 +77,8 @@ final class NotchController {
         model.onCommand = { [weak self] in self?.perform($0) }
         model.onOpenApp = { [weak self] in self?.openApp() }
         model.onVolume = { [weak self] in self?.setVolume($0) }
+        model.onSelectOutput = { [weak self] in self?.selectOutput($0) }
+        model.onMenu = { [weak self] open in self?.menu(open: open) }
         panel.onScroll = { [weak self] in self?.scroll($0) }
         // Posted when a display is plugged in or removed, its resolution changes, or the lid closes.
         screenObserver = NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main) { [weak self] _ in
@@ -132,15 +135,39 @@ final class NotchController {
         model.isMuted = volume.isMuted
     }
 
-    /// Reads the volume, and follows changes from the volume keys and elsewhere, only while the slider shows.
+    /// Reads the volume and the outputs, and follows changes from the volume keys and elsewhere, only while the slider
+    /// shows.
     private func followVolume(_ follow: Bool) {
         guard follow != followsVolume else { return }
         followsVolume = follow
         if follow {
             readVolume()
+            readOutputs()
             volume.startListening { [weak self] in self?.readVolume() }
+            outputs.startListening { [weak self] in self?.readOutputs() }
         } else {
             volume.stopListening()
+            outputs.stopListening()
+        }
+    }
+
+    private func readOutputs() {
+        model.outputs = outputs.all
+        model.currentOutput = outputs.current
+    }
+
+    /// `SystemVolume` moves to the new output, and its listener reads the new output's volume.
+    private func selectOutput(_ id: UInt32) {
+        outputs.select(id)
+        readOutputs()
+    }
+
+    /// Keeps the card open while a menu from it is up. AppKit may not report the pointer leaving or coming back while a
+    /// menu tracks it, so once the menu closes the panel checks where it is.
+    private func menu(open: Bool) {
+        handle(open ? .menuOpened : .menuClosed)
+        if !open {
+            panel.recheckPointer()
         }
     }
 

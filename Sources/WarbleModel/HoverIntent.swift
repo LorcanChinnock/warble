@@ -20,6 +20,10 @@ public enum HoverEvent: Sendable {
     case pinButton
     /// A click outside, or Escape.
     case dismiss
+    /// A menu from the open card, such as the outputs, opened: the card stays open, wherever the pointer goes and
+    /// whatever is clicked, until `menuClosed`.
+    case menuOpened
+    case menuClosed
 }
 
 /// Decides when the notch opens and closes, so moving the pointer past it on the way to a menu bar item never opens
@@ -38,6 +42,7 @@ public struct HoverIntent: Equatable, Sendable {
     /// When the pointer started its stay on the notch; `nil` while it's away, and after a dismiss.
     private var enteredAt: Date?
     private var leftAt: Date?
+    private var menuOpen = false
 
     public init() {}
 
@@ -61,10 +66,18 @@ public struct HoverIntent: Equatable, Sendable {
             // Unpinned with the pointer away: the wait to close starts now, not when it left.
             if !pointerInside { leftAt = date }
         case .dismiss:
+            guard !menuOpen else { return }
             state = .resting
             // Resting on the notch doesn't open it again until the pointer leaves and comes back; a click still does.
             enteredAt = nil
             leftAt = nil
+        case .menuOpened:
+            menuOpen = true
+        case .menuClosed:
+            guard menuOpen else { return }
+            menuOpen = false
+            // The pointer may have left long ago, over the menu: the wait to close starts now.
+            if !pointerInside { leftAt = date }
         }
         deadline = nextDeadline()
     }
@@ -84,7 +97,7 @@ public struct HoverIntent: Equatable, Sendable {
     private func nextDeadline() -> Date? {
         switch state {
         case .resting: enteredAt.map { $0 + Self.expandDelay }
-        case .expanded: pointerInside ? nil : leftAt.map { $0 + Self.collapseDelay }
+        case .expanded: pointerInside || menuOpen ? nil : leftAt.map { $0 + Self.collapseDelay }
         case .pinned: nil
         }
     }

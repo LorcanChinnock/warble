@@ -39,6 +39,12 @@ final class NotchModel {
     var volume: Double?
     var isMuted = false
     @ObservationIgnored var onVolume: (Double) -> Void = { _ in }
+    /// The outputs to offer and the one playing, read while Expanded shows.
+    var outputs: [AudioOutput] = []
+    var currentOutput: UInt32?
+    @ObservationIgnored var onSelectOutput: (UInt32) -> Void = { _ in }
+    /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
+    @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }
 
     /// Picks the colours off the main thread, then fades the glow to them.
     private func pickColours() {
@@ -294,9 +300,15 @@ private struct ExpandedContent: View {
             Scrubber(playback: playback) { model.onCommand(.seek(to: $0)) }
             Spacer(minLength: 0)
             PlaybackControls(playback: playback, send: model.onCommand)
-            if let volume = model.volume {
-                Spacer(minLength: 0)
-                VolumeSlider(volume: model.isMuted ? 0 : volume, isMuted: model.isMuted, set: model.onVolume)
+            Spacer(minLength: 0)
+            HStack(spacing: 8) {
+                if let volume = model.volume {
+                    VolumeSlider(volume: model.isMuted ? 0 : volume, isMuted: model.isMuted, set: model.onVolume)
+                } else {
+                    Spacer(minLength: 0)
+                }
+                OutputButton(model: model)
+                    .frame(width: 34, height: 24)
             }
         }
         .padding(.horizontal, 16)
@@ -402,7 +414,7 @@ private struct Scrubber: View {
     }
 }
 
-/// The output's volume between a quiet and a loud speaker, set as the pointer drags.
+/// The output's volume after a speaker, set as the pointer drags.
 private struct VolumeSlider: View {
     let volume: Double
     let isMuted: Bool
@@ -426,14 +438,98 @@ private struct VolumeSlider: View {
                         .onChanged { set(min(max($0.location.x / width, 0), 1)) }
                 )
             }
-            Image(systemName: "speaker.wave.3.fill")
-                .frame(width: 34, alignment: .leading)
         }
         .font(.system(size: 10))
         .foregroundStyle(Native.secondary)
         .frame(height: 24)
         .accessibilityRepresentation {
             Slider(value: Binding(get: { volume }, set: set), in: 0...1) { Text("Volume") }
+        }
+    }
+}
+
+/// The playing output's symbol, which opens a menu of the outputs with the playing one ticked. AirPlay receivers aren't
+/// listed: they aren't Core Audio devices, and the system's route picker, the only public way to them, moves only
+/// Warble's own audio.
+private struct OutputButton: View {
+    let model: NotchModel
+
+    var body: some View {
+        let playing = model.outputs.first { $0.id == model.currentOutput }
+        ZStack {
+            OutputMenu(model: model)
+            Image(systemName: playing?.symbol ?? "hifispeaker")
+                .font(.system(size: 12))
+                .foregroundStyle(Native.secondary)
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+        }
+    }
+}
+
+private struct OutputMenu: NSViewRepresentable {
+    let model: NotchModel
+
+    func makeNSView(context: Context) -> OutputMenuView {
+        OutputMenuView()
+    }
+
+    func updateNSView(_ view: OutputMenuView, context: Context) {
+        view.outputs = model.outputs
+        view.current = model.currentOutput
+        view.select = model.onSelectOutput
+        view.onMenu = model.onMenu
+    }
+
+    final class OutputMenuView: NSView {
+        var outputs: [AudioOutput] = [] {
+            didSet { setAccessibilityValue(playing?.name) }
+        }
+        var current: UInt32? {
+            didSet { setAccessibilityValue(playing?.name) }
+        }
+        var select: (UInt32) -> Void = { _ in }
+        var onMenu: (Bool) -> Void = { _ in }
+
+        init() {
+            super.init(frame: .zero)
+            setAccessibilityElement(true)
+            setAccessibilityRole(.popUpButton)
+            setAccessibilityLabel(String(localized: "Output"))
+        }
+
+        required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+        override func mouseDown(with event: NSEvent) {
+            showMenu()
+        }
+
+        override func accessibilityPerformPress() -> Bool {
+            showMenu()
+            return true
+        }
+
+        private var playing: AudioOutput? {
+            outputs.first { $0.id == current }
+        }
+
+        private func showMenu() {
+            let menu = NSMenu()
+            for output in outputs {
+                let item = NSMenuItem(title: output.name, action: #selector(choose(_:)), keyEquivalent: "")
+                item.target = self
+                item.tag = Int(output.id)
+                item.image = NSImage(systemSymbolName: output.symbol, accessibilityDescription: nil)
+                item.state = output.id == current ? .on : .off
+                menu.addItem(item)
+            }
+            onMenu(true)
+            menu.popUp(positioning: nil, at: NSPoint(x: 0, y: bounds.minY - 4), in: self)
+            onMenu(false)
+        }
+
+        @objc private func choose(_ item: NSMenuItem) {
+            select(UInt32(item.tag))
         }
     }
 }
