@@ -318,7 +318,11 @@ private struct Artwork: View {
         let shape = RoundedRectangle(cornerRadius: 8, style: .continuous)
         Group {
             if let image {
-                Image(nsImage: image).resizable().scaledToFill()
+                // Clear takes the size the caller gives, so artwork that isn't square, such as a video's, fills it and
+                // is cropped rather than drawn at its own width.
+                Color.clear.overlay {
+                    Image(nsImage: image).resizable().scaledToFill()
+                }
             } else {
                 shape.fill(Color(white: 0.15))
                     .overlay {
