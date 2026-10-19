@@ -131,9 +131,9 @@ public final class ScriptSource: NowPlayingSource {
         }
     }
 
-    /// The bytes `source` returns, or `nil` when it fails.
+    /// The bytes `source` returns, or `nil` when it fails or returns `missing value`.
     private nonisolated static func runForData(_ source: String) async -> Data? {
-        await execute(source) { $0.data }
+        await execute(source) { $0.artworkData } ?? nil
     }
 
     private nonisolated static func execute<T: Sendable>(_ source: String, _ read: @escaping @Sendable (NSAppleEventDescriptor) -> T) async -> T? {
@@ -170,5 +170,12 @@ extension ScriptValue {
         default:
             self = .missing
         }
+    }
+}
+
+extension NSAppleEventDescriptor {
+    /// The encoded image an artwork script returned, or `nil` for `missing value`, the type 'msng'.
+    public var artworkData: Data? {
+        descriptorType == typeType ? nil : data
     }
 }

@@ -35,3 +35,9 @@ private var missingValue: NSAppleEventDescriptor { NSAppleEventDescriptor(typeCo
     #expect(state.duration == 240)
     #expect(state.repeatMode == .all)
 }
+
+@Test func artworkIsTheBytesReturnedAndMissingValueIsNone() {
+    let png = Data([0x89, 0x50, 0x4E, 0x47])
+    #expect(NSAppleEventDescriptor(descriptorType: 0x504E_4766, data: png)?.artworkData == png) // 'PNGf'
+    #expect(missingValue.artworkData == nil)
+}
