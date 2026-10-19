@@ -11,10 +11,32 @@ private let log = Logger.warble("notch")
 @MainActor
 final class NotchController {
     /// What's playing, or `nil` to draw nothing. `AdapterSource` sets it, or the preview track at launch.
+    ///
+    /// A source reports nothing for a moment while it changes track, so `nil` hides the notch only if nothing follows
+    /// within `hideDelay`; otherwise a skip would close the notch under the pointer.
     var playback: PlaybackState? {
+        get { shownPlayback }
+        set {
+            hideTimer?.invalidate()
+            hideTimer = nil
+            guard newValue == nil, shownPlayback != nil else {
+                shownPlayback = newValue
+                return
+            }
+            hideTimer = Timer.scheduledTimer(withTimeInterval: Self.hideDelay, repeats: false) { [weak self] _ in
+                MainActor.assumeIsolated { self?.shownPlayback = nil }
+            }
+        }
+    }
+
+    /// Longer than the gap the adapter leaves between tracks, about half a second.
+    private static let hideDelay: TimeInterval = 1.5
+    private var hideTimer: Timer?
+
+    private var shownPlayback: PlaybackState? {
         didSet {
-            model.playback = playback
-            if playback == nil {
+            model.playback = shownPlayback
+            if shownPlayback == nil {
                 // Start over, so a pointer still on the notch when playback returns is reported as entering again.
                 hover = HoverIntent()
                 pointerInside = false
