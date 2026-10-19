@@ -10,7 +10,7 @@ private let log = Logger.warble("notch")
 /// it when displays change. At rest it does no work: no timers, no polling and no event monitors.
 @MainActor
 final class NotchController {
-    /// What's playing, or `nil` to draw nothing. Nothing sets it until playback is read (#9), except the preview.
+    /// What's playing, or `nil` to draw nothing. `AdapterSource` sets it, or the preview track at launch.
     var playback: PlaybackState? {
         didSet {
             model.playback = playback

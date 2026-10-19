@@ -5,7 +5,8 @@ import PackageDescription
 var dependencies: [Package.Dependency] = []
 var targets: [Target] = [
     .target(name: "WarbleModel"),
-    .testTarget(name: "WarbleModelTests", dependencies: ["WarbleModel"]),
+    // The tests read their recorded fixtures from the source tree.
+    .testTarget(name: "WarbleModelTests", dependencies: ["WarbleModel"], exclude: ["Fixtures"]),
 ]
 
 #if os(macOS)
