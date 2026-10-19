@@ -149,3 +149,28 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
     #expect(unpinned.state == .expanded)
     #expect(unpinned.deadline == nil)
 }
+
+@Test func anOpenMenuKeepsTheCardOpenWhileThePointerIsOnIt() {
+    var open = intent((.pointerEntered, 0), (.menuOpened, 1), (.pointerLeft, 1.1))
+    #expect(open.deadline == nil)
+    open.advance(to: entered + 10)
+    #expect(open.state == .expanded)
+}
+
+@Test func aClickOutsideWhileAMenuIsOpenLeavesTheCardOpen() {
+    let open = intent((.click, 0), (.menuOpened, 1), (.dismiss, 2))
+    #expect(open.state == .expanded)
+}
+
+@Test func theCardClosesAfterTheMenuWithThePointerAway() {
+    var closing = intent((.pointerEntered, 0), (.menuOpened, 1), (.pointerLeft, 1.1), (.menuClosed, 5))
+    #expect(closing.deadline == entered + 5.4)
+    closing.advance(to: entered + 5.4)
+    #expect(closing.state == .resting)
+}
+
+@Test func theCardStaysOpenAfterTheMenuWithThePointerOnIt() {
+    let open = intent((.pointerEntered, 0), (.menuOpened, 1), (.menuClosed, 2))
+    #expect(open.state == .expanded)
+    #expect(open.deadline == nil)
+}
