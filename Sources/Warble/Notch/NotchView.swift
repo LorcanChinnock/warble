@@ -11,15 +11,24 @@ final class NotchModel {
     var notch = CGRect.zero
     var playback: PlaybackState? {
         didSet {
-            if playback?.artwork != oldValue?.artwork {
+            let artworkChanged = playback?.artwork != oldValue?.artwork
+            let appChanged = playback?.bundleIdentifier != oldValue?.bundleIdentifier
+            if artworkChanged {
                 artwork = playback?.artwork.flatMap(NSImage.init(data:))
             }
-            if playback?.bundleIdentifier != oldValue?.bundleIdentifier {
+            if appChanged {
                 appName = playback.flatMap { NSRunningApplication.runningApplications(withBundleIdentifier: $0.bundleIdentifier).first?.localizedName }
+            }
+            if artworkChanged || (appChanged && playback?.artwork == nil) {
+                pickColours()
             }
         }
     }
     private(set) var artwork: NSImage?
+    /// The glow's colours, from the artwork or, without it, the app's icon.
+    private(set) var colours: ArtworkColours?
+    /// Bumped by every pick, so a pick that finishes after the track has changed again is dropped.
+    @ObservationIgnored private var colourPicks = 0
     /// The name of the app that's playing, for VoiceOver.
     private(set) var appName: String?
     @ObservationIgnored var onClick: () -> Void = {}
@@ -30,6 +39,30 @@ final class NotchModel {
     var volume: Double?
     var isMuted = false
     @ObservationIgnored var onVolume: (Double) -> Void = { _ in }
+
+    /// Picks the colours off the main thread, then fades the glow to them.
+    private func pickColours() {
+        colourPicks += 1
+        let pick = colourPicks
+        guard let playback else {
+            colours = nil
+            return
+        }
+        let artwork = playback.artwork
+        let app = NSWorkspace.shared.urlForApplication(withBundleIdentifier: playback.bundleIdentifier)
+        Task { [weak self] in
+            let colours = await Task.detached(priority: .utility) { () -> ArtworkColours? in
+                if let artwork {
+                    return ArtworkColours(data: artwork)
+                }
+                var rect = CGRect(x: 0, y: 0, width: 32, height: 32)
+                guard let app, let icon = NSWorkspace.shared.icon(forFile: app.path).cgImage(forProposedRect: &rect, context: nil, hints: nil) else { return nil }
+                return ArtworkColours(image: icon)
+            }.value
+            guard let self, pick == self.colourPicks, colours != self.colours else { return }
+            withAnimation(Native.glowChange) { self.colours = colours }
+        }
+    }
 
     /// Hidden draws at the housing's size, black on black, so the wings slide out from behind it and back in.
     func size(_ state: NotchState) -> CGSize {
@@ -83,6 +116,7 @@ private struct NotchContent: View {
         case (.expanded, let playback?):
             ExpandedContent(playback: playback, model: model)
                 .padding(.top, model.notch.height)
+                .background { Glow(colours: model.colours) }
         case (.resting, let playback?):
             RestingContent(playback: playback, artwork: model.artwork, height: model.notch.height)
         default:
@@ -271,6 +305,34 @@ private struct ExpandedContent: View {
     }
 }
 
+/// The artwork's two colours rising from the card's bottom corners, or with Increase Contrast a solid border in the
+/// first. Both stop short of the top edge, which stays black to merge with the housing. It never animates on its own,
+/// so a card left open costs the window server nothing.
+private struct Glow: View {
+    let colours: ArtworkColours?
+    @Environment(\.colorSchemeContrast) private var contrast
+
+    var body: some View {
+        if let colours {
+            if contrast == .increased {
+                UnevenRoundedRectangle(bottomLeadingRadius: Native.radius(.expanded), bottomTrailingRadius: Native.radius(.expanded))
+                    .strokeBorder(Color(colours.border), lineWidth: Native.contrastBorder)
+                    // Leaves out the top edge, along the screen's.
+                    .mask { Rectangle().padding(.top, Native.contrastBorder) }
+            } else {
+                ZStack {
+                    corner(colours.first, at: .bottomLeading)
+                    corner(colours.second, at: .bottomTrailing)
+                }
+            }
+        }
+    }
+
+    private func corner(_ colour: ArtworkColours.RGB, at center: UnitPoint) -> some View {
+        EllipticalGradient(colors: [Color(colour).opacity(Native.glowOpacity), .clear], center: center, endRadiusFraction: Native.glowReach)
+    }
+}
+
 /// The elapsed and remaining time either side of a bar that seeks where it's released. While dragging, the bar and the
 /// time follow the pointer and nothing is sent; a live stream, which has no end, shows only the elapsed time.
 private struct Scrubber: View {
@@ -418,6 +480,12 @@ private struct PlaybackControls: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+    }
+}
+
+private extension Color {
+    init(_ colour: ArtworkColours.RGB) {
+        self.init(.sRGB, red: colour.red, green: colour.green, blue: colour.blue)
     }
 }
 
