@@ -112,6 +112,7 @@ codesign --force --sign "$identity" "$app/Contents/Frameworks/Sparkle.framework"
 # The adapter's build signs it ad hoc; sign it again with the app's identity, before the app seals its resources.
 codesign --force --sign "$identity" "$app/Contents/Resources/MediaRemoteAdapterTestClient"
 codesign --force --sign "$identity" "$app/Contents/Resources/MediaRemoteAdapter.framework"
-codesign --force --sign "$identity" "$app"
+# The entitlement lets the app send Music and Spotify Apple Events once it runs under the hardened runtime.
+codesign --force --sign "$identity" --entitlements Resources/Warble.entitlements "$app"
 version="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$app/Contents/Info.plist")"
 echo "Built $app $version ($build_number) for $(lipo -archs "$app/Contents/MacOS/$name")"

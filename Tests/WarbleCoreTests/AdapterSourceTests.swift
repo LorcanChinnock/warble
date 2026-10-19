@@ -114,6 +114,16 @@ private func states(_ source: AdapterSource, count: Int, timeout: Duration = .se
     #expect(try adapter.commands() == ["stream --micros", "test"])
 }
 
+@Test func theStatesEndWhenTheAdapterGivesUp() async throws {
+    let adapter = try FakeAdapter(stream: "exit 1;", testStatus: 1)
+    defer { adapter.remove() }
+    let source = AdapterSource(paths: adapter.paths)
+    source.start()
+    defer { source.stop() }
+    // Nothing once the stream exits, then the end, well before the timeout's empty list.
+    #expect(await states(source, count: 2) == [nil])
+}
+
 @Test func theAdapterIsFoundInTheAppsResources() throws {
     let folder = try temporaryFolder()
     defer { try? FileManager.default.removeItem(at: folder) }

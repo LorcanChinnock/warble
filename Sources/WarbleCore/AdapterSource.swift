@@ -10,7 +10,7 @@ private let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Warble", ca
 ///
 /// `start()` runs `stream` for as long as Warble does. It waits on MediaRemote rather than polling, so it costs nothing
 /// while nothing changes. When it exits on its own, `AdapterSupervisor` decides whether to check with `test` and start
-/// it again.
+/// it again, and when it gives up `states` ends, so Warble can switch to `ScriptSource`.
 public final class AdapterSource: NowPlayingSource {
     public struct Paths: Sendable {
         public var script: URL
@@ -170,7 +170,8 @@ public final class AdapterSource: NowPlayingSource {
             guard !runner.withLock({ $0.stopped }) else { return }
             startStream()
         case .giveUp:
-            log.fault("Gave up on the adapter; Warble can't read what's playing until it's opened again")
+            log.fault("Gave up on the adapter until Warble is opened again")
+            continuation.finish()
         }
     }
 
