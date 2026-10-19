@@ -11,10 +11,32 @@ private let log = Logger.warble("notch")
 @MainActor
 final class NotchController {
     /// What's playing, or `nil` to draw nothing. `AdapterSource` sets it, or the preview track at launch.
+    ///
+    /// A source reports nothing for a moment while it changes track, so `nil` hides the notch only if nothing follows
+    /// within `hideDelay`; otherwise a skip would close the notch under the pointer.
     var playback: PlaybackState? {
+        get { shownPlayback }
+        set {
+            hideTimer?.invalidate()
+            hideTimer = nil
+            guard newValue == nil, shownPlayback != nil else {
+                shownPlayback = newValue
+                return
+            }
+            hideTimer = Timer.scheduledTimer(withTimeInterval: Self.hideDelay, repeats: false) { [weak self] _ in
+                MainActor.assumeIsolated { self?.shownPlayback = nil }
+            }
+        }
+    }
+
+    /// Longer than the gap the adapter leaves between tracks, about half a second.
+    private static let hideDelay: TimeInterval = 1.5
+    private var hideTimer: Timer?
+
+    private var shownPlayback: PlaybackState? {
         didSet {
-            model.playback = playback
-            if playback == nil {
+            model.playback = shownPlayback
+            if shownPlayback == nil {
                 // Start over, so a pointer still on the notch when playback returns is reported as entering again.
                 hover = HoverIntent()
                 pointerInside = false
@@ -23,6 +45,9 @@ final class NotchController {
             update()
         }
     }
+
+    /// Sends a command to the app that's playing. Unset, as in the preview, a command only changes what the notch shows.
+    var send: (PlaybackCommand) -> Void = { _ in }
 
     var state: NotchState {
         playback == nil ? .hidden : NotchState(hover.state)
@@ -46,10 +71,36 @@ final class NotchController {
         panel = NotchPanel(model: model)
         panel.onPointer = { [weak self] inside in self?.pointer(inside: inside) }
         model.onClick = { [weak self] in self?.handle(.click) }
+        model.onCommand = { [weak self] in self?.perform($0) }
+        model.onOpenApp = { [weak self] in self?.openApp() }
         // Posted when a display is plugged in or removed, its resolution changes, or the lid closes.
         screenObserver = NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.update(animated: false) }
         }
+    }
+
+    /// Shows what a command will do before the app reports back, so a click on play/pause answers at once. Skipping waits
+    /// for the app, since only it knows the next track. The app's next report replaces the guess either way. While a hide
+    /// is pending there's no guess, since setting one would cancel the hide and keep a stopped track on screen.
+    private func perform(_ command: PlaybackCommand) {
+        if hideTimer == nil, let current = playback {
+            switch command {
+            case .play: playback = current.playing(true, at: .now)
+            case .pause: playback = current.playing(false, at: .now)
+            case .togglePlayPause: playback = current.playing(!current.isPlaying, at: .now)
+            case .seek(let position): playback = current.seeked(to: position, at: .now)
+            case .setShuffle(let mode): playback?.shuffle = mode
+            case .setRepeat(let mode): playback?.repeatMode = mode
+            case .nextTrack, .previousTrack: break
+            }
+        }
+        send(command)
+    }
+
+    private func openApp() {
+        guard let bundleIdentifier = playback?.bundleIdentifier,
+              let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) else { return }
+        NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
     }
 
     private func pointer(inside: Bool) {

@@ -1,6 +1,19 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ of %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ of %2$@"
+          }
+        }
+      }
+    },
+    "All" : {
+
+    },
     "Cancel" : {
 
     },
@@ -16,6 +29,36 @@
     "Later" : {
 
     },
+    "Next track" : {
+
+    },
+    "Off" : {
+
+    },
+    "On" : {
+
+    },
+    "One" : {
+
+    },
+    "Open %@" : {
+
+    },
+    "Open the app that's playing" : {
+
+    },
+    "Pause" : {
+
+    },
+    "Play" : {
+
+    },
+    "Position" : {
+
+    },
+    "Previous track" : {
+
+    },
     "Quit Warble" : {
 
     },
@@ -25,10 +68,16 @@
     "Relaunch" : {
 
     },
+    "Repeat" : {
+
+    },
     "Shortcut unavailable: %@. Another app may use it, so choose a different one in Settings › Shortcuts." : {
 
     },
     "Show" : {
+
+    },
+    "Shuffle" : {
 
     },
     "Undo" : {
