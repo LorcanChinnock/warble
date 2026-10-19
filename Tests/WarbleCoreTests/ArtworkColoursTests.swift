@@ -56,6 +56,17 @@ private func isClose(_ colour: ArtworkColours.RGB, _ red: Double, _ green: Doubl
     #expect(colours.second.brightness < colours.first.brightness)
 }
 
+@Test func paleArtworkIsDimmedSoTheGreySymbolsStillShow() throws {
+    let pale = try image { x, _ in x < 24 ? (255, 255, 255, 255) : (255, 240, 120, 255) }
+    let colours = try #require(ArtworkColours(image: pale))
+    for colour in [colours.first, colours.second] {
+        #expect(colour.luminance <= 0.6)
+        #expect(colour.luminance > 0.59)
+    }
+    #expect(abs(colours.first.red / colours.first.blue - 255.0 / 120) < 0.05)
+    #expect(abs(colours.second.red - colours.second.blue) < 0.001)
+}
+
 @Test func theSpaceAroundAnIconIsIgnored() throws {
     let icon = try image { x, y in (8..<32).contains(x) && (8..<32).contains(y) ? (200, 40, 160, 255) : (0, 0, 0, 0) }
     let colours = try #require(ArtworkColours(image: icon))

@@ -33,6 +33,31 @@ public struct ArtworkColours: Equatable, Sendable {
             return RGB(red: red * scale, green: green * scale, blue: blue * scale)
         }
 
+        /// WCAG's relative luminance, from 0 for black to 1 for white.
+        var luminance: Double {
+            func linear(_ channel: Double) -> Double {
+                channel <= 0.04045 ? channel / 12.92 : pow((channel + 0.055) / 1.055, 2.4)
+            }
+            return 0.2126 * linear(red) + 0.7152 * linear(green) + 0.0722 * linear(blue)
+        }
+
+        /// The same hue scaled down until its luminance is at most `luminance`.
+        func dimmed(to luminance: Double) -> RGB {
+            guard self.luminance > luminance else { return self }
+            // Luminance rises with the scale, so halve the range around it until it's close enough.
+            var low = 0.0
+            var high = 1.0
+            for _ in 0..<20 {
+                let middle = (low + high) / 2
+                if RGB(red: red * middle, green: green * middle, blue: blue * middle).luminance > luminance {
+                    high = middle
+                } else {
+                    low = middle
+                }
+            }
+            return RGB(red: red * low, green: green * low, blue: blue * low)
+        }
+
         func distance(to other: RGB) -> Double {
             ((red - other.red) * (red - other.red) + (green - other.green) * (green - other.green) + (blue - other.blue) * (blue - other.blue)).squareRoot()
         }
@@ -100,15 +125,19 @@ public struct ArtworkColours: Equatable, Sendable {
             }
             .sorted { $0.score > $1.score }
         guard let first = ranked.first?.colour else { return nil }
-        self.first = first
-        second = ranked.first { $0.colour.distance(to: first) >= Self.distinct }?.colour
+        let second = ranked.first { $0.colour.distance(to: first) >= Self.distinct }?.colour
             ?? RGB(red: first.red * 0.6, green: first.green * 0.6, blue: first.blue * 0.6)
+        self.first = first.dimmed(to: Self.brightest)
+        self.second = second.dimmed(to: Self.brightest)
     }
 
     /// The thumbnail's side in pixels: enough to find the main colours, few enough to read in well under a millisecond.
     private static let side = 32
     /// How far apart, in RGB from 0 to 1, two colours must be to count as different.
     private static let distinct = 0.3
+    /// The most luminance a colour may have, so the grey symbols in the card's bottom corners keep 3:1 contrast over the
+    /// glow even when the artwork is white. Vivid colours are well below it and keep their brightness.
+    private static let brightest = 0.6
 
     /// How much a pixel of `colour` counts: vivid colours most, and near-black, which disappears into the notch, least.
     private static func weight(_ colour: RGB) -> Double {
