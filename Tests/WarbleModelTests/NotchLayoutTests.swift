@@ -29,7 +29,7 @@ private let notch = CGRect(x: 856, y: 1205.5, width: 208, height: 37.5)
 
 @Test func expandedIsCentredOnTheNotchAndReachesFurtherDown() throws {
     let frame = try #require(NotchLayout.frame(.expanded, notch: notch))
-    #expect(frame == CGRect(x: 786, y: 1073.5, width: 348, height: 169.5))
+    #expect(frame == CGRect(x: 786, y: 1045.5, width: 348, height: 197.5))
     #expect(frame.midX == notch.midX)
     #expect(frame.maxY == notch.maxY)
 }
