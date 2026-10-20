@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-import WarbleCore
+@testable import WarbleCore
 
 /// A stand-in for mediaremote-adapter.pl: it logs each command to `log`, and for `stream` runs `stream`, Perl that
 /// prints to STDOUT. `test` exits with `testStatus`.
@@ -133,4 +133,54 @@ private func states(_ source: AdapterSource, count: Int, timeout: Duration = .se
     }
     let paths = try #require(AdapterSource.Paths(resources: folder))
     #expect(paths.script.lastPathComponent == "mediaremote-adapter.pl")
+}
+
+/// Runs `script` the way `AdapterSource` runs the stream, behind its watchdog, with `lifeline` as its stdin.
+private func watchedPerl(_ script: String, lifeline: Pipe, output: Pipe? = nil) throws -> Process {
+    let process = Process()
+    process.executableURL = URL(fileURLWithPath: "/usr/bin/perl")
+    process.arguments = AdapterSource.watched(["-e", script])
+    process.standardInput = lifeline
+    process.standardOutput = output ?? FileHandle.nullDevice
+    process.standardError = FileHandle.nullDevice
+    try process.run()
+    return process
+}
+
+/// Whether `body` returns within `timeout`. It runs on its own thread since it may block, and is left running when it
+/// doesn't return in time, so a regression fails the test rather than hanging it.
+private func finishes(within timeout: Duration, _ body: @escaping @Sendable () -> Void) async -> Bool {
+    let done = DispatchSemaphore(value: 0)
+    Thread.detachNewThread {
+        body()
+        done.signal()
+    }
+    let deadline = DispatchTime.now() + .milliseconds(Int(timeout / .milliseconds(1)))
+    return await withCheckedContinuation { continuation in
+        Thread.detachNewThread {
+            continuation.resume(returning: done.wait(timeout: deadline) == .success)
+        }
+    }
+}
+
+@Test func theStreamEndsWhenWarbleHasGone() async throws {
+    let lifeline = Pipe()
+    let process = try watchedPerl("sleep 30", lifeline: lifeline)
+    // The kernel does this when Warble ends, however it ends.
+    try lifeline.fileHandleForWriting.close()
+    try #require(await finishes(within: .seconds(5)) { process.waitUntilExit() })
+    #expect(process.terminationReason == .uncaughtSignal)
+    #expect(process.terminationStatus == SIGTERM)
+}
+
+@Test func theWatchdogLeavesTheStreamsOutputToTheStream() async throws {
+    let lifeline = Pipe()
+    let output = Pipe()
+    let process = try watchedPerl(#"print "line\n";"#, lifeline: lifeline, output: output)
+    defer { try? lifeline.fileHandleForWriting.close() }
+    // The output ends when the stream exits, though the watchdog is still waiting on stdin.
+    let reader = output.fileHandleForReading
+    #expect(await finishes(within: .seconds(5)) { _ = reader.readDataToEndOfFile() })
+    process.waitUntilExit()
+    #expect(process.terminationStatus == 0)
 }

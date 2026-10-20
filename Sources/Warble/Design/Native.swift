@@ -8,16 +8,14 @@ enum Native {
     static let panel = Color.black
     /// Text and marks that matter less than the title, such as the artist.
     static let secondary = ContrastAware(standard: Color(white: 0.6), increased: Color(white: 0.8))
-    /// Bottom corner radius of the notch at rest. Expanded rounds more as it grows.
-    static let restingRadius: CGFloat = 12
+    /// Bottom corner radius of the expanded card, rounder than the housing's as the card is larger.
+    static let expandedRadius: CGFloat = 24
 
-    /// Space above and below the art in a resting wing.
-    static let restingInset: CGFloat = 6
-
-    static func radius(_ state: NotchState) -> CGFloat {
+    /// Bottom corner radius of the notch over `notch`: the camera housing's own at rest, `expandedRadius` once open.
+    static func radius(_ state: NotchState, notch: CGRect) -> CGFloat {
         switch state {
-        case .hidden, .resting: restingRadius
-        case .expanded: 24
+        case .hidden, .resting: NotchLayout.cornerRadius(notch: notch)
+        case .expanded: expandedRadius
         }
     }
 

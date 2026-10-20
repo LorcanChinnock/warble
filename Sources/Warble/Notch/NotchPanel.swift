@@ -28,11 +28,11 @@ final class NotchPanel: NSPanel {
         contentView = NSView(hosting: NotchView(model: model))
     }
 
-    /// Fills `frame`, the larger of the shapes on screen. AppKit snaps a window to whole points, so over a notch with a
-    /// half-point edge the window grows by up to a point at the bottom; the shape keeps to its own height from the top, and
-    /// the rest stays clear, so the panel ends exactly where the camera housing does.
+    /// Fills `frame`, the larger of the shapes on screen. A window covers whole points, so over a notch with a half-point
+    /// edge it grows outwards by up to a point; the shape keeps to its own height from the top and stays centred, and the
+    /// rest stays clear, so the panel ends exactly where the camera housing does.
     func show(in frame: CGRect) {
-        setFrame(frame, display: true)
+        setFrame(NotchLayout.window(for: frame), display: true)
         orderFrontRegardless()
         retrack()
     }
