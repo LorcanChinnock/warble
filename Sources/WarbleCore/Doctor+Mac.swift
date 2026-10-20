@@ -17,11 +17,16 @@ extension Doctor {
 
     /// Whether Warble may script `player`, without asking: macOS only answers for a player that's running.
     static func automation(of player: ScriptedPlayer) -> Automation {
+        // The descriptor owns the data `aeDesc` points to, so it has to outlive the call.
+        let descriptor = NSAppleEventDescriptor(bundleIdentifier: player.bundleIdentifier)
         guard !NSRunningApplication.runningApplications(withBundleIdentifier: player.bundleIdentifier).isEmpty,
-              var target = NSAppleEventDescriptor(bundleIdentifier: player.bundleIdentifier).aeDesc?.pointee else {
+              var target = descriptor.aeDesc?.pointee else {
             return .notRunning
         }
-        switch AEDeterminePermissionToAutomateTarget(&target, typeWildCard, typeWildCard, false) {
+        let status = withExtendedLifetime(descriptor) {
+            AEDeterminePermissionToAutomateTarget(&target, typeWildCard, typeWildCard, false)
+        }
+        switch status {
         case noErr: return .allowed
         case OSStatus(errAEEventNotPermitted): return .denied
         case OSStatus(procNotFound): return .notRunning
