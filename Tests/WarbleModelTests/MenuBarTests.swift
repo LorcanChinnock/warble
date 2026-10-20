@@ -26,3 +26,17 @@ private let builtIn = CGRect(x: -1512, y: 0, width: 1512, height: 982)
     #expect(MenuBar.notch(safeAreaTop: 0, leftArea: left, rightArea: right) == nil)
     #expect(MenuBar.notch(safeAreaTop: 32, leftArea: nil, rightArea: nil) == nil)
 }
+
+@Test(arguments: fifteenInchAir)
+func theHousingIsTheSameHardwareAtEveryScale(_ scale: MeasuredScale) throws {
+    let notch = try #require(MenuBar.notch(safeAreaTop: scale.safeAreaTop, leftArea: scale.leftArea, rightArea: scale.rightArea))
+    let pixels = scale.pixelsPerPoint
+    // Each edge is within the quarter point macOS rounds to, and the height up to half a point over, never under.
+    #expect(abs(notch.minX * pixels - 1284) <= 0.25 * pixels)
+    #expect(abs(notch.maxX * pixels - 1596) <= 0.25 * pixels)
+    #expect(notch.height * pixels >= 56)
+    #expect(notch.height * pixels - 56 <= 0.5 * pixels)
+    #expect(notch.maxY == scale.screen.height)
+    // Centred on a whole point, so a window grown out to whole points stays centred on it.
+    #expect(notch.midX == scale.screen.width / 2)
+}
