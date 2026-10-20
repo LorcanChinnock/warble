@@ -36,9 +36,26 @@ final class NotchController {
     private var shownPlayback: PlaybackState? {
         didSet {
             player.playback = shownPlayback
+            if let shownPlayback {
+                remember(shownPlayback)
+            }
             handleIdle(.playback(shownPlayback))
         }
     }
+
+    /// What the idle card shows before anything plays. The preview sets it instead of reading the saved one.
+    var lastPlayed: LastPlayed? {
+        get { player.lastPlayed }
+        set { player.lastPlayed = newValue }
+    }
+    /// Where the last track played is kept across launches, or `nil` to keep it only in memory, as the preview does.
+    private let lastPlayedStore: LastPlayedStore?
+    /// The state last remembered, so a pause or a seek doesn't write to disk again.
+    private var remembered: PlaybackState?
+    /// Bumped by every track remembered, so one whose art finishes shrinking after the next has begun is dropped.
+    private var remembers = 0
+    /// The write in flight, which the next one waits for, so the file always ends up holding the latest track.
+    private var saving: Task<Void, Never>?
 
     /// Hides a paused track a while after the pause, unless the pointer is on a notch.
     private var idle = IdleAfterPause(delay: Preferences().stayVisibleAfterPausing)
@@ -46,6 +63,8 @@ final class NotchController {
     /// Whether the surfaces draw what's playing: something is, and it isn't Idle.
     private var showsPlayback = false
     private var hovering = false
+    /// What a hover on the housing does while Idle.
+    private var idleHover = Preferences().idleHover
 
     /// Sends a command to the app that's playing. Unset, as in the preview, a command only changes what the notch shows.
     var send: (PlaybackCommand) -> Void = { _ in }
@@ -64,7 +83,8 @@ final class NotchController {
     private var takesEscape = false
     private var observers: [NSObjectProtocol] = []
 
-    init() {
+    init(lastPlayedStore: LastPlayedStore?) {
+        self.lastPlayedStore = lastPlayedStore
         player.onCommand = { [weak self] in self?.perform($0) }
         player.onOpenApp = { [weak self] in self?.openApp() }
         player.onVolume = { [weak self] in self?.setVolume($0) }
@@ -83,12 +103,56 @@ final class NotchController {
                     self.idle.delay = preferences.stayVisibleAfterPausing
                     self.handleIdle(nil)
                 }
+                if preferences.idleHover != self.idleHover {
+                    self.idleHover = preferences.idleHover
+                    for surface in self.surfaces.values {
+                        surface.idleHover = self.idleHover
+                        surface.update()
+                    }
+                    self.changed()
+                }
                 if preferences.virtualNotchRules != self.rules {
                     self.layOut()
                 }
             }
         })
         layOut()
+        loadLastPlayed()
+    }
+
+    /// Reads the track saved last time, unless one has played since Warble opened.
+    private func loadLastPlayed() {
+        guard let store = lastPlayedStore else { return }
+        Task { [weak self] in
+            let saved = await Task.detached(priority: .utility) { store.load() }.value
+            guard let self, self.remembered == nil, let saved else { return }
+            self.player.lastPlayed = saved
+        }
+    }
+
+    /// Keeps `state` as the last track played, with a small copy of its art, and saves it for the next launch. Only a
+    /// new track or new art does any work.
+    private func remember(_ state: PlaybackState) {
+        guard LastPlayed.changes(from: remembered, to: state) else { return }
+        remembered = state
+        remembers += 1
+        let pass = remembers
+        let appName = player.appName
+        Task { [weak self] in
+            let lastPlayed = await Task.detached(priority: .utility) { LastPlayedStore.remembering(state, appName: appName) }.value
+            guard let self, pass == self.remembers else { return }
+            self.player.lastPlayed = lastPlayed
+            guard let store = self.lastPlayedStore else { return }
+            let previous = self.saving
+            self.saving = Task.detached(priority: .utility) {
+                await previous?.value
+                do {
+                    try store.save(lastPlayed)
+                } catch {
+                    log.error("Couldn't save the last track played: \(error.localizedDescription, privacy: .public)")
+                }
+            }
+        }
     }
 
     /// Puts a surface over each housing the displays and their rules call for, moving the ones that stay and removing
@@ -105,6 +169,8 @@ final class NotchController {
             let surface = surfaces[housing.display] ?? makeSurface(over: housing.frame)
             surfaces[housing.display] = surface
             surface.housing = housing.frame
+            surface.isVirtual = housing.isVirtual
+            surface.idleHover = idleHover
             surface.isPlaying = showsPlayback
             surface.needsAttention = doctor.needsAttention
             surface.update(animated: false)
@@ -128,7 +194,8 @@ final class NotchController {
     private func changed() {
         let open = surfaces.values.contains { $0.state == .expanded }
         listen(open: open, pointerInside: surfaces.values.contains { $0.state == .expanded && $0.pointerInside })
-        followVolume(open)
+        // Only the player's card has a slider and an output menu.
+        followVolume(surfaces.values.contains { $0.state == .expanded && $0.card == .player })
         if open, !wasOpen, doctor.adapter != .working {
             doctor.refresh()
         }
@@ -167,7 +234,7 @@ final class NotchController {
         changed()
     }
 
-    /// Draws or takes away the "!", which draws a resting notch even when nothing is playing.
+    /// Draws or takes away the "!", which draws a resting notch even when nothing is playing, in place of Idle.
     private func attentionChanged() {
         for surface in surfaces.values {
             surface.needsAttention = doctor.needsAttention
@@ -200,8 +267,9 @@ final class NotchController {
         send(command)
     }
 
+    /// Brings the app that's playing to the front, or while Idle the one that played last, opening it if it's quit.
     private func openApp() {
-        guard let bundleIdentifier = playback?.bundleIdentifier,
+        guard let bundleIdentifier = playback?.bundleIdentifier ?? player.lastPlayed?.bundleIdentifier,
               let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) else { return }
         NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
     }

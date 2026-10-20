@@ -60,6 +60,12 @@
     "It was installed while Warble was running. Relaunch to use it." : {
 
     },
+    "Last played" : {
+
+    },
+    "Last played · %@" : {
+
+    },
     "Later" : {
 
     },
@@ -76,6 +82,9 @@
 
     },
     "Notch on Displays" : {
+
+    },
+    "Nothing playing" : {
 
     },
     "Off" : {
@@ -102,6 +111,9 @@
     "Open Warble Again" : {
 
     },
+    "Open the app that played it" : {
+
+    },
     "Open the app that's playing" : {
 
     },
@@ -121,6 +133,9 @@
 
     },
     "Play" : {
+
+    },
+    "Play something and it shows here" : {
 
     },
     "Players" : {
@@ -148,6 +163,9 @@
 
     },
     "Repeat" : {
+
+    },
+    "Resume" : {
 
     },
     "Shortcut unavailable: %@. Another app may use it, so choose a different one in Settings › Shortcuts." : {
