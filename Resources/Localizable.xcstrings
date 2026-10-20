@@ -24,6 +24,9 @@
     "All" : {
 
     },
+    "Always" : {
+
+    },
     "Cancel" : {
 
     },
@@ -40,6 +43,9 @@
 
     },
     "Next track" : {
+
+    },
+    "Notch on Displays" : {
 
     },
     "Off" : {
@@ -109,6 +115,9 @@
 
     },
     "Warble %@ is installed" : {
+
+    },
+    "When There's No Notch" : {
 
     }
   },

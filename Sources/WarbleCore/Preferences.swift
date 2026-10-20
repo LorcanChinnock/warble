@@ -5,6 +5,8 @@ public enum PreferenceKey {
     public static let showMenuBarIcon = "showMenuBarIcon"
     /// How large Warble draws its own text, a `TextSize`.
     public static let textSize = "textSize"
+    /// Each display's `VirtualNotchRule` raw value, by `NotchDisplay.id`. A display missing from it follows its default.
+    public static let virtualNotch = "virtualNotch"
 
     public static func hotkey(_ action: WarbleAction) -> String { "hotkey.\(action.rawValue)" }
 }
@@ -15,6 +17,7 @@ public struct Preferences {
         var values: [String: Any] = [
             PreferenceKey.showMenuBarIcon: true,
             PreferenceKey.textSize: TextSize.standard.rawValue,
+            PreferenceKey.virtualNotch: [String: String](),
         ]
         for action in WarbleAction.allCases {
             values[PreferenceKey.hotkey(action)] = action.defaultCombo?.encoded ?? ""
@@ -53,6 +56,12 @@ public struct Preferences {
 
     public var textSize: TextSize {
         TextSize(rawValue: store.string(forKey: PreferenceKey.textSize) ?? "") ?? .standard
+    }
+
+    /// The rules the user has set, leaving out any that isn't a rule.
+    public var virtualNotchRules: [String: VirtualNotchRule] {
+        let stored = store.dictionary(forKey: PreferenceKey.virtualNotch) as? [String: String] ?? [:]
+        return stored.compactMapValues(VirtualNotchRule.init(rawValue:))
     }
 
     /// `nil` means the user cleared the shortcut.
