@@ -61,3 +61,42 @@ private func track(elapsed: TimeInterval = 30, rate: Double, duration: TimeInter
     #expect(track(rate: 0).seeked(to: 999, at: reported).elapsed == 240)
     #expect(track(rate: 0).seeked(to: -5, at: reported).elapsed == 0)
 }
+
+@Test func pausingHoldsThePositionItHadReached() {
+    let paused = track(rate: 1).playing(false, at: reported + 10)
+    #expect(!paused.isPlaying)
+    #expect(paused.elapsed(at: reported + 60) == 40)
+}
+
+@Test func playingRunsOnFromWhereItWasPaused() {
+    let playing = track(rate: 0).playing(true, at: reported + 10)
+    #expect(playing.isPlaying)
+    #expect(playing.rate == 1)
+    #expect(playing.elapsed(at: reported + 20) == 40)
+}
+
+@Test func playingWhatsAlreadyPlayingChangesNothing() {
+    let state = track(rate: 2)
+    #expect(state.playing(true, at: reported + 10) == state)
+}
+
+@Test func shuffleTurnsOnForSongsAndOffFromAny() {
+    #expect(ShuffleMode.off.next == .songs)
+    #expect(ShuffleMode.songs.next == .off)
+    #expect(ShuffleMode.albums.next == .off)
+}
+
+@Test func repeatGoesOffAllOneOff() {
+    #expect(RepeatMode.off.next == .all)
+    #expect(RepeatMode.all.next == .one)
+    #expect(RepeatMode.one.next == .off)
+}
+
+@Test func positionsReadAsMinutesAndSeconds() {
+    #expect(PlaybackState.positionLabel(0) == "0:00")
+    #expect(PlaybackState.positionLabel(7.9) == "0:07")
+    #expect(PlaybackState.positionLabel(187) == "3:07")
+    #expect(PlaybackState.positionLabel(3599) == "59:59")
+    #expect(PlaybackState.positionLabel(3723) == "1:02:03")
+    #expect(PlaybackState.positionLabel(-5) == "0:00")
+}

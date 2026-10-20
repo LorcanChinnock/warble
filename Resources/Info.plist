@@ -18,7 +18,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.1.0-beta.3</string> <!-- x-release-please-version -->
+	<string>0.1.0-beta.4</string> <!-- x-release-please-version -->
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>CFBundleIconFile</key>
@@ -35,6 +35,9 @@
 	<true/>
 	<key>NSHighResolutionCapable</key>
 	<true/>
+	<!-- Asked the first time Warble scripts Music or Spotify, which it does only when it can't read what's playing otherwise. -->
+	<key>NSAppleEventsUsageDescription</key>
+	<string>Warble shows what Music and Spotify are playing and lets you control them from the notch.</string>
 	<key>SUFeedURL</key>
 	<string>https://github.com/LorcanChinnock/warble/releases/latest/download/appcast.xml</string>
 	<!-- Sparkle's generate_keys --account warble: CONTRIBUTING.md › Release secrets. -->

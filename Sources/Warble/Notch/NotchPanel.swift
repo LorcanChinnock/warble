@@ -6,6 +6,8 @@ import WarbleCore
 final class NotchPanel: NSPanel {
     /// Called with true when the pointer enters the area set by `track(_:)`, and false when it leaves.
     var onPointer: ((Bool) -> Void)?
+    /// Called with each scroll over the panel, in any state.
+    var onScroll: ((NSEvent) -> Void)?
     private var hoverArea = CGRect.zero
     private var trackingArea: NSTrackingArea?
 
@@ -41,6 +43,11 @@ final class NotchPanel: NSPanel {
         retrack()
     }
 
+    /// Reports whether the pointer is in the tracked area now, for when AppKit may have missed it crossing.
+    func recheckPointer() {
+        onPointer?(hoverArea.contains(NSEvent.mouseLocation))
+    }
+
     /// A tracking area is in window space, so it moves with every change of frame or area. A pointer already inside the
     /// new area is reported at once, since AppKit only reports crossings.
     private func retrack() {
@@ -58,6 +65,7 @@ final class NotchPanel: NSPanel {
 
     override func mouseEntered(with event: NSEvent) { onPointer?(true) }
     override func mouseExited(with event: NSEvent) { onPointer?(false) }
+    override func scrollWheel(with event: NSEvent) { onScroll?(event) }
 
     override var canBecomeKey: Bool { false }
     override var canBecomeMain: Bool { false }
