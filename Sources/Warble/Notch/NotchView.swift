@@ -2,13 +2,34 @@ import AppKit
 import SwiftUI
 import WarbleCore
 
-/// What the notch view draws. `NotchController` changes `state` inside an animation, and the view morphs to it.
+/// What one notch panel draws. `NotchController` changes `state` inside an animation, and the view morphs to it.
 @MainActor
 @Observable
 final class NotchModel {
     var state = NotchState.hidden
-    /// The camera housing, which every state's shape is measured from.
+    /// The camera housing, real or virtual, which every state's shape is measured from.
     var notch = CGRect.zero
+    /// What's playing, shared by every display's notch.
+    let player: PlayerModel
+    @ObservationIgnored var onClick: () -> Void = {}
+    /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
+    @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }
+
+    init(player: PlayerModel) {
+        self.player = player
+    }
+
+    /// Hidden draws at the housing's size, black on black, so the wings slide out from behind it and back in.
+    func size(_ state: NotchState) -> CGSize {
+        NotchLayout.frame(state, notch: notch)?.size ?? notch.size
+    }
+}
+
+/// What's playing and the controls for it, which every display's notch shows. The artwork is decoded and its colours
+/// picked once, however many notches there are.
+@MainActor
+@Observable
+final class PlayerModel {
     var playback: PlaybackState? {
         didSet {
             let artworkChanged = playback?.artwork != oldValue?.artwork
@@ -31,7 +52,6 @@ final class NotchModel {
     @ObservationIgnored private var colourPicks = 0
     /// The name of the app that's playing, for VoiceOver.
     private(set) var appName: String?
-    @ObservationIgnored var onClick: () -> Void = {}
     @ObservationIgnored var onCommand: (PlaybackCommand) -> Void = { _ in }
     /// Brings the app that's playing to the front.
     @ObservationIgnored var onOpenApp: () -> Void = {}
@@ -43,8 +63,6 @@ final class NotchModel {
     var outputs: [AudioOutput] = []
     var currentOutput: UInt32?
     @ObservationIgnored var onSelectOutput: (UInt32) -> Void = { _ in }
-    /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
-    @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }
 
     /// Picks the colours off the main thread, then fades the glow to them.
     private func pickColours() {
@@ -68,11 +86,6 @@ final class NotchModel {
             guard let self, pick == self.colourPicks, colours != self.colours else { return }
             withAnimation(Native.glowChange) { self.colours = colours }
         }
-    }
-
-    /// Hidden draws at the housing's size, black on black, so the wings slide out from behind it and back in.
-    func size(_ state: NotchState) -> CGSize {
-        NotchLayout.frame(state, notch: notch)?.size ?? notch.size
     }
 }
 
@@ -118,13 +131,13 @@ private struct NotchContent: View {
     let model: NotchModel
 
     var body: some View {
-        switch (state, model.playback) {
+        switch (state, model.player.playback) {
         case (.expanded, let playback?):
             ExpandedContent(playback: playback, model: model)
                 .padding(.top, model.notch.height)
-                .background { Glow(colours: model.colours) }
+                .background { Glow(colours: model.player.colours) }
         case (.resting, let playback?):
-            RestingContent(playback: playback, artwork: model.artwork, height: model.notch.height)
+            RestingContent(playback: playback, artwork: model.player.artwork, height: model.notch.height)
         default:
             Color.clear.accessibilityHidden(true)
         }
@@ -275,12 +288,12 @@ private struct ExpandedContent: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                Button(action: model.onOpenApp) {
-                    Artwork(image: model.artwork)
+                Button(action: model.player.onOpenApp) {
+                    Artwork(image: model.player.artwork)
                         .frame(width: 56, height: 56)
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel(model.appName.map { Text("Open \($0)") } ?? Text("Open the app that's playing"))
+                .accessibilityLabel(model.player.appName.map { Text("Open \($0)") } ?? Text("Open the app that's playing"))
                 VStack(alignment: .leading, spacing: 2) {
                     Text(playback.title)
                         .font(.system(size: 15, weight: .semibold))
@@ -297,13 +310,13 @@ private struct ExpandedContent: View {
                 Spacer(minLength: 0)
             }
             Spacer(minLength: 0)
-            Scrubber(playback: playback) { model.onCommand(.seek(to: $0)) }
+            Scrubber(playback: playback) { model.player.onCommand(.seek(to: $0)) }
             Spacer(minLength: 0)
-            PlaybackControls(playback: playback, send: model.onCommand)
+            PlaybackControls(playback: playback, send: model.player.onCommand)
             Spacer(minLength: 0)
             HStack(spacing: 8) {
-                if let volume = model.volume {
-                    VolumeSlider(volume: model.isMuted ? 0 : volume, isMuted: model.isMuted, set: model.onVolume)
+                if let volume = model.player.volume {
+                    VolumeSlider(volume: model.player.isMuted ? 0 : volume, isMuted: model.player.isMuted, set: model.player.onVolume)
                 } else {
                     Spacer(minLength: 0)
                 }
@@ -455,7 +468,7 @@ private struct OutputButton: View {
     let model: NotchModel
 
     var body: some View {
-        let playing = model.outputs.first { $0.id == model.currentOutput }
+        let playing = model.player.outputs.first { $0.id == model.player.currentOutput }
         ZStack {
             OutputMenu(model: model)
             Image(systemName: playing?.symbol ?? "hifispeaker")
@@ -475,9 +488,9 @@ private struct OutputMenu: NSViewRepresentable {
     }
 
     func updateNSView(_ view: OutputMenuView, context: Context) {
-        view.outputs = model.outputs
-        view.current = model.currentOutput
-        view.select = model.onSelectOutput
+        view.outputs = model.player.outputs
+        view.current = model.player.currentOutput
+        view.select = model.player.onSelectOutput
         view.onMenu = model.onMenu
     }
 

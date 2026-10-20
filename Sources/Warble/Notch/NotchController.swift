@@ -6,8 +6,8 @@ import WarbleCore
 
 private let log = Logger.warble("notch")
 
-/// Puts the notch panel over the built-in display's camera housing, opens it as `HoverIntent` decides, and moves or hides
-/// it when displays change. At rest it does no work: no timers, no polling and no event monitors.
+/// Draws a notch over each camera housing, real or virtual, opens each as its `HoverIntent` decides, and moves, adds or
+/// removes them when displays or their rules change. At rest it does no work: no timers, no polling and no event monitors.
 @MainActor
 final class NotchController {
     /// What's playing, or `nil` to draw nothing. `AdapterSource` sets it, or the preview track at launch.
@@ -35,54 +35,90 @@ final class NotchController {
 
     private var shownPlayback: PlaybackState? {
         didSet {
-            model.playback = shownPlayback
-            if shownPlayback == nil {
-                // Start over, so a pointer still on the notch when playback returns is reported as entering again.
-                hover = HoverIntent()
-                pointerInside = false
-                scheduleDeadline()
+            player.playback = shownPlayback
+            guard (shownPlayback == nil) != (oldValue == nil) else { return }
+            for surface in surfaces.values {
+                surface.isPlaying = shownPlayback != nil
+                surface.update()
             }
-            update()
+            changed()
         }
     }
 
     /// Sends a command to the app that's playing. Unset, as in the preview, a command only changes what the notch shows.
     var send: (PlaybackCommand) -> Void = { _ in }
 
-    var state: NotchState {
-        playback == nil ? .hidden : NotchState(hover.state)
-    }
-
-    private let model = NotchModel()
+    private let player = PlayerModel()
     private let volume = SystemVolume()
     private var followsVolume = false
     private let outputs = AudioOutputs()
-    private let panel: NotchPanel
-    private var hover = HoverIntent()
-    private var deadlineTimer: Timer?
-    /// The state and frame last shown, and the frame the panel has, which stays the larger one until a morph ends.
-    private var shown: (state: NotchState, frame: CGRect)?
-    private var panelFrame: CGRect?
-    /// Bumped by every change, so a morph that ends after another has begun doesn't shrink the panel under it.
-    private var morphs = 0
-    private var pointerInside = false
+    /// One for each housing, by `NotchDisplay.id`.
+    private var surfaces: [String: NotchSurface] = [:]
+    private var rules: [String: VirtualNotchRule] = [:]
     private var clickMonitor: Any?
     private var takesEscape = false
-    private var screenObserver: NSObjectProtocol?
+    private var observers: [NSObjectProtocol] = []
 
     init() {
-        panel = NotchPanel(model: model)
-        panel.onPointer = { [weak self] inside in self?.pointer(inside: inside) }
-        model.onClick = { [weak self] in self?.handle(.click) }
-        model.onCommand = { [weak self] in self?.perform($0) }
-        model.onOpenApp = { [weak self] in self?.openApp() }
-        model.onVolume = { [weak self] in self?.setVolume($0) }
-        model.onSelectOutput = { [weak self] in self?.selectOutput($0) }
-        model.onMenu = { [weak self] open in self?.menu(open: open) }
-        panel.onScroll = { [weak self] in self?.scroll($0) }
+        player.onCommand = { [weak self] in self?.perform($0) }
+        player.onOpenApp = { [weak self] in self?.openApp() }
+        player.onVolume = { [weak self] in self?.setVolume($0) }
+        player.onSelectOutput = { [weak self] in self?.selectOutput($0) }
         // Posted when a display is plugged in or removed, its resolution changes, or the lid closes.
-        screenObserver = NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated { self?.update(animated: false) }
+        observers.append(NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.layOut() }
+        })
+        // Any write to Warble's defaults; only a change of rule lays the notches out again.
+        observers.append(NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: UserDefaults.standard, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated {
+                guard let self, Preferences().virtualNotchRules != self.rules else { return }
+                self.layOut()
+            }
+        })
+        layOut()
+    }
+
+    /// Puts a surface over each housing the displays and their rules call for, moving the ones that stay and removing
+    /// the rest at once.
+    private func layOut() {
+        rules = Preferences().virtualNotchRules
+        let housings = VirtualNotch.housings(NSScreen.notchDisplays, rules: rules)
+        let kept = Set(housings.map(\.display))
+        for (display, surface) in surfaces where !kept.contains(display) {
+            surface.remove()
+            surfaces[display] = nil
+        }
+        for housing in housings {
+            let surface = surfaces[housing.display] ?? makeSurface(over: housing.frame)
+            surfaces[housing.display] = surface
+            surface.housing = housing.frame
+            surface.isPlaying = shownPlayback != nil
+            surface.update(animated: false)
+        }
+        log.notice("Notches over \(housings.map { NSStringFromRect($0.frame) }.joined(separator: ", "), privacy: .public)")
+        changed()
+    }
+
+    private func makeSurface(over housing: CGRect) -> NotchSurface {
+        let surface = NotchSurface(housing: housing, player: player) { [weak self] in self?.scroll($0) }
+        surface.onChange = { [weak self] in self?.changed() }
+        // A click on one notch closes any other that's open; clicks in other apps are the click monitor's.
+        surface.onClick = { [weak self, weak surface] in
+            self?.dismiss { $0 !== surface }
+        }
+        return surface
+    }
+
+    /// Listens for clicks elsewhere and Escape, and follows the volume, only while a notch is open.
+    private func changed() {
+        let open = surfaces.values.contains { $0.state == .expanded }
+        listen(open: open, pointerInside: surfaces.values.contains { $0.state == .expanded && $0.pointerInside })
+        followVolume(open)
+    }
+
+    private func dismiss(where included: (NotchSurface) -> Bool = { _ in true }) {
+        for surface in surfaces.values where surface.state == .expanded && included(surface) {
+            surface.handle(.dismiss)
         }
     }
 
@@ -131,8 +167,8 @@ final class NotchController {
     }
 
     private func readVolume() {
-        model.volume = volume.volume
-        model.isMuted = volume.isMuted
+        player.volume = volume.volume
+        player.isMuted = volume.isMuted
     }
 
     /// Reads the volume and the outputs, and follows changes from the volume keys and elsewhere, only while the slider
@@ -152,8 +188,8 @@ final class NotchController {
     }
 
     private func readOutputs() {
-        model.outputs = outputs.all
-        model.currentOutput = outputs.current
+        player.outputs = outputs.all
+        player.currentOutput = outputs.current
     }
 
     /// `SystemVolume` moves to the new output, and its listener reads the new output's volume.
@@ -162,124 +198,13 @@ final class NotchController {
         readOutputs()
     }
 
-    /// Keeps the card open while a menu from it is up. AppKit may not report the pointer leaving or coming back while a
-    /// menu tracks it, so once the menu closes the panel checks where it is.
-    private func menu(open: Bool) {
-        handle(open ? .menuOpened : .menuClosed)
-        if !open {
-            panel.recheckPointer()
-        }
-    }
-
-    private func pointer(inside: Bool) {
-        guard inside != pointerInside else { return }
-        pointerInside = inside
-        handle(inside ? .pointerEntered : .pointerLeft)
-    }
-
-    private func handle(_ event: HoverEvent) {
-        hover.handle(event, at: .now)
-        scheduleDeadline()
-        update()
-    }
-
-    /// One timer at most, for `HoverIntent`'s next deadline, and none while nothing is due.
-    private func scheduleDeadline() {
-        deadlineTimer?.invalidate()
-        deadlineTimer = nil
-        guard let deadline = hover.deadline else { return }
-        let timer = Timer(fire: deadline, interval: 0, repeats: false) { [weak self] _ in
-            MainActor.assumeIsolated {
-                guard let self else { return }
-                self.hover.advance(to: max(.now, deadline))
-                self.scheduleDeadline()
-                self.update()
-            }
-        }
-        RunLoop.main.add(timer, forMode: .common)
-        deadlineTimer = timer
-    }
-
-    private func update(animated: Bool = true) {
-        let state = state
-        // Only a built-in display has a notch; screens without one get a virtual notch later (#22).
-        let notch = NSScreen.screens.lazy.compactMap(\.notch).first
-        guard let notch, let frame = NotchLayout.frame(state, notch: notch) else {
-            listen(open: false)
-            followVolume(false)
-            guard shown != nil else { return }
-            shown = nil
-            morphs += 1
-            let morph = morphs
-            log.notice("Notch hidden (\(self.state.rawValue, privacy: .public))")
-            // The wings slide back behind the housing before the panel goes, unless the notch itself has gone.
-            guard animated, notch != nil, panelFrame != nil else {
-                hide()
-                return
-            }
-            withAnimation(NSWorkspace.shared.accessibilityDisplayShouldReduceMotion ? Native.fade : Native.morph, completionCriteria: .removed) {
-                model.state = .hidden
-            } completion: { [weak self] in
-                guard let self, morph == self.morphs else { return }
-                self.hide()
-            }
-            return
-        }
-        listen(open: state == .expanded)
-        followVolume(state == .expanded)
-        guard shown?.state != state || shown?.frame != frame else { return }
-        let previous = shown
-        shown = (state, frame)
-        morphs += 1
-        let morph = morphs
-        if animated, previous == nil {
-            // Draw Hidden, the housing's own size, over the housing first, so the wings slide out from behind it. A hide
-            // still sliding in keeps its larger panel until the shape has caught up.
-            model.notch = notch
-            model.state = .hidden
-            show(in: panelFrame.map { $0.union(frame) } ?? frame)
-            panel.displayIfNeeded()
-        }
-        model.notch = notch
-        if animated, let panelFrame, (previous?.frame ?? .zero) != frame {
-            // Grow the panel before the shape does, so nothing is clipped, and shrink it once the shape has.
-            let union = panelFrame.union(frame)
-            if union != panelFrame {
-                show(in: union)
-            }
-            let reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
-            withAnimation(reduceMotion ? Native.fade : Native.morph, completionCriteria: .removed) {
-                model.state = state
-            } completion: { [weak self] in
-                guard let self, morph == self.morphs, self.panelFrame != frame else { return }
-                self.show(in: frame)
-            }
-        } else {
-            model.state = state
-            show(in: frame)
-        }
-        panel.track(NotchLayout.hoverArea(state, notch: notch) ?? .zero)
-        log.notice("Notch \(state.rawValue, privacy: .public) at \(NSStringFromRect(frame), privacy: .public) over \(NSStringFromRect(notch), privacy: .public)")
-    }
-
-    private func hide() {
-        panel.orderOut(nil)
-        panelFrame = nil
-        model.state = .hidden
-    }
-
-    private func show(in frame: CGRect) {
-        panelFrame = frame
-        panel.show(in: frame)
-    }
-
-    /// While the notch is open, a click anywhere else closes it, and so does Escape with the pointer on it. Both stop at
+    /// While a notch is open, a click anywhere else closes it, and so does Escape with the pointer on it. Both stop at
     /// rest, so a resting notch watches nothing and never takes Escape from the app in front.
-    private func listen(open: Bool) {
+    private func listen(open: Bool, pointerInside: Bool) {
         if open, clickMonitor == nil {
             // Clicks in other apps; a click on the panel itself is the panel's own.
             clickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown]) { [weak self] _ in
-                MainActor.assumeIsolated { self?.handle(.dismiss) }
+                MainActor.assumeIsolated { self?.dismiss() }
             }
         } else if !open, let monitor = clickMonitor {
             NSEvent.removeMonitor(monitor)
@@ -288,7 +213,7 @@ final class NotchController {
         let wantsEscape = open && pointerInside
         if wantsEscape, !takesEscape {
             takesEscape = HotkeyCenter.shared.registerTemporary(KeyCombo(keyCode: UInt32(kVK_Escape), modifiers: 0)) { [weak self] in
-                self?.handle(.dismiss)
+                self?.dismiss()
             }
         } else if !wantsEscape, takesEscape {
             HotkeyCenter.shared.unregisterTemporary()
