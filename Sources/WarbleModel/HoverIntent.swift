@@ -4,8 +4,7 @@ import Foundation
 public enum HoverState: String, CaseIterable, Sendable {
     /// The pointer is elsewhere, or only passing.
     case resting
-    /// The pointer has stayed on the notch long enough to mean it.
-    case peeking
+    /// The pointer has stayed on the notch long enough to mean it, or the notch was clicked.
     case expanded
     /// Expanded, and stays open when the pointer leaves.
     case pinned
@@ -21,16 +20,18 @@ public enum HoverEvent: Sendable {
     case pinButton
     /// A click outside, or Escape.
     case dismiss
+    /// A menu from the open card, such as the outputs, opened: the card stays open, wherever the pointer goes and
+    /// whatever is clicked, until `menuClosed`.
+    case menuOpened
+    case menuClosed
 }
 
 /// Decides when the notch opens and closes, so moving the pointer past it on the way to a menu bar item never opens
 /// Warble. It holds no timers: after each call the owner schedules one for `deadline`, if any, and calls
 /// `advance(to:)` when it fires.
 public struct HoverIntent: Equatable, Sendable {
-    /// How long the pointer stays on the notch before it peeks.
-    public static let peekDelay: TimeInterval = 0.12
-    /// How long the pointer stays on the notch before it expands, counted from when it entered.
-    public static let expandDelay: TimeInterval = 0.6
+    /// How long the pointer stays on the notch before it expands.
+    public static let expandDelay: TimeInterval = 0.25
     /// How long after the pointer leaves the notch closes, unless pinned.
     public static let collapseDelay: TimeInterval = 0.4
 
@@ -41,6 +42,7 @@ public struct HoverIntent: Equatable, Sendable {
     /// When the pointer started its stay on the notch; `nil` while it's away, and after a dismiss.
     private var enteredAt: Date?
     private var leftAt: Date?
+    private var menuOpen = false
 
     public init() {}
 
@@ -64,10 +66,18 @@ public struct HoverIntent: Equatable, Sendable {
             // Unpinned with the pointer away: the wait to close starts now, not when it left.
             if !pointerInside { leftAt = date }
         case .dismiss:
+            guard !menuOpen else { return }
             state = .resting
             // Resting on the notch doesn't open it again until the pointer leaves and comes back; a click still does.
             enteredAt = nil
             leftAt = nil
+        case .menuOpened:
+            menuOpen = true
+        case .menuClosed:
+            guard menuOpen else { return }
+            menuOpen = false
+            // The pointer may have left long ago, over the menu: the wait to close starts now.
+            if !pointerInside { leftAt = date }
         }
         deadline = nextDeadline()
     }
@@ -76,9 +86,8 @@ public struct HoverIntent: Equatable, Sendable {
     public mutating func advance(to date: Date) {
         while let due = deadline, due <= date {
             switch state {
-            case .resting: state = .peeking
-            case .peeking where enteredAt != nil: state = .expanded
-            case .peeking, .expanded: state = .resting; leftAt = nil
+            case .resting: state = .expanded
+            case .expanded: state = .resting; leftAt = nil
             case .pinned: break
             }
             deadline = nextDeadline()
@@ -87,9 +96,8 @@ public struct HoverIntent: Equatable, Sendable {
 
     private func nextDeadline() -> Date? {
         switch state {
-        case .resting: enteredAt.map { $0 + Self.peekDelay }
-        case .peeking: enteredAt.map { $0 + Self.expandDelay } ?? leftAt.map { $0 + Self.collapseDelay }
-        case .expanded: pointerInside ? nil : leftAt.map { $0 + Self.collapseDelay }
+        case .resting: enteredAt.map { $0 + Self.expandDelay }
+        case .expanded: pointerInside || menuOpen ? nil : leftAt.map { $0 + Self.collapseDelay }
         case .pinned: nil
         }
     }

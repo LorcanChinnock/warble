@@ -1,0 +1,16 @@
+{"type":"data","diff":false,"payload":{}}
+{"type":"data","diff":false,"payload":{"playbackRate":1,"timestampEpochMicros":1792364847639636,"album":"Test Album","elapsedTimeMicros":0,"playing":true,"bundleIdentifier":"com.apple.WebKit.GPU","processIdentifier":88987,"parentApplicationBundleIdentifier":"com.apple.Safari","title":"Warble Test Tone","uniqueIdentifier":167772,"artworkMimeType":"image\/tiff","artist":"Test Artist","durationMicros":599975328,"contentItemIdentifier":"167772"}}
+{"type":"data","diff":true,"payload":{"artworkMimeType":"image\/jpeg","artworkData":"YXJ0d29yayAx"}}
+{"type":"data","diff":true,"payload":{"playing":false}}
+{"type":"data","diff":true,"payload":{"elapsedTimeMicros":2761531,"playbackRate":0,"timestampEpochMicros":1792364850723502,"artworkMimeType":"image\/tiff"}}
+{"type":"data","diff":true,"payload":{"artworkMimeType":"image\/jpeg"}}
+{"type":"data","diff":true,"payload":{"playing":true}}
+{"type":"data","diff":true,"payload":{"elapsedTimeMicros":2763997,"playbackRate":1,"timestampEpochMicros":1792364852758507,"artworkMimeType":"image\/tiff"}}
+{"type":"data","diff":true,"payload":{"artworkMimeType":"image\/jpeg"}}
+{"type":"data","diff":true,"payload":{"playing":false}}
+{"type":"data","diff":true,"payload":{"elapsedTimeMicros":120000000,"playbackRate":0,"timestampEpochMicros":1792364854807984,"artworkMimeType":"image\/tiff"}}
+{"type":"data","diff":true,"payload":{"artworkMimeType":"image\/jpeg"}}
+{"type":"data","diff":true,"payload":{"playing":true}}
+{"type":"data","diff":true,"payload":{"timestampEpochMicros":1792364854853759,"artworkMimeType":"image\/tiff","playbackRate":1}}
+{"type":"data","diff":true,"payload":{"artworkMimeType":"image\/jpeg"}}
+{"type":"data","diff":false,"payload":{}}

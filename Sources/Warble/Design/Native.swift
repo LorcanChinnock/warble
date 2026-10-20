@@ -8,13 +8,15 @@ enum Native {
     static let panel = Color.black
     /// Text and marks that matter less than the title, such as the artist.
     static let secondary = ContrastAware(standard: Color(white: 0.6), increased: Color(white: 0.8))
-    /// Bottom corner radius of the notch at rest. Peek and Expanded round more as they grow.
+    /// Bottom corner radius of the notch at rest. Expanded rounds more as it grows.
     static let restingRadius: CGFloat = 12
+
+    /// Space above and below the art in a resting wing.
+    static let restingInset: CGFloat = 6
 
     static func radius(_ state: NotchState) -> CGFloat {
         switch state {
         case .hidden, .resting: restingRadius
-        case .peek: 16
         case .expanded: 24
         }
     }
@@ -24,4 +26,14 @@ enum Native {
     static let morph = Animation.smooth(duration: 0.25)
     /// The content's cross-fade between states, which is all that moves while Reduce Motion is on.
     static let fade = Animation.easeInOut(duration: 0.2)
+
+    /// The expanded card's glow in the artwork's colours, the one exception to the black, rises from its bottom corners
+    /// and fades out before the top, so the top edge still merges with the housing.
+    static let glowOpacity = 0.45
+    /// How far up the card the glow reaches from each bottom corner, as a fraction of the card.
+    static let glowReach = 0.8
+    /// The glow's change of colour with the track, slow enough not to flash.
+    static let glowChange = Animation.easeInOut(duration: 0.6)
+    /// The solid border drawn instead of the glow while Increase Contrast is on.
+    static let contrastBorder: CGFloat = 2
 }

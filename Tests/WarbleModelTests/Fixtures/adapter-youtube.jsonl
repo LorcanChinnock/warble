@@ -1,0 +1,31 @@
+{"type":"data","diff":false,"payload":{}}
+{"type":"data","diff":false,"payload":{"playbackRate":1,"timestampEpochMicros":1792364867982389,"album":"","elapsedTimeMicros":0,"playing":true,"bundleIdentifier":"com.apple.WebKit.GPU","processIdentifier":88987,"parentApplicationBundleIdentifier":"com.apple.Safari","title":"Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)","uniqueIdentifier":15619388,"artworkMimeType":"image\/tiff","artist":"Rick Astley","durationMicros":213061000,"contentItemIdentifier":"15619388"}}
+{"type":"data","diff":true,"payload":{"artworkMimeType":"image\/jpeg","artworkData":"YXJ0d29yayAx"}}
+{"type":"data","diff":false,"payload":{}}
+{"type":"data","diff":false,"payload":{"playbackRate":1,"timestampEpochMicros":1792364869232834,"album":"","elapsedTimeMicros":0,"playing":true,"bundleIdentifier":"com.apple.WebKit.GPU","processIdentifier":88987,"parentApplicationBundleIdentifier":"com.apple.Safari","title":"NEW Pampers Baby-Dry. Leak-proof for better sleep.","uniqueIdentifier":7573977,"artworkMimeType":"image\/tiff","artist":"Pampers UK & Ireland","durationMicros":20021000,"contentItemIdentifier":"7573977"}}
+{"type":"data","diff":true,"payload":{"artworkMimeType":"image\/jpeg","artworkData":"YXJ0d29yayAy"}}
+{"type":"data","diff":true,"payload":{"playing":false}}
+{"type":"data","diff":true,"payload":{"elapsedTimeMicros":20013500,"playbackRate":0,"timestampEpochMicros":1792364889687962,"artworkMimeType":"image\/tiff","durationMicros":20013500}}
+{"type":"data","diff":true,"payload":{"artworkMimeType":"image\/jpeg"}}
+{"type":"data","diff":true,"payload":{"playing":true}}
+{"type":"data","diff":false,"payload":{"playbackRate":1,"timestampEpochMicros":1792364889777950,"album":"","elapsedTimeMicros":0,"bundleIdentifier":"com.apple.WebKit.GPU","processIdentifier":88987,"parentApplicationBundleIdentifier":"com.apple.Safari","title":"Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)","uniqueIdentifier":15619388,"artworkMimeType":"image\/tiff","artist":"Rick Astley","contentItemIdentifier":"15619388","playing":true}}
+{"type":"data","diff":true,"payload":{"artworkMimeType":"image\/jpeg","artworkData":"YXJ0d29yayAx"}}
+{"type":"data","diff":true,"payload":{"timestampEpochMicros":1792364889814849,"durationMicros":213061000,"artworkMimeType":"image\/tiff"}}
+{"type":"data","diff":true,"payload":{"artworkMimeType":"image\/jpeg"}}
+{"type":"data","diff":true,"payload":{"playing":false}}
+{"type":"data","diff":true,"payload":{"elapsedTimeMicros":15523721,"playbackRate":0,"timestampEpochMicros":1792364905580911,"artworkMimeType":"image\/tiff"}}
+{"type":"data","diff":true,"payload":{"artworkMimeType":"image\/jpeg"}}
+{"type":"data","diff":true,"payload":{"playing":true}}
+{"type":"data","diff":true,"payload":{"elapsedTimeMicros":15525167,"playbackRate":1,"timestampEpochMicros":1792364907637679,"artworkMimeType":"image\/tiff"}}
+{"type":"data","diff":true,"payload":{"artworkMimeType":"image\/jpeg"}}
+{"type":"data","diff":true,"payload":{"playing":false}}
+{"type":"data","diff":true,"payload":{"elapsedTimeMicros":25695101,"playbackRate":0,"timestampEpochMicros":1792364917885658,"artworkMimeType":"image\/tiff"}}
+{"type":"data","diff":true,"payload":{"artworkMimeType":"image\/jpeg"}}
+{"type":"data","diff":false,"payload":{"playbackRate":0,"timestampEpochMicros":1792364917885658,"album":"","elapsedTimeMicros":25695101,"playing":false,"bundleIdentifier":"com.apple.WebKit.GPU","processIdentifier":88987,"artworkData":"YXJ0d29yayAx","title":"Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)","uniqueIdentifier":15619388,"artworkMimeType":"image\/jpeg","artist":"Rick Astley","durationMicros":213061000,"contentItemIdentifier":"15619388"}}
+{"type":"data","diff":false,"payload":{}}
+{"type":"data","diff":false,"payload":{"playbackRate":1,"timestampEpochMicros":1792365056260062,"album":"","elapsedTimeMicros":46790000000,"playing":true,"bundleIdentifier":"com.apple.WebKit.GPU","processIdentifier":88987,"parentApplicationBundleIdentifier":"com.apple.Safari","title":"lofi hip hop radio 📚 beats to relax\/study to","uniqueIdentifier":9493605,"artworkMimeType":"image\/tiff","artist":"Lofi Girl","durationMicros":50390002811,"contentItemIdentifier":"9493605"}}
+{"type":"data","diff":true,"payload":{"artworkMimeType":"image\/jpeg","artworkData":"YXJ0d29yayAz"}}
+{"type":"data","diff":true,"payload":{"contentItemIdentifier":"14328626","durationMicros":50390010793,"timestampEpochMicros":1792365056817108,"artworkMimeType":"image\/tiff","uniqueIdentifier":14328626}}
+{"type":"data","diff":true,"payload":{"artworkMimeType":"image\/jpeg"}}
+{"type":"data","diff":false,"payload":{"playbackRate":1,"timestampEpochMicros":1792365056817108,"album":"","elapsedTimeMicros":46790000000,"playing":true,"bundleIdentifier":"com.apple.WebKit.GPU","processIdentifier":88987,"artworkData":"YXJ0d29yayAz","title":"lofi hip hop radio 📚 beats to relax\/study to","uniqueIdentifier":14328626,"artworkMimeType":"image\/jpeg","artist":"Lofi Girl","durationMicros":50390010793,"contentItemIdentifier":"14328626"}}
+{"type":"data","diff":false,"payload":{}}

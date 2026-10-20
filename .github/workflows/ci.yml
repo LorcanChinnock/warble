@@ -101,7 +101,19 @@ jobs:
             dir="$RUNNER_TEMP/$(basename "$zip" .zip)"
             ditto -x -k "$zip" "$dir"
             r="$(echo "$dir"/*.app)/Contents/Resources"
-            /usr/bin/perl "$r/mediaremote-adapter.pl" "$r/MediaRemoteAdapter.framework" "$r/MediaRemoteAdapterTestClient" test
+            # 3 and 4 are timeouts on an adapter that works, so try again after 2 s and then 10 s, as AdapterSupervisor.testRetryDelays does.
+            attempt=1
+            for delay in 2 10 ""; do
+              status=0
+              /usr/bin/perl "$r/mediaremote-adapter.pl" "$r/MediaRemoteAdapter.framework" "$r/MediaRemoteAdapterTestClient" test || status=$?
+              echo "Attempt $attempt on $zip: test exited $status."
+              case "$status" in
+                0) break ;;
+                3|4) [ -n "$delay" ] || exit "$status"; sleep "$delay" ;;
+                *) exit "$status" ;;
+              esac
+              attempt=$((attempt + 1))
+            done
             echo "The adapter in $zip works."
           done
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -127,6 +139,18 @@ jobs:
             dir="$RUNNER_TEMP/$(basename "$zip" .zip)"
             ditto -x -k "$zip" "$dir"
             r="$(echo "$dir"/*.app)/Contents/Resources"
-            /usr/bin/perl "$r/mediaremote-adapter.pl" "$r/MediaRemoteAdapter.framework" "$r/MediaRemoteAdapterTestClient" test
+            # 3 and 4 are timeouts on an adapter that works, so try again after 2 s and then 10 s, as AdapterSupervisor.testRetryDelays does.
+            attempt=1
+            for delay in 2 10 ""; do
+              status=0
+              /usr/bin/perl "$r/mediaremote-adapter.pl" "$r/MediaRemoteAdapter.framework" "$r/MediaRemoteAdapterTestClient" test || status=$?
+              echo "Attempt $attempt on $zip: test exited $status."
+              case "$status" in
+                0) break ;;
+                3|4) [ -n "$delay" ] || exit "$status"; sleep "$delay" ;;
+                *) exit "$status" ;;
+              esac
+              attempt=$((attempt + 1))
+            done
             echo "The adapter in $zip works."
           done

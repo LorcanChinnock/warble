@@ -18,7 +18,7 @@ Not set up yet. `scripts/perf.sh` will drive an installed WarbleDev through its 
 | Metric | Reference Mac | Budget |
 |---|---|---|
 | Launch → ready | TBD | TBD |
-| Hover → peek visible | TBD | under 100 ms |
+| End of hover delay → expanded visible | TBD | under 100 ms |
 | Click → expanded, settled | TBD | under 250 ms |
 | Idle CPU, nothing playing | TBD | about 0% |
 | CPU while playing, notch at rest | TBD | under 1% |

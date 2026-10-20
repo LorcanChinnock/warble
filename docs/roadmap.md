@@ -36,6 +36,9 @@ The first public beta: what's playing in the notch, playback and volume controls
 - [#30](https://github.com/LorcanChinnock/warble/issues/30) docs: demo player for site media
 - [#31](https://github.com/LorcanChinnock/warble/issues/31) docs(site): landing page and 0.1 guide pages
 - [#32](https://github.com/LorcanChinnock/warble/issues/32) ci(release): ship the first beta
+- [#73](https://github.com/LorcanChinnock/warble/issues/73) feat(app): menu bar icon from the app icon's bars
+- [#75](https://github.com/LorcanChinnock/warble/issues/75) ci: retry the adapter test on a timeout, as the app does
+- [#76](https://github.com/LorcanChinnock/warble/issues/76) feat(notch): open straight to the full card after a short hover
 
 ## [0.2: lyrics, gestures and podcasts](https://github.com/LorcanChinnock/warble/issues/33)
 

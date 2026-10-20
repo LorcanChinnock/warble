@@ -48,6 +48,14 @@ public struct PlaybackState: Equatable, Sendable {
 
     public var isPlaying: Bool { rate != 0 }
 
+    /// How a position in a track reads: "3:07", or "1:02:03" past an hour.
+    public static func positionLabel(_ seconds: TimeInterval) -> String {
+        let total = Int(max(seconds, 0).rounded(.down))
+        let (hours, minutes, rest) = (total / 3600, total / 60 % 60, total % 60)
+        let twoDigits = { (value: Int) in value < 10 ? "0\(value)" : "\(value)" }
+        return hours > 0 ? "\(hours):\(twoDigits(minutes)):\(twoDigits(rest))" : "\(minutes):\(twoDigits(rest))"
+    }
+
     /// The position at `date`, run on from the last report at `rate`, so the progress bar needs no polling. It stays
     /// within the track: a source can report late, and the next track's report can lag the end of this one.
     public func elapsed(at date: Date) -> TimeInterval {
@@ -62,6 +70,15 @@ public struct PlaybackState: Equatable, Sendable {
         return state
     }
 
+    /// This state playing or paused from `date`, kept where it had got to, so play/pause shows at once rather than when
+    /// the source reports back. Playing again runs at normal speed.
+    public func playing(_ isPlaying: Bool, at date: Date) -> PlaybackState {
+        guard isPlaying != self.isPlaying else { return self }
+        var state = seeked(to: elapsed(at: date), at: date)
+        state.rate = isPlaying ? 1 : 0
+        return state
+    }
+
     private func clamped(_ position: TimeInterval) -> TimeInterval {
         min(max(position, 0), duration ?? .infinity)
     }
@@ -69,8 +86,22 @@ public struct PlaybackState: Equatable, Sendable {
 
 public enum ShuffleMode: String, CaseIterable, Sendable {
     case off, albums, songs
+
+    /// What the shuffle button turns it to: on shuffles songs, and any shuffle turns off.
+    public var next: ShuffleMode {
+        self == .off ? .songs : .off
+    }
 }
 
 public enum RepeatMode: String, CaseIterable, Sendable {
     case off, one, all
+
+    /// What the repeat button turns it to, in Music's order: off, all, one, then off again.
+    public var next: RepeatMode {
+        switch self {
+        case .off: .all
+        case .all: .one
+        case .one: .off
+        }
+    }
 }
