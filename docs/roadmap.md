@@ -39,6 +39,7 @@ The first public beta: what's playing in the notch, playback and volume controls
 - [#73](https://github.com/LorcanChinnock/warble/issues/73) feat(app): menu bar icon from the app icon's bars
 - [#75](https://github.com/LorcanChinnock/warble/issues/75) ci: retry the adapter test on a timeout, as the app does
 - [#76](https://github.com/LorcanChinnock/warble/issues/76) feat(notch): open straight to the full card after a short hover
+- [#86](https://github.com/LorcanChinnock/warble/issues/86) fix(now-playing): stop the adapter when Warble is killed
 
 ## [0.2: lyrics, gestures and podcasts](https://github.com/LorcanChinnock/warble/issues/33)
 
