@@ -37,4 +37,4 @@ While Warble follows Music and Spotify itself, it needs your permission to contr
 While Warble follows only Music and Spotify, other apps, such as your browser, don't show. If neither is open, click **Open Music**, or open Spotify, and play something.
 
 > [!TIP]
-> If the notch shows nothing and there's no **!**, Warble is working and nothing is playing. Start something in any app and it appears.
+> If the notch shows nothing and there's no **!**, Warble is working and nothing is playing. A paused song also leaves the notch after 10 seconds. Start something in any app and it appears.

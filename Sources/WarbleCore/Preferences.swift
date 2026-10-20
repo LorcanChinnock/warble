@@ -7,6 +7,8 @@ public enum PreferenceKey {
     public static let textSize = "textSize"
     /// Each display's `VirtualNotchRule` raw value, by `NotchDisplay.id`. A display missing from it follows its default.
     public static let virtualNotch = "virtualNotch"
+    /// How many seconds a paused track stays in the notch before it goes Idle.
+    public static let stayVisibleAfterPausing = "stayVisibleAfterPausing"
 
     public static func hotkey(_ action: WarbleAction) -> String { "hotkey.\(action.rawValue)" }
 }
@@ -18,6 +20,7 @@ public struct Preferences {
             PreferenceKey.showMenuBarIcon: true,
             PreferenceKey.textSize: TextSize.standard.rawValue,
             PreferenceKey.virtualNotch: [String: String](),
+            PreferenceKey.stayVisibleAfterPausing: IdleAfterPause.defaultDelay,
         ]
         for action in WarbleAction.allCases {
             values[PreferenceKey.hotkey(action)] = action.defaultCombo?.encoded ?? ""
@@ -62,6 +65,11 @@ public struct Preferences {
     public var virtualNotchRules: [String: VirtualNotchRule] {
         let stored = store.dictionary(forKey: PreferenceKey.virtualNotch) as? [String: String] ?? [:]
         return stored.compactMapValues(VirtualNotchRule.init(rawValue:))
+    }
+
+    /// Never negative, so a stray value goes Idle at once rather than never.
+    public var stayVisibleAfterPausing: TimeInterval {
+        max(store.double(forKey: PreferenceKey.stayVisibleAfterPausing), 0)
     }
 
     /// `nil` means the user cleared the shortcut.
