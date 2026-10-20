@@ -55,7 +55,9 @@ dist: bundle
 	@echo "Wrote build/Warble.zip"
 
 icon:
-	swift scripts/make-icon.swift .
+	mkdir -p .build
+	cat Sources/WarbleModel/IconBars.swift scripts/make-icon.swift > .build/make-icon.swift
+	swift .build/make-icon.swift .
 
 clean:
 	rm -rf .build build

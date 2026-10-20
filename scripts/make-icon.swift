@@ -1,4 +1,5 @@
-// Renders Resources/AppIcon.icns and docs/icon.png (for the README). Run: make icon
+// Renders Resources/AppIcon.icns and docs/icon.png (for the README). Run: make icon, which adds
+// Sources/WarbleModel/IconBars.swift for the bars the menu bar icon shares.
 import AppKit
 
 let ink = NSColor(srgbRed: 0.07, green: 0.07, blue: 0.10, alpha: 1)
@@ -42,11 +43,9 @@ func render(size: Int) -> Data {
     notch.fill()
     ctx.restoreGState()
 
-    let barWidth: CGFloat = 96, gap: CGFloat = 56, baseline: CGFloat = 250
-    for (index, height) in [CGFloat(250), 380, 190].enumerated() {
-        let x = body.midX - (barWidth * 1.5 + gap) + CGFloat(index) * (barWidth + gap)
-        let bar = NSBezierPath(roundedRect: CGRect(x: x, y: baseline, width: barWidth, height: height), xRadius: barWidth / 2, yRadius: barWidth / 2)
-        (index == 1 ? pink : ink).setFill()
+    for (index, rect) in IconBars.rects.enumerated() {
+        let bar = NSBezierPath(roundedRect: rect, xRadius: rect.width / 2, yRadius: rect.width / 2)
+        (index == IconBars.accent ? pink : ink).setFill()
         bar.fill()
     }
 
