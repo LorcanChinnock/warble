@@ -36,14 +36,16 @@ final class NotchController {
     private var shownPlayback: PlaybackState? {
         didSet {
             player.playback = shownPlayback
-            guard (shownPlayback == nil) != (oldValue == nil) else { return }
-            for surface in surfaces.values {
-                surface.isPlaying = shownPlayback != nil
-                surface.update()
-            }
-            changed()
+            handleIdle(.playback(shownPlayback))
         }
     }
+
+    /// Hides a paused track a while after the pause, unless the pointer is on a notch.
+    private var idle = IdleAfterPause(delay: Preferences().stayVisibleAfterPausing)
+    private var idleTimer: Timer?
+    /// Whether the surfaces draw what's playing: something is, and it isn't Idle.
+    private var showsPlayback = false
+    private var hovering = false
 
     /// Sends a command to the app that's playing. Unset, as in the preview, a command only changes what the notch shows.
     var send: (PlaybackCommand) -> Void = { _ in }
@@ -75,8 +77,15 @@ final class NotchController {
         // Any write to Warble's defaults; only a change of rule lays the notches out again.
         observers.append(NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: UserDefaults.standard, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated {
-                guard let self, Preferences().virtualNotchRules != self.rules else { return }
-                self.layOut()
+                guard let self else { return }
+                let preferences = Preferences()
+                if preferences.stayVisibleAfterPausing != self.idle.delay {
+                    self.idle.delay = preferences.stayVisibleAfterPausing
+                    self.handleIdle(nil)
+                }
+                if preferences.virtualNotchRules != self.rules {
+                    self.layOut()
+                }
             }
         })
         layOut()
@@ -96,7 +105,7 @@ final class NotchController {
             let surface = surfaces[housing.display] ?? makeSurface(over: housing.frame)
             surfaces[housing.display] = surface
             surface.housing = housing.frame
-            surface.isPlaying = shownPlayback != nil
+            surface.isPlaying = showsPlayback
             surface.needsAttention = doctor.needsAttention
             surface.update(animated: false)
         }
@@ -124,6 +133,38 @@ final class NotchController {
             doctor.refresh()
         }
         wasOpen = open
+        let hovering = surfaces.values.contains { $0.state == .expanded || $0.pointerInside }
+        if hovering != self.hovering {
+            self.hovering = hovering
+            handleIdle(hovering ? .hoverStarted : .hoverEnded)
+        }
+    }
+
+    /// Passes `event` to `IdleAfterPause`, or with `nil` only applies a deadline that's due, then shows or hides what's
+    /// playing and schedules one timer at most, for the next deadline.
+    private func handleIdle(_ event: IdleEvent?) {
+        if let event {
+            idle.handle(event, at: .now)
+        } else {
+            idle.advance(to: .now)
+        }
+        idleTimer?.invalidate()
+        idleTimer = nil
+        if let deadline = idle.deadline {
+            let timer = Timer(fire: deadline, interval: 0, repeats: false) { [weak self] _ in
+                MainActor.assumeIsolated { self?.handleIdle(nil) }
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            idleTimer = timer
+        }
+        guard !idle.isIdle != showsPlayback else { return }
+        showsPlayback = !idle.isIdle
+        log.notice("Playback \(self.showsPlayback ? "shown" : "idle", privacy: .public)")
+        for surface in surfaces.values {
+            surface.isPlaying = showsPlayback
+            surface.update()
+        }
+        changed()
     }
 
     /// Draws or takes away the "!", which draws a resting notch even when nothing is playing.

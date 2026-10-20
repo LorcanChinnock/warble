@@ -77,3 +77,12 @@ import Testing
     suite.store.set(["studio": "always", "old": "sometimes"], forKey: PreferenceKey.virtualNotch)
     #expect(Preferences(store: suite.store).virtualNotchRules == ["studio": .always])
 }
+
+@Test func aPausedTrackStaysVisibleForTenSecondsByDefault() throws {
+    let suite = try TestDefaults()
+    defer { suite.remove() }
+    Preferences.registerDefaults(in: suite.store)
+    #expect(Preferences(store: suite.store).stayVisibleAfterPausing == 10)
+    suite.store.set(-5, forKey: PreferenceKey.stayVisibleAfterPausing)
+    #expect(Preferences(store: suite.store).stayVisibleAfterPausing == 0)
+}
