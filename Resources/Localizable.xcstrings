@@ -27,7 +27,16 @@
     "Always" : {
 
     },
+    "Any app that plays, including your browser." : {
+
+    },
+    "Back to what's playing" : {
+
+    },
     "Cancel" : {
+
+    },
+    "Check for Updates" : {
 
     },
     "Check for Updates…" : {
@@ -36,13 +45,34 @@
     "Couldn't relaunch Warble" : {
 
     },
+    "Download Warble" : {
+
+    },
+    "Everything's working" : {
+
+    },
+    "Following %@. Other apps won't show for now." : {
+
+    },
+    "Hide the \"!\" until Warble opens again" : {
+
+    },
     "It was installed while Warble was running. Relaunch to use it." : {
 
     },
     "Later" : {
 
     },
+    "Newer than this version of Warble. An update may fix reading what's playing." : {
+
+    },
     "Next track" : {
+
+    },
+    "Not Now" : {
+
+    },
+    "Not needed while Warble can read what's playing." : {
 
     },
     "Notch on Displays" : {
@@ -57,7 +87,19 @@
     "One" : {
 
     },
+    "Only Music and Spotify can show for now." : {
+
+    },
     "Open %@" : {
+
+    },
+    "Open Music or Spotify to check." : {
+
+    },
+    "Open Settings" : {
+
+    },
+    "Open Warble Again" : {
 
     },
     "Open the app that's playing" : {
@@ -66,13 +108,22 @@
     "Output" : {
 
     },
+    "Part of Warble is missing, so it can only follow Music and Spotify." : {
+
+    },
     "Pause" : {
 
     },
     "Paused" : {
 
     },
+    "Permission" : {
+
+    },
     "Play" : {
+
+    },
+    "Players" : {
 
     },
     "Playing" : {
@@ -90,6 +141,9 @@
     "Quit Warble and open it again." : {
 
     },
+    "Reading what's playing" : {
+
+    },
     "Relaunch" : {
 
     },
@@ -102,7 +156,16 @@
     "Show" : {
 
     },
+    "Show what's wrong" : {
+
+    },
     "Shuffle" : {
+
+    },
+    "Supported." : {
+
+    },
+    "This kept stopping, so Warble only follows Music and Spotify until you open it again." : {
 
     },
     "Undo" : {
@@ -117,7 +180,31 @@
     "Warble %@ is installed" : {
 
     },
+    "Warble can't see everything" : {
+
+    },
+    "Warble isn't allowed to control %@. Turn it on under Warble in Privacy & Security › Automation." : {
+
+    },
+    "Warble may control %@." : {
+
+    },
     "When There's No Notch" : {
+
+    },
+    "Works with any app that plays." : {
+
+    },
+    "macOS" : {
+
+    },
+    "macOS %@" : {
+
+    },
+    "macOS will ask the first time %@ plays." : {
+
+    },
+    "macOS won't let Warble read what's playing, so it only follows Music and Spotify." : {
 
     }
   },

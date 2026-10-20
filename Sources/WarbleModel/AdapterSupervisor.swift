@@ -22,6 +22,8 @@ public struct AdapterSupervisor: Equatable, Sendable {
 
     private var restarts = 0
     private var testRetries = 0
+    /// How the last `test` exited, which tells the Doctor why Warble gave up; `nil` until one has run.
+    public private(set) var lastTestStatus: Int32?
 
     public init() {}
 
@@ -36,6 +38,7 @@ public struct AdapterSupervisor: Equatable, Sendable {
     }
 
     public mutating func testExited(status: Int32) -> Step {
+        lastTestStatus = status
         switch status {
         case 0:
             return .startStream
