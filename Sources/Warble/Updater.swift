@@ -84,7 +84,8 @@ extension Updater: SPUUpdaterDelegate {
         }
     }
 
-    private static func relaunch() {
+    /// Opens a new copy of Warble and quits this one.
+    static func relaunch() {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
         process.arguments = ["-n", Bundle.main.bundlePath]

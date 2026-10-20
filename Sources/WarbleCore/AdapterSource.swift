@@ -59,6 +59,11 @@ public final class AdapterSource: NowPlayingSource {
         (states, continuation) = AsyncStream.makeStream(bufferingPolicy: .bufferingNewest(1))
     }
 
+    /// How the adapter's last `test` exited, `nil` until one has run, which tells the Doctor why it gave up.
+    public var lastTestStatus: Int32? {
+        runner.withLock { $0.supervisor.lastTestStatus }
+    }
+
     public func start() {
         runner.withLock { $0.stopped = false }
         startStream()

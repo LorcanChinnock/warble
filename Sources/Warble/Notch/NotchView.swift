@@ -11,17 +11,29 @@ final class NotchModel {
     var notch = CGRect.zero
     /// What's playing, shared by every display's notch.
     let player: PlayerModel
+    /// The checks behind the "!", shared by every display's notch.
+    let doctor: DoctorModel
+    /// Whether the open card shows the Doctor's checks rather than the player.
+    var showsDoctor = false
     @ObservationIgnored var onClick: () -> Void = {}
     /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
     @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }
+    /// Called to swap the open card between the player and the checks.
+    @ObservationIgnored var onShowDoctor: (Bool) -> Void = { _ in }
 
-    init(player: PlayerModel) {
+    init(player: PlayerModel, doctor: DoctorModel) {
         self.player = player
+        self.doctor = doctor
+    }
+
+    /// What Expanded holds: the checks when asked for, or when there's nothing playing to show.
+    var card: NotchCard {
+        showsDoctor || player.playback == nil ? .doctor : .player
     }
 
     /// Hidden draws at the housing's size, black on black, so the wings slide out from behind it and back in.
     func size(_ state: NotchState) -> CGSize {
-        NotchLayout.frame(state, notch: notch)?.size ?? notch.size
+        NotchLayout.frame(state, notch: notch, card: card)?.size ?? notch.size
     }
 }
 
@@ -132,40 +144,80 @@ private struct NotchContent: View {
 
     var body: some View {
         switch (state, model.player.playback) {
-        case (.expanded, let playback?):
+        case (.expanded, let playback?) where !model.showsDoctor:
             ExpandedContent(playback: playback, model: model)
                 .padding(.top, model.notch.height)
                 .background { Glow(colours: model.player.colours) }
+        case (.expanded, _):
+            DoctorCard(model: model)
+                .padding(.top, model.notch.height)
         case (.resting, let playback?):
-            RestingContent(playback: playback, artwork: model.player.artwork, height: model.notch.height)
+            RestingContent(playback: playback, artwork: model.player.artwork, height: model.notch.height, model: model)
+        case (.resting, nil):
+            RestingContent(playback: nil, artwork: nil, height: model.notch.height, model: model)
         default:
             Color.clear.accessibilityHidden(true)
         }
     }
 }
 
-/// The art in the left wing and the play-state bars in the right, either side of the camera housing.
+/// The art in the left wing and the play-state bars in the right, either side of the camera housing, and a "!" beside
+/// the bars when a Doctor check fails. With nothing playing, only the "!".
 private struct RestingContent: View {
-    let playback: PlaybackState
+    let playback: PlaybackState?
     let artwork: NSImage?
     let height: CGFloat
+    let model: NotchModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         let art = height - 2 * Native.restingInset
         HStack(spacing: 0) {
-            Artwork(image: artwork, radius: 6, symbolSize: 12)
-                .frame(width: art, height: art)
-                .frame(width: NotchLayout.wing)
+            Group {
+                if let playback {
+                    Artwork(image: artwork, radius: 6, symbolSize: 12)
+                        .frame(width: art, height: art)
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel(playback.artist.map { Text("\(playback.title) by \($0)") } ?? Text(playback.title))
+                        .accessibilityValue(playback.isPlaying ? Text("Playing") : Text("Paused"))
+                }
+            }
+            .frame(width: NotchLayout.wing)
             Spacer(minLength: 0)
-            PlayStateBars(isPlaying: playback.isPlaying, reduceMotion: reduceMotion)
-                .frame(width: 18, height: art * 0.6)
-                .frame(width: NotchLayout.wing)
+            HStack(spacing: 6) {
+                if let playback {
+                    PlayStateBars(isPlaying: playback.isPlaying, reduceMotion: reduceMotion)
+                        .frame(width: 18, height: art * 0.6)
+                        .accessibilityHidden(true)
+                }
+                if model.doctor.needsAttention {
+                    AttentionButton(model: model)
+                }
+            }
+            .frame(width: NotchLayout.wing)
         }
         .frame(maxHeight: .infinity)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(playback.artist.map { Text("\(playback.title) by \($0)") } ?? Text(playback.title))
-        .accessibilityValue(playback.isPlaying ? Text("Playing") : Text("Paused"))
+    }
+}
+
+/// The "!" that opens the notch on the Doctor's checks.
+private struct AttentionButton: View {
+    let model: NotchModel
+
+    var body: some View {
+        Button {
+            model.onShowDoctor(true)
+            model.onClick()
+        } label: {
+            Image(systemName: "exclamationmark.circle.fill")
+                .font(.system(size: 13))
+                .foregroundStyle(Native.secondary)
+                .frame(width: 16, height: 24)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Show what's wrong")
+        .help("Warble can't see everything")
     }
 }
 
@@ -308,6 +360,17 @@ private struct ExpandedContent: View {
                 .lineLimit(1)
                 .accessibilityElement(children: .combine)
                 Spacer(minLength: 0)
+                if model.doctor.needsAttention {
+                    Button { model.onShowDoctor(true) } label: {
+                        Image(systemName: "exclamationmark.circle.fill")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Native.secondary)
+                            .frame(width: 24, height: 24)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Show what's wrong")
+                }
             }
             Spacer(minLength: 0)
             Scrubber(playback: playback) { model.player.onCommand(.seek(to: $0)) }

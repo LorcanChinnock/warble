@@ -11,16 +11,16 @@ private let log = Logger.warble("notch")
 final class NotchSurface {
     /// The camera housing the panel is drawn over.
     var housing: CGRect
-    /// Whether anything is playing. Without it, the surface draws nothing.
+    /// Whether anything is playing.
     var isPlaying = false {
-        didSet {
-            guard !isPlaying, oldValue else { return }
-            // Start over, so a pointer still on the notch when playback returns is reported as entering again.
-            hover = HoverIntent()
-            pointerInside = false
-            scheduleDeadline()
-        }
+        didSet { shownChanged(from: oldValue || needsAttention) }
     }
+    /// Whether a Doctor check failed, which draws the notch with a "!" even when nothing is playing.
+    var needsAttention = false {
+        didSet { shownChanged(from: isPlaying || oldValue) }
+    }
+    /// Without anything playing or a "!", the surface draws nothing.
+    private var isShown: Bool { isPlaying || needsAttention }
     /// Called after the surface opens or closes, or the pointer crosses it, so the controller can listen for clicks
     /// elsewhere and Escape only while a notch is open.
     var onChange: () -> Void = {}
@@ -28,7 +28,7 @@ final class NotchSurface {
     var onClick: () -> Void = {}
 
     var state: NotchState {
-        isPlaying ? NotchState(hover.state) : .hidden
+        isShown ? NotchState(hover.state) : .hidden
     }
     private(set) var pointerInside = false
 
@@ -42,9 +42,9 @@ final class NotchSurface {
     /// Bumped by every change, so a morph that ends after another has begun doesn't shrink the panel under it.
     private var morphs = 0
 
-    init(housing: CGRect, player: PlayerModel, onScroll: @escaping (NSEvent) -> Void) {
+    init(housing: CGRect, player: PlayerModel, doctor: DoctorModel, onScroll: @escaping (NSEvent) -> Void) {
         self.housing = housing
-        model = NotchModel(player: player)
+        model = NotchModel(player: player, doctor: doctor)
         panel = NotchPanel(model: model)
         panel.onPointer = { [weak self] inside in self?.pointer(inside: inside) }
         panel.onScroll = onScroll
@@ -53,6 +53,24 @@ final class NotchSurface {
             self?.handle(.click)
         }
         model.onMenu = { [weak self] open in self?.menu(open: open) }
+        model.onShowDoctor = { [weak self] show in self?.showDoctor(show) }
+    }
+
+    private func shownChanged(from wasShown: Bool) {
+        guard !isShown, wasShown else { return }
+        // Start over, so a pointer still on the notch when it's drawn again is reported as entering again.
+        hover = HoverIntent()
+        pointerInside = false
+        scheduleDeadline()
+    }
+
+    /// Swaps the open card between the player and the Doctor's checks. From the resting "!", the click that follows
+    /// opens the notch on the checks.
+    private func showDoctor(_ show: Bool) {
+        model.showsDoctor = show
+        if state == .expanded {
+            update()
+        }
     }
 
     func handle(_ event: HoverEvent) {
@@ -107,7 +125,11 @@ final class NotchSurface {
     func update(animated: Bool = true) {
         let state = state
         let notch = housing
-        guard let frame = NotchLayout.frame(state, notch: notch) else {
+        // The checks show until the notch closes; the next open shows the player again.
+        if state != .expanded, model.showsDoctor {
+            model.showsDoctor = false
+        }
+        guard let frame = NotchLayout.frame(state, notch: notch, card: model.card) else {
             guard shown != nil else { return }
             shown = nil
             morphs += 1
@@ -157,7 +179,7 @@ final class NotchSurface {
             model.state = state
             show(in: frame)
         }
-        panel.track(NotchLayout.hoverArea(state, notch: notch) ?? .zero)
+        panel.track(NotchLayout.hoverArea(state, notch: notch, card: model.card) ?? .zero)
         log.notice("Notch \(state.rawValue, privacy: .public) at \(NSStringFromRect(frame), privacy: .public) over \(NSStringFromRect(notch), privacy: .public)")
     }
 

@@ -53,3 +53,14 @@ private let notch = CGRect(x: 856, y: 1205.5, width: 208, height: 37.5)
     #expect(NotchState(.expanded) == .expanded)
     #expect(NotchState(.pinned) == .expanded)
 }
+
+@Test func theDoctorsCardReachesFurtherDownThanThePlayerAtTheSameWidth() throws {
+    let player = try #require(NotchLayout.frame(.expanded, notch: notch))
+    let doctor = try #require(NotchLayout.frame(.expanded, notch: notch, card: .doctor))
+    #expect(doctor.width == player.width)
+    #expect(doctor.maxY == notch.maxY)
+    #expect(doctor.height == notch.height + NotchLayout.doctorDrop)
+    #expect(NotchLayout.hoverArea(.expanded, notch: notch, card: .doctor) == doctor)
+    // Resting looks the same whatever Expanded will hold.
+    #expect(NotchLayout.frame(.resting, notch: notch, card: .doctor) == NotchLayout.frame(.resting, notch: notch))
+}

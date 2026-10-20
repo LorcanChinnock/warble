@@ -48,7 +48,10 @@ final class NotchController {
     /// Sends a command to the app that's playing. Unset, as in the preview, a command only changes what the notch shows.
     var send: (PlaybackCommand) -> Void = { _ in }
 
+    /// The checks behind the "!". `AppDelegate` tells it how the adapter is doing.
+    let doctor = DoctorModel()
     private let player = PlayerModel()
+    private var wasOpen = false
     private let volume = SystemVolume()
     private var followsVolume = false
     private let outputs = AudioOutputs()
@@ -64,6 +67,7 @@ final class NotchController {
         player.onOpenApp = { [weak self] in self?.openApp() }
         player.onVolume = { [weak self] in self?.setVolume($0) }
         player.onSelectOutput = { [weak self] in self?.selectOutput($0) }
+        doctor.onChange = { [weak self] in self?.attentionChanged() }
         // Posted when a display is plugged in or removed, its resolution changes, or the lid closes.
         observers.append(NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.layOut() }
@@ -93,6 +97,7 @@ final class NotchController {
             surfaces[housing.display] = surface
             surface.housing = housing.frame
             surface.isPlaying = shownPlayback != nil
+            surface.needsAttention = doctor.needsAttention
             surface.update(animated: false)
         }
         log.notice("Notches over \(housings.map { NSStringFromRect($0.frame) }.joined(separator: ", "), privacy: .public)")
@@ -100,7 +105,7 @@ final class NotchController {
     }
 
     private func makeSurface(over housing: CGRect) -> NotchSurface {
-        let surface = NotchSurface(housing: housing, player: player) { [weak self] in self?.scroll($0) }
+        let surface = NotchSurface(housing: housing, player: player, doctor: doctor) { [weak self] in self?.scroll($0) }
         surface.onChange = { [weak self] in self?.changed() }
         // A click on one notch closes any other that's open; clicks in other apps are the click monitor's.
         surface.onClick = { [weak self, weak surface] in
@@ -109,11 +114,25 @@ final class NotchController {
         return surface
     }
 
-    /// Listens for clicks elsewhere and Escape, and follows the volume, only while a notch is open.
+    /// Listens for clicks elsewhere and Escape, and follows the volume, only while a notch is open. Opening one checks
+    /// again whatever the Doctor found, in case the user fixed it, such as in System Settings, which tells Warble nothing.
     private func changed() {
         let open = surfaces.values.contains { $0.state == .expanded }
         listen(open: open, pointerInside: surfaces.values.contains { $0.state == .expanded && $0.pointerInside })
         followVolume(open)
+        if open, !wasOpen, doctor.adapter != .working {
+            doctor.refresh()
+        }
+        wasOpen = open
+    }
+
+    /// Draws or takes away the "!", which draws a resting notch even when nothing is playing.
+    private func attentionChanged() {
+        for surface in surfaces.values {
+            surface.needsAttention = doctor.needsAttention
+            surface.update()
+        }
+        changed()
     }
 
     private func dismiss(where included: (NotchSurface) -> Bool = { _ in true }) {

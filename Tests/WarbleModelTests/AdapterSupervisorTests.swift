@@ -61,3 +61,11 @@ import Testing
         #expect(supervisor.testExited(status: status) == .giveUp)
     }
 }
+
+@Test func theSupervisorRemembersHowTheLastTestExited() {
+    var supervisor = AdapterSupervisor()
+    #expect(supervisor.lastTestStatus == nil)
+    _ = supervisor.streamExited(afterRunning: 300)
+    _ = supervisor.testExited(status: 1)
+    #expect(supervisor.lastTestStatus == 1)
+}
