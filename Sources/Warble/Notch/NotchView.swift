@@ -108,7 +108,7 @@ struct NotchView: View {
     var body: some View {
         let state = model.state
         let size = model.size(state)
-        let shape = UnevenRoundedRectangle(bottomLeadingRadius: Native.radius(state), bottomTrailingRadius: Native.radius(state))
+        let shape = UnevenRoundedRectangle(bottomLeadingRadius: Native.radius(state, notch: model.notch), bottomTrailingRadius: Native.radius(state, notch: model.notch))
         ZStack(alignment: .top) {
             shape
                 .fill(Native.panel)
@@ -152,57 +152,59 @@ private struct NotchContent: View {
             DoctorCard(model: model)
                 .padding(.top, model.notch.height)
         case (.resting, let playback?):
-            RestingContent(playback: playback, artwork: model.player.artwork, height: model.notch.height, model: model)
+            RestingContent(playback: playback, artwork: model.player.artwork, notch: model.notch, model: model)
         case (.resting, nil):
-            RestingContent(playback: nil, artwork: nil, height: model.notch.height, model: model)
+            RestingContent(playback: nil, artwork: nil, notch: model.notch, model: model)
         default:
             Color.clear.accessibilityHidden(true)
         }
     }
 }
 
-/// The art in the left wing and the play-state bars in the right, either side of the camera housing, and a "!" beside
-/// the bars when a Doctor check fails. With nothing playing, only the "!".
+/// The art in the left wing and the play-state bars in the right, either side of the camera housing, each centred in a
+/// square as tall as the housing. When a Doctor check fails, a "!" takes the bars' place, and with nothing playing it's
+/// all that shows.
 private struct RestingContent: View {
     let playback: PlaybackState?
     let artwork: NSImage?
-    let height: CGFloat
+    let notch: CGRect
     let model: NotchModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        let art = height - 2 * Native.restingInset
+        let wing = NotchLayout.wing(notch: notch)
+        let art = wing - 2 * NotchLayout.inset(notch: notch)
         HStack(spacing: 0) {
             Group {
                 if let playback {
-                    Artwork(image: artwork, radius: 6, symbolSize: 12)
+                    Artwork(image: artwork, radius: art / 4, symbolSize: art / 2)
                         .frame(width: art, height: art)
                         .accessibilityElement(children: .ignore)
                         .accessibilityLabel(playback.artist.map { Text("\(playback.title) by \($0)") } ?? Text(playback.title))
                         .accessibilityValue(playback.isPlaying ? Text("Playing") : Text("Paused"))
                 }
             }
-            .frame(width: NotchLayout.wing)
+            .frame(width: wing)
             Spacer(minLength: 0)
-            HStack(spacing: 6) {
-                if let playback {
+            Group {
+                if model.doctor.needsAttention {
+                    AttentionButton(model: model, size: art)
+                } else if let playback {
                     PlayStateBars(isPlaying: playback.isPlaying, reduceMotion: reduceMotion)
-                        .frame(width: 18, height: art * 0.6)
+                        .frame(width: min(18, art), height: art * 0.6)
                         .accessibilityHidden(true)
                 }
-                if model.doctor.needsAttention {
-                    AttentionButton(model: model)
-                }
             }
-            .frame(width: NotchLayout.wing)
+            .frame(width: wing)
         }
-        .frame(maxHeight: .infinity)
+        .frame(height: notch.height)
     }
 }
 
-/// The "!" that opens the notch on the Doctor's checks.
+/// The "!" that opens the notch on the Doctor's checks, in a square `size` points wide.
 private struct AttentionButton: View {
     let model: NotchModel
+    let size: CGFloat
 
     var body: some View {
         Button {
@@ -210,9 +212,9 @@ private struct AttentionButton: View {
             model.onClick()
         } label: {
             Image(systemName: "exclamationmark.circle.fill")
-                .font(.system(size: 13))
+                .font(.system(size: size / 2))
                 .foregroundStyle(Native.secondary)
-                .frame(width: 16, height: 24)
+                .frame(width: size, height: size)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -403,7 +405,7 @@ private struct Glow: View {
     var body: some View {
         if let colours {
             if contrast == .increased {
-                UnevenRoundedRectangle(bottomLeadingRadius: Native.radius(.expanded), bottomTrailingRadius: Native.radius(.expanded))
+                UnevenRoundedRectangle(bottomLeadingRadius: Native.expandedRadius, bottomTrailingRadius: Native.expandedRadius)
                     .strokeBorder(Color(colours.border), lineWidth: Native.contrastBorder)
                     // Leaves out the top edge, along the screen's.
                     .mask { Rectangle().padding(.top, Native.contrastBorder) }
