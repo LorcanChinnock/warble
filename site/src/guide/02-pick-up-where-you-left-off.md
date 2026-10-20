@@ -6,6 +6,8 @@ group: Playback
 
 When nothing is playing, Warble hides behind the notch, so your screen looks just as it did before you installed it. It still remembers the last song you played, even after you restart your Mac.
 
+When a song starts, the notch slides out from behind the camera to show the album art and the bars, and when it stops, it slides back. If you've turned on **Reduce motion** in System Settings › Accessibility › Display, the notch changes size at once and only fades.
+
 ## Play the last song again
 
 1. Hover over the notch, or click it. A short card drops down with the last song you played and the app that played it.

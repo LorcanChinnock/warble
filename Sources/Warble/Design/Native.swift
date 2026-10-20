@@ -24,9 +24,16 @@ enum Native {
 
     /// The change of shape between states. No bounce: the panel's frame is only as big as the larger state, so an
     /// overshoot would be clipped.
-    static let morph = Animation.smooth(duration: 0.25)
+    static let morph = Animation.smooth(duration: NotchMotion.morph)
     /// The content's cross-fade between states, which is all that moves while Reduce Motion is on.
     static let fade = Animation.easeInOut(duration: 0.2)
+    /// A state's content fading in, once the growing shape has started to uncover it.
+    static let contentIn = Animation.easeInOut(duration: NotchMotion.contentIn).delay(NotchMotion.contentDelay)
+    /// A state's content fading out, quickly, ahead of the shape closing over it.
+    static let contentOut = Animation.easeIn(duration: NotchMotion.contentOut)
+    /// The resting art growing into place: quick to start and slow to settle, with no overshoot. The bars rise on the
+    /// same curve (`PlayStateBars`).
+    static let artIn = Animation.timingCurve(0.2, 0.9, 0.3, 1, duration: NotchMotion.artGrow).delay(NotchMotion.artDelay)
 
     /// The expanded card's glow in the artwork's colours, the one exception to the black, rises from its bottom corners
     /// and fades out before the top, so the top edge still merges with the housing.

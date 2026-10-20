@@ -15,7 +15,10 @@ final class NotchModel {
     let doctor: DoctorModel
     /// Whether the open card shows the Doctor's checks rather than the player.
     var showsDoctor = false
-    /// Whether something is playing, rather than Idle. While Idle, `player` may still hold the paused track.
+    /// What Expanded holds. `NotchSurface` sets it with `state`, inside the same animation, so a change of card morphs.
+    var card = NotchCard.player
+    /// Whether the notch shows what's playing, rather than Idle. While Idle, `player` may still hold the paused track.
+    /// Set with `state`, like `card`.
     var isPlaying = false
     /// Whether the housing is one Warble draws on a display without a notch, where Idle shows nothing at all rather
     /// than black over the camera.
@@ -29,10 +32,6 @@ final class NotchModel {
     init(player: PlayerModel, doctor: DoctorModel) {
         self.player = player
         self.doctor = doctor
-    }
-
-    var card: NotchCard {
-        NotchCard(isPlaying: isPlaying && player.playback != nil, needsAttention: doctor.needsAttention, showsDoctor: showsDoctor)
     }
 
     /// Hidden and Idle draw at the housing's size, black on black, so the wings slide out from behind it and back in.
@@ -130,11 +129,14 @@ struct NotchView: View {
                 // pointer.
                 .opacity(state == .idle && model.isVirtual ? 0 : 1)
                 .transaction(snapWithReduceMotion)
-            // Each state's content keeps its own size while the shape morphs, so it fades rather than reflows.
-            NotchContent(state: state, model: model)
+            // Each state's content keeps its own size while the shape morphs, so it fades rather than reflows. What it
+            // shows is passed in, so content on its way out keeps the track that stopped rather than going blank.
+            // While Idle, the player still holds the paused track, which only the idle card shows.
+            let playback = model.isPlaying ? model.player.playback : nil
+            NotchContent(state: state, card: model.card, playback: playback, artwork: model.player.artwork, colours: model.player.colours, model: model)
                 .frame(width: size.width, height: size.height, alignment: .top)
-                .id(ContentID(state: state, card: model.card))
-                .transition(.opacity)
+                .id(ContentID(state: state, card: model.card, isPlaying: playback != nil))
+                .transition(ContentTransition())
         }
         .mask(alignment: .top) {
             shape
@@ -154,24 +156,38 @@ struct NotchView: View {
     }
 }
 
-/// Tells one state's content from the next, so a change of card, such as resuming from the idle card, fades too.
+/// Tells one state's content from the next, so a change of card, such as resuming from the idle card, or a track
+/// starting beside the "!", fades too.
 private struct ContentID: Hashable {
     let state: NotchState
     let card: NotchCard
+    let isPlaying: Bool
+}
+
+/// How a state's content comes and goes while the shape morphs: in a moment after the shape starts to grow, so the shape
+/// uncovers it, and out quickly, before the shape closes over it.
+private struct ContentTransition: Transition {
+    func body(content: Content, phase: TransitionPhase) -> some View {
+        content
+            .opacity(phase.isIdentity ? 1 : 0)
+            .animation(phase.isIdentity ? Native.contentIn : Native.contentOut, value: phase)
+    }
 }
 
 private struct NotchContent: View {
     let state: NotchState
+    let card: NotchCard
+    let playback: PlaybackState?
+    let artwork: NSImage?
+    let colours: ArtworkColours?
     let model: NotchModel
 
     var body: some View {
-        // While Idle, the player still holds the paused track, which only the idle card shows.
-        let playback = model.isPlaying ? model.player.playback : nil
-        switch (state, model.card, playback) {
+        switch (state, card, playback) {
         case (.expanded, .player, let playback?):
-            ExpandedContent(playback: playback, model: model)
+            ExpandedContent(playback: playback, artwork: artwork, model: model)
                 .padding(.top, model.notch.height)
-                .background { Glow(colours: model.player.colours) }
+                .background { Glow(colours: colours) }
         case (.expanded, .doctor, _):
             DoctorCard(model: model)
                 .padding(.top, model.notch.height)
@@ -179,7 +195,7 @@ private struct NotchContent: View {
             IdleCard(model: model)
                 .padding(.top, model.notch.height)
         case (.resting, _, let playback?):
-            RestingContent(playback: playback, artwork: model.player.artwork, notch: model.notch, model: model)
+            RestingContent(playback: playback, artwork: artwork, notch: model.notch, model: model)
         case (.resting, _, nil):
             RestingContent(playback: nil, artwork: nil, notch: model.notch, model: model)
         default:
@@ -260,15 +276,22 @@ private struct RestingContent: View {
     let notch: CGRect
     let model: NotchModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    /// Set once the wings appear, so the art grows and the bars rise as they slide out.
+    @State private var appeared = false
 
     var body: some View {
         let wing = NotchLayout.wing(notch: notch)
         let art = wing - 2 * NotchLayout.inset(notch: notch)
+        // Content on its way out still reads the model, so the bars drop as the notch leaves Resting.
+        let isIn = appeared && model.state == .resting
         HStack(spacing: 0) {
             Group {
                 if let playback {
                     Artwork(image: artwork, radius: art / 4, symbolSize: art / 2)
                         .frame(width: art, height: art)
+                        // Grows into place as the wings slide out. With Reduce Motion it only fades.
+                        .scaleEffect(isIn || reduceMotion ? 1 : NotchMotion.artScale)
+                        .animation(isIn ? Native.artIn : Native.contentOut, value: isIn)
                         .accessibilityElement(children: .ignore)
                         .accessibilityLabel(playback.artist.map { Text("\(playback.title) by \($0)") } ?? Text(playback.title))
                         .accessibilityValue(playback.isPlaying ? Text("Playing") : Text("Paused"))
@@ -280,7 +303,7 @@ private struct RestingContent: View {
                 if model.doctor.needsAttention {
                     AttentionButton(model: model, size: art)
                 } else if let playback {
-                    PlayStateBars(isPlaying: playback.isPlaying, reduceMotion: reduceMotion)
+                    PlayStateBars(isPlaying: playback.isPlaying, isShown: isIn, reduceMotion: reduceMotion)
                         .frame(width: min(18, art), height: art * 0.6)
                         .accessibilityHidden(true)
                 }
@@ -288,6 +311,7 @@ private struct RestingContent: View {
             .frame(width: wing)
         }
         .frame(height: notch.height)
+        .onAppear { appeared = true }
     }
 }
 
@@ -314,10 +338,13 @@ private struct AttentionButton: View {
 }
 
 /// Four bars that rise and fall while something plays and settle when it pauses. They follow the play state, not the
-/// audio. Core Animation runs them in the window server, so the app does no work per frame; with Reduce Motion they
-/// stand still.
+/// audio. Core Animation runs them in the window server, so the app does no work per frame. They rise one after another
+/// as the wings slide out, and drop as the content leaves; once the content is gone, so are their animations. With
+/// Reduce Motion they stand still and show at once.
 private struct PlayStateBars: NSViewRepresentable {
     let isPlaying: Bool
+    /// Whether the content around them is in, rather than coming or going.
+    let isShown: Bool
     let reduceMotion: Bool
 
     func makeNSView(context: Context) -> BarsView {
@@ -325,7 +352,7 @@ private struct PlayStateBars: NSViewRepresentable {
     }
 
     func updateNSView(_ view: BarsView, context: Context) {
-        view.show(isPlaying ? (reduceMotion ? .still : .moving) : .settled)
+        view.show(isPlaying ? (reduceMotion ? .still : .moving) : .settled, shown: isShown, animated: !reduceMotion)
     }
 
     final class BarsView: NSView {
@@ -342,8 +369,15 @@ private struct PlayStateBars: NSViewRepresentable {
         /// A paused bar, a rounded dot.
         private static let settled: CGFloat = 3
         private static let barWidth: CGFloat = 3
+        /// The curve each bar rises on, the same as the resting art's (`Native.artIn`).
+        private static let rise = CAMediaTimingFunction(controlPoints: 0.2, 0.9, 0.3, 1)
         private let bars = heights.map { _ in CALayer() }
         private var look = Look.settled
+        private var shown = false
+        /// Whether the bars have been drawn yet. They're drawn hidden first, so they rise once they're shown.
+        private var drawn = false
+        /// When the bars started to rise, while they may still be rising, so a layout mid-rise carries on from there.
+        private var riseBegan: CFTimeInterval?
 
         init() {
             super.init(frame: .zero)
@@ -369,53 +403,87 @@ private struct PlayStateBars: NSViewRepresentable {
                 bar.bounds.size = CGSize(width: Self.barWidth, height: height(of: index))
             }
             CATransaction.commit()
-            if look == .moving {
-                startMoving()
-            }
+            animate()
         }
 
-        func show(_ look: Look) {
-            guard look != self.look else { return }
-            let wasMoving = self.look == .moving
+        /// Shows `look`, with the bars up when `shown` and gone when not. `animated` staggers their rise and eases their
+        /// drop; a change of look always eases.
+        func show(_ look: Look, shown: Bool, animated: Bool) {
+            defer { drawn = true }
+            guard look != self.look || shown != self.shown else { return }
+            let animated = animated && drawn
+            let rises = shown && !self.shown
+            let drops = !shown && self.shown
             self.look = look
+            self.shown = shown
+            riseBegan = rises && animated ? CACurrentMediaTime() : nil
+            // Hold each bar where it is before its animations go, so it moves on from there rather than jumping.
             CATransaction.begin()
-            if wasMoving {
-                // Hold each bar where it is before the animation goes, so it settles from there rather than jumping.
-                CATransaction.setDisableActions(true)
-                for bar in bars {
-                    if let height = bar.presentation()?.bounds.height { bar.bounds.size.height = height }
-                    bar.removeAnimation(forKey: "height")
-                }
-                CATransaction.commit()
-                CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            for bar in bars {
+                if let height = bar.presentation()?.bounds.height { bar.bounds.size.height = height }
+                bar.removeAllAnimations()
             }
-            CATransaction.setAnimationDuration(0.25)
+            CATransaction.commit()
+            CATransaction.begin()
+            if rises || (drops && !animated) {
+                // A rise is animate()'s; it starts from nothing.
+                CATransaction.setDisableActions(true)
+            } else if drops {
+                CATransaction.setAnimationDuration(NotchMotion.barDrop)
+                CATransaction.setAnimationTimingFunction(CAMediaTimingFunction(name: .easeIn))
+            } else {
+                CATransaction.setAnimationDuration(0.25)
+            }
             for (index, bar) in bars.enumerated() {
                 bar.bounds.size.height = height(of: index)
             }
             CATransaction.commit()
-            if look == .moving {
-                startMoving()
-            }
+            animate()
         }
 
         private func height(of index: Int) -> CGFloat {
-            switch look {
+            guard shown else { return 0 }
+            return switch look {
             case .settled, .moving: Self.settled
             case .still: Self.heights[index][0] * bounds.height
             }
         }
 
-        private func startMoving() {
-            guard bounds.height > 0 else { return }
+        /// Adds each bar's rise while it's due or under way, then, while playing, its loop from where the rise ends.
+        private func animate() {
+            guard shown, bounds.height > 0 else { return }
+            let now = CACurrentMediaTime()
+            if let riseBegan, riseBegan + NotchMotion.barsRisen(count: bars.count) <= now {
+                self.riseBegan = nil
+            }
             for (index, bar) in bars.enumerated() {
-                let values = Self.heights[index].map { max($0 * bounds.height, Self.settled) }
+                let loop = Self.heights[index].map { max($0 * bounds.height, Self.settled) }
+                var loopBegins: CFTimeInterval = 0
+                if let riseBegan {
+                    let begins = riseBegan + NotchMotion.barDelay(index)
+                    let rise = CABasicAnimation(keyPath: "bounds.size.height")
+                    rise.fromValue = 0
+                    rise.toValue = look == .moving ? loop[0] : height(of: index)
+                    rise.beginTime = begins
+                    rise.duration = NotchMotion.barRise
+                    rise.timingFunction = Self.rise
+                    // Nothing before its turn, and its top after, until the loop takes over.
+                    rise.fillMode = .both
+                    rise.isRemovedOnCompletion = false
+                    bar.add(rise, forKey: "rise")
+                    loopBegins = begins + NotchMotion.barRise
+                } else {
+                    bar.removeAnimation(forKey: "rise")
+                }
+                guard look == .moving else { continue }
                 let animation = CAKeyframeAnimation(keyPath: "bounds.size.height")
-                animation.values = values + [values[0]]
+                animation.values = loop + [loop[0]]
                 animation.calculationMode = .cubic
+                animation.beginTime = loopBegins
                 // Slow enough that 8 frames a second reads as motion rather than steps. Each frame costs the window
                 // server a redraw of the notch: about 1.7% of a core at 8, against about 21% at the display's rate.
-                animation.duration = Double(values.count) * 0.35
+                animation.duration = Double(loop.count) * 0.35
                 animation.repeatCount = .infinity
                 animation.preferredFrameRateRange = CAFrameRateRange(minimum: 6, maximum: 8, preferred: 8)
                 bar.add(animation, forKey: "height")
@@ -427,13 +495,14 @@ private struct PlayStateBars: NSViewRepresentable {
 /// The full card: art, title, artist and album, then the position and the controls.
 private struct ExpandedContent: View {
     let playback: PlaybackState
+    let artwork: NSImage?
     let model: NotchModel
 
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
                 Button(action: model.player.onOpenApp) {
-                    Artwork(image: model.player.artwork)
+                    Artwork(image: artwork)
                         .frame(width: 56, height: 56)
                 }
                 .buttonStyle(.plain)
