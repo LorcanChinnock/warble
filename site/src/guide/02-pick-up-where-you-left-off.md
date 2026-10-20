@@ -1,0 +1,24 @@
+---
+title: Pick up where you left off
+summary: Play the last song again from the notch when nothing is playing.
+group: Playback
+---
+
+When nothing is playing, Warble hides behind the notch, so your screen looks just as it did before you installed it. It still remembers the last song you played, even after you restart your Mac.
+
+## Play the last song again
+
+1. Hover over the notch, or click it. A short card drops down with the last song you played and the app that played it.
+2. Click the play button on the right to carry on from where you stopped.
+
+The card grows into the full player as the song starts, with all the controls.
+
+> [!TIP]
+> Click the album art on the card to open the app that played the song.
+
+## Before you've played anything
+
+If you haven't played anything since installing Warble, the card says **Nothing playing**. Start a song in any app, and it shows in the notch.
+
+> [!NOTE]
+> Only the notch itself opens the card, so moving the pointer across the menu bar doesn't open anything.

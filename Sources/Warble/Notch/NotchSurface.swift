@@ -11,16 +11,29 @@ private let log = Logger.warble("notch")
 final class NotchSurface {
     /// The camera housing the panel is drawn over.
     var housing: CGRect
-    /// Whether anything is playing.
+    /// Whether the housing is one Warble draws on a display without a notch.
+    var isVirtual: Bool {
+        get { model.isVirtual }
+        set { model.isVirtual = newValue }
+    }
+    /// Whether anything is playing, rather than Idle.
     var isPlaying = false {
-        didSet { shownChanged(from: oldValue || needsAttention) }
+        didSet {
+            model.isPlaying = isPlaying
+            shownChanged()
+        }
     }
     /// Whether a Doctor check failed, which draws the notch with a "!" even when nothing is playing.
     var needsAttention = false {
-        didSet { shownChanged(from: isPlaying || oldValue) }
+        didSet { shownChanged() }
     }
-    /// Without anything playing or a "!", the surface draws nothing.
-    private var isShown: Bool { isPlaying || needsAttention }
+    /// What a hover on the housing does while Idle.
+    var idleHover = IdleHover.lastPlayed {
+        didSet { shownChanged() }
+    }
+    /// Without anything playing, a "!" or a card to open while Idle, the surface draws nothing.
+    private var isShown: Bool { state != .hidden }
+    private var wasShown = false
     /// Called after the surface opens or closes, or the pointer crosses it, so the controller can listen for clicks
     /// elsewhere and Escape only while a notch is open.
     var onChange: () -> Void = {}
@@ -28,8 +41,9 @@ final class NotchSurface {
     var onClick: () -> Void = {}
 
     var state: NotchState {
-        isShown ? NotchState(hover.state) : .hidden
+        NotchState(hover.state, isPlaying: isPlaying, needsAttention: needsAttention, idleHover: idleHover)
     }
+    var card: NotchCard { model.card }
     private(set) var pointerInside = false
 
     private let model: NotchModel
@@ -56,7 +70,8 @@ final class NotchSurface {
         model.onShowDoctor = { [weak self] show in self?.showDoctor(show) }
     }
 
-    private func shownChanged(from wasShown: Bool) {
+    private func shownChanged() {
+        defer { wasShown = isShown }
         guard !isShown, wasShown else { return }
         // Start over, so a pointer still on the notch when it's drawn again is reported as entering again.
         hover = HoverIntent()

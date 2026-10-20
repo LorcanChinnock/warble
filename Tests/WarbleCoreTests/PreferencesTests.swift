@@ -86,3 +86,14 @@ import Testing
     suite.store.set(-5, forKey: PreferenceKey.stayVisibleAfterPausing)
     #expect(Preferences(store: suite.store).stayVisibleAfterPausing == 0)
 }
+
+@Test func hoveringTheIdleNotchShowsTheLastTrackByDefault() throws {
+    let suite = try TestDefaults()
+    defer { suite.remove() }
+    Preferences.registerDefaults(in: suite.store)
+    #expect(Preferences(store: suite.store).idleHover == .lastPlayed)
+    suite.store.set(IdleHover.nothing.rawValue, forKey: PreferenceKey.idleHover)
+    #expect(Preferences(store: suite.store).idleHover == .nothing)
+    suite.store.set("sometimes", forKey: PreferenceKey.idleHover)
+    #expect(Preferences(store: suite.store).idleHover == .lastPlayed)
+}

@@ -9,6 +9,8 @@ public enum PreferenceKey {
     public static let virtualNotch = "virtualNotch"
     /// How many seconds a paused track stays in the notch before it goes Idle.
     public static let stayVisibleAfterPausing = "stayVisibleAfterPausing"
+    /// What the camera housing does on a hover while nothing is playing, an `IdleHover`.
+    public static let idleHover = "idleHover"
 
     public static func hotkey(_ action: WarbleAction) -> String { "hotkey.\(action.rawValue)" }
 }
@@ -21,6 +23,7 @@ public struct Preferences {
             PreferenceKey.textSize: TextSize.standard.rawValue,
             PreferenceKey.virtualNotch: [String: String](),
             PreferenceKey.stayVisibleAfterPausing: IdleAfterPause.defaultDelay,
+            PreferenceKey.idleHover: IdleHover.lastPlayed.rawValue,
         ]
         for action in WarbleAction.allCases {
             values[PreferenceKey.hotkey(action)] = action.defaultCombo?.encoded ?? ""
@@ -70,6 +73,10 @@ public struct Preferences {
     /// Never negative, so a stray value goes Idle at once rather than never.
     public var stayVisibleAfterPausing: TimeInterval {
         max(store.double(forKey: PreferenceKey.stayVisibleAfterPausing), 0)
+    }
+
+    public var idleHover: IdleHover {
+        IdleHover(rawValue: store.string(forKey: PreferenceKey.idleHover) ?? "") ?? .lastPlayed
     }
 
     /// `nil` means the user cleared the shortcut.

@@ -13,12 +13,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         Preferences.registerDefaults()
         _ = Updater.shared
-        let notch = NotchController()
         // To see the notch without playing anything, launch with
         // `open build/WarbleDev.app --args -notchPreviewState resting` and hover or click it to open it; the argument
-        // lasts only for that launch.
-        let preview = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)["notchPreviewState"] as? String
-        if preview.flatMap(NotchState.init(rawValue:)) == .resting {
+        // lasts only for that launch. `idle` shows the idle card with a preview track as the last played, and adding
+        // `-notchPreviewLastPlayed NO` shows it with nothing played yet. Neither reads nor saves the real last track.
+        let arguments = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
+        let preview = (arguments["notchPreviewState"] as? String).flatMap(NotchState.init(rawValue:))
+        let isPreview = preview == .resting || preview == .idle
+        let notch = NotchController(lastPlayedStore: isPreview ? nil : Bundle.main.bundleIdentifier.flatMap(LastPlayedStore.standard))
+        if preview == .idle {
+            if (arguments["notchPreviewLastPlayed"] as? String).map({ NSString(string: $0).boolValue }) ?? true {
+                notch.lastPlayed = LastPlayed(bundleIdentifier: "com.apple.Music", appName: "Music", title: "Preview track with a title long enough to scroll", artist: "Preview artist")
+            }
+        } else if preview == .resting {
             notch.playback = PlaybackState(
                 bundleIdentifier: "com.apple.Music",
                 title: "Preview track with a title long enough to scroll",

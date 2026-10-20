@@ -14,10 +14,13 @@ enum Native {
     /// Bottom corner radius of the notch over `notch`: the camera housing's own at rest, `expandedRadius` once open.
     static func radius(_ state: NotchState, notch: CGRect) -> CGFloat {
         switch state {
-        case .hidden, .resting: NotchLayout.cornerRadius(notch: notch)
+        case .hidden, .idle, .resting: NotchLayout.cornerRadius(notch: notch)
         case .expanded: expandedRadius
         }
     }
+
+    /// The idle card's art, dimmed so the last track reads as past rather than playing.
+    static let dimmed = 0.55
 
     /// The change of shape between states. No bounce: the panel's frame is only as big as the larger state, so an
     /// overshoot would be clipped.

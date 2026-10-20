@@ -15,6 +15,11 @@ final class NotchModel {
     let doctor: DoctorModel
     /// Whether the open card shows the Doctor's checks rather than the player.
     var showsDoctor = false
+    /// Whether something is playing, rather than Idle. While Idle, `player` may still hold the paused track.
+    var isPlaying = false
+    /// Whether the housing is one Warble draws on a display without a notch, where Idle shows nothing at all rather
+    /// than black over the camera.
+    var isVirtual = false
     @ObservationIgnored var onClick: () -> Void = {}
     /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
     @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }
@@ -26,12 +31,11 @@ final class NotchModel {
         self.doctor = doctor
     }
 
-    /// What Expanded holds: the checks when asked for, or when there's nothing playing to show.
     var card: NotchCard {
-        showsDoctor || player.playback == nil ? .doctor : .player
+        NotchCard(isPlaying: isPlaying && player.playback != nil, needsAttention: doctor.needsAttention, showsDoctor: showsDoctor)
     }
 
-    /// Hidden draws at the housing's size, black on black, so the wings slide out from behind it and back in.
+    /// Hidden and Idle draw at the housing's size, black on black, so the wings slide out from behind it and back in.
     func size(_ state: NotchState) -> CGSize {
         NotchLayout.frame(state, notch: notch, card: card)?.size ?? notch.size
     }
@@ -42,6 +46,15 @@ final class NotchModel {
 @MainActor
 @Observable
 final class PlayerModel {
+    /// The last track played, which the idle card shows. It outlasts what's playing, and Warble too.
+    var lastPlayed: LastPlayed? {
+        didSet {
+            if lastPlayed?.artwork != oldValue?.artwork {
+                lastPlayedArtwork = lastPlayed?.artwork.flatMap(NSImage.init(data:))
+            }
+        }
+    }
+    private(set) var lastPlayedArtwork: NSImage?
     var playback: PlaybackState? {
         didSet {
             let artworkChanged = playback?.artwork != oldValue?.artwork
@@ -113,11 +126,14 @@ struct NotchView: View {
             shape
                 .fill(Native.panel)
                 .frame(width: size.width, height: size.height)
+                // A virtual housing has no camera to hide behind, so there Idle draws nothing, though it still takes the
+                // pointer.
+                .opacity(state == .idle && model.isVirtual ? 0 : 1)
                 .transaction(snapWithReduceMotion)
             // Each state's content keeps its own size while the shape morphs, so it fades rather than reflows.
             NotchContent(state: state, model: model)
                 .frame(width: size.width, height: size.height, alignment: .top)
-                .id(state)
+                .id(ContentID(state: state, card: model.card))
                 .transition(.opacity)
         }
         .mask(alignment: .top) {
@@ -138,26 +154,100 @@ struct NotchView: View {
     }
 }
 
+/// Tells one state's content from the next, so a change of card, such as resuming from the idle card, fades too.
+private struct ContentID: Hashable {
+    let state: NotchState
+    let card: NotchCard
+}
+
 private struct NotchContent: View {
     let state: NotchState
     let model: NotchModel
 
     var body: some View {
-        switch (state, model.player.playback) {
-        case (.expanded, let playback?) where !model.showsDoctor:
+        // While Idle, the player still holds the paused track, which only the idle card shows.
+        let playback = model.isPlaying ? model.player.playback : nil
+        switch (state, model.card, playback) {
+        case (.expanded, .player, let playback?):
             ExpandedContent(playback: playback, model: model)
                 .padding(.top, model.notch.height)
                 .background { Glow(colours: model.player.colours) }
-        case (.expanded, _):
+        case (.expanded, .doctor, _):
             DoctorCard(model: model)
                 .padding(.top, model.notch.height)
-        case (.resting, let playback?):
+        case (.expanded, .idle, _):
+            IdleCard(model: model)
+                .padding(.top, model.notch.height)
+        case (.resting, _, let playback?):
             RestingContent(playback: playback, artwork: model.player.artwork, notch: model.notch, model: model)
-        case (.resting, nil):
+        case (.resting, _, nil):
             RestingContent(playback: nil, artwork: nil, notch: model.notch, model: model)
         default:
             Color.clear.accessibilityHidden(true)
         }
+    }
+}
+
+/// While Idle: the last track played, its art dimmed, with a button that resumes it, or a line saying nothing has
+/// played yet.
+private struct IdleCard: View {
+    let model: NotchModel
+
+    var body: some View {
+        Group {
+            if let lastPlayed = model.player.lastPlayed {
+                HStack(spacing: 12) {
+                    Button(action: model.player.onOpenApp) {
+                        Artwork(image: model.player.lastPlayedArtwork, symbolSize: 20)
+                            .frame(width: 48, height: 48)
+                            .opacity(Native.dimmed)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(lastPlayed.appName.map { Text("Open \($0)") } ?? Text("Open the app that played it"))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Group {
+                            if let appName = lastPlayed.appName { Text("Last played · \(appName)") } else { Text("Last played") }
+                        }
+                        .font(.system(size: 11))
+                        .foregroundStyle(Native.secondary)
+                        Text(lastPlayed.title)
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(.white)
+                        if let artist = lastPlayed.artist {
+                            Text(artist)
+                                .font(.system(size: 13))
+                                .foregroundStyle(Native.secondary)
+                        }
+                    }
+                    .lineLimit(1)
+                    .accessibilityElement(children: .combine)
+                    Spacer(minLength: 0)
+                    Button { model.player.onCommand(.togglePlayPause) } label: {
+                        Image(systemName: "play.fill")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 36, height: 36)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Resume")
+                }
+            } else {
+                VStack(spacing: 3) {
+                    Text("Nothing playing")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(.white)
+                    Text("Play something and it shows here")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Native.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .accessibilityElement(children: .combine)
+            }
+        }
+        .frame(maxHeight: .infinity)
+        .padding(.horizontal, 16)
+        .padding(.bottom, 10)
     }
 }
 

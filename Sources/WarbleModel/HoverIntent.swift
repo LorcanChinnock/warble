@@ -12,8 +12,8 @@ public enum HoverState: String, CaseIterable, Sendable {
 
 /// Something the pointer or the user did.
 public enum HoverEvent: Sendable {
-    /// The pointer entered the area that keeps the notch open: the notch itself while resting, not the wings, and
-    /// the panel once it's open.
+    /// The pointer entered the area that keeps the notch open: the camera housing itself while Idle or resting, not the
+    /// wings, and the panel once it's open.
     case pointerEntered
     case pointerLeft
     case click
@@ -27,7 +27,7 @@ public enum HoverEvent: Sendable {
 }
 
 /// Decides when the notch opens and closes, so moving the pointer past it on the way to a menu bar item never opens
-/// Warble. It holds no timers: after each call the owner schedules one for `deadline`, if any, and calls
+/// Warble. It works the same whether anything is playing: while Idle, `.expanded` opens the idle card. It holds no timers: after each call the owner schedules one for `deadline`, if any, and calls
 /// `advance(to:)` when it fires.
 public struct HoverIntent: Equatable, Sendable {
     /// How long the pointer stays on the notch before it expands.
