@@ -35,7 +35,12 @@ final class NotchPanel: NSPanel {
     /// edge it grows outwards by up to a point; the shape keeps to its own height from the top and stays centred, and the
     /// rest stays clear, so the panel ends exactly where the camera housing does.
     func show(in frame: CGRect) {
-        setFrame(NotchLayout.window(for: frame), display: true)
+        setFrame(NotchLayout.window(for: frame), display: false)
+        // Lay the content out at the new size now, before a morph begins, so the shape stays centred over the housing.
+        // Otherwise SwiftUI takes the new size in the same pass as the morph, and the shape slides over from the window's
+        // old left edge as it grows.
+        contentView?.layoutSubtreeIfNeeded()
+        displayIfNeeded()
         orderFrontRegardless()
         retrack()
     }

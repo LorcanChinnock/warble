@@ -18,10 +18,7 @@ final class NotchSurface {
     }
     /// Whether anything is playing, rather than Idle.
     var isPlaying = false {
-        didSet {
-            model.isPlaying = isPlaying
-            shownChanged()
-        }
+        didSet { shownChanged() }
     }
     /// Whether a Doctor check failed, which draws the notch with a "!" even when nothing is playing.
     var needsAttention = false {
@@ -43,7 +40,10 @@ final class NotchSurface {
     var state: NotchState {
         NotchState(hover.state, isPlaying: isPlaying, needsAttention: needsAttention, idleHover: idleHover)
     }
-    var card: NotchCard { model.card }
+    /// What Expanded holds, which the panel morphs to on the next `update`.
+    var card: NotchCard {
+        NotchCard(isPlaying: isPlaying && model.player.playback != nil, needsAttention: needsAttention, showsDoctor: model.showsDoctor)
+    }
     private(set) var pointerInside = false
 
     private let model: NotchModel
@@ -145,7 +145,9 @@ final class NotchSurface {
         if state != .expanded, model.showsDoctor {
             model.showsDoctor = false
         }
-        guard let frame = NotchLayout.frame(state, notch: notch, card: model.card) else {
+        let card = card
+        let isPlaying = isPlaying
+        guard let frame = NotchLayout.frame(state, notch: notch, card: card) else {
             guard shown != nil else { return }
             shown = nil
             morphs += 1
@@ -158,13 +160,14 @@ final class NotchSurface {
             }
             withAnimation(NSWorkspace.shared.accessibilityDisplayShouldReduceMotion ? Native.fade : Native.morph, completionCriteria: .removed) {
                 model.state = .hidden
+                model.isPlaying = isPlaying
             } completion: { [weak self] in
                 guard let self, morph == self.morphs else { return }
                 self.hide()
             }
             return
         }
-        guard shown?.state != state || shown?.frame != frame else { return }
+        guard shown?.state != state || shown?.frame != frame || model.card != card || model.isPlaying != isPlaying else { return }
         let previous = shown
         shown = (state, frame)
         morphs += 1
@@ -178,8 +181,10 @@ final class NotchSurface {
             panel.displayIfNeeded()
         }
         model.notch = notch
-        if animated, let panelFrame, (previous?.frame ?? .zero) != frame {
-            // Grow the panel before the shape does, so nothing is clipped, and shrink it once the shape has.
+        if animated, let panelFrame {
+            // Grow the panel before the shape does, so nothing is clipped, and shrink it once the shape has. The card and
+            // what's playing change in the same animation as the state, so resuming from the idle card, or playback
+            // stopping under the full card, morphs from one card to the other and cross-fades their content.
             let union = panelFrame.union(frame)
             if union != panelFrame {
                 show(in: union)
@@ -187,15 +192,19 @@ final class NotchSurface {
             let reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
             withAnimation(reduceMotion ? Native.fade : Native.morph, completionCriteria: .removed) {
                 model.state = state
+                model.card = card
+                model.isPlaying = isPlaying
             } completion: { [weak self] in
                 guard let self, morph == self.morphs, self.panelFrame != frame else { return }
                 self.show(in: frame)
             }
         } else {
             model.state = state
+            model.card = card
+            model.isPlaying = isPlaying
             show(in: frame)
         }
-        panel.track(NotchLayout.hoverArea(state, notch: notch, card: model.card) ?? .zero)
+        panel.track(NotchLayout.hoverArea(state, notch: notch, card: card) ?? .zero)
         log.notice("Notch \(state.rawValue, privacy: .public) at \(NSStringFromRect(frame), privacy: .public) over \(NSStringFromRect(notch), privacy: .public)")
     }
 
