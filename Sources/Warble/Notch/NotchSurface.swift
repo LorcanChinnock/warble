@@ -80,11 +80,12 @@ final class NotchSurface {
     }
 
     /// Swaps the open card between the player and the Doctor's checks. From the resting "!", the click that follows
-    /// opens the notch on the checks.
+    /// opens the notch on the checks. The controller hears of the change, since only the player's card follows the volume.
     private func showDoctor(_ show: Bool) {
         model.showsDoctor = show
         if state == .expanded {
             update()
+            onChange()
         }
     }
 
