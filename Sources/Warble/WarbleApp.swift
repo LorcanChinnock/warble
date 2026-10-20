@@ -10,9 +10,30 @@ struct WarbleApp: App {
         MenuBarExtra(isInserted: $showMenuBarIcon) {
             WarbleMenu(updater: Updater.shared)
         } label: {
-            Image(systemName: Updater.shared.pendingVersion == nil ? "music.note" : "arrow.down.circle")
+            if Updater.shared.pendingVersion == nil {
+                Image(nsImage: .menuBarIcon)
+                    .accessibilityLabel(Text(verbatim: "Warble"))
+            } else {
+                Image(systemName: "arrow.down.circle")
+            }
         }
     }
+}
+
+private extension NSImage {
+    /// The app icon's bars as a template image, so macOS tints it for light and dark menu bars and while the menu is
+    /// open. Drawn on demand, so it's sharp at every scale.
+    static let menuBarIcon: NSImage = {
+        let bars = IconBars.rects(height: 16)
+        let image = NSImage(size: CGSize(width: bars.last!.maxX, height: 16), flipped: false) { _ in
+            for bar in bars {
+                NSBezierPath(roundedRect: bar, xRadius: bar.width / 2, yRadius: bar.width / 2).fill()
+            }
+            return true
+        }
+        image.isTemplate = true
+        return image
+    }()
 }
 
 private struct WarbleMenu: View {
