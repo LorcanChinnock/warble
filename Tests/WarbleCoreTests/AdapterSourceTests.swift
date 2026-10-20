@@ -147,25 +147,19 @@ private func watchedPerl(_ script: String, lifeline: Pipe, output: Pipe? = nil) 
     return process
 }
 
-/// Whether `body` returns within `timeout`, run on its own thread since it may block.
+/// Whether `body` returns within `timeout`. It runs on its own thread since it may block, and is left running when it
+/// doesn't return in time, so a regression fails the test rather than hanging it.
 private func finishes(within timeout: Duration, _ body: @escaping @Sendable () -> Void) async -> Bool {
-    await withTaskGroup(of: Bool.self) { group in
-        group.addTask {
-            await withCheckedContinuation { continuation in
-                Thread.detachNewThread {
-                    body()
-                    continuation.resume()
-                }
-            }
-            return true
+    let done = DispatchSemaphore(value: 0)
+    Thread.detachNewThread {
+        body()
+        done.signal()
+    }
+    let deadline = DispatchTime.now() + .milliseconds(Int(timeout / .milliseconds(1)))
+    return await withCheckedContinuation { continuation in
+        Thread.detachNewThread {
+            continuation.resume(returning: done.wait(timeout: deadline) == .success)
         }
-        group.addTask {
-            try? await Task.sleep(for: timeout)
-            return false
-        }
-        let first = await group.next() ?? false
-        group.cancelAll()
-        return first
     }
 }
 
@@ -174,7 +168,7 @@ private func finishes(within timeout: Duration, _ body: @escaping @Sendable () -
     let process = try watchedPerl("sleep 30", lifeline: lifeline)
     // The kernel does this when Warble ends, however it ends.
     try lifeline.fileHandleForWriting.close()
-    #expect(await finishes(within: .seconds(5)) { process.waitUntilExit() })
+    try #require(await finishes(within: .seconds(5)) { process.waitUntilExit() })
     #expect(process.terminationReason == .uncaughtSignal)
     #expect(process.terminationStatus == SIGTERM)
 }
