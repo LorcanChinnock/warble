@@ -2,13 +2,46 @@ import AppKit
 import SwiftUI
 import WarbleCore
 
-/// What the notch view draws. `NotchController` changes `state` inside an animation, and the view morphs to it.
+/// What one notch panel draws. `NotchController` changes `state` inside an animation, and the view morphs to it.
 @MainActor
 @Observable
 final class NotchModel {
     var state = NotchState.hidden
-    /// The camera housing, which every state's shape is measured from.
+    /// The camera housing, real or virtual, which every state's shape is measured from.
     var notch = CGRect.zero
+    /// What's playing, shared by every display's notch.
+    let player: PlayerModel
+    /// The checks behind the "!", shared by every display's notch.
+    let doctor: DoctorModel
+    /// Whether the open card shows the Doctor's checks rather than the player.
+    var showsDoctor = false
+    @ObservationIgnored var onClick: () -> Void = {}
+    /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
+    @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }
+    /// Called to swap the open card between the player and the checks.
+    @ObservationIgnored var onShowDoctor: (Bool) -> Void = { _ in }
+
+    init(player: PlayerModel, doctor: DoctorModel) {
+        self.player = player
+        self.doctor = doctor
+    }
+
+    /// What Expanded holds: the checks when asked for, or when there's nothing playing to show.
+    var card: NotchCard {
+        showsDoctor || player.playback == nil ? .doctor : .player
+    }
+
+    /// Hidden draws at the housing's size, black on black, so the wings slide out from behind it and back in.
+    func size(_ state: NotchState) -> CGSize {
+        NotchLayout.frame(state, notch: notch, card: card)?.size ?? notch.size
+    }
+}
+
+/// What's playing and the controls for it, which every display's notch shows. The artwork is decoded and its colours
+/// picked once, however many notches there are.
+@MainActor
+@Observable
+final class PlayerModel {
     var playback: PlaybackState? {
         didSet {
             let artworkChanged = playback?.artwork != oldValue?.artwork
@@ -31,7 +64,6 @@ final class NotchModel {
     @ObservationIgnored private var colourPicks = 0
     /// The name of the app that's playing, for VoiceOver.
     private(set) var appName: String?
-    @ObservationIgnored var onClick: () -> Void = {}
     @ObservationIgnored var onCommand: (PlaybackCommand) -> Void = { _ in }
     /// Brings the app that's playing to the front.
     @ObservationIgnored var onOpenApp: () -> Void = {}
@@ -43,8 +75,6 @@ final class NotchModel {
     var outputs: [AudioOutput] = []
     var currentOutput: UInt32?
     @ObservationIgnored var onSelectOutput: (UInt32) -> Void = { _ in }
-    /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
-    @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }
 
     /// Picks the colours off the main thread, then fades the glow to them.
     private func pickColours() {
@@ -69,11 +99,6 @@ final class NotchModel {
             withAnimation(Native.glowChange) { self.colours = colours }
         }
     }
-
-    /// Hidden draws at the housing's size, black on black, so the wings slide out from behind it and back in.
-    func size(_ state: NotchState) -> CGSize {
-        NotchLayout.frame(state, notch: notch)?.size ?? notch.size
-    }
 }
 
 struct NotchView: View {
@@ -83,7 +108,7 @@ struct NotchView: View {
     var body: some View {
         let state = model.state
         let size = model.size(state)
-        let shape = UnevenRoundedRectangle(bottomLeadingRadius: Native.radius(state), bottomTrailingRadius: Native.radius(state))
+        let shape = UnevenRoundedRectangle(bottomLeadingRadius: Native.radius(state, notch: model.notch), bottomTrailingRadius: Native.radius(state, notch: model.notch))
         ZStack(alignment: .top) {
             shape
                 .fill(Native.panel)
@@ -118,41 +143,83 @@ private struct NotchContent: View {
     let model: NotchModel
 
     var body: some View {
-        switch (state, model.playback) {
-        case (.expanded, let playback?):
+        switch (state, model.player.playback) {
+        case (.expanded, let playback?) where !model.showsDoctor:
             ExpandedContent(playback: playback, model: model)
                 .padding(.top, model.notch.height)
-                .background { Glow(colours: model.colours) }
+                .background { Glow(colours: model.player.colours) }
+        case (.expanded, _):
+            DoctorCard(model: model)
+                .padding(.top, model.notch.height)
         case (.resting, let playback?):
-            RestingContent(playback: playback, artwork: model.artwork, height: model.notch.height)
+            RestingContent(playback: playback, artwork: model.player.artwork, notch: model.notch, model: model)
+        case (.resting, nil):
+            RestingContent(playback: nil, artwork: nil, notch: model.notch, model: model)
         default:
             Color.clear.accessibilityHidden(true)
         }
     }
 }
 
-/// The art in the left wing and the play-state bars in the right, either side of the camera housing.
+/// The art in the left wing and the play-state bars in the right, either side of the camera housing, each centred in a
+/// square as tall as the housing. When a Doctor check fails, a "!" takes the bars' place, and with nothing playing it's
+/// all that shows.
 private struct RestingContent: View {
-    let playback: PlaybackState
+    let playback: PlaybackState?
     let artwork: NSImage?
-    let height: CGFloat
+    let notch: CGRect
+    let model: NotchModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        let art = height - 2 * Native.restingInset
+        let wing = NotchLayout.wing(notch: notch)
+        let art = wing - 2 * NotchLayout.inset(notch: notch)
         HStack(spacing: 0) {
-            Artwork(image: artwork, radius: 6, symbolSize: 12)
-                .frame(width: art, height: art)
-                .frame(width: NotchLayout.wing)
+            Group {
+                if let playback {
+                    Artwork(image: artwork, radius: art / 4, symbolSize: art / 2)
+                        .frame(width: art, height: art)
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel(playback.artist.map { Text("\(playback.title) by \($0)") } ?? Text(playback.title))
+                        .accessibilityValue(playback.isPlaying ? Text("Playing") : Text("Paused"))
+                }
+            }
+            .frame(width: wing)
             Spacer(minLength: 0)
-            PlayStateBars(isPlaying: playback.isPlaying, reduceMotion: reduceMotion)
-                .frame(width: 18, height: art * 0.6)
-                .frame(width: NotchLayout.wing)
+            Group {
+                if model.doctor.needsAttention {
+                    AttentionButton(model: model, size: art)
+                } else if let playback {
+                    PlayStateBars(isPlaying: playback.isPlaying, reduceMotion: reduceMotion)
+                        .frame(width: min(18, art), height: art * 0.6)
+                        .accessibilityHidden(true)
+                }
+            }
+            .frame(width: wing)
         }
-        .frame(maxHeight: .infinity)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(playback.artist.map { Text("\(playback.title) by \($0)") } ?? Text(playback.title))
-        .accessibilityValue(playback.isPlaying ? Text("Playing") : Text("Paused"))
+        .frame(height: notch.height)
+    }
+}
+
+/// The "!" that opens the notch on the Doctor's checks, in a square `size` points wide.
+private struct AttentionButton: View {
+    let model: NotchModel
+    let size: CGFloat
+
+    var body: some View {
+        Button {
+            model.onShowDoctor(true)
+            model.onClick()
+        } label: {
+            Image(systemName: "exclamationmark.circle.fill")
+                .font(.system(size: size / 2))
+                .foregroundStyle(Native.secondary)
+                .frame(width: size, height: size)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Show what's wrong")
+        .help("Warble can't see everything")
     }
 }
 
@@ -275,12 +342,12 @@ private struct ExpandedContent: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                Button(action: model.onOpenApp) {
-                    Artwork(image: model.artwork)
+                Button(action: model.player.onOpenApp) {
+                    Artwork(image: model.player.artwork)
                         .frame(width: 56, height: 56)
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel(model.appName.map { Text("Open \($0)") } ?? Text("Open the app that's playing"))
+                .accessibilityLabel(model.player.appName.map { Text("Open \($0)") } ?? Text("Open the app that's playing"))
                 VStack(alignment: .leading, spacing: 2) {
                     Text(playback.title)
                         .font(.system(size: 15, weight: .semibold))
@@ -295,15 +362,26 @@ private struct ExpandedContent: View {
                 .lineLimit(1)
                 .accessibilityElement(children: .combine)
                 Spacer(minLength: 0)
+                if model.doctor.needsAttention {
+                    Button { model.onShowDoctor(true) } label: {
+                        Image(systemName: "exclamationmark.circle.fill")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Native.secondary)
+                            .frame(width: 24, height: 24)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Show what's wrong")
+                }
             }
             Spacer(minLength: 0)
-            Scrubber(playback: playback) { model.onCommand(.seek(to: $0)) }
+            Scrubber(playback: playback) { model.player.onCommand(.seek(to: $0)) }
             Spacer(minLength: 0)
-            PlaybackControls(playback: playback, send: model.onCommand)
+            PlaybackControls(playback: playback, send: model.player.onCommand)
             Spacer(minLength: 0)
             HStack(spacing: 8) {
-                if let volume = model.volume {
-                    VolumeSlider(volume: model.isMuted ? 0 : volume, isMuted: model.isMuted, set: model.onVolume)
+                if let volume = model.player.volume {
+                    VolumeSlider(volume: model.player.isMuted ? 0 : volume, isMuted: model.player.isMuted, set: model.player.onVolume)
                 } else {
                     Spacer(minLength: 0)
                 }
@@ -327,7 +405,7 @@ private struct Glow: View {
     var body: some View {
         if let colours {
             if contrast == .increased {
-                UnevenRoundedRectangle(bottomLeadingRadius: Native.radius(.expanded), bottomTrailingRadius: Native.radius(.expanded))
+                UnevenRoundedRectangle(bottomLeadingRadius: Native.expandedRadius, bottomTrailingRadius: Native.expandedRadius)
                     .strokeBorder(Color(colours.border), lineWidth: Native.contrastBorder)
                     // Leaves out the top edge, along the screen's.
                     .mask { Rectangle().padding(.top, Native.contrastBorder) }
@@ -455,7 +533,7 @@ private struct OutputButton: View {
     let model: NotchModel
 
     var body: some View {
-        let playing = model.outputs.first { $0.id == model.currentOutput }
+        let playing = model.player.outputs.first { $0.id == model.player.currentOutput }
         ZStack {
             OutputMenu(model: model)
             Image(systemName: playing?.symbol ?? "hifispeaker")
@@ -475,9 +553,9 @@ private struct OutputMenu: NSViewRepresentable {
     }
 
     func updateNSView(_ view: OutputMenuView, context: Context) {
-        view.outputs = model.outputs
-        view.current = model.currentOutput
-        view.select = model.onSelectOutput
+        view.outputs = model.player.outputs
+        view.current = model.player.currentOutput
+        view.select = model.player.onSelectOutput
         view.onMenu = model.onMenu
     }
 

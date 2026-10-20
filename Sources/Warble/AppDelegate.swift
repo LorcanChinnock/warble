@@ -40,11 +40,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     notch.playback = state
                 }
                 // The states end only when the adapter gives up.
+                notch.doctor.adapter = .stopped(testStatus: source.lastTestStatus)
                 startFallback(notch)
             }
             self.source = source
         } else {
             log.error("The adapter isn't in the app's resources; build with make bundle")
+            notch.doctor.adapter = .missing
             startFallback(notch)
         }
         self.notch = notch
@@ -62,11 +64,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Follows Music and Spotify with AppleScript when the adapter can't run, so the two most common players still work.
     private func startFallback(_ notch: NotchController) {
         let fallback = ScriptSource()
+        fallback.onAutomationDenied = { [weak notch] in notch?.doctor.refresh() }
         fallback.start()
         notch.send = { command in Task { await fallback.send(command) } }
         Task {
             for await state in fallback.states {
                 notch.playback = state
+                notch.doctor.refreshIfAutomationFails()
             }
         }
         self.fallback = fallback

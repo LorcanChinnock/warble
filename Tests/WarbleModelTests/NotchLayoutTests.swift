@@ -5,7 +5,7 @@ import Foundation
 import Testing
 @testable import WarbleModel
 
-/// A 14-inch MacBook Pro's notch at "More Space": half-point height and origin.
+/// A 15-inch MacBook Air's notch at More Space, 1920 × 1243: half-point height and origin.
 private let notch = CGRect(x: 856, y: 1205.5, width: 208, height: 37.5)
 
 @Test func nothingIsDrawnWhenHidden() {
@@ -14,7 +14,7 @@ private let notch = CGRect(x: 856, y: 1205.5, width: 208, height: 37.5)
 
 @Test func restingWidensTheNotchEquallyOnBothSides() throws {
     let frame = try #require(NotchLayout.frame(.resting, notch: notch))
-    #expect(frame == CGRect(x: 806, y: 1205.5, width: 308, height: 37.5))
+    #expect(frame == CGRect(x: 818.5, y: 1205.5, width: 283, height: 37.5))
     #expect(frame.midX == notch.midX)
     // The panel covers the housing exactly top to bottom, so no sliver of menu bar shows above or below it.
     #expect(frame.minY == notch.minY)
@@ -52,4 +52,61 @@ private let notch = CGRect(x: 856, y: 1205.5, width: 208, height: 37.5)
     #expect(NotchState(.resting) == .resting)
     #expect(NotchState(.expanded) == .expanded)
     #expect(NotchState(.pinned) == .expanded)
+}
+
+@Test func theDoctorsCardReachesFurtherDownThanThePlayerAtTheSameWidth() throws {
+    let player = try #require(NotchLayout.frame(.expanded, notch: notch))
+    let doctor = try #require(NotchLayout.frame(.expanded, notch: notch, card: .doctor))
+    #expect(doctor.width == player.width)
+    #expect(doctor.maxY == notch.maxY)
+    #expect(doctor.height == notch.height + NotchLayout.doctorDrop)
+    #expect(NotchLayout.hoverArea(.expanded, notch: notch, card: .doctor) == doctor)
+    // Resting looks the same whatever Expanded will hold.
+    #expect(NotchLayout.frame(.resting, notch: notch, card: .doctor) == NotchLayout.frame(.resting, notch: notch))
+}
+
+@Test(arguments: fifteenInchAir)
+func theCornersAreTheHousingsAtEveryScale(_ scale: MeasuredScale) throws {
+    let notch = try #require(MenuBar.notch(safeAreaTop: scale.safeAreaTop, leftArea: scale.leftArea, rightArea: scale.rightArea))
+    let pixels = scale.pixelsPerPoint
+    // The same pixels whatever the text size, within what the height's rounding carries over.
+    let radius = NotchLayout.cornerRadius(notch: notch) * pixels
+    #expect(abs(radius - NotchLayout.cornerRatio * 56) <= NotchLayout.cornerRatio * 0.5 * pixels)
+}
+
+@Test(arguments: fifteenInchAir)
+func eachWingHoldsItsContentWithTheSameMarginAllRound(_ scale: MeasuredScale) throws {
+    let notch = try #require(MenuBar.notch(safeAreaTop: scale.safeAreaTop, leftArea: scale.leftArea, rightArea: scale.rightArea))
+    let wing = NotchLayout.wing(notch: notch)
+    let inset = NotchLayout.inset(notch: notch)
+    let content = wing - 2 * inset
+    // A square: the margin beside the content matches the margin above and below it.
+    #expect(content + 2 * inset == notch.height)
+    #expect(content > 0)
+    let resting = try #require(NotchLayout.frame(.resting, notch: notch))
+    #expect(notch.minX - resting.minX == wing)
+    #expect(resting.maxX - notch.maxX == wing)
+    #expect(resting.minY == notch.minY)
+    #expect(resting.height == notch.height)
+    let expanded = try #require(NotchLayout.frame(.expanded, notch: notch))
+    #expect(expanded.contains(resting))
+}
+
+@Test(arguments: fifteenInchAir)
+func theWindowCoversWholePointsAndStaysCentredOnTheHousing(_ scale: MeasuredScale) throws {
+    let notch = try #require(MenuBar.notch(safeAreaTop: scale.safeAreaTop, leftArea: scale.leftArea, rightArea: scale.rightArea))
+    for state in NotchState.allCases {
+        let frame = NotchLayout.frame(state, notch: notch) ?? notch
+        let window = NotchLayout.window(for: frame)
+        #expect(window == window.integral)
+        #expect(window.contains(frame))
+        #expect(window.maxY == frame.maxY)
+        // The shape is drawn in the middle of the window, so the window's middle has to be the housing's.
+        #expect(window.midX == notch.midX)
+    }
+}
+
+@Test func aWindowAtAHalfPointGrowsOnBothSides() {
+    let notch = CGRect(x: 456.5, y: 643, width: 111, height: 20)
+    #expect(NotchLayout.window(for: notch) == CGRect(x: 456, y: 643, width: 112, height: 20))
 }
