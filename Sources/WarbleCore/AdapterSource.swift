@@ -9,7 +9,7 @@ private let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Warble", ca
 /// script under `/usr/bin/perl`, which loads the adapter's framework.
 ///
 /// `start()` runs `stream` for as long as Warble does. It waits on MediaRemote rather than polling, so it costs nothing
-/// while nothing changes. When it exits on its own, `AdapterSupervisor` decides whether to check with `test` and start
+/// while nothing changes. `watched(_:)` makes sure it ends with Warble, however Warble ends. When it exits on its own, `AdapterSupervisor` decides whether to check with `test` and start
 /// it again, and when it gives up `states` ends, so Warble can switch to `ScriptSource`.
 public final class AdapterSource: NowPlayingSource {
     public struct Paths: Sendable {
@@ -64,7 +64,7 @@ public final class AdapterSource: NowPlayingSource {
         startStream()
     }
 
-    /// Ends the stream, which otherwise outlives Warble until its next write.
+    /// Ends the stream. Without this, a quit leaves the stream to its watchdog.
     public func stop() {
         let process = runner.withLock { runner in
             runner.stopped = true
@@ -86,12 +86,34 @@ public final class AdapterSource: NowPlayingSource {
         [paths.script.path, paths.framework.path, paths.testClient.path] + command
     }
 
+    /// Runs `arguments` under `/usr/bin/perl` behind a watchdog, a forked Perl process that waits on stdin and stops the
+    /// stream when stdin closes. Warble holds stdin's only write end and never writes, so the kernel closes it when
+    /// Warble ends however it ends, a crash or `kill -9` included, and Warble closes it once the stream has exited, so the
+    /// watchdog goes too. The stream itself never reads stdin, and without this it runs until its next write, which can
+    /// be days when nothing plays. The stream execs in the process Warble started, so `terminate()` still reaches it.
+    static func watched(_ arguments: [String]) -> [String] {
+        let watchdog = """
+            my $stream = $$;
+            my $watchdog = fork;
+            if (defined $watchdog && $watchdog == 0) {
+                close STDOUT; close STDERR;
+                1 while sysread(STDIN, my $byte, 1);
+                kill 'TERM', $stream if getppid() == $stream;
+                POSIX::_exit(0);
+            }
+            exec '/usr/bin/perl', @ARGV or exit 127;
+            """
+        return ["-MPOSIX", "-e", watchdog, "--"] + arguments
+    }
+
     private func startStream() {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/perl")
-        process.arguments = arguments(["stream", "--micros"])
+        process.arguments = Self.watched(arguments(["stream", "--micros"]))
         let output = Pipe()
         process.standardOutput = output
+        let lifeline = Pipe()
+        process.standardInput = lifeline
         process.standardError = FileHandle.nullDevice
         let generation = runner.withLock { runner in
             runner.generation += 1
@@ -110,6 +132,7 @@ public final class AdapterSource: NowPlayingSource {
             }
         }
         process.terminationHandler = { [weak self] process in
+            try? lifeline.fileHandleForWriting.close()
             self?.streamExited(process, generation: generation)
         }
         do {
@@ -117,6 +140,7 @@ public final class AdapterSource: NowPlayingSource {
             log.notice("Stream started")
         } catch {
             output.fileHandleForReading.readabilityHandler = nil
+            try? lifeline.fileHandleForWriting.close()
             log.error("Stream didn't start: \(error.localizedDescription, privacy: .public)")
             streamExited(nil, generation: generation)
         }
