@@ -16,7 +16,7 @@ Other displays don't show a notch until you choose to show one.
 ## Choose where the notch shows
 
 1. Click the Warble icon in the menu bar.
-2. Choose **Notch on Displays**, then the display you want to change.
+2. Choose **Notch on Displays**, then the display you want to change. The same choices are in **Settings…** › **General** › **Displays**.
 3. Choose one of these:
    - **Always** shows a notch on that display all the time, as well as the one on your MacBook.
    - **When There's No Notch** shows it only when your MacBook's lid is closed, or if your Mac doesn't have a notch.
@@ -25,7 +25,7 @@ Other displays don't show a notch until you choose to show one.
 The change takes effect straight away. Warble remembers each display, so the setting comes back when you plug that display in again.
 
 > [!NOTE]
-> **Notch on Displays** lists only displays without a notch. Your MacBook's own notch always shows what's playing.
+> **Notch on Displays** and Settings list only displays without a notch. Your MacBook's own notch always shows what's playing.
 
 ## Full-screen apps
 

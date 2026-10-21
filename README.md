@@ -24,7 +24,7 @@
 
 Warble shows what's playing in the notch at the top of your Mac's screen: the album art on one side, and on the other a few bars that move while it plays. Hover over the notch or click it to see the song on a soft glow in the album art's colours, then play, pause, skip, scrub, change the volume or switch speakers. When you pause, the song stays in the notch for a few seconds, then Warble gets out of the way. When nothing is playing, Warble hides behind the notch and uses no CPU, then slides back out when a song starts. Hover over the notch to see the last song you played and play it again.
 
-It works with Apple Music, Spotify, podcasts and video in your browser. Macs without a notch, and external displays, get a virtual one. If something stops Warble seeing what's playing, a small "!" appears beside the notch. Click it to see what's wrong and how to fix it.
+It works with Apple Music, Spotify, podcasts and video in your browser. Macs without a notch, and external displays, get a virtual one. Settings lets you change the text size, how long a paused song stays, and what a hover shows when nothing is playing. If something stops Warble seeing what's playing, a small "!" appears beside the notch. Click it to see what's wrong and how to fix it.
 
 Warble isn't released yet. [docs/roadmap.md](docs/roadmap.md) lists what each release will include, with a link to each release's issue.
 

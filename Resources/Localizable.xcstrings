@@ -21,13 +21,25 @@
         }
       }
     },
+    "About" : {
+
+    },
+    "Acknowledgements" : {
+
+    },
     "All" : {
 
     },
     "Always" : {
 
     },
+    "Animations follow Reduce Motion in System Settings › Accessibility › Display." : {
+
+    },
     "Any app that plays, including your browser." : {
+
+    },
+    "BSD 3-Clause License" : {
 
     },
     "Back to what's playing" : {
@@ -42,10 +54,19 @@
     "Check for Updates…" : {
 
     },
+    "Check for updates automatically" : {
+
+    },
     "Couldn't relaunch Warble" : {
 
     },
+    "Displays" : {
+
+    },
     "Download Warble" : {
+
+    },
+    "Every display connected now has a notch." : {
 
     },
     "Everything's working" : {
@@ -54,10 +75,28 @@
     "Following %@. Other apps won't show for now." : {
 
     },
+    "General" : {
+
+    },
+    "Help and user guide" : {
+
+    },
     "Hide the \"!\" until Warble opens again" : {
 
     },
+    "How Warble looks and where it shows." : {
+
+    },
     "It was installed while Warble was running. Relaunch to use it." : {
+
+    },
+    "Large" : {
+
+    },
+    "Larger" : {
+
+    },
+    "Last Played" : {
 
     },
     "Last played" : {
@@ -67,6 +106,9 @@
 
     },
     "Later" : {
+
+    },
+    "MIT License" : {
 
     },
     "Newer than this version of Warble. An update may fix reading what's playing." : {
@@ -81,7 +123,13 @@
     "Not needed while Warble can read what's playing." : {
 
     },
+    "Notch" : {
+
+    },
     "Notch on Displays" : {
+
+    },
+    "Nothing" : {
 
     },
     "Nothing playing" : {
@@ -91,6 +139,9 @@
 
     },
     "On" : {
+
+    },
+    "On displays without a notch, and Macs without one, Warble can draw a notch of its own." : {
 
     },
     "One" : {
@@ -109,6 +160,9 @@
 
     },
     "Open Warble Again" : {
+
+    },
+    "Open Warble again from Applications to bring it back." : {
 
     },
     "Open the app that played it" : {
@@ -168,10 +222,16 @@
     "Resume" : {
 
     },
+    "Settings…" : {
+
+    },
     "Shortcut unavailable: %@. Another app may use it, so choose a different one in Settings › Shortcuts." : {
 
     },
     "Show" : {
+
+    },
+    "Show icon in the menu bar" : {
 
     },
     "Show what's wrong" : {
@@ -180,7 +240,22 @@
     "Shuffle" : {
 
     },
+    "Standard" : {
+
+    },
+    "Stay visible after pausing" : {
+
+    },
     "Supported." : {
+
+    },
+    "Text size" : {
+
+    },
+    "The notch stays hidden behind the camera until you point at it." : {
+
+    },
+    "Then the notch hides until something plays." : {
 
     },
     "This kept stopping, so Warble only follows Music and Spotify until you open it again." : {
@@ -192,10 +267,19 @@
     "Update to %@…" : {
 
     },
+    "Version %@" : {
+
+    },
+    "Version, updates and help." : {
+
+    },
     "Volume" : {
 
     },
     "Warble %@ is installed" : {
+
+    },
+    "Warble Settings" : {
 
     },
     "Warble can't see everything" : {
@@ -207,7 +291,13 @@
     "Warble may control %@." : {
 
     },
+    "What the notch shows." : {
+
+    },
     "When There's No Notch" : {
+
+    },
+    "When nothing is playing, hover shows" : {
 
     },
     "Works with any app that plays." : {

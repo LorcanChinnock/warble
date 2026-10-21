@@ -16,6 +16,13 @@ public struct IdleAfterPause: Equatable, Sendable {
     /// How long a paused track stays on screen unless the user changes it in `PreferenceKey.stayVisibleAfterPausing`.
     public static let defaultDelay: TimeInterval = 10
 
+    /// The delays Settings offers, in seconds, shortest first, with `current` among them so a value set some other way,
+    /// such as `defaults write`, still shows.
+    public static func choices(including current: TimeInterval) -> [TimeInterval] {
+        let offered: [TimeInterval] = [5, defaultDelay, 30, 60, 300]
+        return offered.contains(current) ? offered : (offered + [current]).sorted()
+    }
+
     /// How long a paused track stays on screen once the pointer is away.
     public var delay: TimeInterval
     /// Whether the notch is Idle: nothing is playing, or a track was paused for `delay`.

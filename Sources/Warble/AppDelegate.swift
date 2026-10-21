@@ -84,9 +84,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// Opening Warble again from Finder or Spotlight brings back a menu bar icon that was turned off, so it can always
-    /// be reached.
+    /// be reached, and opens Settings.
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         UserDefaults.standard.set(true, forKey: PreferenceKey.showMenuBarIcon)
+        SettingsWindow.show()
         return false
     }
 }

@@ -24,3 +24,9 @@ If you haven't played anything since installing Warble, the card says **Nothing 
 
 > [!NOTE]
 > Only the notch itself opens the card, so moving the pointer across the menu bar doesn't open anything.
+
+## Turn off the card
+
+If you'd rather a hover did nothing while nothing is playing, open **Settings…** from the Warble icon in the menu bar, choose **Notch**, and set **When nothing is playing, hover shows** to **Nothing**.
+
+When you pause, the song stays in the notch for 10 seconds before Warble hides. To change how long, set **Stay visible after pausing** in Settings › **General**.

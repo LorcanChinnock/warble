@@ -19,13 +19,14 @@ final class Updater: NSObject {
     /// update alert can open behind other windows, so the menu offers it too.
     private(set) var pendingVersion: String?
     private(set) var canCheckForUpdates = false
+    /// Whether this build has a feed, which only `make dist` gives it, so the updater runs at all.
+    let isEnabled = Bundle.main.object(forInfoDictionaryKey: "SUFeedURL") != nil
 
     @ObservationIgnored private var controller: SPUStandardUpdaterController!
     @ObservationIgnored private var canCheckObservation: NSKeyValueObservation?
 
     private override init() {
         super.init()
-        let isEnabled = Bundle.main.object(forInfoDictionaryKey: "SUFeedURL") != nil
         controller = SPUStandardUpdaterController(startingUpdater: isEnabled, updaterDelegate: self, userDriverDelegate: self)
         canCheckObservation = controller.updater.observe(\.canCheckForUpdates, options: [.initial, .new]) { [weak self] _, _ in
             MainActor.assumeIsolated {
