@@ -145,18 +145,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release edit "$TAG" --draft=false --latest --prerelease=false
-      # The site reads the latest release at build time, so rebuild it now that this one is published.
-      # Cloudflare Workers Builds deploys it; the hook URL is its own credential. See site/README.md.
-      # Until the site is on Cloudflare the secret is unset, and the release goes on to update the cask.
-      - name: Update the website
-        env:
-          SITE_DEPLOY_HOOK: ${{ secrets.SITE_DEPLOY_HOOK }}
-        run: |
-          if [ -z "$SITE_DEPLOY_HOOK" ]; then
-            echo "::notice::SITE_DEPLOY_HOOK isn't set, so the website wasn't rebuilt."
-            exit 0
-          fi
-          curl -fsS -X POST "$SITE_DEPLOY_HOOK" > /dev/null
       # GITHUB_TOKEN can't push to another repo, so the tap has a write deploy key, which its
       # ruleset lets push to main. See CONTRIBUTING.md › Release secrets.
       - name: Update the Homebrew cask
@@ -179,3 +167,15 @@ jobs:
           git -C "$tap" diff --cached --quiet || git -C "$tap" commit -m "warble ${TAG#v}"
           git -C "$tap" push
           rm "$RUNNER_TEMP/tap_key"
+
+  # The guide and changelog follow the release, not main, and the download button moves to the new zip, which is why
+  # this waits for the build to publish the release. See site/README.md › Deploying.
+  site:
+    needs: [release-please, build]
+    if: needs.release-please.outputs.release_created == 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/site.yml
+    with:
+      tag: ${{ needs.release-please.outputs.tag_name }}
+    secrets: inherit
