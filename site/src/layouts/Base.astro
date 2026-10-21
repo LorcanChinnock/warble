@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import Bars from '../components/Bars.astro';
 import { latestRelease } from '../lib/release';
 
 interface Props {
@@ -29,7 +30,8 @@ const current = (href: string) => (path === href ? 'page' : undefined);
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="theme-color" content="#ffd43b" />
+    <meta name="theme-color" content="#f2f2f0" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0b0c" media="(prefers-color-scheme: dark)" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Warble" />
     <meta property="og:title" content={fullTitle} />
@@ -44,18 +46,13 @@ const current = (href: string) => (path === href ? 'page' : undefined);
     <slot name="head" />
   </head>
   <body>
-    <div class="backdrop" aria-hidden="true">
-      <div class="blob pink"></div>
-      <div class="blob yellow"></div>
-      <div class="blob mint"></div>
-      <div class="blob sky"></div>
-    </div>
+    <div class="backdrop" aria-hidden="true"></div>
 
-    <header class="site-header wrap">
-      <div class="bar card solid">
+    <header class="site-header">
+      <div class="bar wrap">
         <a class="brand" href="/" aria-label="Warble home">
-          <img src="/icon-64.png" alt="" width="32" height="32" />
-          <span>Warble<sup>beta</sup></span>
+          <Bars />
+          <span>Warble</span><span class="chip">beta</span>
         </a>
         <nav aria-label="Main">
           <a href="/docs/" aria-current={current('/docs')}>Guide</a>
@@ -71,22 +68,27 @@ const current = (href: string) => (path === href ? 'page' : undefined);
       <slot />
     </main>
 
-    <footer class="site-footer wrap">
-      <div class="bar card">
-        <a class="brand" href="/">
-          <img src="/icon-64.png" alt="" width="32" height="32" />
-          <span>Warble</span>
-        </a>
-        <nav aria-label="Footer">
-          <a href="/docs/">Guide</a>
-          <a href="/changelog/">Changelog</a>
-          <a href="/privacy/">Privacy</a>
-          <a href="https://github.com/LorcanChinnock/warble">Source</a>
-          <a href="https://github.com/LorcanChinnock/warble/issues">Report a bug</a>
-          <a href="/sponsor">Sponsor</a>
-          <a href="https://github.com/LorcanChinnock/warble/blob/main/LICENSE">GPL-3.0</a>
-        </nav>
-        <small>Made by <a href="https://lorcanchinnock.com">Lorcan Chinnock</a>. Not affiliated with Apple.</small>
+    <footer class="site-footer">
+      <div class="bar wrap">
+        <div class="top">
+          <a class="brand" href="/">
+            <Bars />
+            <span>Warble</span>
+          </a>
+          <nav aria-label="Footer">
+            <a href="/docs/">Guide</a>
+            <a href="/changelog/">Changelog</a>
+            <a href="/privacy/">Privacy</a>
+            <a href="https://github.com/LorcanChinnock/warble">Source</a>
+            <a href="https://github.com/LorcanChinnock/warble/issues">Report a bug</a>
+            <a href="/sponsor">Sponsor</a>
+            <a href="https://github.com/LorcanChinnock/warble/blob/main/LICENSE">GPL-3.0 license</a>
+          </nav>
+        </div>
+        <small>
+          <a class="maker" href="https://lorcanchinnock.com"><span class="lc" aria-hidden="true">LC<span>_</span></span><span class="name">Made by Lorcan Chinnock</span></a>
+          <span>Not affiliated with Apple.</span>
+        </small>
       </div>
     </footer>
   </body>

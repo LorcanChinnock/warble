@@ -1,10 +1,12 @@
 ---
+import NotchDemo from '../components/NotchDemo.astro';
 import Base from '../layouts/Base.astro';
 ---
 
 <Base>
   <section class="hero">
     <div class="wrap">
+      <NotchDemo />
       <h1>Your music, in the notch</h1>
       <p class="lede">Warble shows what's playing in your Mac's notch. Hover over it to see the song, then play, pause, skip or switch speakers. When nothing's playing, it stays out of sight, and a hover brings back the last song so you can pick up where you left off.</p>
       <p class="meta">Free and open source, for macOS 15 or later. Warble is still being built, and the first beta isn't out yet.</p>
@@ -22,17 +24,19 @@ import Base from '../layouts/Base.astro';
 </Base>
 
 <style>
-  .hero { padding-top: clamp(40px, 6vw, 72px); }
-  .hero .wrap { justify-items: start; }
-  .hero h1 { font-size: clamp(44px, 7vw, 80px); margin: 0; }
-  .lede { font-size: clamp(19px, 2.2vw, 22px); margin: 0; max-width: 30em; }
-  .cta { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; width: 100%; }
-  .button.big { min-height: 52px; padding: 12px 22px; font-size: 18px; }
-  .meta { margin: 0; font-size: 15px; color: var(--muted); }
+  .hero { padding-top: clamp(24px, 4vw, 48px); }
+  .hero .wrap { justify-items: center; text-align: center; }
+  .hero :global(.screen) { margin-bottom: clamp(4px, 2vw, 16px); }
+  .hero h1 { font-size: clamp(40px, 6.5vw, 72px); margin: 0; }
+  .lede { font-size: clamp(18px, 2.1vw, 21px); margin: 0; max-width: 32em; }
+  .cta { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
+  .button.big { min-height: 50px; padding: 12px 24px; font-size: 17px; }
+  .meta { margin: 0; font-size: 15px; color: var(--secondary); max-width: 32em; }
 
   section { padding-block: clamp(28px, 4vw, 48px); }
   .wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .narrow-text { justify-items: center; }
   .narrow-text p { max-width: 36em; }
-  .small p { font-size: 19px; margin: 0; }
-  .small a { font-weight: 700; }
+  .small p { font-size: 18px; margin: 0; color: var(--secondary); }
+  .small a { color: var(--fg); }
 </style>
