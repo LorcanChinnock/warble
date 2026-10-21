@@ -94,9 +94,10 @@ final class NotchPanel: NSPanel {
         }
     }
 
-    /// A key the focused control didn't use, such as Space with Keyboard navigation off.
+    /// A key the focused control didn't use, such as Space with Keyboard navigation off. Once the notch has closed, the
+    /// panel may stay key a moment longer, and passes keys on untouched.
     override func keyDown(with event: NSEvent) {
-        if onKey?(event) != true {
+        if !takesKeyboard || onKey?(event) != true {
             super.keyDown(with: event)
         }
     }

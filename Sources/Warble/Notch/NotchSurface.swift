@@ -61,6 +61,8 @@ final class NotchSurface {
     private(set) var pointerInside = false
     /// The app in front when the shortcut opened the notch, which gets the keyboard back when it closes.
     private var keyboardFrom: NSRunningApplication?
+    /// Warble's own window that had the keyboard, such as Settings, when the shortcut opened the notch.
+    private var keyWindowBefore: NSWindow?
     /// Whether a menu from this notch is open, which takes Escape for itself.
     private(set) var isShowingMenu = false
 
@@ -97,7 +99,9 @@ final class NotchSurface {
         let opening = state != .expanded
         handle(.keyboard)
         guard opening, state == .expanded else { return }
-        if !NSApp.isActive {
+        if NSApp.isActive {
+            keyWindowBefore = NSApp.keyWindow
+        } else {
             keyboardFrom = NSWorkspace.shared.frontmostApplication
         }
         panel.takesKeyboard = true
@@ -107,15 +111,22 @@ final class NotchSurface {
         panel.makeFirstResponder(panel.contentView?.subviews.first)
     }
 
-    /// Gives the keyboard back to the app that had it once the notch closes, unless a click has already moved it on.
+    /// Gives the keyboard back once the notch closes, unless a click has already moved it on: to the app that had it,
+    /// or, when Warble was already in front, to its window that had it, or else to whichever app is next.
     private func releaseKeyboard() {
         guard panel.takesKeyboard else { return }
         panel.takesKeyboard = false
-        panel.resignKey()
-        if NSApp.isActive, let keyboardFrom {
-            keyboardFrom.activate()
+        if NSApp.isActive, panel.isKeyWindow {
+            if let keyboardFrom {
+                keyboardFrom.activate()
+            } else if let keyWindowBefore, keyWindowBefore.isVisible {
+                keyWindowBefore.makeKey()
+            } else {
+                NSApp.deactivate()
+            }
         }
         keyboardFrom = nil
+        keyWindowBefore = nil
     }
 
     private func shownChanged() {
