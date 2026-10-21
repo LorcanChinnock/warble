@@ -31,6 +31,8 @@ What this means in practice:
 ```bash
 make test                         # WarbleModel and WarbleCore unit tests (Swift Testing)
 make test-linux                   # WarbleModel tests in Docker on Linux, as CI runs them
+make perf                         # PerfTests alone: the timed paths with budgets in docs/performance.md
+make perf-app                     # scripts/perf.sh: the installed WarbleDev against its budgets; moves the pointer for ~5 min
 make lint                         # scripts/lint.sh: bans patterns that caused bugs (see below); on macOS also scripts/strings.sh --check
 make strings                      # sync Resources/Localizable.xcstrings with the strings the build extracted
 make build                        # swift build
@@ -86,6 +88,8 @@ Motion: `NotchSurface.update` sets `NotchModel.state`, `card` and `isPlaying` to
 
 Website: `site/` is the Astro site for warble.lorcanchinnock.com, deployed from each release's tag by `.github/workflows/site.yml`, which `release.yml` calls, so it describes the version people can install. Merging a site change to `main` doesn't deploy it (see `site/README.md` › Deploying). The user guide lives in `site/src/guide/`, one Markdown file per page at `/docs/<slug>/`, in file name order. Each file's front matter gives its `title`, a one-line `summary` and its `group` (the groups are in `site/src/lib/guide-files.ts`). Write pages as tasks, in second person: numbered steps, `<kbd>⌘⇧4</kbd>` for keys, and `> [!TIP]` or `> [!NOTE]` callouts. The site also renders `CHANGELOG.md` directly. The landing page's `#install` section holds the steps to open Warble past Gatekeeper, and the Homebrew cask's caveat (`scripts/homebrew-cask.sh`) links to it, so keep that anchor. release-please ignores `site/`. The site's look is Warble's own, not Shot's: black, quiet, gone when not needed. It uses the notch's black, white and greys in the system font, with no accent colour. Its one colour is a glow like the one the open card takes from the artwork, and light and dark follow the system. The tokens are at the top of `site/src/styles/global.css`. Only the footer's "LC_" mark and "Made by Lorcan Chinnock", the voice and the copy button carry over from Shot.
 
+Performance: `docs/performance.md` holds the budgets, the reference Mac and how each is measured. `Perf` (`Sources/Warble/Perf.swift`) emits signposts in category `perf`: `Ready` at launch, and `Expand` and `Play/pause`, which run from the input to the next frame of the display after the change (`Perf.untilNextFrame`, one display link that goes away after it fires), so they cost nothing until someone touches the notch. `scripts/perf.sh` (`make perf-app`) drives the installed WarbleDev with the pointer through `scripts/perf-input.swift`, reads the signposts, and counts CPU and wakeups (context switches, the median 10-second slice) for the app and its Perl processes. A timer shows as wakeups long before it shows as CPU. `Tests/WarbleCoreTests/PerfTests.swift` (`make perf`) times the stream, artwork colours and idle-card art; `make test` skips it, and CI runs it on the release PR and on any PR labelled `performance`.
+
 Concurrency: UI and model types are `@MainActor`. Heavy work runs in `Task.detached`.
 
 ## Rules enforced by `make lint`
@@ -99,7 +103,7 @@ Concurrency: UI and model types are `@MainActor`. Heavy work runs in `Task.detac
 ## CI
 
 The repository is public, so GitHub's runners are free, but the free plan runs only 5 macOS jobs at once, so macOS runs can queue (`.github/workflows/ci.yml`):
-- Every PR runs two required checks. `test` is Linux: `scripts/lint.sh` and WarbleModel's tests, which keeps WarbleModel portable. `macos` builds the app, checks the strings catalog, compiles for Intel, and runs every test. On push to `main`, `warm-cache.yml` only builds, to save the Linux build cache PRs restore.
+- Every PR runs two required checks. `test` is Linux: `scripts/lint.sh` and WarbleModel's tests, which keeps WarbleModel portable. `macos` builds the app, checks the strings catalog, compiles for Intel, and runs every test except `PerfTests`, which it runs only on the release PR and on PRs labelled `performance`. On push to `main`, `warm-cache.yml` only builds, to save the Linux build cache PRs restore.
 - release-please opens its release PR as the repository's GitHub App (`release.yml`), so its runs start without approval. The repository has auto-merge turned off: an admin merges the release PR by hand once its checks pass.
 - `release.yml` runs `make test` on the tagged commit before it signs anything, because a `docs:`, `test:` or `ci:` commit merged after the release PR's checks can change what's released.
 - Run `make lint` and `make test` before every push, plus `make test-linux` when you change WarbleModel, and push once per PR where you can, so CI is a check rather than a debugger.
