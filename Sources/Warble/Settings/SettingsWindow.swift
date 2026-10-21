@@ -4,18 +4,26 @@ import SwiftUI
 /// The Settings window, made the first time it opens. Its content is dropped when it closes, so a closed window keeps
 /// nothing observing settings or displays.
 @MainActor
-enum SettingsWindow {
-    private static var window: NSWindow?
-    private static var closeObserver: NSObjectProtocol?
+final class SettingsWindow {
+    private var window: NSWindow?
+    private var closeObserver: NSObjectProtocol?
+    private let navigation: SettingsNavigation
+    /// What the window's views read. `AppEnvironment` sets it once it's built, which holds this window.
+    weak var environment: AppEnvironment?
     static let size = NSSize(width: 720, height: 520)
 
-    static func show(section: SettingsSection? = nil) {
+    init(navigation: SettingsNavigation) {
+        self.navigation = navigation
+    }
+
+    func show(section: SettingsSection? = nil) {
+        guard let environment else { return }
         if let section {
-            SettingsNavigation.shared.section = section
+            navigation.section = section
         }
         let window = window ?? makeWindow()
         if window.contentView?.subviews.isEmpty ?? true {
-            window.contentView = NSView(hosting: SettingsView())
+            window.contentView = NSView(hosting: SettingsView().inject(environment), settings: environment.settings)
         }
         // Warble has no Dock icon, so it takes one while Settings is open, to show in ⌘Tab and get the app menu.
         NSApp.setActivationPolicy(.regular)
@@ -30,13 +38,13 @@ enum SettingsWindow {
     }
 
     /// Whether the window is open on `section`.
-    static func isShowing(_ section: SettingsSection) -> Bool {
-        window?.isVisible == true && SettingsNavigation.shared.section == section
+    func isShowing(_ section: SettingsSection) -> Bool {
+        window?.isVisible == true && navigation.section == section
     }
 
-    private static func makeWindow() -> NSWindow {
+    private func makeWindow() -> NSWindow {
         let window = NSWindow(
-            contentRect: NSRect(origin: .zero, size: size),
+            contentRect: NSRect(origin: .zero, size: Self.size),
             styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
             backing: .buffered,
             defer: false
@@ -47,9 +55,9 @@ enum SettingsWindow {
         window.isReleasedWhenClosed = false
         window.collectionBehavior = [.moveToActiveSpace, .fullScreenNone]
         window.center()
-        closeObserver = NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: window, queue: .main) { _ in
+        closeObserver = NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: window, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated {
-                SettingsWindow.window?.contentView = NSView()
+                self?.window?.contentView = NSView()
                 NSApp.setActivationPolicy(.accessory)
             }
         }

@@ -5,7 +5,7 @@ import AppKit
 @MainActor
 enum NotchMenu {
     /// `source` is the bundle identifier of the app that's playing, or while Idle the one that played last.
-    static func make(source: String?, updater: Updater, openApp: @escaping () -> Void) -> NSMenu {
+    static func make(source: String?, updater: Updater, settingsWindow: SettingsWindow, openApp: @escaping () -> Void) -> NSMenu {
         let menu = NSMenu()
         if let source, let app = NSWorkspace.shared.urlForApplication(withBundleIdentifier: source) {
             let item = ActionItem(title: String(localized: "Open \(name(of: app, bundleIdentifier: source))"), action: openApp)
@@ -15,7 +15,7 @@ enum NotchMenu {
             menu.addItem(item)
             menu.addItem(.separator())
         }
-        menu.addItem(ActionItem(title: String(localized: "Settings…"), keyEquivalent: ",") { SettingsWindow.show() })
+        menu.addItem(ActionItem(title: String(localized: "Settings…"), keyEquivalent: ",") { settingsWindow.show() })
         if let version = updater.pendingVersion {
             menu.addItem(ActionItem(title: String(localized: "Update to \(version)…")) { updater.checkForUpdates() })
         } else {

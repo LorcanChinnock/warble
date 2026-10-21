@@ -77,7 +77,8 @@ final class NotchController {
     var send: (PlaybackCommand) -> Void = { _ in }
 
     /// The checks behind the "!". `AppDelegate` tells it how the adapter is doing.
-    let doctor = DoctorModel()
+    let doctor: DoctorModel
+    private let environment: AppEnvironment
     private let player = PlayerModel()
     private var wasOpen = false
     private let volume = SystemVolume()
@@ -90,8 +91,10 @@ final class NotchController {
     private var takesEscape = false
     private var observers: [NSObjectProtocol] = []
 
-    init(lastPlayedStore: LastPlayedStore?) {
+    init(lastPlayedStore: LastPlayedStore?, environment: AppEnvironment) {
         self.lastPlayedStore = lastPlayedStore
+        self.environment = environment
+        doctor = DoctorModel(updater: environment.updater)
         player.onCommand = { [weak self] in self?.perform($0) }
         player.onOpenApp = { [weak self] in self?.openApp() }
         player.onVolume = { [weak self] in self?.setVolume($0) }
@@ -195,7 +198,7 @@ final class NotchController {
     }
 
     private func makeSurface(over housing: CGRect) -> NotchSurface {
-        let surface = NotchSurface(housing: housing, player: player, doctor: doctor) { [weak self] in self?.scroll($0) }
+        let surface = NotchSurface(housing: housing, player: player, doctor: doctor, settings: environment.settings) { [weak self] in self?.scroll($0) }
         surface.onChange = { [weak self] in self?.changed() }
         // A click on one notch closes any other that's open; clicks in other apps are the click monitor's.
         surface.onClick = { [weak self, weak surface] in
@@ -204,7 +207,7 @@ final class NotchController {
         surface.onKey = { [weak self] event in self?.key(event) ?? false }
         surface.makeMenu = { [weak self] in
             guard let self else { return nil }
-            return NotchMenu.make(source: self.playback?.bundleIdentifier ?? self.player.lastPlayed?.bundleIdentifier, updater: .shared) { [weak self] in
+            return NotchMenu.make(source: self.playback?.bundleIdentifier ?? self.player.lastPlayed?.bundleIdentifier, updater: self.environment.updater, settingsWindow: self.environment.settingsWindow) { [weak self] in
                 self?.openApp()
             }
         }
@@ -447,11 +450,11 @@ final class NotchController {
         }
         let wantsEscape = open && pointerInside && !menuOpen
         if wantsEscape, !takesEscape {
-            takesEscape = HotkeyCenter.shared.registerTemporary(KeyCombo(keyCode: UInt32(kVK_Escape), modifiers: 0)) { [weak self] in
+            takesEscape = environment.hotkeys.registerTemporary(KeyCombo(keyCode: UInt32(kVK_Escape), modifiers: 0)) { [weak self] in
                 self?.dismiss()
             }
         } else if !wantsEscape, takesEscape {
-            HotkeyCenter.shared.unregisterTemporary()
+            environment.hotkeys.unregisterTemporary()
             takesEscape = false
         }
     }

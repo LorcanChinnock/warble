@@ -8,8 +8,6 @@ private let log = Logger.warble("settings")
 @MainActor
 @Observable
 final class LoginItem {
-    static let shared = LoginItem()
-
     private(set) var status = SMAppService.mainApp.status
 
     var isEnabled: Bool { status == .enabled }

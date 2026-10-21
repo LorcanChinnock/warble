@@ -12,12 +12,19 @@ final class ShortcutRecorder {
     private(set) var refusal: (action: WarbleAction, message: String)?
     @ObservationIgnored private var monitors: [Any] = []
     @ObservationIgnored private var resignObserver: NSObjectProtocol?
+    @ObservationIgnored private let hotkeys: HotkeyCenter
+    @ObservationIgnored private let settings: SettingsStore
+
+    init(hotkeys: HotkeyCenter, settings: SettingsStore) {
+        self.hotkeys = hotkeys
+        self.settings = settings
+    }
 
     func start(_ action: WarbleAction) {
         stop()
         refusal = nil
         recording = action
-        HotkeyCenter.shared.suspend()
+        hotkeys.suspend()
         monitors.append(NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             MainActor.assumeIsolated { self?.press(event) }
             return nil
@@ -41,14 +48,20 @@ final class ShortcutRecorder {
         resignObserver = nil
         if recording != nil {
             recording = nil
-            HotkeyCenter.shared.resume()
+            hotkeys.resume()
         }
+    }
+
+    /// Stops recording and forgets any refusal, for a page that's gone, so it opens again as new.
+    func reset() {
+        stop()
+        refusal = nil
     }
 
     /// Written before recording stops, so the shortcuts register once, without the cleared one.
     func clear(_ action: WarbleAction) {
         refusal = nil
-        SettingsStore.shared.set("", forKey: PreferenceKey.hotkey(action))
+        settings.set("", forKey: PreferenceKey.hotkey(action))
         stop()
     }
 
@@ -75,7 +88,7 @@ final class ShortcutRecorder {
             refusal = (action, conflict.message(for: combo))
         case .record(let combo):
             refusal = nil
-            SettingsStore.shared.set(combo.encoded, forKey: PreferenceKey.hotkey(action))
+            settings.set(combo.encoded, forKey: PreferenceKey.hotkey(action))
             stop()
         }
     }
@@ -86,7 +99,7 @@ struct ShortcutRow: View {
     let action: WarbleAction
     let recorder: ShortcutRecorder
     @Setting private var encoded: String
-    private let hotkeys = HotkeyCenter.shared
+    @Environment(HotkeyCenter.self) private var hotkeys
 
     init(action: WarbleAction, recorder: ShortcutRecorder) {
         self.action = action

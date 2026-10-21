@@ -3,24 +3,32 @@ import Carbon.HIToolbox
 import SwiftUI
 import WarbleCore
 
+/// A short message near the bottom of the screen under the pointer. `AppEnvironment` makes the one Warble shows.
 @MainActor
-enum Toast {
-    private static var panel: NSPanel?
-    private static var hideTask: Task<Void, Never>?
-    private static var duration: Duration?
-    private static var undoable: PendingAction?
-    private static var shown: ToastText?
-    private static var actionTitle: String?
+final class Toast {
+    private var panel: NSPanel?
+    private var hideTask: Task<Void, Never>?
+    private var duration: Duration?
+    private var undoable: PendingAction?
+    private var shown: ToastText?
+    private var actionTitle: String?
+    private let hotkeys: HotkeyCenter
+    private let settings: SettingsStore
     fileprivate static let font = ScaledFont.scaled(13, weight: .semibold)
 
+    init(hotkeys: HotkeyCenter, settings: SettingsStore) {
+        self.hotkeys = hotkeys
+        self.settings = settings
+    }
+
     /// Shows `message` for something that didn't happen or went wrong, long enough to read.
-    static func error(_ message: LocalizedStringResource) {
+    func error(_ message: LocalizedStringResource) {
         error(String(localized: message))
     }
 
     /// An error whose text is already localized, such as an error's `localizedDescription`.
     @_disfavoredOverload
-    static func error<S: StringProtocol>(_ message: S) {
+    func error<S: StringProtocol>(_ message: S) {
         show(String(message), duration: .seconds(5))
     }
 
@@ -28,30 +36,30 @@ enum Toast {
     /// With `undoable`, the toast offers Undo, which ⌘Z also presses from any app while the toast shows, and the action
     /// commits once the toast goes away any other way.
     /// With `cancel`, it offers Cancel for the work it describes. With `reveal`, it offers Show, which selects that file in Finder.
-    static func show(_ message: LocalizedStringResource, duration: Duration? = .seconds(1.5), undoable: PendingAction? = nil, cancel: (() -> Void)? = nil, reveal: URL? = nil) {
+    func show(_ message: LocalizedStringResource, duration: Duration? = .seconds(1.5), undoable: PendingAction? = nil, cancel: (() -> Void)? = nil, reveal: URL? = nil) {
         show(String(localized: message), duration: duration, undoable: undoable, cancel: cancel, reveal: reveal)
     }
 
     /// A toast whose text is already localized.
     @_disfavoredOverload
-    static func show<S: StringProtocol>(_ message: S, duration: Duration? = .seconds(1.5), undoable: PendingAction? = nil, cancel: (() -> Void)? = nil, reveal: URL? = nil) {
+    func show<S: StringProtocol>(_ message: S, duration: Duration? = .seconds(1.5), undoable: PendingAction? = nil, cancel: (() -> Void)? = nil, reveal: URL? = nil) {
         let message = String(message)
         settle()
         self.undoable = undoable
         let panel = panel ?? makePanel()
         if let undoable {
             // The panel never becomes key, so ⌘Z can't reach it through the responder chain.
-            HotkeyCenter.shared.registerTemporary(KeyCombo(keyCode: UInt32(kVK_ANSI_Z), modifiers: KeyCombo.command)) {
+            hotkeys.registerTemporary(KeyCombo(keyCode: UInt32(kVK_ANSI_Z), modifiers: KeyCombo.command)) { [weak self] in
                 undoable.undo()
-                hide()
+                self?.hide()
             }
         }
         let action: ToastView.Action? = if let undoable {
-            ToastView.Action(title: String(localized: "Undo")) { undoable.undo(); hide() }
+            ToastView.Action(title: String(localized: "Undo")) { [weak self] in undoable.undo(); self?.hide() }
         } else if let cancel {
             ToastView.Action(title: String(localized: "Cancel"), perform: cancel)
         } else if let reveal {
-            ToastView.Action(title: String(localized: "Show")) { NSWorkspace.shared.activateFileViewerSelecting([reveal]); hide() }
+            ToastView.Action(title: String(localized: "Show")) { [weak self] in NSWorkspace.shared.activateFileViewerSelecting([reveal]); self?.hide() }
         } else {
             nil
         }
@@ -59,7 +67,7 @@ enum Toast {
         let size = size(of: message, actionTitle: actionTitle)
         let text = ToastText(message: message)
         shown = text
-        panel.contentView = NSView(hosting: ToastView(text: text, action: action, hold: { hold($0) }, dismiss: { hide() }))
+        panel.contentView = NSView(hosting: ToastView(text: text, action: action, hold: { [weak self] in self?.hold($0) }, dismiss: { [weak self] in self?.hide() }), settings: settings)
         let screen = NSScreen.underPointer ?? NSScreen.main ?? NSScreen.screens[0]
         let origin = NSPoint(x: screen.frame.midX - size.width / 2, y: screen.visibleFrame.minY + 80)
         panel.setFrame(NSRect(origin: origin, size: size), display: true)
@@ -71,13 +79,13 @@ enum Toast {
 
     /// Shows `message` until the next call, changing the toast's text in place without announcing it, so a percentage
     /// can tick up without VoiceOver reading every step. Does nothing when `message` is already showing.
-    static func progress(_ message: LocalizedStringResource) {
+    func progress(_ message: LocalizedStringResource) {
         progress(String(localized: message))
     }
 
     /// Progress whose text is already localized.
     @_disfavoredOverload
-    static func progress<S: StringProtocol>(_ message: S) {
+    func progress<S: StringProtocol>(_ message: S) {
         let message = String(message)
         guard let panel, let shown, undoable == nil else {
             show(message, duration: nil)
@@ -96,16 +104,16 @@ enum Toast {
         }
     }
 
-    private static func size(of message: String, actionTitle: String?) -> NSSize {
+    private func size(of message: String, actionTitle: String?) -> NSSize {
         let textSize = Preferences().textSize
-        var textWidth = (message as NSString).size(withAttributes: [.font: NSFont.systemFont(ofSize: font.points(textSize), weight: .semibold)]).width.rounded(.up)
+        var textWidth = (message as NSString).size(withAttributes: [.font: NSFont.systemFont(ofSize: Self.font.points(textSize), weight: .semibold)]).width.rounded(.up)
         if let actionTitle {
             textWidth += (actionTitle as NSString).size(withAttributes: [.font: NSFont.systemFont(ofSize: textSize.points(12), weight: .bold)]).width.rounded(.up) + 36
         }
         return NSSize(width: textWidth + 32, height: 38)
     }
 
-    private static func hold(_ holding: Bool) {
+    private func hold(_ holding: Bool) {
         if holding {
             hideTask?.cancel()
         } else {
@@ -113,34 +121,34 @@ enum Toast {
         }
     }
 
-    private static func scheduleHide() {
+    private func scheduleHide() {
         hideTask?.cancel()
         guard let duration, panel != nil else {
             return
         }
-        hideTask = Task {
+        hideTask = Task { [weak self] in
             try? await Task.sleep(for: duration)
             if !Task.isCancelled {
-                hide()
+                self?.hide()
             }
         }
     }
 
-    private static func hide() {
+    private func hide() {
         panel?.orderOut(nil)
         settle()
     }
 
-    private static func settle() {
+    private func settle() {
         let pending = undoable
         undoable = nil
         if pending != nil {
-            HotkeyCenter.shared.unregisterTemporary()
+            hotkeys.unregisterTemporary()
         }
         pending?.commit()
     }
 
-    private static func makePanel() -> NSPanel {
+    private func makePanel() -> NSPanel {
         let panel = NSPanel(contentRect: .zero, styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
         panel.level = .statusBar
         panel.isOpaque = false

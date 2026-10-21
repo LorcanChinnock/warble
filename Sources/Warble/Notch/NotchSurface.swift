@@ -76,10 +76,10 @@ final class NotchSurface {
     /// Bumped by every change, so a morph that ends after another has begun doesn't shrink the panel under it.
     private var morphs = 0
 
-    init(housing: CGRect, player: PlayerModel, doctor: DoctorModel, onScroll: @escaping (NSEvent) -> Void) {
+    init(housing: CGRect, player: PlayerModel, doctor: DoctorModel, settings: SettingsStore, onScroll: @escaping (NSEvent) -> Void) {
         self.housing = housing
         model = NotchModel(player: player, doctor: doctor)
-        panel = NotchPanel(model: model)
+        panel = NotchPanel(model: model, settings: settings)
         panel.onPointer = { [weak self] inside in self?.pointer(inside: inside) }
         panel.onScroll = onScroll
         panel.onMenu = { [weak self] event in self?.showMenu(for: event) }

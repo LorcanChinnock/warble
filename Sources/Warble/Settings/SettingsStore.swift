@@ -6,8 +6,6 @@ import WarbleCore
 @MainActor
 @Observable
 final class SettingsStore {
-    static let shared = SettingsStore()
-
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private var observers: [NSObjectProtocol] = []
     private var values: [String: Any] = [:]
@@ -52,11 +50,13 @@ final class SettingsStore {
 /// The defaults `Setting` falls back to, worked out once.
 @MainActor private let registeredDefaults = Preferences.defaults
 
-/// A setting in a view, declared like `@AppStorage` but read from `SettingsStore`. `@Setting(key) var name: Type` takes
-/// the default `Preferences` registers for `key`, so it's written in one place; an enum is stored as its raw value.
+/// A setting in a view, declared like `@AppStorage` but read from the `SettingsStore` in the environment.
+/// `@Setting(key) var name: Type` takes the default `Preferences` registers for `key`, so it's written in one place; an
+/// enum is stored as its raw value.
 @MainActor
 @propertyWrapper
-struct Setting<Value> {
+struct Setting<Value>: DynamicProperty {
+    @Environment(SettingsStore.self) private var store
     private let key: String
     private let fallback: Value
     private let read: (Any?) -> Value?
@@ -79,8 +79,8 @@ struct Setting<Value> {
     }
 
     var wrappedValue: Value {
-        get { read(SettingsStore.shared.value(forKey: key)) ?? fallback }
-        nonmutating set { SettingsStore.shared.set(write(newValue), forKey: key) }
+        get { read(store.value(forKey: key)) ?? fallback }
+        nonmutating set { store.set(write(newValue), forKey: key) }
     }
 
     var projectedValue: Binding<Value> {

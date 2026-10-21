@@ -6,13 +6,13 @@ private let log = Logger.warble("app")
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    /// Built with the delegate, before the menu bar scene reads it.
+    let environment = AppEnvironment()
     private var notch: NotchController?
     private var source: AdapterSource?
     private var fallback: ScriptSource?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        Preferences.registerDefaults()
-        _ = Updater.shared
         // To see the notch without playing anything, launch with
         // `open build/WarbleDev.app --args -notchPreviewState resting` and hover or click it to open it; the argument
         // lasts only for that launch. `idle` shows the idle card with a preview track as the last played, and adding
@@ -20,7 +20,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let arguments = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
         let preview = (arguments["notchPreviewState"] as? String).flatMap(NotchState.init(rawValue:))
         let isPreview = preview == .resting || preview == .idle
-        let notch = NotchController(lastPlayedStore: isPreview ? nil : Bundle.main.bundleIdentifier.flatMap(LastPlayedStore.standard))
+        let notch = NotchController(lastPlayedStore: isPreview ? nil : Bundle.main.bundleIdentifier.flatMap(LastPlayedStore.standard), environment: environment)
         if preview == .idle {
             if (arguments["notchPreviewLastPlayed"] as? String).map({ NSString(string: $0).boolValue }) ?? true {
                 notch.lastPlayed = LastPlayed(bundleIdentifier: "com.apple.Music", appName: "Music", title: "Preview track with a title long enough to scroll", artist: "Preview artist")
@@ -68,14 +68,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             notch.doctor.adapter = .missing
             startFallback(notch)
         }
-        HotkeyCenter.shared.onPress = { [weak notch] action in
+        environment.hotkeys.onPress = { [weak notch] action in
             if let command = action.command {
                 notch?.perform(command)
             } else {
                 notch?.toggleKeyboard()
             }
         }
-        HotkeyCenter.shared.start()
+        environment.hotkeys.start()
         self.notch = notch
         if let launch = Perf.millisecondsSinceLaunch() {
             Perf.signposter.emitEvent("Ready", "launch ms=\(launch)")
@@ -107,7 +107,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// be reached, and opens Settings.
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         UserDefaults.standard.set(true, forKey: PreferenceKey.showMenuBarIcon)
-        SettingsWindow.show()
+        environment.settingsWindow.show()
         return false
     }
 }
