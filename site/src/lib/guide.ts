@@ -38,8 +38,29 @@ function rehypeCallouts() {
     });
 }
 
+const textOf = (node: any): string => (node.type === 'text' ? node.value : (node.children ?? []).map(textOf).join(''));
+
+/** Turns a one-line `sh` code block into the same copy block as Copy.astro, so a command in the guide copies in one click. */
+function rehypeCopyCommands() {
+  return (tree: any) =>
+    visit(tree, 'element', (node: any) => {
+      if (node.tagName !== 'pre') return;
+      const code = node.children.find((child: any) => child.tagName === 'code');
+      const language = node.properties?.dataLanguage ?? code?.properties?.className?.find((c: string) => c.startsWith('language-'))?.slice(9);
+      const command = code && textOf(code).trim();
+      if (language !== 'sh' || !command || command.includes('\n')) return;
+      node.tagName = 'div';
+      node.properties = { className: ['copy', 'card'] };
+      node.children = [
+        { type: 'element', tagName: 'code', properties: {}, children: [{ type: 'text', value: command }] },
+        { type: 'element', tagName: 'button', properties: { type: 'button', className: ['button', 'small', 'quiet'], dataCopy: command }, children: [{ type: 'text', value: 'Copy' }] },
+        { type: 'element', tagName: 'span', properties: { className: ['status'], ariaLive: 'polite' }, children: [] },
+      ];
+    });
+}
+
 const processor = await createMarkdownProcessor({
-  rehypePlugins: [rehypeRepoLinks, rehypeCallouts],
+  rehypePlugins: [rehypeRepoLinks, rehypeCallouts, rehypeCopyCommands],
   shikiConfig: { theme: 'github-light' },
 });
 

@@ -123,6 +123,14 @@ code, kbd { font-family: var(--mono); }
 .button.quiet:active { background: var(--fill-strong); }
 .button .sub { font-weight: 500; font-size: 13px; opacity: 0.7; }
 
+/* A one-line shell command with a copy button (Copy.astro, and sh code blocks in the guide). */
+.copy { display: flex; min-width: 0; align-items: center; gap: 12px; padding: 6px 6px 6px 16px; max-width: 100%; }
+.copy code, .prose .copy code { font-size: 14px; flex: 1; min-width: 0; overflow-wrap: anywhere; padding: 0; background: none; }
+/* Generated content, so selecting the command (triple-click included) never picks up the prompt. */
+.copy code::before { content: '$ '; color: var(--secondary); }
+.copy button { flex: none; min-width: 78px; }
+.copy .status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
 kbd.key, .prose kbd {
   display: inline-block; min-width: 1.8em; padding: 0 0.42em;
   font: 500 0.84em/1.55 var(--font); text-align: center; white-space: nowrap;

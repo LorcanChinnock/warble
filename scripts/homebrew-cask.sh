@@ -41,7 +41,7 @@ cask "warble" do
     Warble isn't notarized by Apple yet, so macOS blocks it the first time you open it.
     Open Warble and click Done, then click Open Anyway in
     System Settings > Privacy & Security and confirm. You only do this once.
-    Steps with pictures: https://warble.lorcanchinnock.com/#install
+    Steps: https://warble.lorcanchinnock.com/#install
   EOS
 end
 EOF
