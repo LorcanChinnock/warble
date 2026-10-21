@@ -13,13 +13,21 @@ INSTALL_DIR ?= /Applications
 # Extra `swift test` flags, e.g. ARGS=--skip-build in CI.
 ARGS ?=
 
-.PHONY: build test test-linux lint strings bundle app run dist icon clean
+.PHONY: build test test-linux perf perf-app lint strings bundle app run dist icon clean
 
 build:
 	swift build
 
 test:
-	swift test $(TEST_FLAGS) $(ARGS)
+	swift test $(TEST_FLAGS) $(ARGS) --skip PerfTests
+
+# The performance budgets, alone and one test at a time, so other tests don't skew the timings. perf-app measures the
+# installed WarbleDev and takes over the pointer for about four minutes. Budgets and baselines: docs/performance.md.
+perf:
+	swift test $(TEST_FLAGS) $(ARGS) --filter PerfTests
+
+perf-app:
+	scripts/perf.sh
 
 # WarbleModel's tests on Linux, as CI's linux job runs them. Needs Docker; keep the image in step with ci.yml.
 test-linux:

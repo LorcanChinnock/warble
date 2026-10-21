@@ -364,6 +364,11 @@ final class NotchController {
             case .setRepeat(let mode): playback?.repeatMode = mode
             case .nextTrack, .previousTrack: break
             }
+            if command == .togglePlayPause || command == .play || command == .pause {
+                // The click's own window is the notch it was on; a shortcut has none.
+                let input = Perf.input
+                Perf.untilNextFrame("Play/pause", on: NSApp.currentEvent?.window?.screen ?? NSScreen.main, cause: input?.cause ?? "shortcut", since: input?.timestamp)
+            }
         }
         send(command)
     }

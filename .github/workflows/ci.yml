@@ -1,7 +1,8 @@
 name: CI
 
 # Every pull request runs two required jobs. `test` lints and runs WarbleModel's tests on Linux, which keeps it portable.
-# `macos` builds the app and runs every macOS test, so an Apple-side break can't reach main. `adapter` and
+# `macos` builds the app and runs every macOS test, so an Apple-side break can't reach main. On release-please's PR, and
+# any PR labelled performance, it also runs the performance budgets: that's the release gate. `adapter` and
 # `adapter-macos-15` check the bundled mediaremote-adapter still works, but aren't required. release-please opens its
 # release PR as the repository's GitHub App (release.yml), so that PR's runs start without approval.
 # There's no run on push to main: PRs are squash-merged, and their merge commit was already tested. warm-cache.yml
@@ -60,6 +61,11 @@ jobs:
         run: swift build --arch x86_64 --force-resolved-versions
       - name: Test on macOS
         run: make test ARGS=--skip-build
+      # On the release PR, which makes it the release gate, and on any PR labelled performance, to keep ordinary PRs'
+      # runs short. Alone, so other tests running in parallel don't skew the timings. Budgets: docs/performance.md.
+      - name: Perf
+        if: startsWith(github.head_ref, 'release-please--') || contains(github.event.pull_request.labels.*.name, 'performance')
+        run: make perf ARGS=--skip-build
 
   # Not a required check. The now-playing source runs mediaremote-adapter under /usr/bin/perl, and a macOS update could
   # stop that working, so this builds both apps as `make bundle` and `make dist` do and runs the adapter's own `test`

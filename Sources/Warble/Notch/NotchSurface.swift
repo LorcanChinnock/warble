@@ -165,10 +165,22 @@ final class NotchSurface {
     func handle(_ event: HoverEvent) {
         // A blank notch that doesn't open keeps no hover, so playback starting under the pointer doesn't open it.
         guard answersPointer else { return }
+        let before = state
         hover.handle(event, at: .now)
         scheduleDeadline()
         update()
         onChange()
+        if event == .click {
+            measureExpand(from: before, cause: "click", since: Perf.input?.timestamp)
+        } else if event == .keyboard {
+            measureExpand(from: before, cause: "shortcut", since: nil)
+        }
+    }
+
+    /// Times opening the notch, from the input to the first frame of the morph, when `before` wasn't open and now is.
+    private func measureExpand(from before: NotchState, cause: String, since start: TimeInterval?) {
+        guard before != .expanded, state == .expanded else { return }
+        Perf.untilNextFrame("Expand", on: panel.screen, cause: cause, since: start)
     }
 
     /// Takes the panel down at once, for a housing that's gone.
@@ -216,10 +228,14 @@ final class NotchSurface {
         let timer = Timer(fire: deadline, interval: 0, repeats: false) { [weak self] _ in
             MainActor.assumeIsolated {
                 guard let self else { return }
+                let before = self.state
                 self.hover.advance(to: max(.now, deadline))
                 self.scheduleDeadline()
                 self.update()
                 self.onChange()
+                // From when the hover delay ended, so a timer that fires late counts against the budget too.
+                let due = ProcessInfo.processInfo.systemUptime + deadline.timeIntervalSinceNow
+                self.measureExpand(from: before, cause: "hover", since: due)
             }
         }
         RunLoop.main.add(timer, forMode: .common)
