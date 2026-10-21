@@ -40,6 +40,9 @@ The first public beta: what's playing in the notch, playback and volume controls
 - [#75](https://github.com/LorcanChinnock/warble/issues/75) ci: retry the adapter test on a timeout, as the app does
 - [#76](https://github.com/LorcanChinnock/warble/issues/76) feat(notch): open straight to the full card after a short hover
 - [#86](https://github.com/LorcanChinnock/warble/issues/86) fix(now-playing): stop the adapter when Warble is killed
+- [#90](https://github.com/LorcanChinnock/warble/issues/90) feat(notch): reveal an idle card on hover when nothing is playing
+- [#91](https://github.com/LorcanChinnock/warble/issues/91) feat(model): return to idle a while after pausing
+- [#92](https://github.com/LorcanChinnock/warble/issues/92) feat(notch): animate between idle and playing
 
 ## [0.2: lyrics, gestures and podcasts](https://github.com/LorcanChinnock/warble/issues/33)
 
