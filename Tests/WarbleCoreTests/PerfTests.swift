@@ -57,10 +57,10 @@ import WarbleModel
 
 /// Twice the CI runner's baselines in `docs/performance.md`, in microseconds; change both together.
 private enum Budget {
-    static let trackLine = 1_000_000
-    static let pauseLine = 1_000_000
-    static let artworkColours = 1_000_000
-    static let thumbnail = 1_000_000
+    static let trackLine = 1012.0
+    static let pauseLine = 16.2
+    static let artworkColours = 2809.0
+    static let thumbnail = 2295.0
 }
 
 /// The fastest run of `body`, after one untimed run that warms caches. It runs at least fifteen times and for at least

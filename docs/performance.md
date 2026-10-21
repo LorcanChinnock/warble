@@ -12,10 +12,10 @@ Each budget is 2× the baseline measured on the CI runner, which is slower than 
 
 | Path | What's measured | Reference Mac | CI runner | Budget |
 |---|---|---|---|---|
-| New track | `AdapterStream.apply` of the line a new track arrives on, with a 600×600 JPEG cover as its art | 300 µs | TBD | TBD |
-| Pause | `AdapterStream.apply` of a pause or play line, after a track with art | 4.1 µs | TBD | TBD |
-| Artwork colours | `ArtworkColours(data:)` of a 600×600 JPEG cover, for the expanded card's glow | 676 µs | TBD | TBD |
-| Idle card art | `LastPlayedStore.thumbnail` of a 600×600 JPEG cover to 112 pixels, for the idle card | 624 µs | TBD | TBD |
+| New track | `AdapterStream.apply` of the line a new track arrives on, with a 600×600 JPEG cover as its art | 300 µs | 506 µs | 1,012 µs |
+| Pause | `AdapterStream.apply` of a pause or play line, after a track with art | 4.1 µs | 8.1 µs | 16.2 µs |
+| Artwork colours | `ArtworkColours(data:)` of a 600×600 JPEG cover, for the expanded card's glow | 676 µs | 1,404 µs | 2,809 µs |
+| Idle card art | `LastPlayedStore.thumbnail` of a 600×600 JPEG cover to 112 pixels, for the idle card | 624 µs | 1,148 µs | 2,295 µs |
 
 To change a budget, measure again, then update both this table and `Budget` in `PerfTests.swift`.
 

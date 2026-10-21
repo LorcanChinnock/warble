@@ -3,6 +3,7 @@ import ApplicationServices
 
 // The pointer for scripts/perf.sh, in global screen points from the top left of the main display, as CGEvent and
 // accessibility use them. Needs Accessibility permission for the terminal.
+//   perf-input trusted            exits 0 when this terminal has Accessibility permission, which moving the pointer needs
 //   perf-input housing            the centre of the main display's camera housing, or its top centre without a notch
 //   perf-input pointer            where the pointer is
 //   perf-input move X Y           moves the pointer, as a hand on the trackpad would
@@ -53,6 +54,9 @@ func find(_ name: String, in element: AXUIElement, depth: Int = 0) -> AXUIElemen
 }
 
 switch args.count > 1 ? args[1] : "" {
+case "trusted":
+    // Without it, macOS drops the posted events without a word.
+    exit(AXIsProcessTrusted() ? 0 : 1)
 case "housing":
     guard let screen = NSScreen.main, let primary = NSScreen.screens.first else { fail("no display") }
     let x: CGFloat
@@ -80,5 +84,5 @@ case "find":
     guard let element = find(args[3], in: AXUIElementCreateApplication(app.processIdentifier)), let at = centre(of: element) else { fail("no \(args[3]) in \(args[2])") }
     print(Int(at.x), Int(at.y))
 default:
-    fail("usage: perf-input housing|pointer|move|click|find …")
+    fail("usage: perf-input trusted|housing|pointer|move|click|find …")
 }

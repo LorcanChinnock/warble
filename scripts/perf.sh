@@ -41,7 +41,7 @@ if [ "$playing" != "null" ]; then
   echo "Something is playing, or was paused a moment ago. Quit the app that's playing, then run this again." >&2
   exit 1
 fi
-"$input" housing >/dev/null || { echo "This terminal needs Accessibility permission (System Settings › Privacy & Security › Accessibility)." >&2; exit 1; }
+"$input" trusted || { echo "This terminal needs Accessibility permission (System Settings › Privacy & Security › Accessibility)." >&2; exit 1; }
 
 signposts() { # name → ndjson lines of that signpost from this app since the script started
   /usr/bin/log show --signpost --start "$started" --style ndjson \
