@@ -1,6 +1,6 @@
 ---
 title: Settings
-summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows and whether a new song shows its title, and set keyboard shortcuts.
+summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows and whether a new song shows its title, and set keyboard shortcuts, including one that opens the notch.
 group: Reference
 ---
 
@@ -37,6 +37,8 @@ The play/pause, next and previous keys on your keyboard already control what's p
 
 1. Click **Record Shortcut** beside **Play or pause**, **Next track** or **Previous track**.
 2. Press the keys you want, such as <kbd>⌃⌥P</kbd>. A shortcut needs <kbd>⌘</kbd>, <kbd>⌥</kbd> or <kbd>⌃</kbd>, so it doesn't catch your typing.
+
+**Open the notch** works a little differently: it opens the notch ready for the keyboard, so you can play, pause, skip and change the volume with the arrow keys. See [Accessibility](/docs/accessibility/).
 
 The shortcut works straight away. To change it, click it and press new keys. To remove it, click the cross beside it, or click it and press <kbd>Delete</kbd>. Press <kbd>Esc</kbd> to stop without changing anything.
 

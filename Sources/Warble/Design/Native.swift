@@ -8,6 +8,8 @@ enum Native {
     static let panel = Color.black
     /// Text and marks that matter less than the title, such as the artist.
     static let secondary = ContrastAware(standard: Color(white: 0.6), increased: Color(white: 0.8))
+    /// The unfilled part of the position and volume bars, brighter with Increase Contrast so the bar's end shows.
+    static let track = ContrastAware(standard: Color(white: 1, opacity: 0.2), increased: Color(white: 1, opacity: 0.45))
     /// Bottom corner radius of the expanded card, rounder than the housing's as the card is larger.
     static let expandedRadius: CGFloat = 24
 

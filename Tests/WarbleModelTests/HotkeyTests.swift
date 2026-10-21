@@ -15,8 +15,8 @@ import Testing
 
 @Test func actionsKeepTheirPositions() {
     // HotkeyCenter numbers hotkeys by position, so a new action goes last and existing ones keep their ids.
-    #expect(WarbleAction.allCases == [.playPause, .nextTrack, .previousTrack])
-    #expect(WarbleAction.allCases.map(\.rawValue) == ["play-pause", "next-track", "previous-track"])
+    #expect(WarbleAction.allCases == [.playPause, .nextTrack, .previousTrack, .openNotch])
+    #expect(WarbleAction.allCases.map(\.rawValue) == ["play-pause", "next-track", "previous-track", "open-notch"])
 }
 
 @Test func aShortcutTakenByAnotherActionOrMacOSConflicts() {
@@ -39,7 +39,7 @@ import Testing
 }
 
 @Test func eachActionSendsItsCommand() {
-    #expect(WarbleAction.allCases.map(\.command) == [.togglePlayPause, .nextTrack, .previousTrack])
+    #expect(WarbleAction.allCases.map(\.command) == [.togglePlayPause, .nextTrack, .previousTrack, nil])
 }
 
 @Test func recordingTakesACombo() {

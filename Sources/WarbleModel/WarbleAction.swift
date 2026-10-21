@@ -5,21 +5,24 @@ public enum WarbleAction: String, CaseIterable, Sendable {
     case playPause = "play-pause"
     case nextTrack = "next-track"
     case previousTrack = "previous-track"
+    /// Opens the notch with the keyboard in it, or closes it again. See `NotchKey` for what the keys do while it's open.
+    case openNotch = "open-notch"
 
-    /// None by default: the keyboard's media keys already do these, and a global shortcut would take its keys from
-    /// every app.
+    /// None by default: the keyboard's media keys already play, pause and skip, and a global shortcut would take its keys
+    /// from every app.
     public var defaultCombo: KeyCombo? {
         switch self {
-        case .playPause, .nextTrack, .previousTrack: nil
+        case .playPause, .nextTrack, .previousTrack, .openNotch: nil
         }
     }
 
-    /// What the action asks the playing app to do.
-    public var command: PlaybackCommand {
+    /// What the action asks the playing app to do, or `nil` for one that only works the notch.
+    public var command: PlaybackCommand? {
         switch self {
         case .playPause: .togglePlayPause
         case .nextTrack: .nextTrack
         case .previousTrack: .previousTrack
+        case .openNotch: nil
         }
     }
 

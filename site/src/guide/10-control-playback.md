@@ -13,6 +13,8 @@ While something plays, the notch shows the album art and a few moving bars. Open
 
 To close it, move the pointer away, click anywhere else, or press <kbd>Esc</kbd>.
 
+You can also open it from the keyboard and control it with the arrow keys. See [Accessibility](/docs/accessibility/).
+
 ## Play, pause and skip
 
 - Click the play or pause button in the middle.

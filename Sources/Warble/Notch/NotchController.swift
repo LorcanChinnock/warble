@@ -201,6 +201,7 @@ final class NotchController {
         surface.onClick = { [weak self, weak surface] in
             self?.dismiss { $0 !== surface }
         }
+        surface.onKey = { [weak self] event in self?.key(event) ?? false }
         surface.makeMenu = { [weak self] in
             guard let self else { return nil }
             return NotchMenu.make(source: self.playback?.bundleIdentifier ?? self.player.lastPlayed?.bundleIdentifier, updater: .shared) { [weak self] in
@@ -313,6 +314,40 @@ final class NotchController {
         for surface in surfaces.values where surface.state == .expanded && included(surface) {
             surface.handle(.dismiss)
         }
+    }
+
+    /// Opens the notch on the display the pointer is on, or else the built-in one, with the keyboard in it, or closes it
+    /// again. Any other notch that's open closes, as for a click.
+    func toggleKeyboard() {
+        let pointer = NSEvent.mouseLocation
+        let screen = NSScreen.screens.first { NSMouseInRect(pointer, $0.frame, false) }
+        let onScreen = surfaces.values.first { surface in screen.map { $0.frame.intersects(surface.housing) } ?? false }
+        guard let surface = onScreen ?? surfaces.values.first(where: { !$0.isVirtual }) ?? surfaces.values.first else { return }
+        let handback = surfaces.values.lazy.filter { $0 !== surface }.compactMap { $0.takeKeyboardHandback() }.first
+        dismiss { $0 !== surface }
+        surface.toggleKeyboard(handback: handback)
+    }
+
+    /// Does what a key means while a notch has the keyboard (`NotchKey`), and says whether it meant anything.
+    private func key(_ event: NSEvent) -> Bool {
+        let flags = event.modifierFlags.intersection([.command, .shift, .option, .control])
+        let combo = KeyCombo(keyCode: UInt32(event.keyCode), eventFlags: CGEventFlags(rawValue: UInt64(flags.rawValue)))
+        guard let key = NotchKey(keyCode: combo.keyCode, modifiers: combo.modifiers) else { return false }
+        switch key {
+        case .command(let command):
+            perform(command)
+        case .seek(let delta):
+            if let playback, let position = NotchKey.position(seeking: delta, in: playback, at: .now) {
+                perform(.seek(to: position))
+            }
+        case .volume(let delta):
+            if let current = volume.volume {
+                setVolume(NotchKey.volume(changing: volume.isMuted ? 0 : current, by: delta))
+            }
+        case .close:
+            dismiss()
+        }
+        return true
     }
 
     /// Shows what a command will do before the app reports back, so a click on play/pause answers at once. Skipping waits

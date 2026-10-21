@@ -1,4 +1,5 @@
 import AppKit
+import Carbon.HIToolbox
 import SwiftUI
 import WarbleCore
 
@@ -231,7 +232,7 @@ private struct IdleCard: View {
                             .frame(width: 48, height: 48)
                             .opacity(Native.dimmed)
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.notch)
                     .accessibilityLabel(lastPlayed.appName.map { Text("Open \($0)") } ?? Text("Open the app that played it"))
                     VStack(alignment: .leading, spacing: 2) {
                         Group {
@@ -258,7 +259,7 @@ private struct IdleCard: View {
                             .frame(width: 36, height: 36)
                             .contentShape(Rectangle())
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.notch)
                     .accessibilityLabel("Resume")
                 }
             } else {
@@ -329,7 +330,8 @@ private struct RestingContent: View {
                         .scaleEffect(isIn || reduceMotion ? 1 : NotchMotion.artScale)
                         .animation(isIn ? Native.artIn : Native.contentOut, value: isIn)
                         .accessibilityElement(children: .ignore)
-                        .accessibilityLabel(playback.artist.map { Text("\(playback.title) by \($0)") } ?? Text(playback.title))
+                        .accessibilityLabel(nowPlaying(playback))
+                        .accessibilityAddTraits(.isStaticText)
                         .accessibilityValue(playback.isPlaying ? Text("Playing") : Text("Paused"))
                 }
             }
@@ -367,7 +369,7 @@ private struct AttentionButton: View {
                 .frame(width: size, height: size)
                 .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.notch)
         .accessibilityLabel("Show what's wrong")
         .help("Warble can't see everything")
     }
@@ -541,7 +543,7 @@ private struct ExpandedContent: View {
                     Artwork(image: artwork)
                         .frame(width: 56, height: 56)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.notch)
                 .accessibilityLabel(model.player.appName.map { Text("Open \($0)") } ?? Text("Open the app that's playing"))
                 VStack(alignment: .leading, spacing: 2) {
                     Text(playback.title)
@@ -555,7 +557,12 @@ private struct ExpandedContent: View {
                     .foregroundStyle(Native.secondary)
                 }
                 .lineLimit(1)
-                .accessibilityElement(children: .combine)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(nowPlaying(playback))
+                .accessibilityAddTraits(.isStaticText)
+                .accessibilityValue(playback.album.map { Text("From \($0)") } ?? Text(verbatim: ""))
+                // VoiceOver starts here when the notch opens from the keyboard, ahead of the art beside it.
+                .accessibilitySortPriority(1)
                 Spacer(minLength: 0)
                 if model.doctor.needsAttention {
                     Button { model.onShowDoctor(true) } label: {
@@ -565,7 +572,7 @@ private struct ExpandedContent: View {
                             .frame(width: 24, height: 24)
                             .contentShape(Rectangle())
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.notch)
                     .accessibilityLabel("Show what's wrong")
                 }
             }
@@ -666,7 +673,7 @@ private struct Scrubber: View {
             let width = geometry.size.width
             let fraction = min(max(fraction, 0), 1)
             ZStack(alignment: .leading) {
-                Capsule().fill(Color.white.opacity(0.2))
+                Capsule().fill(Native.track)
                 Capsule().fill(.white).frame(width: width * fraction)
                 Circle().fill(.white)
                     .frame(width: 9, height: 9)
@@ -700,7 +707,7 @@ private struct VolumeSlider: View {
             GeometryReader { geometry in
                 let width = geometry.size.width
                 ZStack(alignment: .leading) {
-                    Capsule().fill(Color.white.opacity(0.2))
+                    Capsule().fill(Native.track)
                     Capsule().fill(.white).frame(width: width * volume)
                 }
                 .frame(height: 4)
@@ -782,6 +789,24 @@ private struct OutputMenu: NSViewRepresentable {
             return true
         }
 
+        // With Keyboard navigation on, Tab reaches it like the buttons around it, and Space or Return opens the menu.
+        override var acceptsFirstResponder: Bool { true }
+        override var canBecomeKeyView: Bool { NSApp.isFullKeyboardAccessEnabled }
+        override var focusRingMaskBounds: NSRect { bounds }
+        override func drawFocusRingMask() { NSBezierPath(roundedRect: bounds, xRadius: 6, yRadius: 6).fill() }
+
+        override func keyDown(with event: NSEvent) {
+            if [kVK_Space, kVK_Return].contains(Int(event.keyCode)) {
+                showMenu()
+            } else if event.keyCode == kVK_Tab, let content = window?.contentView?.subviews.first {
+                // The last control on the card, which AppKit's key view loop can't leave for the SwiftUI controls, so
+                // Tab and ⇧Tab hand focus back to them.
+                window?.makeFirstResponder(content)
+            } else {
+                super.keyDown(with: event)
+            }
+        }
+
         private var playing: AudioOutput? {
             outputs.first { $0.id == current }
         }
@@ -839,16 +864,53 @@ private struct PlaybackControls: View {
         }
     }
 
-    /// A white symbol, or grey for a mode that's off, on a target at least 30 points square.
-    private func control(_ symbol: String, size: CGFloat, on: Bool = true, action: @escaping () -> Void) -> some View {
+    /// A white symbol on a target at least 30 points square. A mode that's on (`on`) is white with a dot under it, and one
+    /// that's off grey without, so the dot says which, not only the colour.
+    private func control(_ symbol: String, size: CGFloat, on: Bool? = nil, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: symbol)
                 .font(.system(size: size, weight: .semibold))
-                .foregroundStyle(on ? AnyShapeStyle(.white) : AnyShapeStyle(Native.secondary))
+                .foregroundStyle(on == false ? AnyShapeStyle(Native.secondary) : AnyShapeStyle(.white))
                 .frame(width: 30, height: 30)
+                .overlay(alignment: .bottom) {
+                    if on == true {
+                        Circle().fill(.white)
+                            .frame(width: 3, height: 3)
+                            .padding(.bottom, 2)
+                    }
+                }
                 .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.notch)
+    }
+}
+
+/// How VoiceOver names what's playing: "Now playing: Song by Artist".
+private func nowPlaying(_ playback: PlaybackState) -> Text {
+    playback.artist.map { Text("Now playing: \(playback.title) by \($0)") } ?? Text("Now playing: \(playback.title)")
+}
+
+/// A plain button that Space or Return also presses while it has the focus ring, with Keyboard navigation on. A plain
+/// SwiftUI button takes the focus but not the key, which would fall through to the notch's own keys (`NotchKey`).
+struct NotchButtonStyle: PrimitiveButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        Button(action: configuration.trigger) { configuration.label }
+            .buttonStyle(.plain)
+            .pressedByKeyboard(configuration.trigger)
+    }
+}
+
+extension PrimitiveButtonStyle where Self == NotchButtonStyle {
+    static var notch: NotchButtonStyle { NotchButtonStyle() }
+}
+
+extension View {
+    /// Runs `action` for Space or Return while this view has the focus ring.
+    func pressedByKeyboard(_ action: @escaping () -> Void) -> some View {
+        onKeyPress(keys: [.space, .return]) { _ in
+            action()
+            return .handled
+        }
     }
 }
 
