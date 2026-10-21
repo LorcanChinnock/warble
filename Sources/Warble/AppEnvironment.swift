@@ -6,6 +6,8 @@ import WarbleCore
 @MainActor
 final class AppEnvironment {
     let settings: SettingsStore
+    /// What the app has decided, which every notch draws.
+    let store: Store
     let updater: Updater
     let displays: Displays
     let loginItem: LoginItem
@@ -19,6 +21,7 @@ final class AppEnvironment {
         // Before anything reads a setting, so every read falls back to the registered default.
         Preferences.registerDefaults()
         settings = SettingsStore()
+        store = Store(state: AppState(stayVisibleAfterPausing: Preferences().stayVisibleAfterPausing), clock: SystemClock(), scheduler: TimerScheduler())
         updater = Updater()
         displays = Displays()
         loginItem = LoginItem()

@@ -10,41 +10,8 @@ private let log = Logger.warble("notch")
 /// removes them when displays or their rules change. At rest it does no work: no timers, no polling and no event monitors.
 @MainActor
 final class NotchController {
-    /// What's playing, or `nil` to draw nothing. `AdapterSource` sets it, or the preview track at launch.
-    ///
-    /// A source reports nothing for a moment while it changes track, so `nil` hides the notch only if nothing follows
-    /// within `hideDelay`; otherwise a skip would close the notch under the pointer.
-    var playback: PlaybackState? {
-        get { shownPlayback }
-        set {
-            hideTimer?.invalidate()
-            hideTimer = nil
-            guard newValue == nil, shownPlayback != nil else {
-                shownPlayback = newValue
-                return
-            }
-            hideTimer = Timer.scheduledTimer(withTimeInterval: Self.hideDelay, repeats: false) { [weak self] _ in
-                MainActor.assumeIsolated { self?.shownPlayback = nil }
-            }
-        }
-    }
-
-    /// Longer than the gap the adapter leaves between tracks, about half a second.
-    private static let hideDelay: TimeInterval = 1.5
-    private var hideTimer: Timer?
-
-    private var shownPlayback: PlaybackState? {
-        didSet {
-            player.playback = shownPlayback
-            if let shownPlayback {
-                remember(shownPlayback)
-            }
-            handleIdle(.playback(shownPlayback))
-            if let shownPlayback, let notice = TrackToast.notice(from: oldValue, to: shownPlayback) {
-                post(notice)
-            }
-        }
-    }
+    /// What's playing as the notch shows it, which `Store` keeps from what the sources report.
+    var playback: PlaybackState? { store.state.playback }
 
     /// What the idle card shows before anything plays. The preview sets it instead of reading the saved one.
     var lastPlayed: LastPlayed? {
@@ -60,12 +27,8 @@ final class NotchController {
     /// The write in flight, which the next one waits for, so the file always ends up holding the latest track.
     private var saving: Task<Void, Never>?
 
-    /// Hides a paused track a while after the pause, unless the pointer is on a notch.
-    private var idle = IdleAfterPause(delay: Preferences().stayVisibleAfterPausing)
-    private var idleTimer: Timer?
     /// Whether the surfaces draw what's playing: something is, and it isn't Idle.
-    private var showsPlayback = false
-    private var hovering = false
+    private var showsPlayback: Bool { store.state.showsPlayback }
     /// What a hover on the housing does while Idle.
     private var idleHover = Preferences().idleHover
     /// The new track's title and artist, shown for a moment after a skip when Settings turns it on.
@@ -79,6 +42,7 @@ final class NotchController {
     /// The checks behind the "!". `AppDelegate` tells it how the adapter is doing.
     let doctor: DoctorModel
     private let environment: AppEnvironment
+    private var store: Store { environment.store }
     private let player = PlayerModel()
     private var wasOpen = false
     private let volume = SystemVolume()
@@ -95,6 +59,7 @@ final class NotchController {
         self.lastPlayedStore = lastPlayedStore
         self.environment = environment
         doctor = DoctorModel(updater: environment.updater)
+        store.onChange = { [weak self] old, new in self?.stateChanged(from: old, to: new) }
         player.onCommand = { [weak self] in self?.perform($0) }
         player.onOpenApp = { [weak self] in self?.openApp() }
         player.onVolume = { [weak self] in self?.setVolume($0) }
@@ -109,9 +74,8 @@ final class NotchController {
             MainActor.assumeIsolated {
                 guard let self else { return }
                 let preferences = Preferences()
-                if preferences.stayVisibleAfterPausing != self.idle.delay {
-                    self.idle.delay = preferences.stayVisibleAfterPausing
-                    self.handleIdle(nil)
+                if preferences.stayVisibleAfterPausing != self.store.state.idle.delay {
+                    self.store.dispatch(.stayVisibleChanged(preferences.stayVisibleAfterPausing))
                 }
                 if preferences.idleHover != self.idleHover {
                     self.idleHover = preferences.idleHover
@@ -234,31 +198,29 @@ final class NotchController {
         }
         wasOpen = open
         let hovering = surfaces.values.contains { $0.state == .expanded || $0.pointerInside }
-        if hovering != self.hovering {
-            self.hovering = hovering
-            handleIdle(hovering ? .hoverStarted : .hoverEnded)
+        if hovering != store.state.hovering {
+            store.dispatch(.hoverChanged(hovering))
         }
     }
 
-    /// Passes `event` to `IdleAfterPause`, or with `nil` only applies a deadline that's due, then shows or hides what's
-    /// playing and schedules one timer at most, for the next deadline.
-    private func handleIdle(_ event: IdleEvent?) {
-        if let event {
-            idle.handle(event, at: .now)
-        } else {
-            idle.advance(to: .now)
-        }
-        idleTimer?.invalidate()
-        idleTimer = nil
-        if let deadline = idle.deadline {
-            let timer = Timer(fire: deadline, interval: 0, repeats: false) { [weak self] _ in
-                MainActor.assumeIsolated { self?.handleIdle(nil) }
+    /// Draws what `Store` decided: the track, the last one played, and whether the notches show it or are Idle.
+    private func stateChanged(from old: AppState, to new: AppState) {
+        if new.playback != old.playback {
+            player.playback = new.playback
+            if let playback = new.playback {
+                remember(playback)
             }
-            RunLoop.main.add(timer, forMode: .common)
-            idleTimer = timer
         }
-        guard !idle.isIdle != showsPlayback else { return }
-        showsPlayback = !idle.isIdle
+        if new.showsPlayback != old.showsPlayback {
+            showsPlaybackChanged()
+        }
+        if let playback = new.playback, let notice = TrackToast.notice(from: old.playback, to: playback) {
+            post(notice)
+        }
+    }
+
+    /// Shows or hides what's playing on every notch.
+    private func showsPlaybackChanged() {
         log.notice("Playback \(self.showsPlayback ? "shown" : "idle", privacy: .public)")
         for surface in surfaces.values {
             surface.isPlaying = showsPlayback
@@ -357,15 +319,19 @@ final class NotchController {
     /// for the app, since only it knows the next track. The app's next report replaces the guess either way. While a hide
     /// is pending there's no guess, since setting one would cancel the hide and keep a stopped track on screen.
     func perform(_ command: PlaybackCommand) {
-        if hideTimer == nil, let current = playback {
+        if store.state.hideAt == nil, let current = playback {
+            var guess = current
             switch command {
-            case .play: playback = current.playing(true, at: .now)
-            case .pause: playback = current.playing(false, at: .now)
-            case .togglePlayPause: playback = current.playing(!current.isPlaying, at: .now)
-            case .seek(let position): playback = current.seeked(to: position, at: .now)
-            case .setShuffle(let mode): playback?.shuffle = mode
-            case .setRepeat(let mode): playback?.repeatMode = mode
+            case .play: guess = current.playing(true, at: .now)
+            case .pause: guess = current.playing(false, at: .now)
+            case .togglePlayPause: guess = current.playing(!current.isPlaying, at: .now)
+            case .seek(let position): guess = current.seeked(to: position, at: .now)
+            case .setShuffle(let mode): guess.shuffle = mode
+            case .setRepeat(let mode): guess.repeatMode = mode
             case .nextTrack, .previousTrack: break
+            }
+            if guess != current {
+                store.dispatch(.playbackReported(guess))
             }
             if command == .togglePlayPause || command == .play || command == .pause {
                 // The click's own window is the notch it was on; a shortcut has none.
