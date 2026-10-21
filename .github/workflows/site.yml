@@ -1,0 +1,78 @@
+name: Website
+
+# Deploys warble.lorcanchinnock.com from a release tag, so the guide and changelog describe the version people can
+# install rather than whatever is on main. release.yml calls this after each release. Run it by hand to deploy the
+# latest release again, for example after changing a Cloudflare setting. See site/README.md › Deploying.
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: The release tag to deploy.
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The release tag to deploy. Leave it empty for the latest release.
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+# A release and a manual run could otherwise deploy at once, and the older build could land last.
+concurrency:
+  group: site
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # The Cloudflare token lives in the `release` environment, which only deploys from main and v* tags.
+    environment: release
+    steps:
+      - name: Pick the tag
+        id: tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          if [ -z "$TAG" ]; then
+            TAG="$(gh release view -R "$GITHUB_REPOSITORY" --json tagName --jq .tagName)"
+          fi
+          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::$TAG isn't a release tag."
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ steps.tag.outputs.tag }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Install
+        working-directory: site
+        run: npm ci
+      # src/lib/release.ts reads the latest release from GitHub; the token keeps it off the anonymous rate limit.
+      - name: Build
+        working-directory: site
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: npm run build
+      # Until the Cloudflare token is set, the release still finishes and only the website stays as it was.
+      - name: Deploy
+        working-directory: site
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: "false"
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::notice::CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID isn't set, so the website wasn't deployed."
+            exit 0
+          fi
+          npx wrangler deploy
