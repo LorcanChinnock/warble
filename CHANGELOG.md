@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.1.0-beta.5](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.4...v0.1.0-beta.5) (2026-10-20)
+
+
+### Features
+
+* **app:** menu bar icon from the app icon's bars ([#85](https://github.com/LorcanChinnock/warble/issues/85)) ([98b5ee0](https://github.com/LorcanChinnock/warble/commit/98b5ee0aee26a692c53e907e27478a6f01079276))
+* **displays:** virtual notch on external displays and Macs without a notch ([#94](https://github.com/LorcanChinnock/warble/issues/94)) ([7f0845b](https://github.com/LorcanChinnock/warble/commit/7f0845b4322b603f4aaee05210978811cdfd4086))
+* **doctor:** explain why nothing is detected ([#95](https://github.com/LorcanChinnock/warble/issues/95)) ([5821369](https://github.com/LorcanChinnock/warble/commit/58213699e5713a5dccce2633ea0b7b84644f6a4a))
+* **model:** return to idle a while after pausing ([#98](https://github.com/LorcanChinnock/warble/issues/98)) ([9d429df](https://github.com/LorcanChinnock/warble/commit/9d429dfe872bc4c72f1456a01126598d91d823b1)), closes [#91](https://github.com/LorcanChinnock/warble/issues/91)
+* **model:** source priority and ignore list ([#69](https://github.com/LorcanChinnock/warble/issues/69)) ([01dcee0](https://github.com/LorcanChinnock/warble/commit/01dcee0120d50fd92e110fbfd9f8389f66f0abf9))
+* **model:** toast queue ([#68](https://github.com/LorcanChinnock/warble/issues/68)) ([fbced5a](https://github.com/LorcanChinnock/warble/commit/fbced5a92d297680022f8ed5e85e04abab2269e0))
+* **notch:** animate between idle and playing ([#101](https://github.com/LorcanChinnock/warble/issues/101)) ([5c656bc](https://github.com/LorcanChinnock/warble/commit/5c656bc749ebedcc72722d97fc1843f8d8a2e46f))
+* **notch:** reveal an idle card on hover when nothing is playing ([#99](https://github.com/LorcanChinnock/warble/issues/99)) ([29e924b](https://github.com/LorcanChinnock/warble/commit/29e924bc67cc0f1002ab75180c592330452bd93e))
+
+
+### Bug Fixes
+
+* **notch:** match the camera housing exactly on every MacBook ([#97](https://github.com/LorcanChinnock/warble/issues/97)) ([28b7d1a](https://github.com/LorcanChinnock/warble/commit/28b7d1ab687ec6d315f381975ed7a33f32df1580))
+* **now-playing:** stop the adapter when Warble is killed ([#88](https://github.com/LorcanChinnock/warble/issues/88)) ([a2a8a20](https://github.com/LorcanChinnock/warble/commit/a2a8a203e1cc689b3fabaf81a6b18b8b0a849c77))
+
 ## [0.1.0-beta.4](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.3...v0.1.0-beta.4) (2026-10-19)
 
 
