@@ -286,6 +286,9 @@
     "Show" : {
 
     },
+    "Show a message when the track changes" : {
+
+    },
     "Show icon in the menu bar" : {
 
     },
@@ -308,6 +311,9 @@
 
     },
     "The media keys on your keyboard already work. These are for when you want another key." : {
+
+    },
+    "The new song's title and artist slide out of the notch for two seconds." : {
 
     },
     "The notch stays hidden behind the camera until you point at it." : {

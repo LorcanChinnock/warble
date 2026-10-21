@@ -13,6 +13,8 @@ public enum NotchState: String, CaseIterable, Sendable {
     case idle
     /// Something is playing, or a Doctor check failed, and the pointer is elsewhere: the notch widened by a wing on each side.
     case resting
+    /// Resting, with the new track's title and artist in a strip that slides out below for a moment after a skip.
+    case toast
     /// Hovered or clicked: the full card with the art and room for the controls.
     case expanded
 
@@ -25,10 +27,14 @@ public enum NotchState: String, CaseIterable, Sendable {
     }
 
     /// How far `hover` has opened the notch, given whether anything is playing, whether a Doctor check failed, what
-    /// the housing does on a hover while Idle, and whether it stays drawn then (`NotchHousing.isAlwaysShown`).
-    public init(_ hover: HoverState, isPlaying: Bool, needsAttention: Bool, idleHover: IdleHover, isAlwaysShown: Bool = false) {
+    /// the housing does on a hover while Idle, whether it stays drawn then (`NotchHousing.isAlwaysShown`), and whether a
+    /// track-change toast is showing, which only a resting notch with something playing draws.
+    public init(_ hover: HoverState, isPlaying: Bool, needsAttention: Bool, idleHover: IdleHover, isAlwaysShown: Bool = false, showsToast: Bool = false) {
         if isPlaying || needsAttention {
             self.init(hover)
+            if self == .resting, isPlaying, showsToast {
+                self = .toast
+            }
         } else if idleHover == .nothing {
             self = isAlwaysShown ? .idle : .hidden
         } else {
@@ -83,6 +89,8 @@ public enum NotchLayout {
     public static let doctorDrop: CGFloat = 220
     /// How far the idle card reaches: the art beside three short lines, with no controls below.
     public static let idleDrop: CGFloat = 76
+    /// How far a track-change toast reaches below the camera housing: a line for the title and one for the artist.
+    public static let toastDrop: CGFloat = 40
     /// Room either side of the notch once expanded, for the art beside the text. Measured from the notch, so the card
     /// keeps its proportion to each Mac's camera housing.
     public static let expandedWing: CGFloat = 70
@@ -113,6 +121,8 @@ public enum NotchLayout {
             notch
         case .resting:
             CGRect(x: notch.minX - wing(notch: notch), y: notch.minY, width: notch.width + 2 * wing(notch: notch), height: notch.height)
+        case .toast:
+            CGRect(x: notch.minX - wing(notch: notch), y: notch.minY - toastDrop, width: notch.width + 2 * wing(notch: notch), height: notch.height + toastDrop)
         case .expanded:
             CGRect(x: notch.minX - expandedWing, y: notch.minY - drop(card), width: notch.width + 2 * expandedWing, height: notch.height + drop(card))
         }
@@ -133,10 +143,13 @@ public enum NotchLayout {
         }
     }
 
-    /// Where the pointer counts as on the notch in `state`, for `HoverIntent`: only the camera housing while Idle or
-    /// resting, so a pointer crossing the wings or the menu bar on its way to a menu bar item doesn't open it, and the
-    /// whole panel once it's open.
+    /// Where the pointer counts as on the notch in `state`, for `HoverIntent`: only the camera housing while Idle,
+    /// resting or showing a toast, so a pointer crossing the wings, the menu bar or a toast on its way elsewhere doesn't
+    /// open it, and the whole panel once it's open.
     public static func hoverArea(_ state: NotchState, notch: CGRect, card: NotchCard = .player) -> CGRect? {
-        state == .resting || state == .idle ? notch : frame(state, notch: notch, card: card)
+        switch state {
+        case .idle, .resting, .toast: notch
+        case .hidden, .expanded: frame(state, notch: notch, card: card)
+        }
     }
 }

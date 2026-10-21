@@ -168,6 +168,7 @@ private struct GeneralSettings: View {
 
 private struct NotchSettings: View {
     @Setting(PreferenceKey.idleHover) private var idleHover: IdleHover
+    @Setting(PreferenceKey.trackChangeToast) private var trackChangeToast: Bool
 
     var body: some View {
         SectionPage(section: .notch) {
@@ -178,6 +179,10 @@ private struct NotchSettings: View {
                 } label: {
                     Text("When nothing is playing, hover shows")
                     Text("The notch stays hidden behind the camera until you point at it.")
+                }
+                Toggle(isOn: $trackChangeToast) {
+                    Text("Show a message when the track changes")
+                    Text("The new song's title and artist slide out of the notch for two seconds.")
                 }
             } footer: {
                 Text("Animations follow Reduce Motion in System Settings › Accessibility › Display.")

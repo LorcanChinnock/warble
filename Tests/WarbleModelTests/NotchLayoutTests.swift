@@ -62,10 +62,11 @@ private let notch = CGRect(x: 856, y: 1205.5, width: 208, height: 37.5)
     #expect(NotchLayout.hoverArea(.expanded, notch: notch, card: .idle) == idle)
 }
 
-@Test func onlyTheHousingCountsAsOnTheNotchWhileIdleOrResting() throws {
+@Test func onlyTheHousingCountsAsOnTheNotchWhileIdleRestingOrShowingAToast() throws {
     #expect(NotchLayout.hoverArea(.hidden, notch: notch) == nil)
     #expect(NotchLayout.hoverArea(.idle, notch: notch) == notch)
     #expect(NotchLayout.hoverArea(.resting, notch: notch) == notch)
+    #expect(NotchLayout.hoverArea(.toast, notch: notch) == notch)
     #expect(NotchLayout.hoverArea(.expanded, notch: notch) == NotchLayout.frame(.expanded, notch: notch))
 }
 
@@ -73,6 +74,28 @@ private let notch = CGRect(x: 856, y: 1205.5, width: 208, height: 37.5)
     #expect(NotchState(.resting) == .resting)
     #expect(NotchState(.expanded) == .expanded)
     #expect(NotchState(.pinned) == .expanded)
+}
+
+@Test func aToastSlidesOutBelowTheRestingWings() throws {
+    let resting = try #require(NotchLayout.frame(.resting, notch: notch))
+    let toast = try #require(NotchLayout.frame(.toast, notch: notch))
+    #expect(toast.minX == resting.minX)
+    #expect(toast.width == resting.width)
+    #expect(toast.maxY == notch.maxY)
+    #expect(toast.height == notch.height + NotchLayout.toastDrop)
+    let expanded = try #require(NotchLayout.frame(.expanded, notch: notch))
+    #expect(expanded.contains(toast))
+}
+
+@Test func onlyARestingNotchWithSomethingPlayingShowsAToast() {
+    #expect(NotchState(.resting, isPlaying: true, needsAttention: false, idleHover: .lastPlayed, showsToast: true) == .toast)
+    #expect(NotchState(.resting, isPlaying: true, needsAttention: false, idleHover: .lastPlayed, showsToast: false) == .resting)
+    // An open notch already shows the track, so it skips the toast.
+    #expect(NotchState(.expanded, isPlaying: true, needsAttention: false, idleHover: .lastPlayed, showsToast: true) == .expanded)
+    #expect(NotchState(.pinned, isPlaying: true, needsAttention: false, idleHover: .lastPlayed, showsToast: true) == .expanded)
+    // The "!" with nothing playing, and Idle, have no track to show.
+    #expect(NotchState(.resting, isPlaying: false, needsAttention: true, idleHover: .lastPlayed, showsToast: true) == .resting)
+    #expect(NotchState(.resting, isPlaying: false, needsAttention: false, idleHover: .lastPlayed, showsToast: true) == .idle)
 }
 
 @Test func theDoctorsCardReachesFurtherDownThanThePlayerAtTheSameWidth() throws {

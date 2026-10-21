@@ -1,6 +1,6 @@
 ---
 title: Settings
-summary: Open Warble at login, change the text size, how long a paused song stays and what a hover shows, and set keyboard shortcuts.
+summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows and whether a new song shows its title, and set keyboard shortcuts.
 group: Reference
 ---
 
@@ -26,6 +26,7 @@ Every change takes effect straight away.
 ## Notch
 
 - **When nothing is playing, hover shows.** **Last Played** shows the card with the last song you played, so you can [pick up where you left off](/docs/pick-up-where-you-left-off/). **Nothing** keeps Warble out of sight until something plays.
+- **Show a message when the track changes.** Off at first. Turn it on, and when a new song starts, its title and artist slide out of the notch for two seconds, so you can see what's on without pointing at it. Skip a few songs in a row and you see only the last one. Point at the notch or click the message to open the full player.
 
 > [!NOTE]
 > Warble's animations follow **Reduce motion** in System Settings › Accessibility › Display.

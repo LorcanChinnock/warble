@@ -25,6 +25,8 @@ final class NotchModel {
     var isVirtual = false
     /// Whether its display is set to show a notch always, so Idle draws a blank notch even on a virtual housing.
     var isAlwaysShown = false
+    /// The track-change toast, while `state` is `toast`. Set with `state`, like `card`.
+    var toast: TrackToast?
     @ObservationIgnored var onClick: () -> Void = {}
     /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
     @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }
@@ -137,7 +139,7 @@ struct NotchView: View {
             let playback = model.isPlaying ? model.player.playback : nil
             NotchContent(state: state, card: model.card, playback: playback, artwork: model.player.artwork, colours: model.player.colours, model: model)
                 .frame(width: size.width, height: size.height, alignment: .top)
-                .id(ContentID(state: state, card: model.card, isPlaying: playback != nil))
+                .id(ContentID(state: state == .toast ? .resting : state, card: model.card, isPlaying: playback != nil))
                 .transition(ContentTransition())
         }
         .mask(alignment: .top) {
@@ -159,7 +161,8 @@ struct NotchView: View {
 }
 
 /// Tells one state's content from the next, so a change of card, such as resuming from the idle card, or a track
-/// starting beside the "!", fades too.
+/// starting beside the "!", fades too. A toast is Resting's content with a strip below, so the wings stay put while
+/// only the strip comes and goes.
 private struct ContentID: Hashable {
     let state: NotchState
     let card: NotchCard
@@ -196,8 +199,16 @@ private struct NotchContent: View {
         case (.expanded, .idle, _):
             IdleCard(model: model)
                 .padding(.top, model.notch.height)
-        case (.resting, _, let playback?):
-            RestingContent(playback: playback, artwork: artwork, notch: model.notch, model: model)
+        case (.resting, _, let playback?), (.toast, _, let playback?):
+            VStack(spacing: 0) {
+                RestingContent(playback: playback, artwork: artwork, notch: model.notch, model: model)
+                if state == .toast, let toast = model.toast {
+                    ToastLines(toast: toast)
+                        // A skip while it shows swaps the words with a fade.
+                        .id(toast)
+                        .transition(ContentTransition())
+                }
+            }
         case (.resting, _, nil):
             RestingContent(playback: nil, artwork: nil, notch: model.notch, model: model)
         default:
@@ -269,6 +280,29 @@ private struct IdleCard: View {
     }
 }
 
+/// A track-change toast: the new title, and the artist under it, in the strip below the resting wings.
+private struct ToastLines: View {
+    let toast: TrackToast
+
+    var body: some View {
+        VStack(spacing: 1) {
+            Text(toast.title)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(.white)
+            if let artist = toast.artist {
+                Text(artist)
+                    .font(.system(size: 11))
+                    .foregroundStyle(Native.secondary)
+            }
+        }
+        .lineLimit(1)
+        .padding(.horizontal, 16)
+        .frame(maxWidth: .infinity)
+        .frame(height: NotchLayout.toastDrop)
+        .accessibilityElement(children: .combine)
+    }
+}
+
 /// The art in the left wing and the play-state bars in the right, either side of the camera housing, each centred in a
 /// square as tall as the housing. When a Doctor check fails, a "!" takes the bars' place, and with nothing playing it's
 /// all that shows.
@@ -284,8 +318,8 @@ private struct RestingContent: View {
     var body: some View {
         let wing = NotchLayout.wing(notch: notch)
         let art = wing - 2 * NotchLayout.inset(notch: notch)
-        // Content on its way out still reads the model, so the bars drop as the notch leaves Resting.
-        let isIn = appeared && model.state == .resting
+        // Content on its way out still reads the model, so the bars drop as the notch leaves Resting. A toast keeps them.
+        let isIn = appeared && (model.state == .resting || model.state == .toast)
         HStack(spacing: 0) {
             Group {
                 if let playback {
