@@ -2,7 +2,7 @@
   <img src="docs/icon.png" width="128" height="128" alt="Warble app icon">
 </p>
 
-<h1 align="center">Warble <sup>in development</sup></h1>
+<h1 align="center">Warble <sup>beta</sup></h1>
 
 <p align="center">
   Your music, in your Mac's notch.<br>
@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/status-in%20development-yellow" alt="In development">
+  <img src="https://img.shields.io/badge/status-beta-yellow" alt="Beta">
   <img src="https://img.shields.io/badge/macOS-15%2B-black" alt="macOS 15 or later">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="GPL-3.0 license"></a>
   <a href="https://github.com/sponsors/LorcanChinnock"><img src="https://img.shields.io/badge/sponsor-%E2%99%A5-ea4aaa" alt="Sponsor Warble"></a>
@@ -22,11 +22,28 @@
   <a href="CHANGELOG.md">Changelog</a>
 </p>
 
-Warble shows what's playing in the notch at the top of your Mac's screen: the album art on one side, and on the other a few bars that move while it plays. Hover over the notch or click it to see the song on a soft glow in the album art's colours, then play, pause, skip, scrub, change the volume or switch speakers. When you pause, the song stays in the notch for a few seconds, then Warble gets out of the way. When nothing is playing, Warble hides behind the notch and uses no CPU, then slides back out when a song starts. Hover over the notch to see the last song you played and play it again.
+Warble shows what's playing in the notch at the top of your Mac's screen. Hover over the notch or click it to see the song, then play, pause, skip or switch speakers. When nothing is playing, it stays out of sight.
 
-It works with Apple Music, Spotify, podcasts and video in your browser. Macs without a notch, and external displays, get a virtual one. Right-click the notch for Settings or to quit, even with the menu bar icon hidden. Settings lets you open Warble at login, change the text size, how long a paused song stays and what a hover shows when nothing is playing, show the new song's title for a moment when the track changes, and add keyboard shortcuts for play, pause and skip. If something stops Warble seeing what's playing, a small "!" appears beside the notch. Click it to see what's wrong and how to fix it.
+Warble is in beta: it works, and it's still being built. [docs/roadmap.md](docs/roadmap.md) lists what each release will include.
 
-Warble isn't released yet. [docs/roadmap.md](docs/roadmap.md) lists what each release will include, with a link to each release's issue.
+## Install
+
+```sh
+brew install lorcanchinnock/tap/warble
+```
+
+Or [download the latest release](https://warble.lorcanchinnock.com/download) and drag Warble into Applications. It needs macOS 15 or later, on Apple silicon or Intel. Warble isn't notarized by Apple yet, so macOS blocks it the first time you open it: the [install steps](https://warble.lorcanchinnock.com/#install) show how to open it anyway. The [user guide](https://warble.lorcanchinnock.com/docs/) covers the rest.
+
+## Features
+
+- **What's playing, in the notch.** The album art sits on one side, and on the other a few bars move while it plays. Open it to see the song on a soft glow in the album art's colours.
+- **Controls.** Play, pause, skip, move through the song, and turn shuffle and repeat on or off when the app has them. Drag the volume bar, or scroll over the notch to change the volume.
+- **Switch speakers.** Move your Mac's sound to its own speakers, headphones or AirPods from the notch.
+- **Any player.** Apple Music, Spotify, podcast apps and video in your browser.
+- **Calm by default.** A paused song stays for a few seconds, then Warble gets out of the way. When nothing is playing, it hides behind the notch and uses no CPU. Hover over the notch to see the last song you played and play it again.
+- **Every Mac.** Macs without a notch, and external displays, get a virtual one, and you choose which displays show it.
+- **Help when it can't see.** If something stops Warble seeing what's playing, a small "!" appears beside the notch. Click it to see what's wrong and how to fix it.
+- **Settings, if you want them.** Open at login, a larger text size, how long a paused song stays, a message when the track changes, and keyboard shortcuts for play, pause and skip. Right-click the notch for Settings or to quit, even with the menu bar icon hidden.
 
 ## Privacy
 

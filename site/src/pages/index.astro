@@ -1,6 +1,12 @@
 ---
+import Copy from '../components/Copy.astro';
+import ForMacs from '../components/ForMacs.astro';
 import NotchDemo from '../components/NotchDemo.astro';
 import Base from '../layouts/Base.astro';
+import { latestRelease } from '../lib/release';
+
+const release = await latestRelease();
+const brew = 'brew install lorcanchinnock/tap/warble';
 ---
 
 <Base>
@@ -8,17 +14,62 @@ import Base from '../layouts/Base.astro';
     <div class="wrap">
       <NotchDemo />
       <h1>Your music, in the notch</h1>
-      <p class="lede">Warble shows what's playing in your Mac's notch. Hover over it to see the song, then play, pause, skip or switch speakers. When nothing's playing, it stays out of sight, and a hover brings back the last song so you can pick up where you left off.</p>
-      <p class="meta">Free and open source, for macOS 15 or later. Warble is still being built, and the first beta isn't out yet.</p>
+      <p class="lede">Warble shows what's playing in your Mac's notch. Hover over it to see the song, then play, pause, skip or switch speakers. When nothing's playing, it stays out of sight.</p>
       <div class="cta">
-        <a class="button big" href="https://github.com/LorcanChinnock/warble">Follow it on GitHub</a>
+        <a class="button big" href="/download">Download Warble</a>
+        <Copy command={brew} />
       </div>
+      <ForMacs />
+      <p class="meta">Free and open source. Beta {release.version}, for macOS 15 or later, on Apple silicon or Intel. <a href="#install">How to install</a></p>
     </div>
   </section>
 
-  <section class="small">
+  <section class="points" aria-labelledby="points">
+    <div class="wrap">
+      <h2 id="points" class="visually-hidden">What Warble does</h2>
+      <ul class="grid">
+        <li class="card">
+          <h3>Calm by default</h3>
+          <p>When nothing's playing, Warble draws nothing and uses no CPU. A paused song stays for 10 seconds, then the notch is just a notch again. Extras, like a message when the track changes, start switched off.</p>
+        </li>
+        <li class="card">
+          <h3>Quick</h3>
+          <p>A hover opens the player in a quarter of a second, and a click opens it at once. Play and pause change the moment you click, without waiting for the app to catch up.</p>
+        </li>
+        <li class="card">
+          <h3>Any player</h3>
+          <p>Apple Music, Spotify, podcast apps, and video in Safari, Chrome or any other browser. If something stops Warble seeing what's playing, a small <b>!</b> beside the notch says why and how to fix it.</p>
+        </li>
+        <li class="card">
+          <h3>Every Mac</h3>
+          <p>On a Mac without a notch, or a MacBook with its lid closed, Warble draws a notch of its own at the top of the screen. You choose which displays get one.</p>
+        </li>
+        <li class="card">
+          <h3>Private</h3>
+          <p>No account, no cloud, no analytics. Warble only goes online to check for updates, and it asks you first.</p>
+        </li>
+        <li class="card">
+          <h3>Free</h3>
+          <p>Free and open source, with no ads. The <a href="https://github.com/LorcanChinnock/warble">code is on GitHub</a>. If you like it, you can <a href="/sponsor">sponsor it</a>, which helps pay to have Apple notarize it.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="install" id="install" aria-labelledby="install-title">
     <div class="wrap narrow-text">
-      <p>It works with Apple Music, Spotify, podcasts and video in your browser, and on Macs without a notch too. There's no account and nothing to set up, though <a href="/docs/settings/">Settings</a> lets you open Warble at login, change the text size and what a hover shows, show each new song's title as it starts, or add keyboard shortcuts. If something stops it seeing what's playing, it tells you how to <a href="/docs/when-nothing-shows/">fix it</a>. The <a href="https://github.com/LorcanChinnock/warble/blob/main/docs/roadmap.md">roadmap</a> lists what's coming in each release.</p>
+      <h2 id="install-title">Install</h2>
+      <Copy command={brew} />
+      <p>Or <a href="/download">download the zip</a> and drag Warble into Applications.</p>
+      <ForMacs />
+      <p>Warble isn't notarized by Apple yet, so macOS blocks it the first time you open it:</p>
+      <ol class="steps">
+        <li>Open Warble from Applications. macOS says it can't check Warble. Click <b>Done</b>.</li>
+        <li>Open <b>System Settings</b>, choose <b>Privacy &amp; Security</b> and scroll down to <b>Security</b>.</li>
+        <li>Click <b>Open Anyway</b> next to the message about Warble, then confirm.</li>
+        <li>Play something. The notch slides out to show it.</li>
+      </ol>
+      <p>Warble is a beta, still being built, so expect changes between versions. The <a href="/docs/get-started/">guide</a> covers the rest, and the <a href="https://github.com/LorcanChinnock/warble/blob/main/docs/roadmap.md">roadmap</a> lists what's coming.</p>
     </div>
   </section>
 </Base>
@@ -29,14 +80,28 @@ import Base from '../layouts/Base.astro';
   .hero :global(.screen) { margin-bottom: clamp(4px, 2vw, 16px); }
   .hero h1 { font-size: clamp(40px, 6.5vw, 72px); margin: 0; }
   .lede { font-size: clamp(18px, 2.1vw, 21px); margin: 0; max-width: 32em; }
-  .cta { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px 16px; justify-content: center; align-items: center; width: 100%; }
+  .cta :global(.copy) { flex: 0 1 480px; min-width: 0; text-align: start; }
   .button.big { min-height: 50px; padding: 12px 24px; font-size: 17px; }
   .meta { margin: 0; font-size: 15px; color: var(--secondary); max-width: 32em; }
+  .meta a { color: var(--fg); }
+  .hero :global(.for-macs) { justify-content: center; }
 
   section { padding-block: clamp(28px, 4vw, 48px); }
   .wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
-  .narrow-text { justify-items: center; }
-  .narrow-text p { max-width: 36em; }
-  .small p { font-size: 18px; margin: 0; color: var(--secondary); }
-  .small a { color: var(--fg); }
+
+  .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+  .grid .card { padding: 22px 24px; display: grid; gap: 8px; align-content: start; }
+  .grid h3 { font-size: 20px; letter-spacing: -0.015em; }
+  .grid p { margin: 0; color: var(--secondary); }
+  .grid a { color: var(--fg); }
+
+  .narrow-text { max-width: 640px; }
+  .install h2 { font-size: clamp(30px, 4.5vw, 44px); }
+  .install p { margin: 0; }
+  .install a { color: var(--fg); }
+  .steps { margin: 0; padding-left: 1.4em; display: grid; gap: 6px; }
+  .steps li::marker { color: var(--secondary); }
+
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 </style>
