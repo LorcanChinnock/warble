@@ -175,6 +175,27 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
     #expect(open.deadline == nil)
 }
 
+@Test func aRightClickMenuOnARestingNotchKeepsItResting() {
+    var resting = intent((.pointerEntered, 0), (.menuOpened, 0.1))
+    #expect(resting.deadline == nil)
+    resting.advance(to: entered + 10)
+    #expect(resting.state == .resting)
+}
+
+@Test func aRestingNotchStaysRestingAfterItsMenuCloses() {
+    var resting = intent((.pointerEntered, 0), (.menuOpened, 0.1), (.menuClosed, 3))
+    #expect(resting.deadline == nil)
+    resting.advance(to: entered + 10)
+    #expect(resting.state == .resting)
+}
+
+@Test func aRestingNotchOpensAgainOnceThePointerComesBackAfterItsMenu() {
+    var back = intent((.pointerEntered, 0), (.menuOpened, 0.1), (.menuClosed, 3), (.pointerLeft, 4), (.pointerEntered, 5))
+    #expect(back.deadline == entered + 5.25)
+    back.advance(to: entered + 5.25)
+    #expect(back.state == .expanded)
+}
+
 /// What a notch shows for `intent` with nothing playing and nothing wrong.
 private func idleState(_ intent: HoverIntent, idleHover: IdleHover = .lastPlayed) -> NotchState {
     NotchState(intent.state, isPlaying: false, needsAttention: false, idleHover: idleHover)

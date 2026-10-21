@@ -187,6 +187,9 @@
     "Open %@" : {
 
     },
+    "Open Login Items…" : {
+
+    },
     "Open Music or Spotify to check." : {
 
     },
@@ -197,6 +200,9 @@
 
     },
     "Open Warble again from Applications to bring it back." : {
+
+    },
+    "Open at login" : {
 
     },
     "Open the app that played it" : {
@@ -313,6 +319,9 @@
     "This kept stopping, so Warble only follows Music and Spotify until you open it again." : {
 
     },
+    "Turned off in System Settings. Turn Warble on in Login Items to open it at login again." : {
+
+    },
     "Undo" : {
 
     },
@@ -341,6 +350,9 @@
 
     },
     "Warble may control %@." : {
+
+    },
+    "Warble opens when you log in, so the notch is there after a restart." : {
 
     },
     "What the notch shows." : {

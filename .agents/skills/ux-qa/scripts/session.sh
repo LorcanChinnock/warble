@@ -84,6 +84,7 @@ uxqa_screen() {
 }
 
 uxqa_click()  { uxqa_focus; "$UXQA_DIR/bin/input" click "$@"; }
+uxqa_rclick() { uxqa_focus; "$UXQA_DIR/bin/input" rclick "$@"; }
 uxqa_dclick() { uxqa_focus; "$UXQA_DIR/bin/input" dclick "$@"; }
 uxqa_drag()   { uxqa_focus; "$UXQA_DIR/bin/input" drag "$@"; }
 uxqa_scroll() { uxqa_focus; "$UXQA_DIR/bin/input" scroll "$@"; }

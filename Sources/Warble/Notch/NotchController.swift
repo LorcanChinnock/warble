@@ -187,6 +187,12 @@ final class NotchController {
         surface.onClick = { [weak self, weak surface] in
             self?.dismiss { $0 !== surface }
         }
+        surface.makeMenu = { [weak self] in
+            guard let self else { return nil }
+            return NotchMenu.make(source: self.playback?.bundleIdentifier ?? self.player.lastPlayed?.bundleIdentifier, updater: .shared) { [weak self] in
+                self?.openApp()
+            }
+        }
         return surface
     }
 
@@ -194,7 +200,11 @@ final class NotchController {
     /// again whatever the Doctor found, in case the user fixed it, such as in System Settings, which tells Warble nothing.
     private func changed() {
         let open = surfaces.values.contains { $0.state == .expanded }
-        listen(open: open, pointerInside: surfaces.values.contains { $0.state == .expanded && $0.pointerInside })
+        listen(
+            open: open,
+            pointerInside: surfaces.values.contains { $0.state == .expanded && $0.pointerInside },
+            menuOpen: surfaces.values.contains(where: \.isShowingMenu)
+        )
         // Only the player's card has a slider and an output menu.
         followVolume(surfaces.values.contains { $0.state == .expanded && $0.card == .player })
         if open, !wasOpen, doctor.adapter != .working {
@@ -328,8 +338,9 @@ final class NotchController {
     }
 
     /// While a notch is open, a click anywhere else closes it, and so does Escape with the pointer on it. Both stop at
-    /// rest, so a resting notch watches nothing and never takes Escape from the app in front.
-    private func listen(open: Bool, pointerInside: Bool) {
+    /// rest, so a resting notch watches nothing and never takes Escape from the app in front, and Escape is let go while
+    /// a menu is open, so the key reaches the menu and closes it.
+    private func listen(open: Bool, pointerInside: Bool, menuOpen: Bool) {
         if open, clickMonitor == nil {
             // Clicks in other apps; a click on the panel itself is the panel's own.
             clickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown]) { [weak self] _ in
@@ -339,7 +350,7 @@ final class NotchController {
             NSEvent.removeMonitor(monitor)
             clickMonitor = nil
         }
-        let wantsEscape = open && pointerInside
+        let wantsEscape = open && pointerInside && !menuOpen
         if wantsEscape, !takesEscape {
             takesEscape = HotkeyCenter.shared.registerTemporary(KeyCombo(keyCode: UInt32(kVK_Escape), modifiers: 0)) { [weak self] in
                 self?.dismiss()
