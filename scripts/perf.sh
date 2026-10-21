@@ -1,6 +1,6 @@
 #!/bin/bash
 # Measures the app's fast and idle paths on this Mac and checks them against the budgets in docs/performance.md.
-# Drives an installed WarbleDev with the pointer, so it takes over the mouse for about four minutes, and needs:
+# Drives an installed WarbleDev with the pointer, so it takes over the mouse for about five minutes, and needs:
 #   - Accessibility permission for this terminal (moving the pointer, clicking the notch, finding Play/Pause),
 #   - nothing playing when it starts, for the idle measurements.
 # It quits any running WarbleDev, and the installed Warble too, since both draw in the notch, and reopens Warble at the end
@@ -18,14 +18,14 @@ executable=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$app/Conten
 resources="$app/Contents/Resources"
 
 # Budgets, about 1.5x the baselines in docs/performance.md. The idle and at-rest ones are absolute instead: no CPU, and
-# wakeups only as often as macOS itself wakes the app, about one every 10 seconds, so any timer of 5 seconds or less
-# fails. Empty means not measured: printed, not checked.
+# no wakeups in the median 10 seconds, so any timer of 10 seconds or less fails. Empty means not
+# measured: printed, not checked.
 budget_launch_ms="205"
 budget_idle_cpu="0.1"
-budget_idle_wakeups="0.2"
+budget_idle_wakeups="0"
 budget_playing_cpu="0.5"
-budget_playing_wakeups="0.3"
-budget_memory_mb="26"
+budget_playing_wakeups="0"
+budget_memory_mb="33"
 budget_hover_ms="55"
 budget_click_ms="70"
 budget_play_pause_ms="20"
@@ -98,32 +98,23 @@ wakeups() {
   echo "$total"
 }
 
-# CPU as a percentage of one core, and wakeups a second, over the next $1 seconds.
+# CPU as a percentage of one core over the next $1 seconds, and the wakeups in the median 10-second slice of them. A
+# timer of 10 seconds or less wakes the app in every slice. macOS wakes every app when you switch apps or type, and
+# keep-awake apps such as Caffeine fake input every minute or two, but those land in a slice or two, which the median
+# leaves out.
 measure_cpu() {
-  local cpu_before wakeups_before
+  local cpu_before counts="" before after
   cpu_before=$(cpu_seconds)
-  wakeups_before=$(wakeups)
-  sleep "$1"
-  cpu=$(python3 -c "print(round(($(cpu_seconds) - $cpu_before) / $1 * 100, 2))")
-  wakeups_per_second=$(python3 -c "print(round(($(wakeups) - $wakeups_before) / $1, 2))")
-}
-
-# Milliseconds since the last keyboard or pointer input, the script's own included.
-input_idle_ms() { ioreg -c IOHIDSystem | awk '/HIDIdleTime/ {print int($NF / 1000000); exit}'; }
-
-# measure_cpu for $1 seconds while nobody uses the Mac. Using it, or switching apps, makes macOS wake every app, which
-# would count as Warble's wakeups, so a measurement with input during it is taken again, up to three times. The
-# script's own last input came before the wait that precedes this.
-measure_quietly() {
-  for _ in 1 2 3; do
-    measure_cpu "$1"
-    if [ "$(input_idle_ms)" -ge $(($1 * 1000)) ]; then
-      return
-    fi
-    echo "Someone used the Mac while $2 was measured, which wakes every app. Measuring it again. Leave the Mac alone." >&2
+  before=$(wakeups)
+  for _ in $(seq $(($1 / 10))); do
+    sleep 10
+    after=$(wakeups)
+    counts="$counts $((after - before))"
+    before=$after
   done
-  cpu=""
-  wakeups_per_second=""
+  cpu=$(python3 -c "print(round(($(cpu_seconds) - $cpu_before) / $1 * 100, 2))")
+  wakeups_median=$(echo "$counts" | python3 -c 'import sys,statistics; print(statistics.median_low(int(x) for x in sys.stdin.read().split()))')
+  wakeup_slices=$counts
 }
 
 memory_mb() {
@@ -177,27 +168,25 @@ for line in sys.stdin:
         print(match.group(1))' | median)
 [ "$(ps -o comm= -p "$(pid)")" = "$app/Contents/MacOS/$executable" ] || { echo "The running WarbleDev isn't $app" >&2; exit 1; }
 
-# Idle: nothing playing and the pointer away from the notch, for a minute. It starts 20 seconds after launch, once macOS
-# has finished with the new process: AppKit and Launch Services wake it a few times in its first seconds, with timers of
+# Idle: nothing playing and the pointer away from the notch, for a minute. It starts 40 seconds after launch, once macOS
+# has finished with the new process: AppKit and Launch Services wake it a few times in its first minute, with timers of
 # their own that fire once.
 read -r housing_x housing_y <<<"$("$input" housing)"
 away_x=$housing_x
 away_y=$((housing_y + 400))
 "$input" move "$away_x" "$away_y"
-sleep 20
-measure_quietly 60 "idle"
+sleep 40
+measure_cpu 60
 idle_cpu=$cpu
-idle_wakeups=$wakeups_per_second
+idle_wakeups=$wakeups_median
+idle_slices=$wakeup_slices
 
-# Playing: the preview track, which plays without a player, so the runs repeat. The adapter doesn't run, so this is the
-# notch's own cost: the art, the title and the play-state bars at 8 fps.
+# Playing: the preview track, which plays without a player, so the runs repeat. The adapter doesn't run, so CPU and
+# wakeups at rest, measured after the notch has opened and closed, are the notch's own cost: the art, the title and the
+# play-state bars at 8 fps.
 quit "$executable"
 open -g -a "$app" --args -notchPreviewState resting
-sleep 20
-measure_quietly 30 "playing at rest"
-playing_cpu=$cpu
-playing_wakeups=$wakeups_per_second
-memory=$(memory_mb)
+sleep 5
 
 # Hover → expanded: from the end of the hover delay to the first frame of the morph, ten times.
 for _ in $(seq 10); do
@@ -224,7 +213,12 @@ for _ in $(seq 10); do
   sleep 0.6
 done
 "$input" move "$away_x" "$away_y"
-sleep 2
+sleep 10
+measure_cpu 60
+playing_cpu=$cpu
+playing_wakeups=$wakeups_median
+playing_slices=$wakeup_slices
+memory=$(memory_mb)
 
 hover_ms=$(times Expand hover | median)
 click_ms=$(times Expand click | median)
@@ -244,12 +238,13 @@ row() { # name value unit budget
 echo
 row "Launch → ready" "$launch_ms" ms "$budget_launch_ms"
 row "Idle CPU, nothing playing" "$idle_cpu" % "$budget_idle_cpu"
-row "Wakeups, nothing playing" "$idle_wakeups" "a second" "$budget_idle_wakeups"
+row "Wakeups, nothing playing" "$idle_wakeups" "per 10 s" "$budget_idle_wakeups"
 row "CPU playing, at rest" "$playing_cpu" % "$budget_playing_cpu"
-row "Wakeups playing, at rest" "$playing_wakeups" "a second" "$budget_playing_wakeups"
-row "Memory playing" "$memory" MB "$budget_memory_mb"
+row "Wakeups playing, at rest" "$playing_wakeups" "per 10 s" "$budget_playing_wakeups"
+row "Memory playing, after use" "$memory" MB "$budget_memory_mb"
 row "Hover delay end → expanded" "$hover_ms" ms "$budget_hover_ms"
 row "Click → expanded" "$click_ms" ms "$budget_click_ms"
 row "Click → play/pause shown" "$play_pause_ms" ms "$budget_play_pause_ms"
+echo "Wakeups in each 10 s, nothing playing:$idle_slices. Playing at rest:$playing_slices."
 echo
 exit $failed

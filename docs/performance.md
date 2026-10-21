@@ -23,7 +23,7 @@ To change a budget, measure again, then update both this table and `Budget` in `
 
 `scripts/perf.sh` measures an installed WarbleDev (`/Applications/WarbleDev.app` by default, or a path you pass). CI can't run it, because it needs the pointer and the notch. Run it before each release, after `make app`.
 
-It moves the pointer and clicks for about four minutes, so leave the Mac alone while it runs. It needs Accessibility permission for the terminal, and nothing playing when it starts: it asks the adapter and stops if anything is. It quits WarbleDev and the installed Warble, since both draw in the notch, and reopens Warble at the end if it was running. The pointer goes back where it was.
+It moves the pointer and clicks for about five minutes, so keep your hands off the mouse while it runs. It needs Accessibility permission for the terminal, and nothing playing when it starts: it asks the adapter and stops if anything is. It quits WarbleDev and the installed Warble, since both draw in the notch, and reopens Warble at the end if it was running. The pointer goes back where it was.
 
 The app emits `OSSignposter` signposts under its bundle identifier, in category `perf`, which the script reads with `log show --signpost`. Instruments shows them too.
 
@@ -36,10 +36,10 @@ The first frame waits for the display's next refresh, so these include up to a f
 The script:
 
 1. Launches the app three times and takes the median **launch → ready** time.
-2. Waits 20 seconds, then measures **idle CPU** and **wakeups** for a minute with nothing playing, counting the adapter's Perl processes as Warble's.
-3. Launches the preview track (`-notchPreviewState resting`), which plays without a player, so runs repeat. It waits 20 seconds and measures **CPU** and **wakeups** at rest for 30 seconds, then the **memory footprint**. The adapter doesn't run in the preview, so this is the notch's own cost.
-4. Hovers over the notch ten times and clicks it ten times, moving off it after each, and reports the median **hover → expanded** and **click → expanded** times.
-5. Opens the notch and clicks Pause and Play ten times, and reports the median **click → play/pause shown** time.
+2. Waits 40 seconds, then measures **idle CPU** and **wakeups** for a minute with nothing playing, counting the adapter's Perl processes as Warble's.
+3. Launches the preview track (`-notchPreviewState resting`), which plays without a player, so runs repeat. It hovers over the notch ten times and clicks it ten times, moving off it after each, and reports the median **hover → expanded** and **click → expanded** times.
+4. Opens the notch and clicks Pause and Play ten times, and reports the median **click → play/pause shown** time.
+5. Moves off the notch, waits 10 seconds, then measures **CPU** and **wakeups** at rest for a minute, and then the **memory footprint**. The adapter doesn't run in the preview, so this is the notch's own cost.
 
 It exits non-zero if a metric is over budget or couldn't be measured.
 
@@ -47,17 +47,19 @@ It exits non-zero if a metric is over budget or couldn't be measured.
 |---|---|---|
 | Launch → ready | 145 ms | 205 ms |
 | Idle CPU, nothing playing | 0.0% | at most 0.1% |
-| Wakeups, nothing playing | 0.1 a second | at most 0.2 a second |
+| Wakeups, nothing playing | 0 in the median 10 s | 0 in the median 10 s |
 | CPU playing, notch at rest | 0.0% | at most 0.5% |
-| Wakeups playing, notch at rest | 0.13 a second | at most 0.3 a second |
-| Memory playing | 17 MB | 26 MB |
+| Wakeups playing, notch at rest | 0 in the median 10 s | 0 in the median 10 s |
+| Memory playing, after use | 22 MB | 33 MB |
 | End of hover delay → expanded | 35.5 ms | 55 ms |
 | Click → expanded | 44.4 ms | 70 ms |
 | Click → play/pause shown | 10.4 ms | 20 ms |
 
-The timings and memory budgets are about 1.5× the baseline, the median of five runs. The CPU and wakeup budgets are absolute, since the promise is none at all. They're all set in `scripts/perf.sh`, so change both together.
+The timing budgets are about 1.5× the baseline, the median of five runs, and the memory budget 1.5× the two runs that measured it after use. The CPU and wakeup budgets are absolute, since the promise is none at all. They're all set in `scripts/perf.sh`, so change both together.
 
-**Wakeups** count each time a thread of Warble's starts running again, from its context switches. A timer wakes the app without using measurable CPU, so this is what catches one: a 1-second timer gives 1.33 a second and fails. macOS itself wakes any app now and then, about once every 10 seconds once it has settled, and more in its first seconds, so the budget allows twice that, and any timer of 5 seconds or less fails. Using the Mac wakes every app too: switching apps or typing elsewhere during the idle minute added 11 to 25 wakeups in testing, where a minute left alone had none. So the script checks the time since the last keyboard or pointer input after each idle measurement, and when someone used the Mac during it, says so and measures again, up to three times.
+**Wakeups** count each time a thread of Warble's starts running again, from its context switches. A timer wakes the app without using measurable CPU, so this is what catches one: with a 10-second timer added, idle CPU read 0.02%, but every 10 seconds had a wakeup, and the script failed.
+
+The script counts wakeups in 10-second slices and takes the median slice. macOS wakes every app when you switch apps or type, and in an app's first minute, and keep-awake apps such as Caffeine fake input every minute or two. In testing that put 3 to 15 wakeups into one or two slices of a minute, and none into the rest. The median leaves those slices out, while a timer of 10 seconds or less shows in every slice, so the budget is none in the median slice.
 
 `top`'s own idle wakeup column stays at 0 even for a process that wakes twice a second, so the script doesn't use it.
 

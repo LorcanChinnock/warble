@@ -22,7 +22,7 @@ test:
 	swift test $(TEST_FLAGS) $(ARGS) --skip PerfTests
 
 # The performance budgets, alone and one test at a time, so other tests don't skew the timings. perf-app measures the
-# installed WarbleDev and takes over the pointer for about four minutes. Budgets and baselines: docs/performance.md.
+# installed WarbleDev and takes over the pointer for about five minutes. Budgets and baselines: docs/performance.md.
 perf:
 	swift test $(TEST_FLAGS) $(ARGS) --filter PerfTests
 
