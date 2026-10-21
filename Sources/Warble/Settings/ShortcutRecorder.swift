@@ -45,10 +45,11 @@ final class ShortcutRecorder {
         }
     }
 
+    /// Written before recording stops, so the shortcuts register once, without the cleared one.
     func clear(_ action: WarbleAction) {
-        stop()
         refusal = nil
         SettingsStore.shared.set("", forKey: PreferenceKey.hotkey(action))
+        stop()
     }
 
     private func press(_ event: NSEvent) {
