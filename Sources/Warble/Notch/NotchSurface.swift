@@ -35,6 +35,8 @@ final class NotchSurface {
     var idleHover = IdleHover.lastPlayed {
         didSet { shownChanged() }
     }
+    /// The track-change toast showing, which a resting notch draws below its wings.
+    var toast: TrackToast?
     /// Without anything playing, a "!" or a card to open while Idle, the surface draws nothing, or only a blank notch,
     /// and takes no hover or click.
     private var answersPointer: Bool { state != .hidden && !(state == .idle && idleHover == .nothing) }
@@ -48,7 +50,7 @@ final class NotchSurface {
     var makeMenu: () -> NSMenu? = { nil }
 
     var state: NotchState {
-        NotchState(hover.state, isPlaying: isPlaying, needsAttention: needsAttention, idleHover: idleHover, isAlwaysShown: isAlwaysShown)
+        NotchState(hover.state, isPlaying: isPlaying, needsAttention: needsAttention, idleHover: idleHover, isAlwaysShown: isAlwaysShown, showsToast: toast != nil)
     }
     /// What Expanded holds, which the panel morphs to on the next `update`.
     var card: NotchCard {
@@ -175,6 +177,7 @@ final class NotchSurface {
         }
         let card = card
         let isPlaying = isPlaying
+        let toast = state == .toast ? toast : nil
         guard let frame = NotchLayout.frame(state, notch: notch, card: card) else {
             guard shown != nil else { return }
             shown = nil
@@ -195,7 +198,7 @@ final class NotchSurface {
             }
             return
         }
-        guard shown?.state != state || shown?.frame != frame || model.card != card || model.isPlaying != isPlaying else { return }
+        guard shown?.state != state || shown?.frame != frame || model.card != card || model.isPlaying != isPlaying || model.toast != toast else { return }
         let previous = shown
         shown = (state, frame)
         morphs += 1
@@ -222,6 +225,7 @@ final class NotchSurface {
                 model.state = state
                 model.card = card
                 model.isPlaying = isPlaying
+                model.toast = toast
             } completion: { [weak self] in
                 guard let self, morph == self.morphs, self.panelFrame != frame else { return }
                 self.show(in: frame)
@@ -230,6 +234,7 @@ final class NotchSurface {
             model.state = state
             model.card = card
             model.isPlaying = isPlaying
+            model.toast = toast
             show(in: frame)
         }
         panel.track(NotchLayout.hoverArea(state, notch: notch, card: card) ?? .zero)

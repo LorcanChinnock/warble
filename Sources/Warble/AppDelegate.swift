@@ -38,6 +38,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 shuffle: .off,
                 repeatMode: .off
             )
+            // Next and previous change the preview track, such as from a shortcut, to show the track-change toast.
+            var track = 1
+            notch.send = { [weak notch] command in
+                guard let notch, var playback = notch.playback else { return }
+                switch command {
+                case .nextTrack: track += 1
+                case .previousTrack: track = max(track - 1, 1)
+                default: return
+                }
+                playback.title = "Preview track \(track) with a title long enough to scroll"
+                notch.playback = playback
+            }
         } else if let paths = Bundle.main.resourceURL.flatMap(AdapterSource.Paths.init(resources:)) {
             let source = AdapterSource(paths: paths)
             source.start()

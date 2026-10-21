@@ -11,6 +11,8 @@ public enum PreferenceKey {
     public static let stayVisibleAfterPausing = "stayVisibleAfterPausing"
     /// What the camera housing does on a hover while nothing is playing, an `IdleHover`.
     public static let idleHover = "idleHover"
+    /// Whether the new track's title and artist slide out of the notch for a moment when the track changes.
+    public static let trackChangeToast = "trackChangeToast"
 
     public static func hotkey(_ action: WarbleAction) -> String { "hotkey.\(action.rawValue)" }
 }
@@ -24,6 +26,7 @@ public struct Preferences {
             PreferenceKey.virtualNotch: [String: String](),
             PreferenceKey.stayVisibleAfterPausing: IdleAfterPause.defaultDelay,
             PreferenceKey.idleHover: IdleHover.lastPlayed.rawValue,
+            PreferenceKey.trackChangeToast: false,
         ]
         for action in WarbleAction.allCases {
             values[PreferenceKey.hotkey(action)] = action.defaultCombo?.encoded ?? ""
@@ -77,6 +80,10 @@ public struct Preferences {
 
     public var idleHover: IdleHover {
         IdleHover(rawValue: store.string(forKey: PreferenceKey.idleHover) ?? "") ?? .lastPlayed
+    }
+
+    public var trackChangeToast: Bool {
+        store.bool(forKey: PreferenceKey.trackChangeToast)
     }
 
     /// `nil` means the user cleared the shortcut.

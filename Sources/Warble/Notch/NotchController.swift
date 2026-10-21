@@ -40,6 +40,9 @@ final class NotchController {
                 remember(shownPlayback)
             }
             handleIdle(.playback(shownPlayback))
+            if let shownPlayback, let notice = TrackToast.notice(from: oldValue, to: shownPlayback) {
+                post(notice)
+            }
         }
     }
 
@@ -65,6 +68,10 @@ final class NotchController {
     private var hovering = false
     /// What a hover on the housing does while Idle.
     private var idleHover = Preferences().idleHover
+    /// The new track's title and artist, shown for a moment after a skip when Settings turns it on.
+    private var toasts = ToastQueue<TrackToast>()
+    private var toastTimer: Timer?
+    private var showsTrackToast = Preferences().trackChangeToast
 
     /// Sends a command to the app that's playing. Unset, as in the preview, a command only changes what the notch shows.
     var send: (PlaybackCommand) -> Void = { _ in }
@@ -110,6 +117,12 @@ final class NotchController {
                         surface.update()
                     }
                     self.changed()
+                }
+                if preferences.trackChangeToast != self.showsTrackToast {
+                    self.showsTrackToast = preferences.trackChangeToast
+                    if !self.showsTrackToast {
+                        self.dismissToast()
+                    }
                 }
                 if preferences.virtualNotchRules != self.rules {
                     self.layOut()
@@ -172,6 +185,7 @@ final class NotchController {
             surface.isVirtual = housing.isVirtual
             surface.isAlwaysShown = housing.isAlwaysShown
             surface.idleHover = idleHover
+            surface.toast = toasts.current?.content
             surface.isPlaying = showsPlayback
             surface.needsAttention = doctor.needsAttention
             surface.update(animated: false)
@@ -207,6 +221,10 @@ final class NotchController {
         )
         // Only the player's card has a slider and an output menu.
         followVolume(surfaces.values.contains { $0.state == .expanded && $0.card == .player })
+        // The open card shows the track, so a toast has nothing left to say, even once the notch closes again.
+        if open {
+            dismissToast()
+        }
         if open, !wasOpen, doctor.adapter != .working {
             doctor.refresh()
         }
@@ -242,7 +260,44 @@ final class NotchController {
             surface.isPlaying = showsPlayback
             surface.update()
         }
+        if !showsPlayback {
+            dismissToast()
+        }
         changed()
+    }
+
+    /// Shows a track-change toast on every notch, if Settings turns it on, something is showing and no notch is open,
+    /// since an open notch already shows the track.
+    private func post(_ notice: Notice<TrackToast>) {
+        guard showsTrackToast, showsPlayback, !surfaces.values.contains(where: { $0.state == .expanded }) else { return }
+        toasts.post(notice, at: .now)
+        handleToast()
+    }
+
+    private func dismissToast() {
+        guard toasts.current != nil else { return }
+        toasts.dismiss(at: .now)
+        handleToast()
+    }
+
+    /// Applies a deadline due by `date`, draws the toast showing, if any, on every notch, and schedules one timer at
+    /// most, for when it goes.
+    private func handleToast(at date: Date = .now) {
+        toasts.advance(to: date)
+        toastTimer?.invalidate()
+        toastTimer = nil
+        if let deadline = toasts.deadline {
+            let timer = Timer(fire: deadline, interval: 0, repeats: false) { [weak self] _ in
+                MainActor.assumeIsolated { self?.handleToast(at: max(.now, deadline)) }
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            toastTimer = timer
+        }
+        let toast = toasts.current?.content
+        for surface in surfaces.values where surface.toast != toast {
+            surface.toast = toast
+            surface.update()
+        }
     }
 
     /// Draws or takes away the "!", which draws a resting notch even when nothing is playing, in place of Idle.
