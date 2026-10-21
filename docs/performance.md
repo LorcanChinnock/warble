@@ -57,7 +57,9 @@ It exits non-zero if a metric is over budget or couldn't be measured.
 
 The timings and memory budgets are about 1.5× the baseline, the median of five runs. The CPU and wakeup budgets are absolute, since the promise is none at all. They're all set in `scripts/perf.sh`, so change both together.
 
-**Wakeups** count each time a thread of Warble's starts running again, from its context switches. A timer wakes the app without using measurable CPU, so this is what catches one: a 1-second timer gives 1.33 a second and fails. macOS itself wakes any app now and then, about once every 10 seconds once it has settled, and more in its first seconds, so the budget allows twice that, and any timer of 5 seconds or less fails. `top`'s own idle wakeup column stays at 0 even for a process that wakes twice a second, so the script doesn't use it.
+**Wakeups** count each time a thread of Warble's starts running again, from its context switches. A timer wakes the app without using measurable CPU, so this is what catches one: a 1-second timer gives 1.33 a second and fails. macOS itself wakes any app now and then, about once every 10 seconds once it has settled, and more in its first seconds, so the budget allows twice that, and any timer of 5 seconds or less fails. Using the Mac wakes every app too: switching apps or typing elsewhere during the idle minute added 11 to 25 wakeups in testing, where a minute left alone had none. So the script checks the time since the last keyboard or pointer input after each idle measurement, and when someone used the Mac during it, says so and measures again, up to three times.
+
+`top`'s own idle wakeup column stays at 0 even for a process that wakes twice a second, so the script doesn't use it.
 
 **CPU at rest** is the app's own. The play-state bars run in Core Animation, so their cost lands in WindowServer, not Warble: about 1.7% of a core at 8 fps, as measured in `PlayStateBars`.
 

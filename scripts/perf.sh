@@ -108,6 +108,24 @@ measure_cpu() {
   wakeups_per_second=$(python3 -c "print(round(($(wakeups) - $wakeups_before) / $1, 2))")
 }
 
+# Milliseconds since the last keyboard or pointer input, the script's own included.
+input_idle_ms() { ioreg -c IOHIDSystem | awk '/HIDIdleTime/ {print int($NF / 1000000); exit}'; }
+
+# measure_cpu for $1 seconds while nobody uses the Mac. Using it, or switching apps, makes macOS wake every app, which
+# would count as Warble's wakeups, so a measurement with input during it is taken again, up to three times. The
+# script's own last input came before the wait that precedes this.
+measure_quietly() {
+  for _ in 1 2 3; do
+    measure_cpu "$1"
+    if [ "$(input_idle_ms)" -ge $(($1 * 1000)) ]; then
+      return
+    fi
+    echo "Someone used the Mac while $2 was measured, which wakes every app. Measuring it again. Leave the Mac alone." >&2
+  done
+  cpu=""
+  wakeups_per_second=""
+}
+
 memory_mb() {
   footprint -p "$(pid)" 2>/dev/null | python3 -c '
 import re, sys
@@ -167,7 +185,7 @@ away_x=$housing_x
 away_y=$((housing_y + 400))
 "$input" move "$away_x" "$away_y"
 sleep 20
-measure_cpu 60
+measure_quietly 60 "idle"
 idle_cpu=$cpu
 idle_wakeups=$wakeups_per_second
 
@@ -176,7 +194,7 @@ idle_wakeups=$wakeups_per_second
 quit "$executable"
 open -g -a "$app" --args -notchPreviewState resting
 sleep 20
-measure_cpu 30
+measure_quietly 30 "playing at rest"
 playing_cpu=$cpu
 playing_wakeups=$wakeups_per_second
 memory=$(memory_mb)
