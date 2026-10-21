@@ -16,6 +16,13 @@ final class NotchSurface {
         get { model.isVirtual }
         set { model.isVirtual = newValue }
     }
+    /// Whether a blank notch stays drawn over the housing while nothing is playing.
+    var isAlwaysShown = false {
+        didSet {
+            model.isAlwaysShown = isAlwaysShown
+            shownChanged()
+        }
+    }
     /// Whether anything is playing, rather than Idle.
     var isPlaying = false {
         didSet { shownChanged() }
@@ -28,9 +35,10 @@ final class NotchSurface {
     var idleHover = IdleHover.lastPlayed {
         didSet { shownChanged() }
     }
-    /// Without anything playing, a "!" or a card to open while Idle, the surface draws nothing.
-    private var isShown: Bool { state != .hidden }
-    private var wasShown = false
+    /// Without anything playing, a "!" or a card to open while Idle, the surface draws nothing, or only a blank notch,
+    /// and takes no hover or click.
+    private var answersPointer: Bool { state != .hidden && !(state == .idle && idleHover == .nothing) }
+    private var answeredPointer = false
     /// Called after the surface opens or closes, or the pointer crosses it, so the controller can listen for clicks
     /// elsewhere and Escape only while a notch is open.
     var onChange: () -> Void = {}
@@ -38,7 +46,7 @@ final class NotchSurface {
     var onClick: () -> Void = {}
 
     var state: NotchState {
-        NotchState(hover.state, isPlaying: isPlaying, needsAttention: needsAttention, idleHover: idleHover)
+        NotchState(hover.state, isPlaying: isPlaying, needsAttention: needsAttention, idleHover: idleHover, isAlwaysShown: isAlwaysShown)
     }
     /// What Expanded holds, which the panel morphs to on the next `update`.
     var card: NotchCard {
@@ -71,8 +79,8 @@ final class NotchSurface {
     }
 
     private func shownChanged() {
-        defer { wasShown = isShown }
-        guard !isShown, wasShown else { return }
+        defer { answeredPointer = answersPointer }
+        guard !answersPointer, answeredPointer else { return }
         // Start over, so a pointer still on the notch when it's drawn again is reported as entering again.
         hover = HoverIntent()
         pointerInside = false
@@ -90,6 +98,8 @@ final class NotchSurface {
     }
 
     func handle(_ event: HoverEvent) {
+        // A blank notch that doesn't open keeps no hover, so playback starting under the pointer doesn't open it.
+        guard answersPointer else { return }
         hover.handle(event, at: .now)
         scheduleDeadline()
         update()
@@ -115,7 +125,7 @@ final class NotchSurface {
     }
 
     private func pointer(inside: Bool) {
-        guard inside != pointerInside else { return }
+        guard answersPointer, inside != pointerInside else { return }
         pointerInside = inside
         handle(inside ? .pointerEntered : .pointerLeft)
     }

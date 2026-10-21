@@ -23,6 +23,8 @@ final class NotchModel {
     /// Whether the housing is one Warble draws on a display without a notch, where Idle shows nothing at all rather
     /// than black over the camera.
     var isVirtual = false
+    /// Whether its display is set to show a notch always, so Idle draws a blank notch even on a virtual housing.
+    var isAlwaysShown = false
     @ObservationIgnored var onClick: () -> Void = {}
     /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
     @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }
@@ -126,8 +128,8 @@ struct NotchView: View {
                 .fill(Native.panel)
                 .frame(width: size.width, height: size.height)
                 // A virtual housing has no camera to hide behind, so there Idle draws nothing, though it still takes the
-                // pointer.
-                .opacity(state == .idle && model.isVirtual ? 0 : 1)
+                // pointer, unless its display is set to show a notch always.
+                .opacity(state == .idle && model.isVirtual && !model.isAlwaysShown ? 0 : 1)
                 .transaction(snapWithReduceMotion)
             // Each state's content keeps its own size while the shape morphs, so it fades rather than reflows. What it
             // shows is passed in, so content on its way out keeps the track that stopped rather than going blank.

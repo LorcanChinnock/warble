@@ -8,7 +8,8 @@ public enum NotchState: String, CaseIterable, Sendable {
     /// Nothing is playing and nothing needs the user's attention, and the housing doesn't answer a hover: nothing is drawn.
     case hidden
     /// Nothing is playing and nothing needs the user's attention: the panel covers the camera housing exactly and shows
-    /// nothing, black on a real housing and clear on a virtual one, so a hover can open the idle card.
+    /// nothing, black on a real housing and on a virtual one set to Always, and clear on any other virtual one, so a
+    /// hover can open the idle card.
     case idle
     /// Something is playing, or a Doctor check failed, and the pointer is elsewhere: the notch widened by a wing on each side.
     case resting
@@ -23,13 +24,13 @@ public enum NotchState: String, CaseIterable, Sendable {
         }
     }
 
-    /// How far `hover` has opened the notch, given whether anything is playing, whether a Doctor check failed, and what
-    /// the housing does on a hover while Idle.
-    public init(_ hover: HoverState, isPlaying: Bool, needsAttention: Bool, idleHover: IdleHover) {
+    /// How far `hover` has opened the notch, given whether anything is playing, whether a Doctor check failed, what
+    /// the housing does on a hover while Idle, and whether it stays drawn then (`NotchHousing.isAlwaysShown`).
+    public init(_ hover: HoverState, isPlaying: Bool, needsAttention: Bool, idleHover: IdleHover, isAlwaysShown: Bool = false) {
         if isPlaying || needsAttention {
             self.init(hover)
         } else if idleHover == .nothing {
-            self = .hidden
+            self = isAlwaysShown ? .idle : .hidden
         } else {
             self = hover == .resting ? .idle : .expanded
         }
