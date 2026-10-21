@@ -1,9 +1,9 @@
 import SwiftUI
 import WarbleCore
 
-/// The Settings window's sections, in sidebar order. Players and Shortcuts arrive with their features.
+/// The Settings window's sections, in sidebar order. Players arrives with its feature.
 enum SettingsSection: String, CaseIterable, Identifiable {
-    case general, notch, about
+    case general, notch, shortcuts, about
 
     var id: String { rawValue }
 
@@ -11,6 +11,7 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         switch self {
         case .general: String(localized: "General")
         case .notch: String(localized: "Notch")
+        case .shortcuts: String(localized: "Shortcuts")
         case .about: String(localized: "About")
         }
     }
@@ -19,6 +20,7 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         switch self {
         case .general: String(localized: "How Warble looks and where it shows.")
         case .notch: String(localized: "What the notch shows.")
+        case .shortcuts: String(localized: "Control playback from any app. None are set until you add one.")
         case .about: String(localized: "Version, updates and help.")
         }
     }
@@ -27,6 +29,7 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         switch self {
         case .general: "gearshape"
         case .notch: "menubar.rectangle"
+        case .shortcuts: "command"
         case .about: "info.circle"
         }
     }
@@ -56,6 +59,7 @@ struct SettingsView: View {
                 switch navigation.section {
                 case .general: GeneralSettings()
                 case .notch: NotchSettings()
+                case .shortcuts: ShortcutsSettings()
                 case .about: AboutSettings()
                 }
             }
@@ -167,6 +171,28 @@ private struct NotchSettings: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
+    }
+}
+
+private struct ShortcutsSettings: View {
+    @State private var recorder = ShortcutRecorder()
+
+    var body: some View {
+        SectionPage(section: .shortcuts) {
+            Section {
+                ForEach(WarbleAction.allCases, id: \.self) { action in
+                    ShortcutRow(action: action, recorder: recorder)
+                }
+            } footer: {
+                Text("The media keys on your keyboard already work. These are for when you want another key.")
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        // Switching pages or closing the window stops a recording, so no key stays caught.
+        .onDisappear { recorder.stop() }
     }
 }
 

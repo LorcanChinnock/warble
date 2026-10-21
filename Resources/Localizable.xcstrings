@@ -11,6 +11,19 @@
         }
       }
     },
+    "%@ is already set for %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is already set for %2$@."
+          }
+        }
+      }
+    },
+    "%@ is used by macOS and every app. Try another." : {
+
+    },
     "%@ of %@" : {
       "localizations" : {
         "en" : {
@@ -21,10 +34,16 @@
         }
       }
     },
+    "%@ shortcut" : {
+
+    },
     "About" : {
 
     },
     "Acknowledgements" : {
+
+    },
+    "Add ⌘, ⌥ or ⌃, so the shortcut doesn't catch your typing." : {
 
     },
     "All" : {
@@ -34,6 +53,9 @@
 
     },
     "Animations follow Reduce Motion in System Settings › Accessibility › Display." : {
+
+    },
+    "Another app uses this shortcut. Try another." : {
 
     },
     "Any app that plays, including your browser." : {
@@ -55,6 +77,15 @@
 
     },
     "Check for updates automatically" : {
+
+    },
+    "Clear %@ shortcut" : {
+
+    },
+    "Clear Shortcut" : {
+
+    },
+    "Control playback from any app. None are set until you add one." : {
 
     },
     "Couldn't relaunch Warble" : {
@@ -115,6 +146,9 @@
 
     },
     "Next track" : {
+
+    },
+    "None" : {
 
     },
     "Not Now" : {
@@ -189,6 +223,9 @@
     "Play" : {
 
     },
+    "Play or pause" : {
+
+    },
     "Play something and it shows here" : {
 
     },
@@ -201,6 +238,12 @@
     "Position" : {
 
     },
+    "Press Keys…" : {
+
+    },
+    "Press the keys to use, or Esc to cancel." : {
+
+    },
     "Previous track" : {
 
     },
@@ -211,6 +254,9 @@
 
     },
     "Reading what's playing" : {
+
+    },
+    "Record Shortcut" : {
 
     },
     "Relaunch" : {
@@ -226,6 +272,9 @@
 
     },
     "Shortcut unavailable: %@. Another app may use it, so choose a different one in Settings › Shortcuts." : {
+
+    },
+    "Shortcuts" : {
 
     },
     "Show" : {
@@ -250,6 +299,9 @@
 
     },
     "Text size" : {
+
+    },
+    "The media keys on your keyboard already work. These are for when you want another key." : {
 
     },
     "The notch stays hidden behind the camera until you point at it." : {

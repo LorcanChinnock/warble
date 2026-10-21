@@ -14,6 +14,15 @@ public enum WarbleAction: String, CaseIterable, Sendable {
         }
     }
 
+    /// What the action asks the playing app to do.
+    public var command: PlaybackCommand {
+        switch self {
+        case .playPause: .togglePlayPause
+        case .nextTrack: .nextTrack
+        case .previousTrack: .previousTrack
+        }
+    }
+
     /// Why `combo` can't be this action's shortcut.
     public enum Conflict: Equatable, Sendable {
         /// macOS or every app uses it: quit, close, switch apps, Spotlight, hide or minimise.

@@ -1,6 +1,6 @@
 ---
 title: Settings
-summary: Change the text size, how long a paused song stays, and what a hover shows.
+summary: Change the text size, how long a paused song stays, what a hover shows, and set keyboard shortcuts.
 group: Reference
 ---
 
@@ -28,6 +28,20 @@ Every change takes effect straight away.
 
 > [!NOTE]
 > Warble's animations follow **Reduce motion** in System Settings › Accessibility › Display.
+
+## Shortcuts
+
+The play/pause, next and previous keys on your keyboard already control what's playing. If your keyboard doesn't have them, or you'd rather use other keys, give each action a shortcut that works in every app. None is set until you add one.
+
+1. Click **Record Shortcut** beside **Play or pause**, **Next track** or **Previous track**.
+2. Press the keys you want, such as <kbd>⌃⌥P</kbd>. A shortcut needs <kbd>⌘</kbd>, <kbd>⌥</kbd> or <kbd>⌃</kbd>, so it doesn't catch your typing.
+
+The shortcut works straight away. To change it, click it and press new keys. To remove it, click the cross beside it, or click it and press <kbd>Delete</kbd>. Press <kbd>Esc</kbd> to stop without changing anything.
+
+Warble won't use a shortcut that every app needs, such as <kbd>⌘Q</kbd>, or one another action already has. It tells you why under the shortcut, so you can pick other keys.
+
+> [!NOTE]
+> If another app already uses the keys, Warble says so under the shortcut. Choose a different one, or change it in the other app.
 
 ## About
 

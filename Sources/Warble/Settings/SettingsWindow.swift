@@ -29,6 +29,11 @@ enum SettingsWindow {
         }
     }
 
+    /// Whether the window is open on `section`.
+    static func isShowing(_ section: SettingsSection) -> Bool {
+        window?.isVisible == true && SettingsNavigation.shared.section == section
+    }
+
     private static func makeWindow() -> NSWindow {
         let window = NSWindow(
             contentRect: NSRect(origin: .zero, size: size),
