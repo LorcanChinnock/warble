@@ -18,6 +18,9 @@ public enum HoverEvent: Sendable {
     case pointerLeft
     case click
     case pinButton
+    /// The shortcut that opens the notch with the keyboard: a resting notch opens and stays open wherever the pointer
+    /// goes, and an open one closes.
+    case keyboard
     /// A click outside, or Escape.
     case dismiss
     /// A menu from the notch opened, such as the outputs or the right-click menu: an open card stays open, wherever the
@@ -65,7 +68,9 @@ public struct HoverIntent: Equatable, Sendable {
             state = state == .pinned ? .expanded : .pinned
             // Unpinned with the pointer away: the wait to close starts now, not when it left.
             if !pointerInside { leftAt = date }
-        case .dismiss:
+        case .keyboard where state == .resting:
+            state = .pinned
+        case .keyboard, .dismiss:
             guard !menuOpen else { return }
             state = .resting
             // Resting on the notch doesn't open it again until the pointer leaves and comes back; a click still does.

@@ -48,6 +48,8 @@ final class NotchSurface {
     var onClick: () -> Void = {}
     /// Builds the menu a right-click opens, when it opens.
     var makeMenu: () -> NSMenu? = { nil }
+    /// Called with each key the open notch's controls didn't use while it has the keyboard; true when it did something.
+    var onKey: (NSEvent) -> Bool = { _ in false }
 
     var state: NotchState {
         NotchState(hover.state, isPlaying: isPlaying, needsAttention: needsAttention, idleHover: idleHover, isAlwaysShown: isAlwaysShown, showsToast: toast != nil)
@@ -57,6 +59,8 @@ final class NotchSurface {
         NotchCard(isPlaying: isPlaying && model.player.playback != nil, needsAttention: needsAttention, showsDoctor: model.showsDoctor)
     }
     private(set) var pointerInside = false
+    /// The app in front when the shortcut opened the notch, which gets the keyboard back when it closes.
+    private var keyboardFrom: NSRunningApplication?
     /// Whether a menu from this notch is open, which takes Escape for itself.
     private(set) var isShowingMenu = false
 
@@ -83,6 +87,35 @@ final class NotchSurface {
         }
         model.onMenu = { [weak self] open in self?.menu(open: open) }
         model.onShowDoctor = { [weak self] show in self?.showDoctor(show) }
+        panel.onKey = { [weak self] event in self?.onKey(event) ?? false }
+    }
+
+    /// Opens the notch with the keyboard in it, so VoiceOver and Keyboard navigation start there, or closes it. It
+    /// stays open wherever the pointer goes, until the shortcut again, Esc or a click elsewhere. Warble comes to the
+    /// front meanwhile, since VoiceOver and Tab only follow the app in front, and has no menu bar of its own to show.
+    func toggleKeyboard() {
+        let opening = state != .expanded
+        handle(.keyboard)
+        guard opening, state == .expanded else { return }
+        if !NSApp.isActive {
+            keyboardFrom = NSWorkspace.shared.frontmostApplication
+        }
+        panel.takesKeyboard = true
+        NSApp.activate()
+        panel.makeKey()
+        // The SwiftUI view, one level inside the content view, so Tab moves through its buttons.
+        panel.makeFirstResponder(panel.contentView?.subviews.first)
+    }
+
+    /// Gives the keyboard back to the app that had it once the notch closes, unless a click has already moved it on.
+    private func releaseKeyboard() {
+        guard panel.takesKeyboard else { return }
+        panel.takesKeyboard = false
+        panel.resignKey()
+        if NSApp.isActive, let keyboardFrom {
+            keyboardFrom.activate()
+        }
+        keyboardFrom = nil
     }
 
     private func shownChanged() {
@@ -175,6 +208,9 @@ final class NotchSurface {
         if state != .expanded, model.showsDoctor {
             model.showsDoctor = false
         }
+        if state != .expanded {
+            releaseKeyboard()
+        }
         let card = card
         let isPlaying = isPlaying
         let toast = state == .toast ? toast : nil
@@ -242,6 +278,7 @@ final class NotchSurface {
     }
 
     private func hide() {
+        releaseKeyboard()
         panel.orderOut(nil)
         panelFrame = nil
         model.state = .hidden

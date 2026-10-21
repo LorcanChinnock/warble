@@ -17,7 +17,7 @@ struct DoctorCard: View {
                             .frame(width: 20, height: 20)
                             .contentShape(Rectangle())
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.notch)
                     .accessibilityLabel("Back to what's playing")
                 }
                 Text(Doctor.headline(doctor.checks))
@@ -28,7 +28,7 @@ struct DoctorCard: View {
                 Spacer(minLength: 0)
                 if doctor.needsAttention {
                     Button("Not Now", action: doctor.notNow)
-                        .buttonStyle(.plain)
+                        .buttonStyle(.notch)
                         .font(.system(size: 11))
                         .foregroundStyle(Native.secondary)
                         .help("Hide the \"!\" until Warble opens again")
@@ -75,6 +75,7 @@ private struct CheckRow: View {
                         if let fix = check.fix, let title = check.fixTitle {
                             Button(title) { perform(fix) }
                                 .buttonStyle(FixButtonStyle())
+                                .pressedByKeyboard { perform(fix) }
                         }
                     }
                     Text(check.detail)
@@ -87,6 +88,17 @@ private struct CheckRow: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text(verbatim: "\(check.title): \(check.detail)"))
+        .accessibilityValue(outcome)
+    }
+
+    /// How the check went, in words, for VoiceOver, which can't see the mark.
+    private var outcome: Text {
+        switch check.outcome {
+        case .pass: Text("OK")
+        case .warn: Text("Could be better")
+        case .fail: Text("Needs fixing")
+        case .unknown: Text("Not checked yet")
+        }
     }
 
     @ViewBuilder private var mark: some View {

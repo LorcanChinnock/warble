@@ -68,7 +68,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             notch.doctor.adapter = .missing
             startFallback(notch)
         }
-        HotkeyCenter.shared.onPress = { [weak notch] action in notch?.perform(action.command) }
+        HotkeyCenter.shared.onPress = { [weak notch] action in
+            if let command = action.command {
+                notch?.perform(command)
+            } else {
+                notch?.toggleKeyboard()
+            }
+        }
         HotkeyCenter.shared.start()
         self.notch = notch
         if let launch = Perf.millisecondsSinceLaunch() {

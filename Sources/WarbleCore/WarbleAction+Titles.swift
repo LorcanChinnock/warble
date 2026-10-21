@@ -8,6 +8,7 @@ extension WarbleAction {
         case .playPause: String(localized: "Play or pause")
         case .nextTrack: String(localized: "Next track")
         case .previousTrack: String(localized: "Previous track")
+        case .openNotch: String(localized: "Open the notch")
         }
     }
 }

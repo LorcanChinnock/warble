@@ -2,7 +2,8 @@ import AppKit
 import SwiftUI
 import WarbleCore
 
-/// The black shape over the notch. It never takes the keyboard or the menu bar from the app in front.
+/// The black shape over the notch. It takes the keyboard only while the notch is open from the keyboard
+/// (`takesKeyboard`), and never otherwise takes the keyboard or the menu bar from the app in front.
 final class NotchPanel: NSPanel {
     /// Called with true when the pointer enters the area set by `track(_:)`, and false when it leaves.
     var onPointer: ((Bool) -> Void)?
@@ -10,6 +11,10 @@ final class NotchPanel: NSPanel {
     var onScroll: ((NSEvent) -> Void)?
     /// Called with a right-click or Control-click on the panel, in any state, instead of the click reaching the content.
     var onMenu: ((NSEvent) -> Void)?
+    /// Called with each key no control used while the panel has the keyboard; true when it did something.
+    var onKey: ((NSEvent) -> Bool)?
+    /// Whether the panel may take the keyboard, which it does only while the notch is open from the keyboard.
+    var takesKeyboard = false
     private var hoverArea = CGRect.zero
     private var trackingArea: NSTrackingArea?
 
@@ -89,6 +94,13 @@ final class NotchPanel: NSPanel {
         }
     }
 
-    override var canBecomeKey: Bool { false }
+    /// A key the focused control didn't use, such as Space with Keyboard navigation off.
+    override func keyDown(with event: NSEvent) {
+        if onKey?(event) != true {
+            super.keyDown(with: event)
+        }
+    }
+
+    override var canBecomeKey: Bool { takesKeyboard }
     override var canBecomeMain: Bool { false }
 }

@@ -1,16 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "%@ by %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ by %2$@"
-          }
-        }
-      }
-    },
     "%@ is already set for %@." : {
       "localizations" : {
         "en" : {
@@ -88,6 +78,9 @@
     "Control playback from any app. None are set until you add one." : {
 
     },
+    "Could be better" : {
+
+    },
     "Couldn't relaunch Warble" : {
 
     },
@@ -104,6 +97,9 @@
 
     },
     "Following %@. Other apps won't show for now." : {
+
+    },
+    "From %@" : {
 
     },
     "General" : {
@@ -142,6 +138,9 @@
     "MIT License" : {
 
     },
+    "Needs fixing" : {
+
+    },
     "Newer than this version of Warble. An update may fix reading what's playing." : {
 
     },
@@ -152,6 +151,9 @@
 
     },
     "Not Now" : {
+
+    },
+    "Not checked yet" : {
 
     },
     "Not needed while Warble can read what's playing." : {
@@ -167,6 +169,22 @@
 
     },
     "Nothing playing" : {
+
+    },
+    "Now playing: %@" : {
+
+    },
+    "Now playing: %@ by %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Now playing: %1$@ by %2$@"
+          }
+        }
+      }
+    },
+    "OK" : {
 
     },
     "Off" : {
@@ -209,6 +227,9 @@
 
     },
     "Open the app that's playing" : {
+
+    },
+    "Open the notch" : {
 
     },
     "Output" : {

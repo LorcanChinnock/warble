@@ -116,6 +116,10 @@ private struct GeneralSettings: View {
                         Text("Warble opens when you log in, so the notch is there after a restart.")
                     }
                 }
+                .accessibilityLabel(Text("Open at login"))
+                .accessibilityHint(loginItem.needsApproval
+                    ? Text("Turned off in System Settings. Turn Warble on in Login Items to open it at login again.")
+                    : Text("Warble opens when you log in, so the notch is there after a restart."))
                 if loginItem.needsApproval {
                     Button("Open Login Items…") { SMAppService.openSystemSettingsLoginItems() }
                 }
@@ -123,6 +127,8 @@ private struct GeneralSettings: View {
                     Text("Show icon in the menu bar")
                     Text("Open Warble again from Applications to bring it back.")
                 }
+                .accessibilityLabel(Text("Show icon in the menu bar"))
+                .accessibilityHint(Text("Open Warble again from Applications to bring it back."))
                 Picker("Text size", selection: $textSize) {
                     Text("Standard").tag(TextSize.standard)
                     Text("Large").tag(TextSize.large)
@@ -161,6 +167,8 @@ private struct GeneralSettings: View {
                     Text("Stay visible after pausing")
                     Text("Then the notch hides until something plays.")
                 }
+                .accessibilityLabel(Text("Stay visible after pausing"))
+                .accessibilityHint(Text("Then the notch hides until something plays."))
             }
         }
     }
@@ -180,10 +188,14 @@ private struct NotchSettings: View {
                     Text("When nothing is playing, hover shows")
                     Text("The notch stays hidden behind the camera until you point at it.")
                 }
+                .accessibilityLabel(Text("When nothing is playing, hover shows"))
+                .accessibilityHint(Text("The notch stays hidden behind the camera until you point at it."))
                 Toggle(isOn: $trackChangeToast) {
                     Text("Show a message when the track changes")
                     Text("The new song's title and artist slide out of the notch for two seconds.")
                 }
+                .accessibilityLabel(Text("Show a message when the track changes"))
+                .accessibilityHint(Text("The new song's title and artist slide out of the notch for two seconds."))
             } footer: {
                 Text("Animations follow Reduce Motion in System Settings › Accessibility › Display.")
                     .foregroundStyle(.secondary)
@@ -242,6 +254,8 @@ private struct AboutSettings: View {
             Form {
                 Section {
                     Toggle("Check for updates automatically", isOn: automaticallyChecks)
+                        // A switch in a form reports no name of its own, so VoiceOver reads it as "switch".
+                        .accessibilityLabel(Text("Check for updates automatically"))
                         .disabled(!updater.isEnabled)
                     LabeledContent("Help and user guide") {
                         Link(destination: Self.guide) {

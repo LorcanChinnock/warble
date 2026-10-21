@@ -37,6 +37,7 @@ struct VirtualNotchPicker: View {
             Text("Always").tag(VirtualNotchRule.always)
             Text("When There's No Notch").tag(VirtualNotchRule.noNotch)
         }
+        .accessibilityLabel(Text(verbatim: name))
     }
 
     private var rule: Binding<VirtualNotchRule> {
