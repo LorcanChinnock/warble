@@ -99,7 +99,20 @@ jobs:
       - name: Test the adapter
         run: |
           r="$PWD/build/Warble.app/Contents/Resources"
-          /usr/bin/perl "$r/mediaremote-adapter.pl" "$r/MediaRemoteAdapter.framework" "$r/MediaRemoteAdapterTestClient" test
+          # 3 and 4 are timeouts on an adapter that works, so try again after 2 s and then 10 s, as ci.yml's adapter job
+          # and AdapterSupervisor.testRetryDelays do. Any other failure stops the release at once.
+          attempt=1
+          for delay in 2 10 ""; do
+            status=0
+            /usr/bin/perl "$r/mediaremote-adapter.pl" "$r/MediaRemoteAdapter.framework" "$r/MediaRemoteAdapterTestClient" test || status=$?
+            echo "Attempt $attempt: test exited $status."
+            case "$status" in
+              0) break ;;
+              3|4) [ -n "$delay" ] || exit "$status"; sleep "$delay" ;;
+              *) exit "$status" ;;
+            esac
+            attempt=$((attempt + 1))
+          done
       - name: Build the update feed
         env:
           GH_TOKEN: ${{ github.token }}
