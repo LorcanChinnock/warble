@@ -129,3 +129,11 @@ private func idle(_ events: (IdleEvent, TimeInterval)...) -> IdleAfterPause {
     quick.delay = 3
     #expect(quick.deadline == start + 3)
 }
+
+@Test func settingsOffersTheDefaultDelay() {
+    #expect(IdleAfterPause.choices(including: IdleAfterPause.defaultDelay) == [5, 10, 30, 60, 300])
+}
+
+@Test func aDelaySetElsewhereJoinsTheChoicesInOrder() {
+    #expect(IdleAfterPause.choices(including: 45) == [5, 10, 30, 45, 60, 300])
+}

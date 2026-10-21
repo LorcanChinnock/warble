@@ -47,15 +47,16 @@ private struct WarbleMenu: View {
             Button("Check for Updates…") { updater.checkForUpdates() }
                 .disabled(!updater.canCheckForUpdates)
         }
+        Button("Settings…") { SettingsWindow.show() }
+            .keyboardShortcut(",")
         Divider()
         Button("Quit Warble") { NSApp.terminate(nil) }
             .keyboardShortcut("q")
     }
 }
 
-/// A rule for each display without a camera housing, until the Settings window has a place for them.
+/// A rule for each display without a camera housing, as in Settings › General, a click closer.
 private struct DisplaysMenu: View {
-    @Setting(PreferenceKey.virtualNotch) private var rules: [String: String]
     private let displays = Displays.shared
 
     var body: some View {
@@ -63,45 +64,10 @@ private struct DisplaysMenu: View {
         if !virtual.isEmpty {
             Menu("Notch on Displays") {
                 ForEach(virtual, id: \.id) { display in
-                    Picker(displays.names[display.id] ?? display.id, selection: rule(display)) {
-                        Text("Off").tag(VirtualNotchRule.off)
-                        Text("Always").tag(VirtualNotchRule.always)
-                        Text("When There's No Notch").tag(VirtualNotchRule.noNotch)
-                    }
+                    VirtualNotchPicker(display: display, name: displays.names[display.id] ?? display.id)
                 }
             }
             Divider()
         }
-    }
-
-    private func rule(_ display: NotchDisplay) -> Binding<VirtualNotchRule> {
-        Binding {
-            rules[display.id].flatMap(VirtualNotchRule.init(rawValue:)) ?? .default(isMain: display.isMain)
-        } set: {
-            rules[display.id] = $0.rawValue
-        }
-    }
-}
-
-/// The displays connected now, kept up to date for the menu.
-@MainActor
-@Observable
-private final class Displays {
-    static let shared = Displays()
-
-    private(set) var all: [NotchDisplay] = []
-    private(set) var names: [String: String] = [:]
-    @ObservationIgnored private var observer: NSObjectProtocol?
-
-    private init() {
-        read()
-        observer = NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated { self?.read() }
-        }
-    }
-
-    private func read() {
-        all = NSScreen.notchDisplays
-        names = Dictionary(NSScreen.screens.map { ($0.uuid, $0.localizedName) }, uniquingKeysWith: { first, _ in first })
     }
 }
