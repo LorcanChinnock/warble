@@ -232,3 +232,15 @@ private func idleState(_ intent: HoverIntent, idleHover: IdleHover = .lastPlayed
     #expect(NotchCard(isPlaying: true, needsAttention: true, showsDoctor: false) == .player)
     #expect(NotchCard(isPlaying: true, needsAttention: true, showsDoctor: true) == .doctor)
 }
+
+@Test func aDisplaySetToAlwaysKeepsItsBlankNotchWhileIdleAndOpensTheIdleCardOnAHover() {
+    let open = intent((.pointerEntered, 0), (.click, 0.1))
+    #expect(NotchState(HoverIntent().state, isPlaying: false, needsAttention: false, idleHover: .lastPlayed, isAlwaysShown: true) == .idle)
+    #expect(NotchState(open.state, isPlaying: false, needsAttention: false, idleHover: .lastPlayed, isAlwaysShown: true) == .expanded)
+}
+
+@Test func withIdleHoverOffADisplaySetToAlwaysKeepsItsBlankNotchAndNeverOpens() {
+    let open = intent((.pointerEntered, 0), (.click, 0.1))
+    #expect(NotchState(HoverIntent().state, isPlaying: false, needsAttention: false, idleHover: .nothing, isAlwaysShown: true) == .idle)
+    #expect(NotchState(open.state, isPlaying: false, needsAttention: false, idleHover: .nothing, isAlwaysShown: true) == .idle)
+}

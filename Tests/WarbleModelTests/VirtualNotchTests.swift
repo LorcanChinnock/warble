@@ -67,6 +67,12 @@ private func main(_ display: NotchDisplay) -> NotchDisplay {
     #expect(housings.map(\.isVirtual) == [false, true])
 }
 
+@Test func onlyAlwaysKeepsABlankNotchWhileNothingPlays() {
+    let always = VirtualNotch.housings([builtIn, external], rules: ["external": .always])
+    #expect(always.map(\.isAlwaysShown) == [false, true])
+    #expect(VirtualNotch.housings([main(external)], rules: [:]).map(\.isAlwaysShown) == [false])
+}
+
 @Test func offHidesTheMainDisplayEvenWithTheLidClosed() {
     #expect(VirtualNotch.housings([main(external)], rules: ["external": .off]).isEmpty)
 }

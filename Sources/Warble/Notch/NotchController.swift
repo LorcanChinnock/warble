@@ -170,6 +170,7 @@ final class NotchController {
             surfaces[housing.display] = surface
             surface.housing = housing.frame
             surface.isVirtual = housing.isVirtual
+            surface.isAlwaysShown = housing.isAlwaysShown
             surface.idleHover = idleHover
             surface.isPlaying = showsPlayback
             surface.needsAttention = doctor.needsAttention

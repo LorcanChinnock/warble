@@ -43,11 +43,15 @@ public struct NotchHousing: Equatable, Sendable {
     public var display: String
     public var frame: CGRect
     public var isVirtual: Bool
+    /// Whether a blank notch stays drawn over it while nothing is playing: only a virtual one whose rule is Always. One
+    /// that stands in for a closed or missing notch draws nothing then, as the real one would.
+    public var isAlwaysShown: Bool
 
-    public init(display: String, frame: CGRect, isVirtual: Bool) {
+    public init(display: String, frame: CGRect, isVirtual: Bool, isAlwaysShown: Bool = false) {
         self.display = display
         self.frame = frame
         self.isVirtual = isVirtual
+        self.isAlwaysShown = isAlwaysShown
     }
 }
 
@@ -74,12 +78,13 @@ public enum VirtualNotch {
             if let notch = display.notch {
                 return NotchHousing(display: display.id, frame: notch, isVirtual: false)
             }
-            switch rules[display.id] ?? .default(isMain: display.isMain) {
+            let rule = rules[display.id] ?? .default(isMain: display.isMain)
+            switch rule {
             case .off: return nil
             case .noNotch where !noNotch: return nil
             case .always, .noNotch:
                 let frame = housing(in: display.frame, menuBarHeight: display.menuBarHeight)
-                return NotchHousing(display: display.id, frame: frame, isVirtual: true)
+                return NotchHousing(display: display.id, frame: frame, isVirtual: true, isAlwaysShown: rule == .always)
             }
         }
     }
