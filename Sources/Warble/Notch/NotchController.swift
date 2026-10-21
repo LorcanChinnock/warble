@@ -323,8 +323,9 @@ final class NotchController {
         let screen = NSScreen.screens.first { NSMouseInRect(pointer, $0.frame, false) }
         let onScreen = surfaces.values.first { surface in screen.map { $0.frame.intersects(surface.housing) } ?? false }
         guard let surface = onScreen ?? surfaces.values.first(where: { !$0.isVirtual }) ?? surfaces.values.first else { return }
+        let handback = surfaces.values.lazy.filter { $0 !== surface }.compactMap { $0.takeKeyboardHandback() }.first
         dismiss { $0 !== surface }
-        surface.toggleKeyboard()
+        surface.toggleKeyboard(handback: handback)
     }
 
     /// Does what a key means while a notch has the keyboard (`NotchKey`), and says whether it meant anything.

@@ -95,12 +95,20 @@ final class NotchSurface {
     /// Opens the notch with the keyboard in it, so VoiceOver and Keyboard navigation start there, or closes it. It
     /// stays open wherever the pointer goes, until the shortcut again, Esc or a click elsewhere. Warble comes to the
     /// front meanwhile, since VoiceOver and Tab only follow the app in front, and has no menu bar of its own to show.
-    func toggleKeyboard() {
+    /// `handback` is where the keyboard goes when it closes, taken over from another notch that had it.
+    func toggleKeyboard(handback: KeyboardHandback? = nil) {
         let opening = state != .expanded
         handle(.keyboard)
-        guard opening, state == .expanded else { return }
-        if NSApp.isActive {
-            keyWindowBefore = NSApp.keyWindow
+        guard opening, state == .expanded else {
+            handback?.giveBack()
+            return
+        }
+        if let handback {
+            keyboardFrom = handback.app
+            keyWindowBefore = handback.window
+        } else if NSApp.isActive {
+            // Never another notch, which can't take the keyboard once it's closed.
+            keyWindowBefore = NSApp.keyWindow.flatMap { $0 is NotchPanel ? nil : $0 }
         } else {
             keyboardFrom = NSWorkspace.shared.frontmostApplication
         }
@@ -111,19 +119,25 @@ final class NotchSurface {
         panel.makeFirstResponder(panel.contentView?.subviews.first)
     }
 
+    /// Where the keyboard goes when this notch closes, if it has the keyboard, for another notch to take over instead.
+    /// This one then closes without handing it back, so the hand-back doesn't race the other notch taking it.
+    func takeKeyboardHandback() -> KeyboardHandback? {
+        guard panel.takesKeyboard else { return nil }
+        panel.takesKeyboard = false
+        defer {
+            keyboardFrom = nil
+            keyWindowBefore = nil
+        }
+        return KeyboardHandback(app: keyboardFrom, window: keyWindowBefore)
+    }
+
     /// Gives the keyboard back once the notch closes, unless a click has already moved it on: to the app that had it,
     /// or, when Warble was already in front, to its window that had it, or else to whichever app is next.
     private func releaseKeyboard() {
         guard panel.takesKeyboard else { return }
         panel.takesKeyboard = false
-        if NSApp.isActive, panel.isKeyWindow {
-            if let keyboardFrom {
-                keyboardFrom.activate()
-            } else if let keyWindowBefore, keyWindowBefore.isVisible {
-                keyWindowBefore.makeKey()
-            } else {
-                NSApp.deactivate()
-            }
+        if panel.isKeyWindow {
+            KeyboardHandback(app: keyboardFrom, window: keyWindowBefore).giveBack()
         }
         keyboardFrom = nil
         keyWindowBefore = nil
@@ -298,5 +312,24 @@ final class NotchSurface {
     private func show(in frame: CGRect) {
         panelFrame = frame
         panel.show(in: frame)
+    }
+}
+
+/// Where the keyboard goes when a notch opened from the shortcut closes: the app that had it, or Warble's own window.
+@MainActor
+struct KeyboardHandback {
+    let app: NSRunningApplication?
+    let window: NSWindow?
+
+    /// Brings back the app or window, or with neither lets the next app take over, while Warble is still in front.
+    func giveBack() {
+        guard NSApp.isActive else { return }
+        if let app {
+            app.activate()
+        } else if let window, window.isVisible {
+            window.makeKey()
+        } else {
+            NSApp.deactivate()
+        }
     }
 }
