@@ -41,7 +41,7 @@ The shortcut works straight away. To change it, click it and press new keys. To 
 Warble won't use a shortcut that every app needs, such as <kbd>⌘Q</kbd>, or one another action already has. It tells you why under the shortcut, so you can pick other keys.
 
 > [!NOTE]
-> If another app already uses the keys, Warble says so under the shortcut. Choose a different one, or change it in the other app.
+> If another app already uses the keys, Warble says so under the shortcut, or the keys don't record at all. Choose a different one, or change it in the other app.
 
 ## About
 
