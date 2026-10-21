@@ -44,6 +44,7 @@ The first public beta: what's playing in the notch, playback and volume controls
 - [#91](https://github.com/LorcanChinnock/warble/issues/91) feat(model): return to idle a while after pausing
 - [#92](https://github.com/LorcanChinnock/warble/issues/92) feat(notch): animate between idle and playing
 - [#93](https://github.com/LorcanChinnock/warble/issues/93) feat(settings): Shortcuts section
+- [#114](https://github.com/LorcanChinnock/warble/issues/114) docs(site): a look of Warble's own, not Shot's
 
 ## [0.2: lyrics, gestures and podcasts](https://github.com/LorcanChinnock/warble/issues/33)
 

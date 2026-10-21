@@ -5,12 +5,12 @@ const url = Astro.site!.href;
 
 <p class="for-macs" hidden>
   <span>Warble runs on a Mac. Open <span class="url">{url.replace(/^https:\/\/|\/$/g, '')}</span> on yours.</span>
-  <button type="button" class="button small white" data-copy-link={url}>Copy link</button>
+  <button type="button" class="button small quiet" data-copy-link={url}>Copy link</button>
   <span class="status" aria-live="polite"></span>
 </p>
 
 <style>
-  .for-macs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; font-weight: 700; }
+  .for-macs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; font-weight: 600; }
   .for-macs[hidden] { display: none; }
   .url { overflow-wrap: anywhere; }
   .status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

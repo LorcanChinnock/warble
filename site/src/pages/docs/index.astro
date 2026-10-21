@@ -15,14 +15,14 @@ const sections = groups
     <p class="lede">Everything Warble can do, one task at a time. Search for what you need, or start at the top.</p>
     <GuideSearch />
 
-    <a class="start card" href={`/docs/${start.slug}/`}>
-      <span class="chip">New to Warble?</span>
+    <a class="start card notch" href={`/docs/${start.slug}/`}>
+      <span class="new">New to Warble?</span>
       <strong>{start.title} →</strong>
       <span>{start.summary}</span>
     </a>
 
     {sections.map((section) => (
-      <section style={`--accent: var(--${section.color})`}>
+      <section>
         <h2>{section.name}</h2>
         <ul>
           {section.pages.map((page) => (
@@ -41,19 +41,27 @@ const sections = groups
 
 <style>
   .guide-home h1 { margin-bottom: 12px; }
-  .lede { margin: 0 0 24px; font-size: 20px; line-height: 1.45; color: var(--muted); }
+  .lede { margin: 0 0 24px; font-size: 20px; line-height: 1.45; color: var(--secondary); }
   .guide-home :global(.guide-search) { margin-bottom: 28px; }
-  .start { display: grid; gap: 6px; justify-items: start; padding: 20px 22px; text-decoration: none; background: var(--yellow); }
-  .start strong { font: 900 26px/1.1 var(--display); letter-spacing: -0.02em; }
-  .start span:last-child { font-size: 17px; }
-  section { padding: 0; margin-top: 36px; }
-  .guide-home section h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; padding: 0; border: 0; font-size: 22px; }
-  h2::before { content: ""; flex: none; width: 14px; height: 14px; border: var(--border) solid var(--ink); border-radius: 50%; background: var(--accent); }
-  ul { list-style: none; margin: 0; padding: 0 !important; display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+  /* The way in is drawn as the notch's open card: black, with the glow rising from its bottom corners. */
+  .start {
+    position: relative; overflow: hidden; isolation: isolate;
+    display: grid; gap: 6px; justify-items: start; padding: 22px 24px; text-decoration: none;
+    border-radius: 8px 8px var(--radius-card) var(--radius-card);
+  }
+  .start::before, .start::after { content: ""; position: absolute; z-index: -1; bottom: -60%; width: 80%; height: 160%; opacity: 0.5; transition: opacity 200ms ease-out; }
+  .start::before { left: -30%; background: radial-gradient(closest-side, var(--glow-a), transparent); }
+  .start::after { right: -30%; background: radial-gradient(closest-side, var(--glow-b), transparent); }
+  .start:hover::before, .start:hover::after { opacity: 0.65; }
+  .start .new { font-size: 13px; color: var(--on-notch-secondary); }
+  .start strong { font: 700 24px/1.15 var(--display); letter-spacing: -0.02em; }
+  .start span:last-child { font-size: 16px; color: var(--on-notch-secondary); }
+  section { padding: 0; margin-top: 40px; }
+  .guide-home section h2 { margin: 0 0 12px; padding: 0; border: 0; font-size: 13px; font-family: var(--font); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--secondary); }
+  ul { list-style: none; margin: 0; padding: 0 !important; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
   li { margin: 0 !important; display: grid; }
-  ul .card { display: grid; align-content: start; gap: 4px; padding: 14px 16px; text-decoration: none; background: #fff; border-top-width: 8px; border-top-color: var(--accent); }
-  ul .card strong { font-size: 18px; font-weight: 900; }
-  ul .card span { font-size: 15px; line-height: 1.45; font-weight: 500; color: var(--muted); }
-  .card { transition: transform 80ms ease-out, box-shadow 80ms ease-out; }
-  .card:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--ink); }
+  ul .card { display: grid; align-content: start; gap: 4px; padding: 14px 16px; text-decoration: none; transition: border-color 120ms ease-out; }
+  ul .card:hover { border-color: var(--hairline-strong); }
+  ul .card strong { font-size: 17px; font-weight: 600; }
+  ul .card span { font-size: 15px; line-height: 1.45; color: var(--secondary); }
 </style>

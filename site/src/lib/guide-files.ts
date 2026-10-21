@@ -2,14 +2,14 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parseFrontmatter } from '@astrojs/markdown-remark';
 
-/** The guide's parts, in order, each with its colour from the app's palette. */
+/** The guide's parts, in order. */
 export const groups = [
-  { name: 'Get started', color: 'yellow' },
-  { name: 'Playback', color: 'pink' },
-  { name: 'Displays', color: 'sky' },
-  { name: 'For developers', color: 'mint' },
-  { name: 'Reference', color: 'violet' },
-  { name: 'Help', color: 'red' },
+  { name: 'Get started' },
+  { name: 'Playback' },
+  { name: 'Displays' },
+  { name: 'For developers' },
+  { name: 'Reference' },
+  { name: 'Help' },
 ] as const;
 
 export interface GuideFile {

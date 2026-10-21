@@ -8,17 +8,17 @@ const { command } = Astro.props;
 const parts = command.split('/');
 ---
 
-<div class="copy card solid">
+<div class="copy card">
   <code>{parts.map((part, i) => (i ? <Fragment>/<wbr />{part}</Fragment> : part))}</code>
-  <button type="button" class="button small white" data-copy={command}>Copy</button>
+  <button type="button" class="button small quiet" data-copy={command}>Copy</button>
   <span class="status" aria-live="polite"></span>
 </div>
 
 <style>
   .copy { display: flex; min-width: 0; align-items: center; gap: 12px; padding: 6px 6px 6px 16px; max-width: 100%; }
-  code { font-size: 14px; font-weight: 600; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  code { font-size: 14px; flex: 1; min-width: 0; overflow-wrap: anywhere; }
   /* Generated content, so selecting the command (triple-click included) never picks up the prompt. */
-  code::before { content: '$ '; opacity: 0.45; }
+  code::before { content: '$ '; color: var(--secondary); }
   button { flex: none; min-width: 78px; }
   .status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 </style>
