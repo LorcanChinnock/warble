@@ -96,7 +96,9 @@ final class HotkeyCenter {
             }
             let id = EventHotKeyID(signature: OSType(0x5752_424C), id: UInt32(index))
             var ref: EventHotKeyRef?
-            let status = RegisterEventHotKey(combo.keyCode, combo.modifiers, id, GetEventDispatcherTarget(), 0, &ref)
+            // Exclusive, so macOS refuses a shortcut another app holds exclusively and gives Warble one another app
+            // holds without it. Without the option, registering always succeeds and the first app keeps the key.
+            let status = RegisterEventHotKey(combo.keyCode, combo.modifiers, id, GetEventDispatcherTarget(), OptionBits(kEventHotKeyExclusive), &ref)
             if status == noErr, let ref {
                 refs.append(ref)
             } else {
