@@ -1,3 +1,4 @@
+import ServiceManagement
 import SwiftUI
 import WarbleCore
 
@@ -102,10 +103,22 @@ private struct GeneralSettings: View {
     @Setting(PreferenceKey.textSize) private var textSize: TextSize
     @Setting(PreferenceKey.stayVisibleAfterPausing) private var stayVisible: Double
     private let displays = Displays.shared
+    private let loginItem = LoginItem.shared
 
     var body: some View {
         SectionPage(section: .general) {
             Section {
+                Toggle(isOn: Binding { loginItem.isEnabled } set: { loginItem.set($0) }) {
+                    Text("Open at login")
+                    if loginItem.needsApproval {
+                        Text("Turned off in System Settings. Turn Warble on in Login Items to open it at login again.")
+                    } else {
+                        Text("Warble opens when you log in, so the notch is there after a restart.")
+                    }
+                }
+                if loginItem.needsApproval {
+                    Button("Open Login Items…") { SMAppService.openSystemSettingsLoginItems() }
+                }
                 Toggle(isOn: $showMenuBarIcon) {
                     Text("Show icon in the menu bar")
                     Text("Open Warble again from Applications to bring it back.")
@@ -117,6 +130,9 @@ private struct GeneralSettings: View {
                 }
                 .pickerStyle(.segmented)
             }
+            // Login Items can change in System Settings, which tells Warble nothing.
+            .onAppear { loginItem.refresh() }
+            .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in loginItem.refresh() }
             Section {
                 let virtual = displays.all.filter { $0.notch == nil }
                 if virtual.isEmpty {

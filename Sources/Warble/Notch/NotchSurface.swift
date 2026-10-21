@@ -44,6 +44,8 @@ final class NotchSurface {
     var onChange: () -> Void = {}
     /// Called when the surface is clicked, before it opens.
     var onClick: () -> Void = {}
+    /// Builds the menu a right-click opens, when it opens.
+    var makeMenu: () -> NSMenu? = { nil }
 
     var state: NotchState {
         NotchState(hover.state, isPlaying: isPlaying, needsAttention: needsAttention, idleHover: idleHover, isAlwaysShown: isAlwaysShown)
@@ -53,6 +55,8 @@ final class NotchSurface {
         NotchCard(isPlaying: isPlaying && model.player.playback != nil, needsAttention: needsAttention, showsDoctor: model.showsDoctor)
     }
     private(set) var pointerInside = false
+    /// Whether a menu from this notch is open, which takes Escape for itself.
+    private(set) var isShowingMenu = false
 
     private let model: NotchModel
     private let panel: NotchPanel
@@ -70,6 +74,7 @@ final class NotchSurface {
         panel = NotchPanel(model: model)
         panel.onPointer = { [weak self] inside in self?.pointer(inside: inside) }
         panel.onScroll = onScroll
+        panel.onMenu = { [weak self] event in self?.showMenu(for: event) }
         model.onClick = { [weak self] in
             self?.onClick()
             self?.handle(.click)
@@ -118,10 +123,23 @@ final class NotchSurface {
     /// Keeps the card open while a menu from it is up. AppKit may not report the pointer leaving or coming back while a
     /// menu tracks it, so once the menu closes the panel checks where it is.
     private func menu(open: Bool) {
+        isShowingMenu = open
         handle(open ? .menuOpened : .menuClosed)
+        // A notch that doesn't answer the pointer has nothing to handle, but the controller still lets go of Escape.
+        onChange()
         if !open {
             panel.recheckPointer()
         }
+    }
+
+    /// Opens the right-click menu at the pointer, in any state, without opening or closing this notch. Any other notch
+    /// that's open closes, as for a click.
+    private func showMenu(for event: NSEvent) {
+        guard let menu = makeMenu(), let view = panel.contentView else { return }
+        onClick()
+        self.menu(open: true)
+        NSMenu.popUpContextMenu(menu, with: event, for: view)
+        self.menu(open: false)
     }
 
     private func pointer(inside: Bool) {

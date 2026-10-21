@@ -8,6 +8,8 @@ final class NotchPanel: NSPanel {
     var onPointer: ((Bool) -> Void)?
     /// Called with each scroll over the panel, in any state.
     var onScroll: ((NSEvent) -> Void)?
+    /// Called with a right-click or Control-click on the panel, in any state, instead of the click reaching the content.
+    var onMenu: ((NSEvent) -> Void)?
     private var hoverArea = CGRect.zero
     private var trackingArea: NSTrackingArea?
 
@@ -74,6 +76,18 @@ final class NotchPanel: NSPanel {
     override func mouseEntered(with event: NSEvent) { onPointer?(true) }
     override func mouseExited(with event: NSEvent) { onPointer?(false) }
     override func scrollWheel(with event: NSEvent) { onScroll?(event) }
+
+    /// Takes a right-click, or a Control-click, before SwiftUI does, so it never reaches the controls or counts as a click
+    /// that opens the notch.
+    override func sendEvent(_ event: NSEvent) {
+        let isMenuClick = event.type == .rightMouseDown
+            || (event.type == .leftMouseDown && event.modifierFlags.intersection(.deviceIndependentFlagsMask).contains(.control))
+        if isMenuClick, let onMenu {
+            onMenu(event)
+        } else {
+            super.sendEvent(event)
+        }
+    }
 
     override var canBecomeKey: Bool { false }
     override var canBecomeMain: Bool { false }

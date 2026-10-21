@@ -1,6 +1,6 @@
 ---
 title: Settings
-summary: Change the text size, how long a paused song stays, what a hover shows, and set keyboard shortcuts.
+summary: Open Warble at login, change the text size, how long a paused song stays and what a hover shows, and set keyboard shortcuts.
 group: Reference
 ---
 
@@ -8,16 +8,17 @@ Warble works without changing anything, but a few things can be set your way.
 
 ## Open Settings
 
-1. Click the Warble icon in the menu bar.
+1. Click the Warble icon in the menu bar, or right-click the notch. You can also Control-click it.
 2. Choose **Settings…**.
 
-If you've hidden the menu bar icon, open Warble again from your Applications folder. The icon comes back, and Settings opens.
+The right-click menu also opens the app that's playing, checks for updates and quits Warble. It works even with the menu bar icon hidden. To get the icon back, open Warble again from your Applications folder. The icon comes back, and Settings opens.
 
 Every change takes effect straight away.
 
 ## General
 
-- **Show icon in the menu bar.** Turn it off to keep the menu bar tidy. Open Warble from Applications to get it back.
+- **Open at login.** Off at first. Turn it on, and Warble opens each time you log in, so it's there after a restart. It's the same switch as Warble's entry in System Settings › General › Login Items. If you turn Warble off there, turn it back on there.
+- **Show icon in the menu bar.** Turn it off to keep the menu bar tidy. Right-click the notch for the same menu, or open Warble from Applications to get the icon back.
 - **Text size.** Makes the words in the notch larger: **Standard**, **Large** or **Larger**.
 - **Displays.** For each display without a notch, choose whether Warble draws one there. See [External displays](/docs/external-displays/).
 - **Stay visible after pausing.** How long a paused song stays in the notch before Warble hides behind the camera again, from 5 seconds to 5 minutes.

@@ -3,7 +3,7 @@ import CoreGraphics
 import Foundation
 
 // Sends real mouse events in screen points (`axdump` frames; a `uxqa_shot` pixel plus the window origin it prints).
-//   input click X Y | dclick X Y | drag X1 Y1 X2 Y2 [shift] | scroll X Y DX DY
+//   input click X Y | rclick X Y | dclick X Y | drag X1 Y1 X2 Y2 [shift] | scroll X Y DX DY
 // Accessibility clicks don't reach custom-drawn views, so anything canvas-like needs these.
 // It refuses to act unless the app under test is frontmost, so stolen focus can never click into another app.
 
@@ -16,15 +16,15 @@ guard NSWorkspace.shared.frontmostApplication?.localizedName == target else {
 let args = CommandLine.arguments
 func number(_ index: Int) -> Double {
     guard index < args.count, let value = Double(args[index]) else {
-        FileHandle.standardError.write(Data("usage: input click|dclick|drag|scroll …\n".utf8))
+        FileHandle.standardError.write(Data("usage: input click|rclick|dclick|drag|scroll …\n".utf8))
         exit(2)
     }
     return value
 }
 func point(_ index: Int) -> CGPoint { CGPoint(x: number(index), y: number(index + 1)) }
 
-func post(_ type: CGEventType, _ at: CGPoint, flags: CGEventFlags = [], clicks: Int64 = 1) {
-    let event = CGEvent(mouseEventSource: nil, mouseType: type, mouseCursorPosition: at, mouseButton: .left)!
+func post(_ type: CGEventType, _ at: CGPoint, flags: CGEventFlags = [], clicks: Int64 = 1, button: CGMouseButton = .left) {
+    let event = CGEvent(mouseEventSource: nil, mouseType: type, mouseCursorPosition: at, mouseButton: button)!
     event.flags = flags
     event.setIntegerValueField(.mouseEventClickState, value: clicks)
     event.post(tap: .cghidEventTap)
@@ -34,6 +34,8 @@ func post(_ type: CGEventType, _ at: CGPoint, flags: CGEventFlags = [], clicks: 
 switch args.count > 1 ? args[1] : "" {
 case "click":
     post(.mouseMoved, point(2)); post(.leftMouseDown, point(2)); post(.leftMouseUp, point(2))
+case "rclick":
+    post(.mouseMoved, point(2)); post(.rightMouseDown, point(2), button: .right); post(.rightMouseUp, point(2), button: .right)
 case "dclick":
     post(.mouseMoved, point(2))
     for clicks: Int64 in [1, 2] {
@@ -52,6 +54,6 @@ case "scroll":
     post(.mouseMoved, point(2))
     CGEvent(scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 2, wheel1: Int32(number(5)), wheel2: Int32(number(4)), wheel3: 0)?.post(tap: .cghidEventTap)
 default:
-    FileHandle.standardError.write(Data("usage: input click|dclick|drag|scroll …\n".utf8))
+    FileHandle.standardError.write(Data("usage: input click|rclick|dclick|drag|scroll …\n".utf8))
     exit(2)
 }
