@@ -127,6 +127,9 @@ private struct GeneralSettings: View {
             } footer: {
                 Text("On displays without a notch, and Macs without one, Warble can draw a notch of its own.")
                     .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             Section {
                 Picker(selection: $stayVisible) {
@@ -159,6 +162,9 @@ private struct NotchSettings: View {
             } footer: {
                 Text("Animations follow Reduce Motion in System Settings › Accessibility › Display.")
                     .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }
