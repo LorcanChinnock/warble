@@ -1,3 +1,4 @@
+import AppKit
 import Carbon.HIToolbox
 import os
 import WarbleCore
@@ -5,18 +6,36 @@ import WarbleCore
 private let log = Logger.warble("hotkeys")
 
 @MainActor
+@Observable
 final class HotkeyCenter {
     static let shared = HotkeyCenter()
 
-    var onPress: ((WarbleAction) -> Void)?
-    private var refs: [EventHotKeyRef] = []
-    private var handlerInstalled = false
-    private var registered: [WarbleAction: KeyCombo] = [:]
+    @ObservationIgnored var onPress: ((WarbleAction) -> Void)?
+    /// The actions whose shortcut macOS refused, usually because another app has it. Settings says so under each.
+    private(set) var unavailable: Set<WarbleAction> = []
+    @ObservationIgnored private var refs: [EventHotKeyRef] = []
+    @ObservationIgnored private var handlerInstalled = false
+    @ObservationIgnored private var registered: [WarbleAction: KeyCombo] = [:]
+    @ObservationIgnored private var defaultsObserver: NSObjectProtocol?
     /// True while the shortcut recorder listens, so global hotkeys don't swallow the keystroke.
-    private var isSuspended = false
-    private var temporaryRef: EventHotKeyRef?
-    private var onTemporaryPress: (() -> Void)?
+    @ObservationIgnored private var isSuspended = false
+    @ObservationIgnored private var temporaryRef: EventHotKeyRef?
+    @ObservationIgnored private var onTemporaryPress: (() -> Void)?
     private static let temporaryID = UInt32.max
+
+    /// Registers the shortcuts in Settings, and again whenever one changes, so a change works without a relaunch.
+    func start() {
+        reloadFromPreferences()
+        guard defaultsObserver == nil else {
+            return
+        }
+        // Any write to Warble's defaults; reloading registers again only when a shortcut changed.
+        defaultsObserver = NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: UserDefaults.standard, queue: .main) { _ in
+            MainActor.assumeIsolated {
+                HotkeyCenter.shared.reloadFromPreferences()
+            }
+        }
+    }
 
     func reloadFromPreferences(force: Bool = false) {
         guard !isSuspended else {
@@ -70,6 +89,7 @@ final class HotkeyCenter {
         installHandlerIfNeeded()
         registered = bindings
         var failed: [String] = []
+        var unavailable: Set<WarbleAction> = []
         for (action, combo) in bindings {
             guard let index = WarbleAction.allCases.firstIndex(of: action) else {
                 continue
@@ -82,9 +102,14 @@ final class HotkeyCenter {
             } else {
                 log.error("RegisterEventHotKey failed for \(action.rawValue, privacy: .public): \(status)")
                 failed.append(combo.displayString)
+                unavailable.insert(action)
             }
         }
-        if !failed.isEmpty {
+        if self.unavailable != unavailable {
+            self.unavailable = unavailable
+        }
+        // Settings › Shortcuts says so under the shortcut, so the toast is for when it isn't showing.
+        if !failed.isEmpty, !SettingsWindow.isShowing(.shortcuts) {
             // Usually another app owns the shortcut, or two Warble actions share it.
             Toast.error("Shortcut unavailable: \(failed.sorted().joined(separator: ", ")). Another app may use it, so choose a different one in Settings › Shortcuts.")
         }

@@ -37,3 +37,44 @@ import Testing
         #expect(!KeyCombo(keyCode: code, modifiers: 0).keyLabel.hasPrefix("#"))
     }
 }
+
+@Test func eachActionSendsItsCommand() {
+    #expect(WarbleAction.allCases.map(\.command) == [.togglePlayPause, .nextTrack, .previousTrack])
+}
+
+@Test func recordingTakesACombo() {
+    let combo = KeyCombo(keyCode: 35, modifiers: KeyCombo.option | KeyCombo.command)
+    #expect(ShortcutRecording(combo, for: .playPause, bindings: [:]) == .record(combo))
+    // ⇧ counts alongside another modifier.
+    let shifted = KeyCombo(keyCode: 45, modifiers: KeyCombo.shift | KeyCombo.control)
+    #expect(ShortcutRecording(shifted, for: .nextTrack, bindings: [:]) == .record(shifted))
+}
+
+@Test func recordingDropsBitsThatArentModifiers() {
+    // Caps Lock and the Fn key's bits can ride along with an event's modifiers.
+    let combo = KeyCombo(keyCode: 35, modifiers: KeyCombo.command | 1 << 10 | 1 << 17)
+    #expect(ShortcutRecording(combo, for: .playPause, bindings: [:]) == .record(KeyCombo(keyCode: 35, modifiers: KeyCombo.command)))
+}
+
+@Test func escapeCancelsAndDeleteClearsARecording() {
+    #expect(ShortcutRecording(KeyCombo(keyCode: 53, modifiers: 0), for: .playPause, bindings: [:]) == .cancel)
+    #expect(ShortcutRecording(KeyCombo(keyCode: 51, modifiers: 0), for: .playPause, bindings: [:]) == .clear)
+    #expect(ShortcutRecording(KeyCombo(keyCode: 117, modifiers: 0), for: .playPause, bindings: [:]) == .clear)
+    // With a modifier they're ordinary combos.
+    let delete = KeyCombo(keyCode: 51, modifiers: KeyCombo.control | KeyCombo.option)
+    #expect(ShortcutRecording(delete, for: .playPause, bindings: [:]) == .record(delete))
+}
+
+@Test func aKeyWithoutAModifierOrWithOnlyShiftIsNotAShortcut() {
+    #expect(ShortcutRecording(KeyCombo(keyCode: 35, modifiers: 0), for: .playPause, bindings: [:]) == .needsModifier)
+    #expect(ShortcutRecording(KeyCombo(keyCode: 35, modifiers: KeyCombo.shift), for: .playPause, bindings: [:]) == .needsModifier)
+    #expect(ShortcutRecording(KeyCombo(keyCode: 122, modifiers: 0), for: .playPause, bindings: [:]) == .needsModifier)
+}
+
+@Test func recordingRefusesAReservedOrTakenCombo() {
+    let quit = KeyCombo(keyCode: 12, modifiers: KeyCombo.command)
+    #expect(ShortcutRecording(quit, for: .playPause, bindings: [:]) == .refused(.reserved))
+    let combo = KeyCombo(keyCode: 35, modifiers: KeyCombo.option | KeyCombo.command)
+    #expect(ShortcutRecording(combo, for: .nextTrack, bindings: [.playPause: combo]) == .refused(.taken(by: .playPause)))
+    #expect(ShortcutRecording(combo, for: .playPause, bindings: [.playPause: combo]) == .record(combo))
+}
