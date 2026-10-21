@@ -15,9 +15,9 @@ private func store() -> (Store, FakeClock, FakeScheduler) {
 @MainActor
 @Test func withNothingPlayingTheStoreArmsNoTimer() {
     let (store, _, scheduler) = store()
+    store.dispatch(.housingsChanged([NotchHousing(display: "built-in", frame: .zero, isVirtual: false)]))
     store.dispatch(.playbackReported(nil))
-    store.dispatch(.hoverChanged(true))
-    store.dispatch(.hoverChanged(false))
+    store.dispatch(.dismiss(except: nil))
     #expect(scheduler.armed == 0)
     #expect(scheduler.deadline == nil)
 }
@@ -40,8 +40,11 @@ private func store() -> (Store, FakeClock, FakeScheduler) {
 @MainActor
 @Test func theStoreCancelsItsTimerWhenNothingIsDue() {
     let (store, _, scheduler) = store()
+    store.dispatch(.housingsChanged([NotchHousing(display: "built-in", frame: .zero, isVirtual: false)]))
     store.dispatch(.playbackReported(paused))
-    store.dispatch(.hoverChanged(true))
+    // Pinned open, the notch holds the pause's countdown off.
+    store.dispatch(.hover(display: "built-in", .click))
+    store.dispatch(.hover(display: "built-in", .click))
     #expect(scheduler.deadline == nil)
 }
 
@@ -49,7 +52,7 @@ private func store() -> (Store, FakeClock, FakeScheduler) {
 @Test func everyActionReportsTheStateBeforeAndAfter() {
     let (store, _, _) = store()
     var changes: [(AppState, AppState)] = []
-    store.onChange = { changes.append(($0, $1)) }
+    store.onChange = { old, new, _ in changes.append((old, new)) }
     store.dispatch(.playbackReported(paused))
     #expect(changes.count == 1)
     #expect(changes[0].0.playback == nil)

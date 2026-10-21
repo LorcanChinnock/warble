@@ -5,8 +5,10 @@ import Foundation
 @MainActor
 public final class Store {
     public private(set) var state: AppState
-    /// Called after each action with the state before and after it, before its effects run.
-    public var onChange: (_ old: AppState, _ new: AppState) -> Void = { _, _ in }
+    /// Called after each action with the state before and after it and the action, before its effects run.
+    public var onChange: (_ old: AppState, _ new: AppState, _ action: AppAction) -> Void = { _, _, _ in }
+    /// While a `.tick` runs, the deadline it's for, which may be a moment before the timer fired.
+    public private(set) var tickDeadline: Date?
     /// Carries out each effect an action returns.
     public var perform: (AppEffect) -> Void = { _ in }
 
@@ -28,7 +30,7 @@ public final class Store {
         let old = state
         let effects = reduce(&state, action, now: now)
         arm()
-        onChange(old, state)
+        onChange(old, state, action)
         effects.forEach(perform)
     }
 
@@ -40,6 +42,8 @@ public final class Store {
         scheduler.schedule(at: deadline) { [weak self] in
             guard let self, let deadline else { return }
             self.armed = nil
+            self.tickDeadline = deadline
+            defer { self.tickDeadline = nil }
             self.dispatch(.tick, at: max(self.clock.now, deadline))
         }
     }

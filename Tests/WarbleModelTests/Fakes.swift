@@ -34,3 +34,38 @@ final class FakeScheduler: Scheduler {
         fire?()
     }
 }
+
+/// Holds one temporary key, as `HotkeyCenter` does, and presses it when a test says so.
+@MainActor
+final class FakeHotkeys: HotkeyRegistrar {
+    private(set) var temporary: KeyCombo?
+    var refuses = false
+    private(set) var unregisters = 0
+    private var onPress: (() -> Void)?
+
+    func registerTemporary(_ combo: KeyCombo, onPress: @escaping () -> Void) -> Bool {
+        guard !refuses else { return false }
+        temporary = combo
+        self.onPress = onPress
+        return true
+    }
+
+    func unregisterTemporary() {
+        unregisters += 1
+        temporary = nil
+        onPress = nil
+    }
+
+    func press() {
+        onPress?()
+    }
+}
+
+/// Displays a test sets.
+@MainActor
+final class FakeDisplays: DisplayProvider {
+    var displays: [NotchDisplay] = [] {
+        didSet { onChange() }
+    }
+    var onChange: () -> Void = {}
+}

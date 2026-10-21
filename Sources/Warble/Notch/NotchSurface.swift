@@ -5,91 +5,69 @@ import WarbleCore
 
 private let log = Logger.warble("notch")
 
-/// One display's notch: its panel over a camera housing, real or virtual, and the `HoverIntent` that opens it.
-/// `NotchController` keeps one for each housing and shares what's playing between them.
+/// One display's notch: its panel over a camera housing, real or virtual. It draws the state `Store` decides for it and
+/// sends what the pointer and the user do back as actions. `NotchController` keeps one for each housing.
 @MainActor
 final class NotchSurface {
+    /// The `NotchHousing.display` this notch is for.
+    let display: String
     /// The camera housing the panel is drawn over.
     var housing: CGRect
     /// Whether the housing is one Warble draws on a display without a notch.
-    var isVirtual: Bool {
-        get { model.isVirtual }
-        set { model.isVirtual = newValue }
-    }
-    /// Whether a blank notch stays drawn over the housing while nothing is playing.
-    var isAlwaysShown = false {
-        didSet {
-            model.isAlwaysShown = isAlwaysShown
-            shownChanged()
-        }
-    }
-    /// Whether anything is playing, rather than Idle.
-    var isPlaying = false {
-        didSet { shownChanged() }
-    }
-    /// Whether a Doctor check failed, which draws the notch with a "!" even when nothing is playing.
-    var needsAttention = false {
-        didSet { shownChanged() }
-    }
-    /// What a hover on the housing does while Idle.
-    var idleHover = IdleHover.lastPlayed {
-        didSet { shownChanged() }
-    }
-    /// The track-change toast showing, which a resting notch draws below its wings.
-    var toast: TrackToast?
-    /// Without anything playing, a "!" or a card to open while Idle, the surface draws nothing, or only a blank notch,
-    /// and takes no hover or click.
-    private var answersPointer: Bool { state != .hidden && !(state == .idle && idleHover == .nothing) }
-    private var answeredPointer = false
-    /// Called after the surface opens or closes, or the pointer crosses it, so the controller can listen for clicks
-    /// elsewhere and Escape only while a notch is open.
-    var onChange: () -> Void = {}
-    /// Called when the surface is clicked, before it opens.
-    var onClick: () -> Void = {}
+    var isVirtual: Bool { model.isVirtual }
+    /// What the store decided: the state, what Expanded holds, whether anything is playing rather than Idle, the toast
+    /// showing and whether the open card shows the Doctor's checks. `update` draws them.
+    private(set) var state = NotchState.hidden
+    private(set) var card = NotchCard.player
+    private var isPlaying = false
+    private var toast: TrackToast?
     /// Builds the menu a right-click opens, when it opens.
     var makeMenu: () -> NSMenu? = { nil }
     /// Called with each key the open notch's controls didn't use while it has the keyboard; true when it did something.
     var onKey: (NSEvent) -> Bool = { _ in false }
 
-    var state: NotchState {
-        NotchState(hover.state, isPlaying: isPlaying, needsAttention: needsAttention, idleHover: idleHover, isAlwaysShown: isAlwaysShown, showsToast: toast != nil)
-    }
-    /// What Expanded holds, which the panel morphs to on the next `update`.
-    var card: NotchCard {
-        NotchCard(isPlaying: isPlaying && model.player.playback != nil, needsAttention: needsAttention, showsDoctor: model.showsDoctor)
-    }
-    private(set) var pointerInside = false
     /// The app in front when the shortcut opened the notch, which gets the keyboard back when it closes.
     private var keyboardFrom: NSRunningApplication?
     /// Warble's own window that had the keyboard, such as Settings, when the shortcut opened the notch.
     private var keyWindowBefore: NSWindow?
-    /// Whether a menu from this notch is open, which takes Escape for itself.
-    private(set) var isShowingMenu = false
 
     private let model: NotchModel
     private let panel: NotchPanel
-    private var hover = HoverIntent()
-    private var deadlineTimer: Timer?
+    private let dispatch: (AppAction) -> Void
     /// The state and frame last shown, and the frame the panel has, which stays the larger one until a morph ends.
     private var shown: (state: NotchState, frame: CGRect)?
     private var panelFrame: CGRect?
     /// Bumped by every change, so a morph that ends after another has begun doesn't shrink the panel under it.
     private var morphs = 0
 
-    init(housing: CGRect, player: PlayerModel, doctor: DoctorModel, settings: SettingsStore, onScroll: @escaping (NSEvent) -> Void) {
+    init(
+        display: String, housing: CGRect, player: PlayerModel, doctor: DoctorModel, settings: SettingsStore,
+        dispatch: @escaping (AppAction) -> Void, onScroll: @escaping (NSEvent) -> Void
+    ) {
+        self.display = display
         self.housing = housing
+        self.dispatch = dispatch
         model = NotchModel(player: player, doctor: doctor)
         panel = NotchPanel(model: model, settings: settings)
-        panel.onPointer = { [weak self] inside in self?.pointer(inside: inside) }
+        panel.onPointer = { inside in dispatch(.pointer(display: display, inside: inside)) }
         panel.onScroll = onScroll
         panel.onMenu = { [weak self] event in self?.showMenu(for: event) }
-        model.onClick = { [weak self] in
-            self?.onClick()
-            self?.handle(.click)
-        }
+        model.onClick = { dispatch(.hover(display: display, .click)) }
         model.onMenu = { [weak self] open in self?.menu(open: open) }
-        model.onShowDoctor = { [weak self] show in self?.showDoctor(show) }
+        model.onShowDoctor = { show in dispatch(.showDoctor(display: display, show)) }
         panel.onKey = { [weak self] event in self?.onKey(event) ?? false }
+    }
+
+    /// Takes what the store decided for this notch, which the next `update` draws.
+    func apply(_ app: AppState) {
+        guard let surface = app.surfaces[display], let state = app.notchState(display), let card = app.card(display) else { return }
+        self.state = state
+        self.card = card
+        isPlaying = app.showsPlayback
+        toast = app.toasts.current?.content
+        model.isVirtual = surface.isVirtual
+        model.isAlwaysShown = surface.isAlwaysShown
+        model.showsDoctor = surface.showsDoctor
     }
 
     /// Opens the notch with the keyboard in it, so VoiceOver and Keyboard navigation start there, or closes it. It
@@ -98,7 +76,8 @@ final class NotchSurface {
     /// `handback` is where the keyboard goes when it closes, taken over from another notch that had it.
     func toggleKeyboard(handback: KeyboardHandback? = nil) {
         let opening = state != .expanded
-        handle(.keyboard)
+        // The store answers at once, so `state` is already the new one.
+        dispatch(.hover(display: display, .keyboard))
         guard opening, state == .expanded else {
             handback?.giveBack()
             return
@@ -143,50 +122,8 @@ final class NotchSurface {
         keyWindowBefore = nil
     }
 
-    private func shownChanged() {
-        defer { answeredPointer = answersPointer }
-        guard !answersPointer, answeredPointer else { return }
-        // Start over, so a pointer still on the notch when it's drawn again is reported as entering again.
-        hover = HoverIntent()
-        pointerInside = false
-        scheduleDeadline()
-    }
-
-    /// Swaps the open card between the player and the Doctor's checks. From the resting "!", the click that follows
-    /// opens the notch on the checks. The controller hears of the change, since only the player's card follows the volume.
-    private func showDoctor(_ show: Bool) {
-        model.showsDoctor = show
-        if state == .expanded {
-            update()
-            onChange()
-        }
-    }
-
-    func handle(_ event: HoverEvent) {
-        // A blank notch that doesn't open keeps no hover, so playback starting under the pointer doesn't open it.
-        guard answersPointer else { return }
-        let before = state
-        hover.handle(event, at: .now)
-        scheduleDeadline()
-        update()
-        onChange()
-        if event == .click {
-            measureExpand(from: before, cause: "click", since: Perf.input?.timestamp)
-        } else if event == .keyboard {
-            measureExpand(from: before, cause: "shortcut", since: nil)
-        }
-    }
-
-    /// Times opening the notch, from the input to the first frame of the morph, when `before` wasn't open and now is.
-    private func measureExpand(from before: NotchState, cause: String, since start: TimeInterval?) {
-        guard before != .expanded, state == .expanded else { return }
-        Perf.untilNextFrame("Expand", on: panel.screen, cause: cause, since: start)
-    }
-
     /// Takes the panel down at once, for a housing that's gone.
     func remove() {
-        deadlineTimer?.invalidate()
-        deadlineTimer = nil
         morphs += 1
         shown = nil
         hide()
@@ -195,10 +132,7 @@ final class NotchSurface {
     /// Keeps the card open while a menu from it is up. AppKit may not report the pointer leaving or coming back while a
     /// menu tracks it, so once the menu closes the panel checks where it is.
     private func menu(open: Bool) {
-        isShowingMenu = open
-        handle(open ? .menuOpened : .menuClosed)
-        // A notch that doesn't answer the pointer has nothing to handle, but the controller still lets go of Escape.
-        onChange()
+        dispatch(.menu(display: display, open: open))
         if !open {
             panel.recheckPointer()
         }
@@ -208,47 +142,20 @@ final class NotchSurface {
     /// that's open closes, as for a click.
     private func showMenu(for event: NSEvent) {
         guard let menu = makeMenu(), let view = panel.contentView else { return }
-        onClick()
+        dispatch(.dismiss(except: display))
         self.menu(open: true)
         NSMenu.popUpContextMenu(menu, with: event, for: view)
         self.menu(open: false)
     }
 
-    private func pointer(inside: Bool) {
-        guard answersPointer, inside != pointerInside else { return }
-        pointerInside = inside
-        handle(inside ? .pointerEntered : .pointerLeft)
-    }
-
-    /// One timer at most, for `HoverIntent`'s next deadline, and none while nothing is due.
-    private func scheduleDeadline() {
-        deadlineTimer?.invalidate()
-        deadlineTimer = nil
-        guard let deadline = hover.deadline else { return }
-        let timer = Timer(fire: deadline, interval: 0, repeats: false) { [weak self] _ in
-            MainActor.assumeIsolated {
-                guard let self else { return }
-                let before = self.state
-                self.hover.advance(to: max(.now, deadline))
-                self.scheduleDeadline()
-                self.update()
-                self.onChange()
-                // From when the hover delay ended, so a timer that fires late counts against the budget too.
-                let due = ProcessInfo.processInfo.systemUptime + deadline.timeIntervalSinceNow
-                self.measureExpand(from: before, cause: "hover", since: due)
-            }
-        }
-        RunLoop.main.add(timer, forMode: .common)
-        deadlineTimer = timer
+    /// Times opening the notch, from the input to the first frame of the morph.
+    func measureExpand(cause: String, since start: TimeInterval?) {
+        Perf.untilNextFrame("Expand", on: panel.screen, cause: cause, since: start)
     }
 
     func update(animated: Bool = true) {
         let state = state
         let notch = housing
-        // The checks show until the notch closes; the next open shows the player again.
-        if state != .expanded, model.showsDoctor {
-            model.showsDoctor = false
-        }
         if state != .expanded {
             releaseKeyboard()
         }
