@@ -171,6 +171,24 @@ private func client(_ server: Server, cache: URL, clock: SleepingClock = Sleepin
     #expect(server.requests.count == 1)
 }
 
+@Test func noLyricsIsAskedForAgainAfterThirtyDays() async throws {
+    let cache = try temporaryFolder()
+    defer { try? FileManager.default.removeItem(at: cache) }
+    let server = Server(Reply(status: 404), .lyrics(synced))
+    let clock = SleepingClock()
+    let lyrics = client(server, cache: cache, clock: clock)
+    #expect(await lyrics.lyrics(for: grace) == nil)
+    clock.sleep(LRCLIBClient.noLyricsExpiry - 1)
+    #expect(await lyrics.lyrics(for: grace) == nil)
+    #expect(server.requests.count == 1)
+    clock.sleep(1)
+    #expect(await lyrics.lyrics(for: grace) == synced)
+    // Lyrics found don't expire.
+    clock.sleep(LRCLIBClient.noLyricsExpiry * 10)
+    #expect(await lyrics.lyrics(for: grace) == synced)
+    #expect(server.requests.count == 2)
+}
+
 @Test func plainLyricsOrAnInstrumentalAreNoLyricsAndArentAskedForAgain() async throws {
     let cache = try temporaryFolder()
     defer { try? FileManager.default.removeItem(at: cache) }
@@ -277,3 +295,4 @@ private func client(_ server: Server, cache: URL, clock: SleepingClock = Sleepin
     #expect(await [first, second] == [synced, synced])
     #expect(server.requests.count == 1)
 }
+

@@ -28,6 +28,8 @@ final class NotchModel {
     var isAlwaysShown = false
     /// The track-change toast, while `state` is `toast`. Set with `state`, like `card`.
     var toast: TrackToast?
+    /// The lyric line, while `state` is `lyrics`. Set with `state`, like `card`.
+    var lyric: String?
     @ObservationIgnored var onClick: () -> Void = {}
     /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
     @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }

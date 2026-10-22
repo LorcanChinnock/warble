@@ -1,6 +1,6 @@
 ---
 title: Settings
-summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows and whether a new song shows its title, and set keyboard shortcuts, including one that opens the notch.
+summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a new song shows its title and whether lyrics show, and set keyboard shortcuts, including one that opens the notch.
 group: Reference
 ---
 
@@ -27,6 +27,7 @@ Every change takes effect straight away.
 
 - **When nothing is playing, hover shows.** **Last Played** shows the card with the last song you played, so you can [pick up where you left off](/docs/pick-up-where-you-left-off/). **Nothing** keeps Warble out of sight until something plays.
 - **Show a message when the track changes.** Off at first. Turn it on, and when a new song starts, its title and artist slide out of the notch for two seconds, so you can see what's on without pointing at it. Skip a few songs in a row and you see only the last one. Point at the notch or click the message to open the full player.
+- **Show lyrics under the notch.** Off at first. Turn it on, and the line being sung shows under the notch while a song plays. To find the lyrics, Warble sends the song's title, artist, album and length to LRCLIB, a free lyrics library. See [Show lyrics](/docs/show-lyrics/).
 
 > [!NOTE]
 > Warble's animations follow **Reduce motion** in System Settings › Accessibility › Display.
@@ -49,4 +50,4 @@ Warble won't use a shortcut that every app needs, such as <kbd>⌘Q</kbd>, or on
 
 ## About
 
-About shows which version of Warble you have, with **Check for Updates…** and a switch to check for updates automatically. Warble only goes online to check for updates.
+About shows which version of Warble you have, with **Check for Updates…** and a switch to check for updates automatically. Warble only goes online to check for updates, and to look up lyrics if you turn them on.

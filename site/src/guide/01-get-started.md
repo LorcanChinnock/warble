@@ -41,7 +41,7 @@ When you pause, the song stays in the notch for 10 seconds, then Warble hides be
 
 ## Updates
 
-Warble asks once whether it should check for updates automatically. Whatever you choose, you can check at any time with **Check for Updates…** in the menu bar icon's menu. Checking for updates is the only time Warble goes online.
+Warble asks once whether it should check for updates automatically. Whatever you choose, you can check at any time with **Check for Updates…** in the menu bar icon's menu. Checking for updates is the only time Warble goes online, unless you turn on [lyrics](/docs/show-lyrics/).
 
 > [!NOTE]
 > On a Mac without a notch, or with the lid closed, Warble draws a notch of its own at the top of the screen. See [External displays](/docs/external-displays/).

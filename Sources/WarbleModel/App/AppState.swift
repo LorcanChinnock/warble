@@ -38,6 +38,8 @@ public struct AppState: Equatable, Sendable {
     /// The new track's title and artist, shown for a moment after a skip when Settings turns it on.
     public internal(set) var toasts = ToastQueue<TrackToast>()
     public internal(set) var showsTrackToast: Bool
+    /// The current lyric line, which a resting notch shows under it when Settings turns lyrics on.
+    public internal(set) var lyrics: LyricsState
     /// What the effects last asked for, so each is asked for once per change.
     public internal(set) var watchesClicks = false
     public internal(set) var takesEscape = false
@@ -46,12 +48,13 @@ public struct AppState: Equatable, Sendable {
     /// `checks` are what the Doctor finds before it has asked macOS anything: what it finds while the adapter works.
     public init(
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
-        showsTrackToast: Bool = false, checks: [Doctor.Check] = []
+        showsTrackToast: Bool = false, showsLyrics: Bool = false, checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
         doctor = DoctorState(checks: checks)
         self.idleHover = idleHover
         self.showsTrackToast = showsTrackToast
+        lyrics = LyricsState(isOn: showsLyrics)
     }
 
     /// Whether the notches draw what's playing: something is, and it isn't Idle.
@@ -60,7 +63,7 @@ public struct AppState: Equatable, Sendable {
     /// The earliest time something changes if nothing else happens, or `nil` when nothing is due, so `Store` runs one
     /// timer at most, and none while nothing plays.
     public var deadline: Date? {
-        ([hideAt, idle.deadline, toasts.deadline] + surfaces.values.map(\.hover.deadline)).compactMap { $0 }.min()
+        ([hideAt, idle.deadline, toasts.deadline, lyrics.deadline] + surfaces.values.map(\.hover.deadline)).compactMap { $0 }.min()
     }
 
     /// The state the notch over `display` draws.
@@ -76,7 +79,8 @@ public struct AppState: Equatable, Sendable {
     func notchState(_ surface: Surface) -> NotchState {
         NotchState(
             surface.hover.state, isPlaying: showsPlayback, needsAttention: needsAttention, idleHover: idleHover,
-            isAlwaysShown: surface.isAlwaysShown, showsToast: toasts.current != nil
+            isAlwaysShown: surface.isAlwaysShown, showsToast: toasts.current != nil,
+            showsLyrics: lyrics.showsLine
         )
     }
 

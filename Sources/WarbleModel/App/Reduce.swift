@@ -127,6 +127,10 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         if !shows {
             dismissToast(in: &state, at: now)
         }
+    case .lyricsChanged(let on):
+        state.lyrics.turn(on: on)
+    case .lyricsLoaded(let lyrics, let pass):
+        state.lyrics.loaded(lyrics, pass: pass)
     case .tick:
         if let hideAt = state.hideAt, hideAt <= now {
             show(nil, in: &state, at: now)
@@ -144,6 +148,10 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     }
     if let playback = state.playback, playback != old.playback {
         effects += remember(playback, in: &state)
+    }
+    // Last, so the line follows whatever this action did: a new track, a seek, a pause, Idle or a tick.
+    if let fetch = state.lyrics.update(for: state.showsPlayback ? state.playback : nil, at: now) {
+        effects.append(fetch)
     }
     return effects
 }
