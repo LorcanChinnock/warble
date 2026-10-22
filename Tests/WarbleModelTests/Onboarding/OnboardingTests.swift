@@ -147,3 +147,12 @@ func aClickOrTheKeyboardEndsTheDemoAtOnce(_ event: HoverEvent) {
     #expect(frame.contains(housing.frame))
     #expect(NotchLayout.hoverArea(.hint, notch: housing.frame) == housing.frame)
 }
+
+@Test func theOpenNotchShortcutEndsTheDemoBeforeItAsksForTheKeyboard() {
+    var state = launched()
+    let effects = reduce(&state, .perform(.openNotch), now: now + 1)
+    #expect(effects.contains(.showWelcome))
+    #expect(effects.contains(.toggleKeyboard))
+    // The notch is already the idle one when the keyboard is asked to open it, so it counts as opening.
+    #expect(state.notchState("built-in") == .idle)
+}

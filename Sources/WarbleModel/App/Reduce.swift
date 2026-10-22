@@ -213,7 +213,7 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
 private func endsDemo(_ action: AppAction) -> Bool {
     switch action {
     case .pointer(_, let inside): inside
-    case .hover, .menu: true
+    case .hover, .menu, .perform(.openNotch): true
     case .playbackReported(let playback): playback?.isPlaying == true
     default: false
     }
