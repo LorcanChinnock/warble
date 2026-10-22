@@ -49,6 +49,9 @@ final class NotchController {
                 if preferences.lyrics != state.lyrics.isOn {
                     self.store.dispatch(.lyricsChanged(preferences.lyrics))
                 }
+                if preferences.swipeToSkip != state.swipeToSkip {
+                    self.store.dispatch(.swipeToSkipChanged(preferences.swipeToSkip))
+                }
                 if preferences.virtualNotchRules != self.rules {
                     self.layOut()
                 }
@@ -181,11 +184,21 @@ final class NotchController {
         return true
     }
 
-    /// Scrolling over a notch changes the volume, from the volume now, since the card with the slider may not be open.
+    /// Scrolling over a notch changes the volume, from the volume now, since the card with the slider may not be open, and
+    /// a sideways swipe can skip.
     private func scroll(_ event: NSEvent) {
         store.dispatch(.scrolled(
-            delta: event.scrollingDeltaY, precise: event.hasPreciseScrollingDeltas, inverted: event.isDirectionInvertedFromDevice,
+            delta: event.scrollingDeltaY, across: event.scrollingDeltaX, phase: Self.phase(of: event),
+            precise: event.hasPreciseScrollingDeltas, inverted: event.isDirectionInvertedFromDevice,
             volume: volume.volume, isMuted: volume.isMuted
         ))
+    }
+
+    /// Where a scroll falls in its trackpad gesture, or `nil` for a mouse wheel, which has no gesture.
+    private static func phase(of event: NSEvent) -> Swipe.Phase? {
+        if !event.phase.isDisjoint(with: [.mayBegin, .began]) { return .began }
+        if event.phase.contains(.changed) || event.phase.contains(.stationary) { return .changed }
+        if !event.phase.isDisjoint(with: [.ended, .cancelled]) { return .ended }
+        return event.momentumPhase.isEmpty ? nil : .momentum
     }
 }

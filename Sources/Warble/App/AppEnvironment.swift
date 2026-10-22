@@ -39,7 +39,8 @@ final class AppEnvironment {
         store = Store(
             state: AppState(
                 stayVisibleAfterPausing: preferences.stayVisibleAfterPausing, idleHover: preferences.idleHover,
-                showsTrackToast: preferences.trackChangeToast, showsLyrics: preferences.lyrics, checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
+                showsTrackToast: preferences.trackChangeToast, showsLyrics: preferences.lyrics,
+                swipeToSkip: preferences.swipeToSkip, checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
             ),
             clock: SystemClock(), scheduler: TimerScheduler()
         )
