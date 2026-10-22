@@ -74,7 +74,7 @@ Tests/WarbleCoreTests/  WarbleCore's Swift Testing suite
 Resources/              Info.plist, the app icon and the string catalog
 scripts/                Bundling, install, signing certificate, icon, lint and the Homebrew cask
 Vendor/                 MediaRemote Adapter, as a git submodule
-docs/                   The roadmap, performance budgets, and images for the README and the user guide
+docs/                   The roadmap, performance budgets, images for the README and the user guide, and demo/, a made-up player to record
 site/                   The website (see site/README.md)
 ```
 

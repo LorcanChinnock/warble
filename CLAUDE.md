@@ -122,3 +122,4 @@ The repository is public, so GitHub's runners are free, but the free plan runs o
 - Any substantial change or new feature keeps docs in line in the same PR: the user guide in `site/src/guide/`, `README.md`, the landing page `site/src/pages/index.astro`, and `docs/roadmap.md` if it changes the plan. `CHANGELOG.md` is generated, so don't edit it.
 - Only `make dist` builds `Warble.app` with the Sparkle feed. Every other build is `WarbleDev.app` (bundle ID `dev.lorcan.Warble.dev`, executable `WarbleDev`, scheme `warble-dev://`, no feed), so dev builds never self-update or replace the installed release. `scripts/bundle.sh` does the renaming.
 - To QA UI changes by driving the real app, use the `.agents/skills/ux-qa` skill.
+- For recordings that need a real player, `docs/demo/` is a made-up one with invented tracks and generated art (`docs/demo/README.md`). It's a separate package, outside every Make target and CI.
