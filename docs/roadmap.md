@@ -28,7 +28,6 @@ The first public beta: what's playing in the notch, playback and volume controls
 - [#23](https://github.com/LorcanChinnock/warble/issues/23) feat(doctor): explain why nothing is detected
 - [#24](https://github.com/LorcanChinnock/warble/issues/24) feat(app): notch right-click menu, menu bar icon setting, open at login
 - [#25](https://github.com/LorcanChinnock/warble/issues/25) feat(onboarding): welcome window
-- [#130](https://github.com/LorcanChinnock/warble/issues/130) feat(onboarding): first-run notch demo
 - [#26](https://github.com/LorcanChinnock/warble/issues/26) feat(settings): Settings window with General, Notch and Players cards
 - [#27](https://github.com/LorcanChinnock/warble/issues/27) feat(accessibility): VoiceOver, keyboard control and Increase Contrast
 - [#28](https://github.com/LorcanChinnock/warble/issues/28) perf: set budgets for hover latency, idle CPU, memory and launch
@@ -46,6 +45,8 @@ The first public beta: what's playing in the notch, playback and volume controls
 - [#93](https://github.com/LorcanChinnock/warble/issues/93) feat(settings): Shortcuts section
 - [#114](https://github.com/LorcanChinnock/warble/issues/114) docs(site): a look of Warble's own, not Shot's
 - [#121](https://github.com/LorcanChinnock/warble/issues/121) refactor(app): one tested store, injected dependencies and feature folders
+- [#130](https://github.com/LorcanChinnock/warble/issues/130) feat(onboarding): first-run notch demo
+- [#135](https://github.com/LorcanChinnock/warble/issues/135) fix(shortcuts): the notch's Escape and a toast's ⌘Z can unregister each other
 
 ## [0.2: lyrics, gestures and podcasts](https://github.com/LorcanChinnock/warble/issues/33)
 
