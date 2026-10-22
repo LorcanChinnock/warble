@@ -62,7 +62,7 @@ Local builds are `WarbleDev.app`. A real installed version is `/Applications/War
 ## Architecture
 
 Three targets:
-- `Sources/WarbleModel`: logic that needs only Foundation, so CI builds and tests it on Linux: the app's state, `reduce` and their ports (`App/`), notch geometry, playback state and its interpolation, the hover state machine, source priority, the toast queue and the Doctor's checks, and as the roadmap lands the lyrics parser. It may import CoreGraphics only inside `#if canImport(CoreGraphics)`. Linux Foundation has `CGFloat`, `CGPoint`, `CGSize` and `CGRect`, but not `CGPath`, `CGColor` or `CGImage`.
+- `Sources/WarbleModel`: logic that needs only Foundation, so CI builds and tests it on Linux: the app's state, `reduce` and their ports (`App/`), notch geometry, playback state and its interpolation, the hover state machine, source priority, the toast queue, the Doctor's checks and the lyrics parser (`Lyrics`, `Lyrics/`). It may import CoreGraphics only inside `#if canImport(CoreGraphics)`. Linux Foundation has `CGFloat`, `CGPoint`, `CGSize` and `CGRect`, but not `CGPath`, `CGColor` or `CGImage`.
 - `Sources/WarbleCore`: logic that needs Apple frameworks but no window, display or permission, including the real side of most ports: preferences, the now-playing sources, Core Audio volume and outputs (`SystemVolume`, `CoreAudioOutputs`), the last track's file (`LastPlayedFile`), artwork colours and `TimerScheduler`.
 - `Sources/Warble`: AppKit and SwiftUI that need a real session. `WarbleApp` is a `MenuBarExtra` with an `AppDelegate` adaptor; `Updater` wraps Sparkle. It draws the store's state, turns AppKit events into actions and carries out the effects that need AppKit, and decides nothing else.
 
