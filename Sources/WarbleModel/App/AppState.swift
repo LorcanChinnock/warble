@@ -40,6 +40,8 @@ public struct AppState: Equatable, Sendable {
     /// The new track's title and artist, shown for a moment after a skip when Settings turns it on.
     public internal(set) var toasts = ToastQueue<TrackToast>()
     public internal(set) var showsTrackToast: Bool
+    /// Whether the toast also shows over a full-screen app, which Settings turns on.
+    public internal(set) var toastsInFullScreen: Bool
     /// The current lyric line, which a resting notch shows under it when Settings turns lyrics on.
     public internal(set) var lyrics: LyricsState
     /// Whether a sideways swipe over a notch skips, which Settings turns on, and the trackpad gesture under way.
@@ -55,13 +57,14 @@ public struct AppState: Equatable, Sendable {
     /// `checks` are what the Doctor finds before it has asked macOS anything: what it finds while the adapter works.
     public init(
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
-        showsTrackToast: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, dragArtOut: Bool = false,
+        showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, dragArtOut: Bool = false,
         checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
         doctor = DoctorState(checks: checks)
         self.idleHover = idleHover
         self.showsTrackToast = showsTrackToast
+        self.toastsInFullScreen = toastsInFullScreen
         self.swipeToSkip = swipeToSkip
         self.dragArtOut = dragArtOut
         lyrics = LyricsState(isOn: showsLyrics)
@@ -87,13 +90,14 @@ public struct AppState: Equatable, Sendable {
     }
 
     func notchState(_ surface: Surface) -> NotchState {
-        // A full-screen app has the top of its display to itself.
-        guard !surface.isFullScreen else { return .hidden }
-        return NotchState(
+        let state = NotchState(
             surface.hover.state, isPlaying: showsPlayback, needsAttention: needsAttention, idleHover: idleHover,
             isAlwaysShown: surface.isAlwaysShown, showsToast: toasts.current != nil,
             showsLyrics: lyrics.showsLine
         )
+        // A full-screen app has the top of its display to itself, apart from the toast when Settings lets it through.
+        guard surface.isFullScreen else { return state }
+        return state == .toast && toastsInFullScreen ? .toast : .hidden
     }
 
     func card(_ surface: Surface) -> NotchCard {
@@ -124,8 +128,9 @@ public struct AppState: Equatable, Sendable {
     }
 
     /// Without anything playing, a "!" or a card to open while Idle, a notch draws nothing, or only a blank notch, and
-    /// takes no hover or click.
+    /// takes no hover or click. Nor does one over a full-screen app, so a toast there can't open the card.
     func answersPointer(_ surface: Surface) -> Bool {
+        guard !surface.isFullScreen else { return false }
         let state = notchState(surface)
         return state != .hidden && !(state == .idle && idleHover == .nothing)
     }

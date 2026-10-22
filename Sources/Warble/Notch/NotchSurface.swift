@@ -77,6 +77,8 @@ final class NotchSurface {
         model.isVirtual = surface.isVirtual
         model.isAlwaysShown = surface.isAlwaysShown
         model.showsDoctor = surface.showsDoctor
+        // A toast over a full-screen app lets clicks through to the app, since it takes no hover or click.
+        panel.ignoresMouseEvents = surface.isFullScreen
     }
 
     /// Opens the notch with the keyboard in it, so VoiceOver and Keyboard navigation start there, or closes it. It

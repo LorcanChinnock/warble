@@ -176,6 +176,7 @@ private struct GeneralSettings: View {
 private struct NotchSettings: View {
     @Setting(PreferenceKey.idleHover) private var idleHover: IdleHover
     @Setting(PreferenceKey.trackChangeToast) private var trackChangeToast: Bool
+    @Setting(PreferenceKey.toastsInFullScreen) private var toastsInFullScreen: Bool
     @Setting(PreferenceKey.lyrics) private var lyrics: Bool
     @Setting(PreferenceKey.swipeToSkip) private var swipeToSkip: Bool
     @Setting(PreferenceKey.dragArtOut) private var dragArtOut: Bool
@@ -198,6 +199,13 @@ private struct NotchSettings: View {
                 }
                 .accessibilityLabel(Text("Show a message when the track changes"))
                 .accessibilityHint(Text("The new song's title and artist slide out of the notch for two seconds."))
+                Toggle(isOn: $toastsInFullScreen) {
+                    Text("Show it over full-screen apps too")
+                    Text("Only the message shows. The notch stays out of the way.")
+                }
+                .disabled(!trackChangeToast)
+                .accessibilityLabel(Text("Show it over full-screen apps too"))
+                .accessibilityHint(Text("Only the message shows. The notch stays out of the way."))
             } footer: {
                 Text("Animations follow Reduce Motion in System Settings › Accessibility › Display.")
                     .foregroundStyle(.secondary)

@@ -226,6 +226,9 @@
     "Only Music and Spotify can show for now." : {
 
     },
+    "Only the message shows. The notch stays out of the way." : {
+
+    },
     "Open %@" : {
 
     },
@@ -335,6 +338,9 @@
 
     },
     "Show icon in the menu bar" : {
+
+    },
+    "Show it over full-screen apps too" : {
 
     },
     "Show lyrics" : {

@@ -13,6 +13,8 @@ public enum PreferenceKey {
     public static let idleHover = "idleHover"
     /// Whether the new track's title and artist slide out of the notch for a moment when the track changes.
     public static let trackChangeToast = "trackChangeToast"
+    /// Whether that toast also slides out over a full-screen app, where the resting notch never shows.
+    public static let toastsInFullScreen = "toastsInFullScreen"
     /// Whether a resting notch shows the current lyric line, looked up on LRCLIB. Off, nothing is sent there.
     public static let lyrics = "lyrics"
     /// Whether a sideways two-finger swipe over the notch skips to the next or previous track.
@@ -33,6 +35,7 @@ public struct Preferences {
             PreferenceKey.stayVisibleAfterPausing: IdleAfterPause.defaultDelay,
             PreferenceKey.idleHover: IdleHover.lastPlayed.rawValue,
             PreferenceKey.trackChangeToast: false,
+            PreferenceKey.toastsInFullScreen: false,
             PreferenceKey.lyrics: false,
             PreferenceKey.swipeToSkip: false,
             PreferenceKey.dragArtOut: false,
@@ -93,6 +96,10 @@ public struct Preferences {
 
     public var trackChangeToast: Bool {
         store.bool(forKey: PreferenceKey.trackChangeToast)
+    }
+
+    public var toastsInFullScreen: Bool {
+        store.bool(forKey: PreferenceKey.toastsInFullScreen)
     }
 
     public var lyrics: Bool {
