@@ -33,6 +33,8 @@ struct VirtualTitle: View {
             fade: Self.fade, onScroll: { model.scrolledTitle = key }
         )
         .frame(width: width, height: notch.height)
+        // Back out to the notch's width, so the wings stay where they are without a title.
+        .padding(.horizontal, Self.margin)
         .allowsHitTesting(false)
         // The art already reads "Now playing: <title> by <artist>".
         .accessibilityHidden(true)
