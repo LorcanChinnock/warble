@@ -60,7 +60,19 @@ final class NotchController {
                 }
             }
         })
+        // Going full screen, or back, switches Space; only then can a display start or stop showing a full-screen app.
+        observers.append(NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.activeSpaceDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.readFullScreen() }
+        })
         layOut()
+    }
+
+    private func readFullScreen() {
+        let displays = FullScreenSpaces.displays()
+        if displays != store.state.fullScreen {
+            log.notice("Full screen on \(displays.count, privacy: .public) displays")
+            store.dispatch(.fullScreenChanged(displays))
+        }
     }
 
     /// Puts a surface over each housing the displays and their rules call for, moving the ones that stay and removing
@@ -80,6 +92,7 @@ final class NotchController {
         }
         layingOut = true
         store.dispatch(.housingsChanged(housings))
+        readFullScreen()
         layingOut = false
         log.notice("Notches over \(housings.map { NSStringFromRect($0.frame) }.joined(separator: ", "), privacy: .public)")
     }

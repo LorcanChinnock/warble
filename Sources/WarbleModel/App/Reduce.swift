@@ -110,9 +110,16 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
             var surface = state.surfaces[housing.display] ?? AppState.Surface(housing)
             surface.isVirtual = housing.isVirtual
             surface.isAlwaysShown = housing.isAlwaysShown
+            surface.isFullScreen = state.fullScreen.contains(housing.display)
             surfaces[housing.display] = surface
         }
         state.surfaces = surfaces
+    case .fullScreenChanged(let displays):
+        // A notch that stops answering starts its hover over in `settle`, so an open card closes.
+        state.fullScreen = displays
+        for display in state.surfaces.keys {
+            state.surfaces[display]?.isFullScreen = displays.contains(display)
+        }
     case .pointer(let display, let inside):
         guard let surface = state.surfaces[display], state.answersPointer(surface), inside != surface.pointerInside else { break }
         state.surfaces[display]?.pointerInside = inside

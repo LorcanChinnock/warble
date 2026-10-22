@@ -17,6 +17,8 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var hovering = false
     /// One notch for each camera housing, real or virtual, by `NotchHousing.display`.
     public internal(set) var surfaces: [String: Surface] = [:]
+    /// The displays that show a full-screen app, by `NotchDisplay.id`, whose notches draw nothing.
+    public internal(set) var fullScreen: Set<String> = []
     /// What a hover on the housing does while Idle.
     public internal(set) var idleHover: IdleHover
     /// The Doctor's checks behind the "!".
@@ -85,7 +87,9 @@ public struct AppState: Equatable, Sendable {
     }
 
     func notchState(_ surface: Surface) -> NotchState {
-        NotchState(
+        // A full-screen app has the top of its display to itself.
+        guard !surface.isFullScreen else { return .hidden }
+        return NotchState(
             surface.hover.state, isPlaying: showsPlayback, needsAttention: needsAttention, idleHover: idleHover,
             isAlwaysShown: surface.isAlwaysShown, showsToast: toasts.current != nil,
             showsLyrics: lyrics.showsLine
@@ -132,6 +136,8 @@ public struct AppState: Equatable, Sendable {
         public internal(set) var isVirtual: Bool
         /// Whether a blank notch stays drawn over the housing while nothing is playing.
         public internal(set) var isAlwaysShown: Bool
+        /// Whether the display shows a full-screen app, which hides its notch.
+        public internal(set) var isFullScreen = false
         public internal(set) var hover = HoverIntent()
         public internal(set) var pointerInside = false
         /// Whether the open card shows the Doctor's checks rather than the player, until the notch closes.
