@@ -88,7 +88,7 @@ private struct Run {
 @Test func escapeIsTakenOnlyWhileAnOpenNotchHasThePointer() {
     var run = Run()
     run.hover("built-in")
-    #expect(run.effects == [.watchClicksOutside(true), .takeEscape(true), .followVolume(true), .notchOpened])
+    #expect(run.effects == [.watchClicksOutside(true), .takeEscape(true), .followVolume(true)])
     run.effects = []
     run.send(.menu(display: "built-in", open: true))
     #expect(run.effects == [.takeEscape(false)])
@@ -191,7 +191,7 @@ private struct Run {
 @MainActor
 @Test func theRunnerTakesEscapeAndAPressClosesTheNotches() {
     let hotkeys = FakeHotkeys()
-    let runner = EffectRunner(hotkeys: hotkeys)
+    let runner = makeRunner(hotkeys: hotkeys)
     var dispatched: [AppAction] = []
     runner.dispatch = { dispatched.append($0) }
     runner.perform(.takeEscape(true))
@@ -206,7 +206,7 @@ private struct Run {
 @Test func theRunnerLetsGoOnlyOfAnEscapeItHolds() {
     let hotkeys = FakeHotkeys()
     hotkeys.refuses = true
-    let runner = EffectRunner(hotkeys: hotkeys)
+    let runner = makeRunner(hotkeys: hotkeys)
     runner.perform(.takeEscape(true))
     runner.perform(.takeEscape(false))
     // Another temporary key, such as a toast's ⌘Z, stays.
@@ -215,13 +215,13 @@ private struct Run {
 
 @MainActor
 @Test func theRunnerHandsAppKitEffectsToThePlatform() {
-    let runner = EffectRunner(hotkeys: FakeHotkeys())
+    let runner = makeRunner()
     var handed: [AppEffect] = []
     runner.platform = { handed.append($0) }
     runner.perform(.watchClicksOutside(true))
-    runner.perform(.followVolume(true))
-    runner.perform(.notchOpened)
-    #expect(handed == [.watchClicksOutside(true), .followVolume(true), .notchOpened])
+    runner.perform(.haptic)
+    runner.perform(.openApp(bundleIdentifier: "com.apple.Music"))
+    #expect(handed == [.watchClicksOutside(true), .haptic, .openApp(bundleIdentifier: "com.apple.Music")])
 }
 
 @MainActor

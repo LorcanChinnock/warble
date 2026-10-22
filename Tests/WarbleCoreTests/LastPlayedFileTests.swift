@@ -30,11 +30,11 @@ private func pixelWidth(_ data: Data) throws -> Int {
 @Test func theLastTrackPlayedSurvivesAReload() throws {
     let folder = try temporaryFolder()
     defer { try? FileManager.default.removeItem(at: folder) }
-    let store = LastPlayedStore(url: folder.appendingPathComponent("Warble/LastPlayed.json"))
+    let store = LastPlayedFile(url: folder.appendingPathComponent("Warble/LastPlayed.json"))
     #expect(store.load() == nil)
     let track = LastPlayed(bundleIdentifier: "com.apple.Music", appName: "Music", title: "Song", artist: "Artist", artwork: Data([1, 2, 3]))
     try store.save(track)
-    #expect(LastPlayedStore(url: store.url).load() == track)
+    #expect(LastPlayedFile(url: store.url).load() == track)
 }
 
 @Test func aDamagedFileLoadsAsNothingPlayedYet() throws {
@@ -42,21 +42,21 @@ private func pixelWidth(_ data: Data) throws -> Int {
     defer { try? FileManager.default.removeItem(at: folder) }
     let url = folder.appendingPathComponent("LastPlayed.json")
     try Data("{\"title\":".utf8).write(to: url)
-    #expect(LastPlayedStore(url: url).load() == nil)
+    #expect(LastPlayedFile(url: url).load() == nil)
 }
 
 @Test func theRememberedArtIsASmallCopy() throws {
     let state = PlaybackState(bundleIdentifier: "com.spotify.client", title: "Song", artist: "Artist", elapsedTimestamp: .now, rate: 1, artwork: try png(size: 600))
-    let remembered = LastPlayedStore.remembering(state, appName: "Spotify")
+    let remembered = LastPlayedFile.remembering(state, appName: "Spotify")
     #expect(remembered.title == "Song")
     #expect(remembered.artist == "Artist")
     #expect(remembered.appName == "Spotify")
     let artwork = try #require(remembered.artwork)
-    #expect(try pixelWidth(artwork) == LastPlayedStore.artworkPixels)
+    #expect(try pixelWidth(artwork) == LastPlayedFile.artworkPixels)
     #expect(artwork.count < 10_000)
 }
 
 @Test func artThatIsntAnImageIsLeftOut() {
     let state = PlaybackState(bundleIdentifier: "com.apple.Music", title: "Song", elapsedTimestamp: .now, artwork: Data("not an image".utf8))
-    #expect(LastPlayedStore.remembering(state, appName: nil).artwork == nil)
+    #expect(LastPlayedFile.remembering(state, appName: nil).artwork == nil)
 }

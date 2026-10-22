@@ -34,3 +34,31 @@ extension DisplayProvider {
         VirtualNotch.housings(displays, rules: rules)
     }
 }
+
+/// The volume of the Mac's default output, and a call when it changes.
+@MainActor
+public protocol VolumeControl: AnyObject {
+    /// From 0 to 1, or `nil` when the output has no volume Warble can change.
+    var volume: Double? { get }
+    var isMuted: Bool { get }
+    func set(_ volume: Double)
+    func startListening(_ onChange: @escaping () -> Void)
+    func stopListening()
+}
+
+/// The Mac's sound outputs, which one plays, and a call when either changes.
+@MainActor
+public protocol AudioOutputs: AnyObject {
+    var all: [AudioOutput] { get }
+    var current: UInt32 { get }
+    func select(_ id: UInt32)
+    func startListening(_ onChange: @escaping () -> Void)
+    func stopListening()
+}
+
+/// Where the last track played is kept across launches, and how its art is shrunk for the idle card.
+public protocol LastPlayedStore: Sendable {
+    func load() -> LastPlayed?
+    func save(_ lastPlayed: LastPlayed) throws
+    func remembering(_ state: PlaybackState, appName: String?) -> LastPlayed
+}

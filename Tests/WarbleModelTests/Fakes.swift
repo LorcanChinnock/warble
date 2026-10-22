@@ -69,3 +69,83 @@ final class FakeDisplays: DisplayProvider {
     }
     var onChange: () -> Void = {}
 }
+
+/// A volume a test sets, which calls back as Core Audio would when it changes.
+@MainActor
+final class FakeVolume: VolumeControl {
+    var volume: Double? = 0.5
+    var isMuted = false
+    private(set) var listening = false
+    private var onChange: (() -> Void)?
+
+    func set(_ volume: Double) {
+        self.volume = volume
+    }
+
+    func startListening(_ onChange: @escaping () -> Void) {
+        listening = true
+        self.onChange = onChange
+    }
+
+    func stopListening() {
+        listening = false
+        onChange = nil
+    }
+
+    /// The volume keys changed it.
+    func change(to volume: Double) {
+        self.volume = volume
+        onChange?()
+    }
+}
+
+@MainActor
+final class FakeOutputs: AudioOutputs {
+    var all = [AudioOutput(id: 1, name: "MacBook Air Speakers", transport: .builtIn), AudioOutput(id: 2, name: "AirPods", transport: .bluetooth)]
+    var current: UInt32 = 1
+    private(set) var listening = false
+
+    func select(_ id: UInt32) {
+        current = id
+    }
+
+    func startListening(_ onChange: @escaping () -> Void) {
+        listening = true
+    }
+
+    func stopListening() {
+        listening = false
+    }
+}
+
+/// Keeps what's saved in memory, and can hold a save back until a test lets it go, to check the order saves land in.
+final class FakeLastPlayed: LastPlayedStore, @unchecked Sendable {
+    private let lock = NSLock()
+    private var _saved: [LastPlayed] = []
+    var stored: LastPlayed?
+
+    var saved: [LastPlayed] {
+        lock.withLock { _saved }
+    }
+
+    func load() -> LastPlayed? {
+        stored
+    }
+
+    func save(_ lastPlayed: LastPlayed) throws {
+        // The first save is slow, so a later one would overtake it without the chain.
+        if lock.withLock({ _saved.isEmpty }) {
+            Thread.sleep(forTimeInterval: 0.05)
+        }
+        lock.withLock { _saved.append(lastPlayed) }
+    }
+
+    func remembering(_ state: PlaybackState, appName: String?) -> LastPlayed {
+        LastPlayed(bundleIdentifier: state.bundleIdentifier, appName: appName, title: state.title, artist: state.artist, artwork: state.artwork)
+    }
+}
+
+@MainActor
+func makeRunner(hotkeys: FakeHotkeys = FakeHotkeys(), volume: FakeVolume = FakeVolume(), outputs: FakeOutputs = FakeOutputs(), lastPlayed: FakeLastPlayed = FakeLastPlayed()) -> EffectRunner {
+    EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed)
+}

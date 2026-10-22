@@ -1,3 +1,4 @@
+import os
 import SwiftUI
 import WarbleCore
 
@@ -8,8 +9,13 @@ final class AppEnvironment {
     let settings: SettingsStore
     /// What the app has decided, which every notch draws.
     let store: Store
-    /// Carries out what the store asks for.
+    /// Carries out what the store asks for, the AppKit part through `platform`.
     let runner: EffectRunner
+    let platform: PlatformEffects
+    /// The checks behind the "!", as the notch's cards draw them.
+    let doctor: DoctorModel
+    /// The output's volume, which a scroll or a key reads before it changes it.
+    let volume: SystemVolume
     let updater: Updater
     let displays: Displays
     let loginItem: LoginItem
@@ -19,7 +25,8 @@ final class AppEnvironment {
     let toast: Toast
     let recorder: ShortcutRecorder
 
-    init() {
+    /// `lastPlayed` is where the last track played is kept, which the preview keeps only in memory.
+    init(lastPlayed: any LastPlayedStore) {
         // Before anything reads a setting, so every read falls back to the registered default.
         Preferences.registerDefaults()
         settings = SettingsStore()
@@ -29,12 +36,23 @@ final class AppEnvironment {
         hotkeys = HotkeyCenter()
         let preferences = Preferences()
         store = Store(
-            state: AppState(stayVisibleAfterPausing: preferences.stayVisibleAfterPausing, idleHover: preferences.idleHover, showsTrackToast: preferences.trackChangeToast),
+            state: AppState(
+                stayVisibleAfterPausing: preferences.stayVisibleAfterPausing, idleHover: preferences.idleHover,
+                showsTrackToast: preferences.trackChangeToast, checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
+            ),
             clock: SystemClock(), scheduler: TimerScheduler()
         )
-        runner = EffectRunner(hotkeys: hotkeys)
+        let store = store
+        let dispatch: (AppAction) -> Void = { [weak store] in store?.dispatch($0) }
+        doctor = DoctorModel(updater: updater, dispatch: dispatch)
+        volume = SystemVolume()
+        runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: CoreAudioOutputs(), lastPlayed: lastPlayed)
+        platform = PlatformEffects(dispatch: dispatch)
         store.perform = { [weak runner] in runner?.perform($0) }
-        runner.dispatch = { [weak store] in store?.dispatch($0) }
+        runner.dispatch = dispatch
+        runner.platform = { [weak platform] in platform?.perform($0) }
+        runner.appName = { NSRunningApplication.runningApplications(withBundleIdentifier: $0).first?.localizedName }
+        runner.logError = { message in Logger.warble("notch").error("\(message, privacy: .public)") }
         navigation = SettingsNavigation()
         settingsWindow = SettingsWindow(navigation: navigation)
         toast = Toast(hotkeys: hotkeys, settings: settings)

@@ -19,8 +19,22 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var surfaces: [String: Surface] = [:]
     /// What a hover on the housing does while Idle.
     public internal(set) var idleHover: IdleHover
+    /// The Doctor's checks behind the "!".
+    public internal(set) var doctor: DoctorState
     /// Whether a Doctor check failed, which draws a resting notch with a "!" even when nothing is playing.
-    public internal(set) var needsAttention = false
+    public var needsAttention: Bool { doctor.needsAttention }
+    /// The last track played, which the idle card shows. It outlasts what's playing, and Warble too.
+    public internal(set) var lastPlayed: LastPlayed?
+    /// The state last remembered, so a pause or a seek doesn't remember it again.
+    public internal(set) var remembered: PlaybackState?
+    /// Bumped by every track remembered, so one whose art finishes shrinking after the next has begun is dropped.
+    public internal(set) var remembers = 0
+    /// The output's volume from 0 to 1, read while the player's card is open; `nil` when it can't be changed.
+    public internal(set) var volume: Double?
+    public internal(set) var isMuted = false
+    /// The outputs to offer and the one playing, read while the player's card is open.
+    public internal(set) var outputs: [AudioOutput] = []
+    public internal(set) var currentOutput: UInt32?
     /// The new track's title and artist, shown for a moment after a skip when Settings turns it on.
     public internal(set) var toasts = ToastQueue<TrackToast>()
     public internal(set) var showsTrackToast: Bool
@@ -29,8 +43,13 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var takesEscape = false
     public internal(set) var followsVolume = false
 
-    public init(stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed, showsTrackToast: Bool = false) {
+    /// `checks` are what the Doctor finds before it has asked macOS anything: what it finds while the adapter works.
+    public init(
+        stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
+        showsTrackToast: Bool = false, checks: [Doctor.Check] = []
+    ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
+        doctor = DoctorState(checks: checks)
         self.idleHover = idleHover
         self.showsTrackToast = showsTrackToast
     }
@@ -89,5 +108,26 @@ public struct AppState: Equatable, Sendable {
             isVirtual = housing.isVirtual
             isAlwaysShown = housing.isAlwaysShown
         }
+    }
+}
+
+/// The Doctor's checks for every notch, and the "!" they put on it when one fails. It checks again only when something
+/// changes: the adapter stops, a player opens or quits, macOS refuses a script, or a notch opens. While the adapter
+/// works every check passes without asking macOS anything.
+public struct DoctorState: Equatable, Sendable {
+    /// The adapter as the app last saw it. Anything but `.working` follows players opening and quitting.
+    public internal(set) var adapter = Doctor.Adapter.working
+    public internal(set) var checks: [Doctor.Check]
+    /// The failures the user put off with Not now, until Warble opens again or another check fails.
+    public internal(set) var dismissed: Set<Doctor.Kind> = []
+    /// Bumped by every refresh, so facts that arrive after a later refresh has begun are dropped.
+    public internal(set) var refreshes = 0
+
+    public var needsAttention: Bool {
+        Doctor.needsAttention(checks, dismissed: dismissed)
+    }
+
+    init(checks: [Doctor.Check]) {
+        self.checks = checks
     }
 }

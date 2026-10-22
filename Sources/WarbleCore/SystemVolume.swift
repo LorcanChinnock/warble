@@ -5,7 +5,7 @@ import Foundation
 /// The volume of the Mac's default output, as the volume keys and Control Centre's slider set it, through Core Audio.
 /// It follows the output when it changes, such as when AirPods connect.
 @MainActor
-public final class SystemVolume {
+public final class SystemVolume: VolumeControl {
     private var device = AudioObjectID(kAudioObjectUnknown)
     private var onChange: (() -> Void)?
     /// The listeners added, each with what removes it.

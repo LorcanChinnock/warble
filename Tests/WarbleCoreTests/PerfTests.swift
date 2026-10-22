@@ -49,7 +49,7 @@ import WarbleModel
     @Test func shrinkingTheArtForTheIdleCardStaysInBudget() throws {
         let art = try cover()
         let time = try fastest {
-            #expect(LastPlayedStore.thumbnail(art, pixels: LastPlayedStore.artworkPixels) != nil)
+            #expect(LastPlayedFile.thumbnail(art, pixels: LastPlayedFile.artworkPixels) != nil)
         }
         try check(time, budget: .microseconds(Budget.thumbnail), "Idle card art")
     }

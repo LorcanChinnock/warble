@@ -17,8 +17,32 @@ public enum AppAction: Equatable, Sendable {
     case showDoctor(display: String, Bool)
     /// A click outside, Escape, or Esc in a notch with the keyboard: every open notch closes, but `except`.
     case dismiss(except: String?)
-    /// Whether a Doctor check failed.
-    case attentionChanged(Bool)
+    /// A command from a notch button, a key in an open notch or a shortcut, which shows what it will do at once.
+    case command(PlaybackCommand)
+    /// Bring the app that's playing to the front, or while Idle the one that played last.
+    case openApp
+    /// Volume from the slider, a scroll over a notch, or the arrow keys in a notch with the keyboard. A scroll and a key
+    /// carry the volume read just before, since the card that follows it may not be open.
+    case setVolume(Double)
+    case scrolled(delta: Double, precise: Bool, inverted: Bool, volume: Double?, isMuted: Bool)
+    case volumeKey(delta: Double, volume: Double?, isMuted: Bool)
+    case volumeRead(Double?, isMuted: Bool)
+    case selectOutput(UInt32)
+    case outputsRead([AudioOutput], current: UInt32?)
+    /// The last track played, read from disk at launch or shrunk for the idle card after `.remember`.
+    case lastPlayedLoaded(LastPlayed?)
+    case remembered(LastPlayed, pass: Int)
+    /// How the adapter is doing, as the app last saw it.
+    case adapterChanged(Doctor.Adapter)
+    /// What the Doctor found for the refresh numbered `pass`.
+    case factsGathered(Doctor.Facts, pass: Int)
+    /// Music or Spotify opened or quit, or macOS refused a script: check again.
+    case playersChanged
+    case automationDenied
+    /// The AppleScript fallback reported, which clears a failing Automation check once the user allowed it.
+    case fallbackReported
+    /// Not now on the Doctor's card: hide the "!" for what fails now.
+    case notNow
     /// Settings changed.
     case stayVisibleChanged(TimeInterval)
     case idleHoverChanged(IdleHover)
