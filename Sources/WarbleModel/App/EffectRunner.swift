@@ -98,7 +98,7 @@ public final class EffectRunner {
                 }.value
                 self.dispatch(.lyricsLoaded(found, pass: pass))
             }
-        case .watchClicksOutside, .openApp, .haptic, .gatherFacts, .followPlayers, .toggleKeyboard:
+        case .watchClicksOutside, .openApp, .haptic, .gatherFacts, .followPlayers, .toggleKeyboard, .showWelcome:
             platform(effect)
         }
     }

@@ -24,7 +24,7 @@ Warble isn't notarized by Apple yet, so macOS blocks it the first time you open 
 2. Open **System Settings**, choose **Privacy & Security**, and scroll down to **Security**.
 3. Click **Open Anyway** next to the message about Warble, then confirm with your password or Touch ID.
 
-Warble opens. There's no window and nothing to set up: a small icon of three bars appears in the menu bar, and the notch looks just as it did before.
+Warble opens with a small welcome window, once. It has two switches, **Open at login** and **Show icon in the menu bar**, and a link to this guide. It asks for no permission. Click **Done** when you're ready: a small icon of three bars appears in the menu bar, and the notch looks just as it did before. The window never opens again, and you can change both switches later in **Settings…**.
 
 ## See what's playing
 
@@ -37,7 +37,7 @@ Move the pointer away and the notch closes again. [Control playback](/docs/contr
 When you pause, the song stays in the notch for 10 seconds, then Warble hides behind the camera. When nothing is playing, Warble draws nothing and does nothing until a song starts.
 
 > [!TIP]
-> To have Warble there after you restart your Mac, open **Settings…** from the menu bar icon and turn on **Open at login**.
+> To have Warble there after you restart your Mac, turn on **Open at login** in the welcome window, or later in **Settings…** from the menu bar icon.
 
 ## Updates
 

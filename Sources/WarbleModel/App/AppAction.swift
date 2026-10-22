@@ -69,6 +69,10 @@ public enum AppAction: Equatable, Sendable {
     case virtualTitleChanged(Bool)
     /// The lyrics found for the fetch numbered `pass`, or `nil` when there are none.
     case lyricsLoaded(Lyrics?, pass: Int)
+    /// Warble opened, with whether it's the first time. Dispatched once, by `AppDelegate`.
+    case launched(firstRun: Bool)
+    /// The welcome window closed.
+    case welcomeClosed
     /// `AppState.deadline` came due.
     case tick
 }

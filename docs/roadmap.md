@@ -50,7 +50,7 @@ The first public beta: what's playing in the notch, playback and volume controls
 
 ## [0.2: lyrics, gestures and podcasts](https://github.com/LorcanChinnock/warble/issues/33)
 
-Synced lyrics, gestures, podcast controls and source chips, each off until you turn it on, plus the title in the middle of a virtual notch.
+Synced lyrics, gestures and podcast controls, each off until you turn it on, plus the title in the middle of a virtual notch.
 
 - [#34](https://github.com/LorcanChinnock/warble/issues/34) feat(model): LRC parser and current-line lookup
 - [#129](https://github.com/LorcanChinnock/warble/issues/129) feat(lyrics): LRCLIB client and lyrics cache
@@ -61,7 +61,6 @@ Synced lyrics, gestures, podcast controls and source chips, each off until you t
 - [#37](https://github.com/LorcanChinnock/warble/issues/37) feat(player): skip 15 seconds and change speed for podcasts
 - [#38](https://github.com/LorcanChinnock/warble/issues/38) feat(notch): show the track-change toast in full screen
 - [#133](https://github.com/LorcanChinnock/warble/issues/133) feat(notch): hide Warble while the screen is shared or recorded
-- [#17](https://github.com/LorcanChinnock/warble/issues/17) feat(player): source chips
 - [#113](https://github.com/LorcanChinnock/warble/issues/113) feat(notch): show the title in the middle of a virtual notch
 
 ## [0.3: for developers](https://github.com/LorcanChinnock/warble/issues/39)
@@ -80,6 +79,7 @@ The live waveform, a sleep timer and listening stats, plus research into replaci
 - [#45](https://github.com/LorcanChinnock/warble/issues/45) feat(waveform): live waveform from a Core Audio tap
 - [#46](https://github.com/LorcanChinnock/warble/issues/46) spike: replacing the volume and brightness overlay
 - [#47](https://github.com/LorcanChinnock/warble/issues/47) feat(player): sleep timer
+- [#17](https://github.com/LorcanChinnock/warble/issues/17) feat(player): source chips
 - [#143](https://github.com/LorcanChinnock/warble/issues/143) feat(player): change the speed of a podcast
 - [#48](https://github.com/LorcanChinnock/warble/issues/48) feat(stats): weekly listening stats, kept on this Mac
 

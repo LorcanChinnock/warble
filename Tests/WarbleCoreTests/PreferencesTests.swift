@@ -97,3 +97,11 @@ import Testing
     suite.store.set("sometimes", forKey: PreferenceKey.idleHover)
     #expect(Preferences(store: suite.store).idleHover == .lastPlayed)
 }
+
+@Test func onlyAnEmptyDomainIsAFirstLaunch() {
+    #expect(Preferences.isFirstLaunch(saved: [:]))
+    #expect(Preferences.isFirstLaunch(saved: ["SUHasLaunchedBefore": true]))
+    #expect(!Preferences.isFirstLaunch(saved: [PreferenceKey.showMenuBarIcon: true]))
+    #expect(!Preferences.isFirstLaunch(saved: [PreferenceKey.hasSeenWelcome: true]))
+    #expect(Preferences.isFirstLaunch(saved: [PreferenceKey.hasSeenWelcome: false]))
+}

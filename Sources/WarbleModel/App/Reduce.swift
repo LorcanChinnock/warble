@@ -171,6 +171,12 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.showsVirtualTitle = on
     case .lyricsLoaded(let lyrics, let pass):
         state.lyrics.loaded(lyrics, pass: pass)
+    case .launched(let firstRun):
+        if state.onboarding.launched(firstRun: firstRun) {
+            effects.append(.showWelcome)
+        }
+    case .welcomeClosed:
+        state.onboarding.welcomeClosed()
     case .tick:
         if let hideAt = state.hideAt, hideAt <= now {
             show(nil, in: &state, at: now)
