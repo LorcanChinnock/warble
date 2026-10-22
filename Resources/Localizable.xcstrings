@@ -93,6 +93,9 @@
     "Displays" : {
 
     },
+    "Done" : {
+
+    },
     "Download Warble" : {
 
     },
@@ -295,6 +298,9 @@
     "Play something and it shows here" : {
 
     },
+    "Play something and it shows in your notch. Hover over the notch to open the player." : {
+
+    },
     "Players" : {
 
     },
@@ -317,6 +323,9 @@
 
     },
     "Quit Warble and open it again." : {
+
+    },
+    "Read the guide" : {
 
     },
     "Reading what's playing" : {
@@ -455,6 +464,9 @@
 
     },
     "Warble opens when you log in, so the notch is there after a restart." : {
+
+    },
+    "Welcome to Warble" : {
 
     },
     "What the notch shows." : {

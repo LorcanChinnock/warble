@@ -56,6 +56,8 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var hidesFromCapture: Bool
     /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns off.
     public internal(set) var showsVirtualTitle: Bool
+    /// Whether the welcome window has been asked for, which happens once, on a first launch.
+    public internal(set) var onboarding = Onboarding()
     /// What the effects last asked for, so each is asked for once per change.
     public internal(set) var watchesClicks = false
     public internal(set) var takesEscape = false

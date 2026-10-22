@@ -28,6 +28,9 @@ public enum PreferenceKey {
     /// Whether a virtual notch shows the title of what's playing in its middle.
     public static let virtualTitle = "virtualTitle"
 
+    /// Whether the welcome window has been seen, or didn't need to be because Warble was in use before it existed.
+    public static let hasSeenWelcome = "hasSeenWelcome"
+
     public static func hotkey(_ action: WarbleAction) -> String { "hotkey.\(action.rawValue)" }
 }
 
@@ -48,6 +51,7 @@ public struct Preferences {
             PreferenceKey.dragArtOut: false,
             PreferenceKey.hideFromCapture: false,
             PreferenceKey.virtualTitle: true,
+            PreferenceKey.hasSeenWelcome: false,
         ]
         for action in WarbleAction.allCases {
             values[PreferenceKey.hotkey(action)] = action.defaultCombo?.encoded ?? ""
@@ -78,6 +82,14 @@ public struct Preferences {
         for key in defaults.keys {
             store.removeObject(forKey: key)
         }
+    }
+
+    /// Whether this launch is the first, so the welcome window opens. `saved` is Warble's saved defaults domain, which a
+    /// Warble in use before the window existed has settings in; `UserDefaults` itself also answers with registered
+    /// defaults, so it can't tell.
+    public static func isFirstLaunch(saved: [String: Any]) -> Bool {
+        guard saved[PreferenceKey.hasSeenWelcome] as? Bool != true else { return false }
+        return !hasSavedSettings(saved.keys.filter { $0 != PreferenceKey.hasSeenWelcome })
     }
 
     public var showMenuBarIcon: Bool {

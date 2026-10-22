@@ -22,6 +22,7 @@ final class AppEnvironment {
     let hotkeys: HotkeyCenter
     let navigation: SettingsNavigation
     let settingsWindow: SettingsWindow
+    let welcomeWindow: WelcomeWindow
     let toast: Toast
     let recorder: ShortcutRecorder
 
@@ -62,8 +63,12 @@ final class AppEnvironment {
         settingsWindow = SettingsWindow(navigation: navigation)
         toast = Toast(hotkeys: hotkeys, settings: settings)
         recorder = ShortcutRecorder(hotkeys: hotkeys, settings: settings)
+        welcomeWindow = WelcomeWindow(dispatch: dispatch)
         settingsWindow.environment = self
+        welcomeWindow.environment = self
         let settingsWindow = settingsWindow
+        let welcomeWindow = welcomeWindow
+        platform.showWelcome = { [weak welcomeWindow] in welcomeWindow?.show() }
         let toast = toast
         hotkeys.onUnavailable = { failed in
             // Settings › Shortcuts says so under the shortcut, so the toast is for when it isn't showing.

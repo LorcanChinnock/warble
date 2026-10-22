@@ -56,6 +56,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         environment.hotkeys.onPress = { [weak store] action in store?.dispatch(.perform(action)) }
         environment.hotkeys.start()
         self.notch = notch
+        // The previews are for looking at the notch, so they skip the welcome window. Reads the saved domain, since
+        // `UserDefaults` also answers with registered defaults.
+        if preview == nil {
+            let saved = Bundle.main.bundleIdentifier.flatMap(UserDefaults.standard.persistentDomain(forName:)) ?? [:]
+            store.dispatch(.launched(firstRun: Preferences.isFirstLaunch(saved: saved)))
+        }
         if let launch = Perf.millisecondsSinceLaunch() {
             Perf.signposter.emitEvent("Ready", "launch ms=\(launch)")
         }
