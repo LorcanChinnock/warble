@@ -31,6 +31,8 @@ public enum PreferenceKey {
     public static let virtualTitle = "virtualTitle"
     /// Whether `warble://` links do anything, in the Developer card. Off, Warble ignores them.
     public static let answerLinks = "answerLinks"
+    /// Whether Warble opens the socket the `warble` command talks to, in the Developer card. Off, no socket exists.
+    public static let commandLine = "commandLine"
 
     /// Whether the welcome window has been seen, or didn't need to be because Warble was in use before it existed.
     public static let hasSeenWelcome = "hasSeenWelcome"
@@ -57,6 +59,7 @@ public struct Preferences {
             PreferenceKey.hideFromCapture: false,
             PreferenceKey.virtualTitle: true,
             PreferenceKey.answerLinks: false,
+            PreferenceKey.commandLine: false,
             PreferenceKey.hasSeenWelcome: false,
         ]
         for action in WarbleAction.allCases {
@@ -159,6 +162,10 @@ public struct Preferences {
 
     public var answerLinks: Bool {
         store.bool(forKey: PreferenceKey.answerLinks)
+    }
+
+    public var commandLine: Bool {
+        store.bool(forKey: PreferenceKey.commandLine)
     }
 
     /// `nil` means the user cleared the shortcut.

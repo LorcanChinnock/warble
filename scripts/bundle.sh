@@ -20,9 +20,9 @@ for arch in arm64 x86_64; do
     swift build -c release --arch "$arch" ${resolved[@]+"${resolved[@]}"}
     bin_path="$(swift build -c release --arch "$arch" --show-bin-path)"
     mkdir "$universal/$arch"
-    cp "$bin_path/Warble" "$universal/$arch/"
+    cp "$bin_path/Warble" "$bin_path/WarbleCLI" "$universal/$arch/"
 done
-for exe in Warble; do
+for exe in Warble WarbleCLI; do
     lipo -create "$universal/arm64/$exe" "$universal/x86_64/$exe" -output "$universal/$exe"
     lipo -info "$universal/$exe"
 done
@@ -64,6 +64,9 @@ app="build/$name.app"
 rm -rf "$app"
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources" "$app/Contents/Frameworks"
 cp "$binary" "$app/Contents/MacOS/$name"
+# The `warble` command, which asks the running app over a socket (Settings › Developer). It's `warble-cli` here, since a
+# `warble` beside the app's own `Warble` would collide on a case-insensitive volume. Homebrew's cask and Settings link it.
+cp "$universal/WarbleCLI" "$app/Contents/MacOS/warble-cli"
 ditto "$bin_path/Sparkle.framework" "$app/Contents/Frameworks/Sparkle.framework"
 cp Resources/Info.plist "$app/Contents/Info.plist"
 cp Resources/AppIcon.icns "$app/Contents/Resources/AppIcon.icns"
@@ -112,6 +115,7 @@ codesign --force --sign "$identity" "$app/Contents/Frameworks/Sparkle.framework"
 # The adapter's build signs it ad hoc; sign it again with the app's identity, before the app seals its resources.
 codesign --force --sign "$identity" "$app/Contents/Resources/MediaRemoteAdapterTestClient"
 codesign --force --sign "$identity" "$app/Contents/Resources/MediaRemoteAdapter.framework"
+codesign --force --sign "$identity" "$app/Contents/MacOS/warble-cli"
 # The entitlement lets the app send Music and Spotify Apple Events once it runs under the hardened runtime.
 codesign --force --sign "$identity" --entitlements Resources/Warble.entitlements "$app"
 version="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$app/Contents/Info.plist")"

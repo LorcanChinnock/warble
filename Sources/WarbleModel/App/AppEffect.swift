@@ -30,6 +30,8 @@ public enum AppEffect: Equatable, Sendable {
     case showWelcome
     /// Watch Music and Spotify open and quit (true), or stop.
     case followPlayers(Bool)
+    /// Open the socket the `warble` command talks to (true), or close it and remove it. Asked once when the setting changes.
+    case listenForCommands(Bool)
     /// Open Settings, on the section with this name if it's one of `RemoteCommand.settingsSections`.
     case openSettings(section: String?)
 }

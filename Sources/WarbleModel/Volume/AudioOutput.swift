@@ -74,6 +74,27 @@ public struct AudioOutput: Identifiable, Equatable, Sendable {
     }
 }
 
+extension Collection where Element == AudioOutput {
+    /// The output `name` picks: one with exactly that name, or failing that the only one whose name starts with it, or
+    /// failing that the only one that contains it, ignoring case and accents. `nil` when none match, or several do, so
+    /// the command line never moves the sound somewhere the user didn't mean.
+    public func matching(_ name: String) -> AudioOutput? {
+        let wanted = Self.fold(name.trimmingCharacters(in: .whitespaces))
+        guard !wanted.isEmpty else { return nil }
+        let tests: [(String) -> Bool] = [{ $0 == wanted }, { $0.hasPrefix(wanted) }, { $0.contains(wanted) }]
+        for test in tests {
+            let found = filter { test(Self.fold($0.name)) }
+            if found.count == 1 { return found.first }
+            if found.count > 1 { return nil }
+        }
+        return nil
+    }
+
+    private static func fold(_ text: String) -> String {
+        text.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: nil)
+    }
+}
+
 private func fourCharCode(_ code: String) -> UInt32 {
     code.utf8.reduce(0) { $0 << 8 | UInt32($1) }
 }
