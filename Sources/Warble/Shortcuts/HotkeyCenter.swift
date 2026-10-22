@@ -19,9 +19,8 @@ final class HotkeyCenter: HotkeyRegistrar {
     @ObservationIgnored private var defaultsObserver: NSObjectProtocol?
     /// True while the shortcut recorder listens, so global hotkeys don't swallow the keystroke.
     @ObservationIgnored private var isSuspended = false
-    @ObservationIgnored private var temporaryRef: EventHotKeyRef?
-    @ObservationIgnored private var onTemporaryPress: (() -> Void)?
-    private static let temporaryID = UInt32.max
+    /// The temporary key each owner holds, and what a press does.
+    @ObservationIgnored private var temporary: [TemporaryKey: (ref: EventHotKeyRef, onPress: () -> Void)] = [:]
     /// The one Carbon's handler reaches, since a C callback can't capture it.
     private static weak var current: HotkeyCenter?
 
@@ -64,30 +63,33 @@ final class HotkeyCenter: HotkeyRegistrar {
         reloadFromPreferences(force: true)
     }
 
-    /// Takes `combo` from every app until `unregisterTemporary()`, for a key that only means something briefly,
-    /// such as ⌘Z while a toast offers Undo. Replaces any earlier temporary key. False when it couldn't be registered.
+    /// Takes `combo` from every app until `unregisterTemporary(for:)`, for a key that only means something briefly,
+    /// such as ⌘Z while a toast offers Undo. Replaces the key `owner` held before and leaves every other owner's alone.
+    /// False when it couldn't be registered.
     @discardableResult
-    func registerTemporary(_ combo: KeyCombo, onPress: @escaping () -> Void) -> Bool {
-        unregisterTemporary()
+    func registerTemporary(_ combo: KeyCombo, for owner: TemporaryKey, onPress: @escaping () -> Void) -> Bool {
+        unregisterTemporary(for: owner)
         installHandlerIfNeeded()
-        let id = EventHotKeyID(signature: OSType(0x5752_424C), id: Self.temporaryID)
+        let id = EventHotKeyID(signature: OSType(0x5752_424C), id: Self.temporaryID(owner))
         var ref: EventHotKeyRef?
         let status = RegisterEventHotKey(combo.keyCode, combo.modifiers, id, GetEventDispatcherTarget(), 0, &ref)
         guard status == noErr, let ref else {
             log.error("RegisterEventHotKey failed for temporary \(combo.displayString, privacy: .public): \(status)")
             return false
         }
-        temporaryRef = ref
-        onTemporaryPress = onPress
+        temporary[owner] = (ref, onPress)
         return true
     }
 
-    func unregisterTemporary() {
-        if let temporaryRef {
-            UnregisterEventHotKey(temporaryRef)
+    func unregisterTemporary(for owner: TemporaryKey) {
+        if let held = temporary.removeValue(forKey: owner) {
+            UnregisterEventHotKey(held.ref)
         }
-        temporaryRef = nil
-        onTemporaryPress = nil
+    }
+
+    /// Counts down from the top of the ID range, so it never meets a `WarbleAction`'s index.
+    private static func temporaryID(_ owner: TemporaryKey) -> UInt32 {
+        UInt32.max - UInt32(TemporaryKey.allCases.firstIndex(of: owner) ?? 0)
     }
 
     private func register(_ bindings: [WarbleAction: KeyCombo]) {
@@ -142,8 +144,8 @@ final class HotkeyCenter: HotkeyRegistrar {
             let index = Int(id.id)
             // Carbon dispatches hotkey events on the main thread.
             MainActor.assumeIsolated {
-                if id.id == HotkeyCenter.temporaryID {
-                    HotkeyCenter.current?.onTemporaryPress?()
+                if let owner = TemporaryKey.allCases.first(where: { HotkeyCenter.temporaryID($0) == id.id }) {
+                    HotkeyCenter.current?.temporary[owner]?.onPress()
                 } else if WarbleAction.allCases.indices.contains(index) {
                     HotkeyCenter.current?.onPress?(WarbleAction.allCases[index])
                 }

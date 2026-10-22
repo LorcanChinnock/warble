@@ -12,13 +12,23 @@ public protocol Scheduler: AnyObject {
     func schedule(at deadline: Date?, _ fire: @escaping @MainActor () -> Void)
 }
 
-/// Takes one key from every app for a while, such as Escape while a notch is open.
+/// Takes a key from every app for a while, such as Escape while a notch is open. Each owner holds one key of its own, so
+/// owners never take each other's.
 @MainActor
 public protocol HotkeyRegistrar: AnyObject {
-    /// Replaces any earlier temporary key; false when macOS refused it.
+    /// Replaces any key `owner` held before; false when macOS refused it.
     @discardableResult
-    func registerTemporary(_ combo: KeyCombo, onPress: @escaping () -> Void) -> Bool
-    func unregisterTemporary()
+    func registerTemporary(_ combo: KeyCombo, for owner: TemporaryKey, onPress: @escaping () -> Void) -> Bool
+    /// Lets go of the key `owner` holds, and of no other.
+    func unregisterTemporary(for owner: TemporaryKey)
+}
+
+/// Who holds a temporary key.
+public enum TemporaryKey: CaseIterable, Sendable {
+    /// Escape while a notch is open.
+    case notch
+    /// ⌘Z while a toast offers Undo.
+    case toast
 }
 
 /// The displays connected now, and a call when they change: plugged in or removed, a new resolution, or the lid closing.

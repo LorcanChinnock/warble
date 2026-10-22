@@ -18,7 +18,7 @@ public final class EffectRunner {
     public var appName: (String) -> String? = { _ in nil }
     /// Logs a failure, such as a save that didn't work.
     public var logError: @Sendable (String) -> Void = { _ in }
-    /// Whether Escape is Warble's now, so letting go never takes another temporary key, such as a toast's ⌘Z.
+    /// Whether Escape is Warble's now, so it's taken once and let go of only when held.
     private var holdsEscape = false
     private var followsVolume = false
     /// The write in flight, which the next one waits for, so the file always ends up holding the latest track.
@@ -37,12 +37,12 @@ public final class EffectRunner {
         switch effect {
         case .takeEscape(true):
             guard !holdsEscape else { return }
-            holdsEscape = hotkeys.registerTemporary(.escape) { [weak self] in
+            holdsEscape = hotkeys.registerTemporary(.escape, for: .notch) { [weak self] in
                 self?.dispatch(.dismiss(except: nil))
             }
         case .takeEscape(false):
             guard holdsEscape else { return }
-            hotkeys.unregisterTemporary()
+            hotkeys.unregisterTemporary(for: .notch)
             holdsEscape = false
         case .followVolume(let follow):
             followVolume(follow)
