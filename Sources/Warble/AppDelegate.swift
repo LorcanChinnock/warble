@@ -17,6 +17,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // `open build/WarbleDev.app --args -notchPreviewState resting` and hover or click it to open it; the argument
         // lasts only for that launch. `idle` shows the idle card with a preview track as the last played, and adding
         // `-notchPreviewLastPlayed NO` shows it with nothing played yet. Neither reads nor saves the real last track.
+        let store = environment.store
         let arguments = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
         let preview = (arguments["notchPreviewState"] as? String).flatMap(NotchState.init(rawValue:))
         let isPreview = preview == .resting || preview == .idle
@@ -26,7 +27,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 notch.lastPlayed = LastPlayed(bundleIdentifier: "com.apple.Music", appName: "Music", title: "Preview track with a title long enough to scroll", artist: "Preview artist")
             }
         } else if preview == .resting {
-            notch.playback = PlaybackState(
+            store.dispatch(.playbackReported(PlaybackState(
                 bundleIdentifier: "com.apple.Music",
                 title: "Preview track with a title long enough to scroll",
                 artist: "Preview artist",
@@ -37,18 +38,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 rate: 1,
                 shuffle: .off,
                 repeatMode: .off
-            )
+            )))
             // Next and previous change the preview track, such as from a shortcut, to show the track-change toast.
             var track = 1
-            notch.send = { [weak notch] command in
-                guard let notch, var playback = notch.playback else { return }
+            notch.send = { [weak store] command in
+                guard let store, var playback = store.state.playback else { return }
                 switch command {
                 case .nextTrack: track += 1
                 case .previousTrack: track = max(track - 1, 1)
                 default: return
                 }
                 playback.title = "Preview track \(track) with a title long enough to scroll"
-                notch.playback = playback
+                store.dispatch(.playbackReported(playback))
             }
         } else if let paths = Bundle.main.resourceURL.flatMap(AdapterSource.Paths.init(resources:)) {
             let source = AdapterSource(paths: paths)
@@ -56,7 +57,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             notch.send = { command in Task { await source.send(command) } }
             Task {
                 for await state in source.states {
-                    notch.playback = state
+                    store.dispatch(.playbackReported(state))
                 }
                 // The states end only when the adapter gives up.
                 notch.doctor.adapter = .stopped(testStatus: source.lastTestStatus)
@@ -96,7 +97,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         notch.send = { command in Task { await fallback.send(command) } }
         Task {
             for await state in fallback.states {
-                notch.playback = state
+                environment.store.dispatch(.playbackReported(state))
                 notch.doctor.refreshIfAutomationFails()
             }
         }
