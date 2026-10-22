@@ -37,7 +37,7 @@ Or [download the latest release](https://warble.lorcanchinnock.com/download) and
 ## Features
 
 - **What's playing, in the notch.** The album art sits on one side, and on the other a few bars move while it plays. Open it to see the song on a soft glow in the album art's colours.
-- **Controls.** Play, pause, skip, move through the song, and turn shuffle and repeat on or off when the app has them. Drag the volume bar, or scroll over the notch to change the volume. Turn on swiping left or right over the notch to skip, and dragging the album art into a message, a note or a folder.
+- **Controls.** Play, pause, skip, move through the song, and turn shuffle and repeat on or off when the app has them. In a podcast or an audiobook, go back 15 seconds or forward 30. Drag the volume bar, or scroll over the notch to change the volume. Turn on swiping left or right over the notch to skip, and dragging the album art into a message, a note or a folder.
 - **Switch speakers.** Move your Mac's sound to its own speakers, headphones or AirPods from the notch.
 - **Any player.** Apple Music, Spotify, podcast apps and video in your browser.
 - **Calm by default.** A paused song stays for a few seconds, then Warble gets out of the way. When nothing is playing, it hides behind the notch and uses no CPU. Hover over the notch to see the last song you played and play it again.

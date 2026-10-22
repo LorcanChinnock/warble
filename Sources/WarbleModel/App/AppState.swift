@@ -105,6 +105,13 @@ public struct AppState: Equatable, Sendable {
         showsPlayback && playback != nil && lyrics.excerpt != nil
     }
 
+    /// Whether the player's card skips back and forward by seconds rather than by track: a podcast or audiobook is
+    /// playing, with a length to move through.
+    public var skipsBySeconds: Bool {
+        guard showsPlayback, let playback, playback.duration != nil else { return false }
+        return SpokenWord.contains(playback)
+    }
+
     /// What dragging the art out of the player's card carries, or `nil` when it can't be dragged: Settings has it off,
     /// nothing is playing, or the track has neither a link nor art.
     public var artDrag: ArtDrag? {

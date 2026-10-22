@@ -1,0 +1,7 @@
+{"type":"data","diff":false,"payload":{}}
+{"type":"data","diff":false,"payload":{"playbackRate":1,"timestampEpochMicros":1792689022029101,"album":"22 October 2026","mediaType":"MRMediaRemoteMediaTypePodcast","elapsedTimeMicros":285000000,"artist":"Test Show","contentItemIdentifier":"CF6CE3C0-4165-4362-AFB7-EC5F47665898","playing":true,"processIdentifier":67302,"bundleIdentifier":"com.apple.podcasts","artworkData":"YXJ0d29yayAx","title":"Test Episode","uniqueIdentifier":1000797643843,"artworkMimeType":"image\/jpeg","durationMicros":1132147053,"genre":"","composer":""}}
+{"type":"data","diff":true,"payload":{"playing":false}}
+{"type":"data","diff":true,"payload":{"timestampEpochMicros":1792689111564987,"elapsedTimeMicros":374439375,"playbackRate":0}}
+{"type":"data","diff":true,"payload":{"playing":true}}
+{"type":"data","diff":true,"payload":{"timestampEpochMicros":1792689114608364,"elapsedTimeMicros":374468029,"playbackRate":1}}
+{"type":"data","diff":true,"payload":{"timestampEpochMicros":1792689117741430,"elapsedTimeMicros":600000000}}

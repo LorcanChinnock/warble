@@ -18,6 +18,8 @@ final class NotchModel {
     var showsDoctor = false
     /// Whether the song playing has lyrics, so the player's card offers them.
     var hasLyrics = false
+    /// Whether a podcast or audiobook is playing, so the player's card skips by seconds rather than by track.
+    var skipsBySeconds = false
     /// What dragging the art out of the player's card carries, or `nil` when Settings has it off or there's nothing.
     var artDrag: ArtDrag?
     /// What Expanded holds. `NotchSurface` sets it with `state`, inside the same animation, so a change of card morphs.

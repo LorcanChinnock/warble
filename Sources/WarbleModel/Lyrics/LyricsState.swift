@@ -7,8 +7,6 @@ public struct LyricsState: Equatable, Sendable {
     /// How far ahead of the position a line is looked up, more than rounding leaves between a deadline and the position
     /// worked out at it and less than anyone could see, so the line due at a deadline is the one that shows.
     static let tolerance: TimeInterval = 0.01
-    /// Apps that play speech, whose episodes and chapters have no lyrics, so their titles aren't sent anywhere.
-    static let spokenWordApps: Set<String> = ["com.apple.podcasts", "com.apple.iBooksX"]
 
     /// Whether Settings turned lyrics on.
     public internal(set) var isOn: Bool
@@ -36,9 +34,9 @@ public struct LyricsState: Equatable, Sendable {
     }
 
     /// The query to look up for `playback`, or `nil` when lyrics are off or it's no song: nothing, speech, or a source
-    /// that reports no length, such as a live stream.
+    /// that reports no length, such as a live stream. An episode or a chapter has no lyrics, so its title isn't sent.
     func query(for playback: PlaybackState?) -> LyricsQuery? {
-        guard isOn, let playback, !Self.spokenWordApps.contains(playback.bundleIdentifier),
+        guard isOn, let playback, !SpokenWord.contains(playback),
               let query = LyricsQuery(playback), query.duration != nil
         else { return nil }
         return query

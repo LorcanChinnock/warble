@@ -72,6 +72,7 @@ final class NotchSurface {
         lyric = app.lyrics.line?.text
         lyrics = app.lyrics.excerpt
         model.hasLyrics = app.hasLyricsCard
+        model.skipsBySeconds = app.skipsBySeconds
         model.artDrag = app.artDrag
         model.isVirtual = surface.isVirtual
         model.isAlwaysShown = surface.isAlwaysShown
