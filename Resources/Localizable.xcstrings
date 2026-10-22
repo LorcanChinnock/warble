@@ -138,6 +138,9 @@
     "Hide the \"!\" until Warble opens again" : {
 
     },
+    "Hover here to see what's playing" : {
+
+    },
     "How Warble looks and where it shows." : {
 
     },
@@ -472,6 +475,9 @@
     "What the notch shows." : {
 
     },
+    "What's playing" : {
+
+    },
     "When There's No Notch" : {
 
     },
@@ -482,6 +488,9 @@
 
     },
     "You still see the notch. People watching your screen don't." : {
+
+    },
+    "Your music shows up here" : {
 
     },
     "macOS" : {

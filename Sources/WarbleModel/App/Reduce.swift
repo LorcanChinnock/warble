@@ -6,6 +6,10 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     let old = state
     var notice: Notice<TrackToast>?
     var effects: [AppEffect] = []
+    // A touch or something playing ends the first-run demo at once, before the action meets the notch it drew over.
+    if endsDemo(action), state.onboarding.endDemo() {
+        effects.append(.showWelcome)
+    }
     switch action {
     case .playbackReported(let playback):
         if playback == nil, state.playback != nil {
@@ -172,12 +176,15 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .lyricsLoaded(let lyrics, let pass):
         state.lyrics.loaded(lyrics, pass: pass)
     case .launched(let firstRun):
-        if state.onboarding.launched(firstRun: firstRun) {
+        if state.onboarding.launched(firstRun: firstRun, isPlaying: state.playback?.isPlaying == true, at: now) {
             effects.append(.showWelcome)
         }
     case .welcomeClosed:
         state.onboarding.welcomeClosed()
     case .tick:
+        if state.onboarding.advance(to: now) {
+            effects.append(.showWelcome)
+        }
         if let hideAt = state.hideAt, hideAt <= now {
             show(nil, in: &state, at: now)
         }
@@ -200,6 +207,16 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         effects.append(fetch)
     }
     return effects
+}
+
+/// Whether `action` is the user touching a notch or something starting to play, which ends the first-run demo.
+private func endsDemo(_ action: AppAction) -> Bool {
+    switch action {
+    case .pointer(_, let inside): inside
+    case .hover, .menu, .perform(.openNotch): true
+    case .playbackReported(let playback): playback?.isPlaying == true
+    default: false
+    }
 }
 
 /// The volume a scroll of `delta` sets, with a light tick on a Force Touch trackpad at each tenth.

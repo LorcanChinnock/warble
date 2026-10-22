@@ -56,7 +56,7 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var hidesFromCapture: Bool
     /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns off.
     public internal(set) var showsVirtualTitle: Bool
-    /// Whether the welcome window has been asked for, which happens once, on a first launch.
+    /// The first-run demo of the notch and the welcome window after it, which happen once, on a first launch.
     public internal(set) var onboarding = Onboarding()
     /// What the effects last asked for, so each is asked for once per change.
     public internal(set) var watchesClicks = false
@@ -89,7 +89,7 @@ public struct AppState: Equatable, Sendable {
     /// The earliest time something changes if nothing else happens, or `nil` when nothing is due, so `Store` runs one
     /// timer at most, and none while nothing plays.
     public var deadline: Date? {
-        ([hideAt, idle.deadline, toasts.deadline, lyrics.deadline] + surfaces.values.map(\.hover.deadline)).compactMap { $0 }.min()
+        ([hideAt, idle.deadline, toasts.deadline, lyrics.deadline, onboarding.demo.deadline] + surfaces.values.map(\.hover.deadline)).compactMap { $0 }.min()
     }
 
     /// The state the notch over `display` draws.
@@ -103,7 +103,7 @@ public struct AppState: Equatable, Sendable {
     }
 
     func notchState(_ surface: Surface) -> NotchState {
-        let state = NotchState(
+        let state = demoState ?? NotchState(
             surface.hover.state, isPlaying: showsPlayback, needsAttention: needsAttention, idleHover: idleHover,
             isAlwaysShown: surface.isAlwaysShown, showsToast: toasts.current != nil && !showsTitle(surface),
             showsLyrics: lyrics.showsLine
@@ -125,8 +125,20 @@ public struct AppState: Equatable, Sendable {
         showsVirtualTitle && surface.isVirtual && !surface.isFullScreen && showsPlayback && playback?.title.isEmpty == false
     }
 
+    /// What the first-run demo draws on every notch while it runs, ahead of what's really playing: it never starts with
+    /// something playing and ends when something does.
+    var demoState: NotchState? {
+        switch onboarding.demo.step {
+        case .resting: .resting
+        case .expanded: .expanded
+        case .hint: .hint
+        case nil: nil
+        }
+    }
+
     func card(_ surface: Surface) -> NotchCard {
-        NotchCard(
+        if onboarding.demo.step == .expanded { return .player }
+        return NotchCard(
             isPlaying: showsPlayback && playback != nil, needsAttention: needsAttention, showsDoctor: surface.showsDoctor,
             showsLyrics: surface.showsLyrics && hasLyricsCard
         )
