@@ -195,11 +195,11 @@ private struct Run {
     var dispatched: [AppAction] = []
     runner.dispatch = { dispatched.append($0) }
     runner.perform(.takeEscape(true))
-    #expect(hotkeys.temporary == .escape)
-    hotkeys.press()
+    #expect(hotkeys.temporary[.notch] == .escape)
+    hotkeys.press(.notch)
     #expect(dispatched == [.dismiss(except: nil)])
     runner.perform(.takeEscape(false))
-    #expect(hotkeys.temporary == nil)
+    #expect(hotkeys.temporary[.notch] == nil)
 }
 
 @MainActor
@@ -209,8 +209,38 @@ private struct Run {
     let runner = makeRunner(hotkeys: hotkeys)
     runner.perform(.takeEscape(true))
     runner.perform(.takeEscape(false))
-    // Another temporary key, such as a toast's ⌘Z, stays.
     #expect(hotkeys.unregisters == 0)
+}
+
+private let undo = KeyCombo(keyCode: 6, modifiers: KeyCombo.command)
+
+@MainActor
+@Test func aToastsKeyTakenWhileEscapeIsHeldLeavesBothAndEscapeLetsGoOfOnlyItself() {
+    let hotkeys = FakeHotkeys()
+    let runner = makeRunner(hotkeys: hotkeys)
+    var dispatched: [AppAction] = []
+    runner.dispatch = { dispatched.append($0) }
+    runner.perform(.takeEscape(true))
+    hotkeys.registerTemporary(undo, for: .toast) {}
+    #expect(hotkeys.temporary == [.notch: .escape, .toast: undo])
+    hotkeys.press(.notch)
+    #expect(dispatched == [.dismiss(except: nil)])
+    runner.perform(.takeEscape(false))
+    #expect(hotkeys.temporary == [.toast: undo])
+}
+
+@MainActor
+@Test func takingEscapeWhileAToastHoldsItsKeyLeavesThatKeyAndTheToastLetsGoOfOnlyItsOwn() {
+    let hotkeys = FakeHotkeys()
+    let runner = makeRunner(hotkeys: hotkeys)
+    var undone = false
+    hotkeys.registerTemporary(undo, for: .toast) { undone = true }
+    runner.perform(.takeEscape(true))
+    #expect(hotkeys.temporary == [.notch: .escape, .toast: undo])
+    hotkeys.press(.toast)
+    #expect(undone)
+    hotkeys.unregisterTemporary(for: .toast)
+    #expect(hotkeys.temporary == [.notch: .escape])
 }
 
 @MainActor
@@ -234,3 +264,4 @@ private struct Run {
     #expect(displays.housings(rules: [:]).map(\.display) == ["external"])
     #expect(displays.housings(rules: ["external": .off]).isEmpty)
 }
+

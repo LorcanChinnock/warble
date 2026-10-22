@@ -49,7 +49,7 @@ final class Toast {
         let panel = panel ?? makePanel()
         if let undoable {
             // The panel never becomes key, so ⌘Z can't reach it through the responder chain.
-            hotkeys.registerTemporary(KeyCombo(keyCode: UInt32(kVK_ANSI_Z), modifiers: KeyCombo.command)) { [weak self] in
+            hotkeys.registerTemporary(KeyCombo(keyCode: UInt32(kVK_ANSI_Z), modifiers: KeyCombo.command), for: .toast) { [weak self] in
                 undoable.undo()
                 self?.hide()
             }
@@ -143,7 +143,7 @@ final class Toast {
         let pending = undoable
         undoable = nil
         if pending != nil {
-            hotkeys.unregisterTemporary()
+            hotkeys.unregisterTemporary(for: .toast)
         }
         pending?.commit()
     }

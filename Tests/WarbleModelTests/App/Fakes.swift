@@ -35,29 +35,29 @@ final class FakeScheduler: Scheduler {
     }
 }
 
-/// Holds one temporary key, as `HotkeyCenter` does, and presses it when a test says so.
+/// Holds a temporary key for each owner, as `HotkeyCenter` does, and presses one when a test says so.
 @MainActor
 final class FakeHotkeys: HotkeyRegistrar {
-    private(set) var temporary: KeyCombo?
+    private(set) var temporary: [TemporaryKey: KeyCombo] = [:]
     var refuses = false
     private(set) var unregisters = 0
-    private var onPress: (() -> Void)?
+    private var onPress: [TemporaryKey: () -> Void] = [:]
 
-    func registerTemporary(_ combo: KeyCombo, onPress: @escaping () -> Void) -> Bool {
+    func registerTemporary(_ combo: KeyCombo, for owner: TemporaryKey, onPress: @escaping () -> Void) -> Bool {
         guard !refuses else { return false }
-        temporary = combo
-        self.onPress = onPress
+        temporary[owner] = combo
+        self.onPress[owner] = onPress
         return true
     }
 
-    func unregisterTemporary() {
+    func unregisterTemporary(for owner: TemporaryKey) {
         unregisters += 1
-        temporary = nil
-        onPress = nil
+        temporary[owner] = nil
+        onPress[owner] = nil
     }
 
-    func press() {
-        onPress?()
+    func press(_ owner: TemporaryKey) {
+        onPress[owner]?()
     }
 }
 
