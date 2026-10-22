@@ -54,6 +54,8 @@ public struct AppState: Equatable, Sendable {
     /// Whether every notch is left out of screen sharing, recordings and screenshots, which Settings turns on. The
     /// window server does it, so nothing here watches for a capture and the notch draws the same either way.
     public internal(set) var hidesFromCapture: Bool
+    /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns off.
+    public internal(set) var showsVirtualTitle: Bool
     /// What the effects last asked for, so each is asked for once per change.
     public internal(set) var watchesClicks = false
     public internal(set) var takesEscape = false
@@ -63,7 +65,7 @@ public struct AppState: Equatable, Sendable {
     public init(
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
         showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, podcastSkips: Bool = false,
-        dragArtOut: Bool = false, hidesFromCapture: Bool = false,
+        dragArtOut: Bool = false, hidesFromCapture: Bool = false, showsVirtualTitle: Bool = true,
         checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
@@ -75,6 +77,7 @@ public struct AppState: Equatable, Sendable {
         self.podcastSkips = podcastSkips
         self.dragArtOut = dragArtOut
         self.hidesFromCapture = hidesFromCapture
+        self.showsVirtualTitle = showsVirtualTitle
         lyrics = LyricsState(isOn: showsLyrics)
     }
 
@@ -100,12 +103,24 @@ public struct AppState: Equatable, Sendable {
     func notchState(_ surface: Surface) -> NotchState {
         let state = NotchState(
             surface.hover.state, isPlaying: showsPlayback, needsAttention: needsAttention, idleHover: idleHover,
-            isAlwaysShown: surface.isAlwaysShown, showsToast: toasts.current != nil,
+            isAlwaysShown: surface.isAlwaysShown, showsToast: toasts.current != nil && !showsTitle(surface),
             showsLyrics: lyrics.showsLine
         )
         // A full-screen app has the top of its display to itself, apart from the toast when Settings lets it through.
         guard surface.isFullScreen else { return state }
         return state == .toast && toastsInFullScreen ? .toast : .hidden
+    }
+
+    /// Whether the notch over `display` draws the title in its middle.
+    public func titleInNotch(_ display: String) -> Bool {
+        surfaces[display].map(showsTitle) ?? false
+    }
+
+    /// Only a virtual notch has room, since a real one's middle is the camera. It scrolls the title once for each track,
+    /// which says what a track-change toast would, so the toast leaves it alone. Over a full-screen app the notch is
+    /// hidden, so the toast, if Settings lets it through, stays.
+    func showsTitle(_ surface: Surface) -> Bool {
+        showsVirtualTitle && surface.isVirtual && !surface.isFullScreen && showsPlayback && playback?.title.isEmpty == false
     }
 
     func card(_ surface: Surface) -> NotchCard {

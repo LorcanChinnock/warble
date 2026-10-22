@@ -3,7 +3,8 @@ import Carbon.HIToolbox
 import SwiftUI
 import WarbleCore
 
-/// The art in the left wing and the play-state bars in the right, either side of the camera housing, each centred in a
+/// The art in the left wing and the play-state bars in the right, either side of the camera housing (a virtual one has
+/// the title between them), each centred in a
 /// square as tall as the housing. When a Doctor check fails, a "!" takes the bars' place, and with nothing playing it's
 /// all that shows.
 struct RestingContent: View {
@@ -35,7 +36,11 @@ struct RestingContent: View {
                 }
             }
             .frame(width: wing)
-            Spacer(minLength: 0)
+            if model.showsTitle, let playback {
+                VirtualTitle(playback: playback, notch: notch, model: model)
+            } else {
+                Spacer(minLength: 0)
+            }
             Group {
                 if model.doctor.needsAttention {
                     AttentionButton(model: model, size: art)

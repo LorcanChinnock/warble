@@ -1,6 +1,6 @@
 ---
 title: Settings
-summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a new song shows its title, whether lyrics show, whether a swipe skips, whether the album art can be dragged out, and set keyboard shortcuts, including one that opens the notch.
+summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a notch drawn on another display shows the title, whether a new song shows its title, whether lyrics show, whether a swipe skips, whether the album art can be dragged out, and set keyboard shortcuts, including one that opens the notch.
 group: Reference
 ---
 
@@ -26,6 +26,7 @@ Every change takes effect straight away.
 ## Notch
 
 - **When nothing is playing, hover shows.** **Last Played** shows the card with the last song you played, so you can [pick up where you left off](/docs/pick-up-where-you-left-off/). **Nothing** keeps Warble out of sight until something plays.
+- **Show the title in a virtual notch.** On at first. On a display where Warble draws a notch of its own, the title of what's playing shows in the middle. A long title fades out and scrolls once when the song changes. See [External displays](/docs/external-displays/).
 - **Show a message when the track changes.** Off at first. Turn it on, and when a new song starts, its title and artist slide out of the notch for two seconds, so you can see what's on without pointing at it. Skip a few songs in a row and you see only the last one. Point at the notch or click the message to open the full player.
   - **Show it over full-screen apps too.** Off at first, and only there while the message above is on. Turn it on, and the message also slides out over an app in full screen, such as a film or a game, then goes. The notch itself still stays out of a full-screen app.
 - **Show lyrics under the notch.** Off at first. Turn it on, and the line being sung shows under the notch while a song plays. To find the lyrics, Warble sends the song's title, artist, album and length to LRCLIB, a free lyrics library. The player then has a lyrics button that shows the lines around it. See [Show lyrics](/docs/show-lyrics/).

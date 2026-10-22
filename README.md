@@ -41,7 +41,7 @@ Or [download the latest release](https://warble.lorcanchinnock.com/download) and
 - **Switch speakers.** Move your Mac's sound to its own speakers, headphones or AirPods from the notch.
 - **Any player.** Apple Music, Spotify, podcast apps and video in your browser.
 - **Calm by default.** A paused song stays for a few seconds, then Warble gets out of the way. When nothing is playing, it hides behind the notch and uses no CPU. Hover over the notch to see the last song you played and play it again.
-- **Every Mac.** Macs without a notch, and external displays, get a virtual one, and you choose which displays show it.
+- **Every Mac.** Macs without a notch, and external displays, get a virtual one that shows the title of what's playing, and you choose which displays show it.
 - **Help when it can't see.** If something stops Warble seeing what's playing, a small "!" appears beside the notch. Click it to see what's wrong and how to fix it.
 - **For everyone.** Works with VoiceOver and with the keyboard alone, and follows Increase Contrast and Reduce Motion.
 - **Lyrics, if you want them.** Turn them on, and the line being sung shows under the notch, in step with the song. Click the lyrics button in the player to see the lines around it.

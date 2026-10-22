@@ -14,7 +14,8 @@ private struct Run {
     var now = start
 
     init(showsTrackToast: Bool = true, toastsInFullScreen: Bool = true) {
-        state = AppState(showsTrackToast: showsTrackToast, toastsInFullScreen: toastsInFullScreen)
+        // The title would take the virtual notch's toast, which these tests are not about.
+        state = AppState(showsTrackToast: showsTrackToast, toastsInFullScreen: toastsInFullScreen, showsVirtualTitle: false)
         send(.housingsChanged([builtIn, external]))
         send(.playbackReported(song))
         send(.fullScreenChanged(["built-in"]))

@@ -182,6 +182,7 @@ private struct NotchSettings: View {
     @Setting(PreferenceKey.dragArtOut) private var dragArtOut: Bool
     @Setting(PreferenceKey.podcastSkips) private var podcastSkips: Bool
     @Setting(PreferenceKey.hideFromCapture) private var hideFromCapture: Bool
+    @Setting(PreferenceKey.virtualTitle) private var virtualTitle: Bool
 
     var body: some View {
         SectionPage(section: .notch) {
@@ -210,6 +211,20 @@ private struct NotchSettings: View {
                 .accessibilityHint(Text("Only the message shows. The notch stays out of the way."))
             } footer: {
                 Text("Animations follow Reduce Motion in System Settings › Accessibility › Display.")
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            Section {
+                Toggle(isOn: $virtualTitle) {
+                    Text("Show the title in a virtual notch")
+                    Text("On a display without a notch, the song's title shows in the middle.")
+                }
+                .accessibilityLabel(Text("Show the title in a virtual notch"))
+                .accessibilityHint(Text("On a display without a notch, the song's title shows in the middle."))
+            } footer: {
+                Text("A long title fades out and scrolls once when the song changes, unless Reduce Motion is on. The track-change message skips a virtual notch that shows the title, since the title says the same.")
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, 10)
