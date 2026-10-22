@@ -64,6 +64,9 @@ final class NotchController {
                 if preferences.hideFromCapture != state.hidesFromCapture {
                     self.store.dispatch(.hidesFromCaptureChanged(preferences.hideFromCapture))
                 }
+                if preferences.virtualTitle != state.showsVirtualTitle {
+                    self.store.dispatch(.virtualTitleChanged(preferences.virtualTitle))
+                }
                 if preferences.virtualNotchRules != self.rules {
                     self.layOut()
                 }

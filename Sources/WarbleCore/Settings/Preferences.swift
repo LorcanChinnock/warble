@@ -25,6 +25,8 @@ public enum PreferenceKey {
     public static let dragArtOut = "dragArtOut"
     /// Whether the notch is left out of screen sharing, recordings and screenshots, while you still see it.
     public static let hideFromCapture = "hideFromCapture"
+    /// Whether a virtual notch shows the title of what's playing in its middle.
+    public static let virtualTitle = "virtualTitle"
 
     public static func hotkey(_ action: WarbleAction) -> String { "hotkey.\(action.rawValue)" }
 }
@@ -45,6 +47,7 @@ public struct Preferences {
             PreferenceKey.podcastSkips: false,
             PreferenceKey.dragArtOut: false,
             PreferenceKey.hideFromCapture: false,
+            PreferenceKey.virtualTitle: true,
         ]
         for action in WarbleAction.allCases {
             values[PreferenceKey.hotkey(action)] = action.defaultCombo?.encoded ?? ""
@@ -126,6 +129,10 @@ public struct Preferences {
 
     public var hideFromCapture: Bool {
         store.bool(forKey: PreferenceKey.hideFromCapture)
+    }
+
+    public var virtualTitle: Bool {
+        store.bool(forKey: PreferenceKey.virtualTitle)
     }
 
     /// `nil` means the user cleared the shortcut.

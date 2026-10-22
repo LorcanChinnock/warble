@@ -27,6 +27,17 @@ The change takes effect straight away. Warble remembers each display, so the set
 > [!NOTE]
 > **Notch on Displays** and Settings list only displays without a notch. Your MacBook's own notch always shows what's playing.
 
+## See what's playing
+
+A real notch has the camera in the middle. A notch Warble draws has nothing there, so it shows the title of what's playing. If the title and artist fit, you see both. If not, you see just the title.
+
+A long title fades out at the end. It slowly scrolls to its end once when the song changes, then jumps back to the start and stays there. It never loops. Point at the notch to see the whole title in the player. With **Reduce Motion** on in System Settings, it doesn't scroll.
+
+To turn this off, open **Settings…** › **Notch** and turn off **Show the title in a virtual notch**.
+
+> [!NOTE]
+> If you also turn on the message when the track changes, a notch with the title doesn't show it, since the title already tells you. A notch on your MacBook's own display still does.
+
 ## Full-screen apps
 
 When an app is full screen, it has the whole display to itself, so the notch on that display hides until you leave full screen.

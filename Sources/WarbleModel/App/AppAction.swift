@@ -66,6 +66,7 @@ public enum AppAction: Equatable, Sendable {
     case podcastSkipsChanged(Bool)
     case dragArtOutChanged(Bool)
     case hidesFromCaptureChanged(Bool)
+    case virtualTitleChanged(Bool)
     /// The lyrics found for the fetch numbered `pass`, or `nil` when there are none.
     case lyricsLoaded(Lyrics?, pass: Int)
     /// `AppState.deadline` came due.

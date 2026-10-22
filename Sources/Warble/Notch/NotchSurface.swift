@@ -75,6 +75,7 @@ final class NotchSurface {
         model.skipsBySeconds = app.skipsBySeconds
         model.artDrag = app.artDrag
         model.isVirtual = surface.isVirtual
+        model.showsTitle = app.titleInNotch(display)
         model.isAlwaysShown = surface.isAlwaysShown
         model.showsDoctor = surface.showsDoctor
         // A toast over a full-screen app lets clicks through to the app, since it takes no hover or click.

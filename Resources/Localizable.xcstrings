@@ -27,6 +27,9 @@
     "%@ shortcut" : {
 
     },
+    "A long title fades out and scrolls once when the song changes, unless Reduce Motion is on. The track-change message skips a virtual notch that shows the title, since the title says the same." : {
+
+    },
     "About" : {
 
     },
@@ -223,6 +226,9 @@
     "On" : {
 
     },
+    "On a display without a notch, the song's title shows in the middle." : {
+
+    },
     "On displays without a notch, and Macs without one, Warble can draw a notch of its own." : {
 
     },
@@ -356,6 +362,9 @@
 
     },
     "Show the player" : {
+
+    },
+    "Show the title in a virtual notch" : {
 
     },
     "Show what's wrong" : {
