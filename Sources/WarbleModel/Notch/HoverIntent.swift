@@ -11,7 +11,7 @@ public enum HoverState: String, CaseIterable, Sendable {
 }
 
 /// Something the pointer or the user did.
-public enum HoverEvent: Sendable {
+public enum HoverEvent: Equatable, Sendable {
     /// The pointer entered the area that keeps the notch open: the camera housing itself while Idle or resting, not the
     /// wings, and the panel once it's open.
     case pointerEntered
@@ -27,6 +27,9 @@ public enum HoverEvent: Sendable {
     /// pointer goes and whatever is clicked, and a resting notch stays resting, until `menuClosed`.
     case menuOpened
     case menuClosed
+    /// The art began (true) or stopped being dragged out of the card: it stays open while the drag is under way,
+    /// wherever the pointer goes, as it does for a menu.
+    case dragging(Bool)
 }
 
 /// Decides when the notch opens and closes, so moving the pointer past it on the way to a menu bar item never opens
@@ -46,6 +49,9 @@ public struct HoverIntent: Equatable, Sendable {
     private var enteredAt: Date?
     private var leftAt: Date?
     private var menuOpen = false
+    private var dragging = false
+    /// Whether a menu or a drag holds the notch as it is.
+    private var held: Bool { menuOpen || dragging }
 
     public init() {}
 
@@ -71,7 +77,7 @@ public struct HoverIntent: Equatable, Sendable {
         case .keyboard where state == .resting:
             state = .pinned
         case .keyboard, .dismiss:
-            guard !menuOpen else { return }
+            guard !held else { return }
             state = .resting
             // Resting on the notch doesn't open it again until the pointer leaves and comes back; a click still does.
             enteredAt = nil
@@ -85,6 +91,13 @@ public struct HoverIntent: Equatable, Sendable {
             if !pointerInside { leftAt = date }
             // A resting notch doesn't open under the pointer the menu leaves on it, until it leaves and comes back.
             if state == .resting { enteredAt = nil }
+        case .dragging(true):
+            dragging = true
+        case .dragging(false):
+            guard dragging else { return }
+            dragging = false
+            // The drag ended wherever it dropped: the wait to close starts now.
+            if !pointerInside { leftAt = date }
         }
         deadline = nextDeadline()
     }
@@ -103,8 +116,8 @@ public struct HoverIntent: Equatable, Sendable {
 
     private func nextDeadline() -> Date? {
         switch state {
-        case .resting: menuOpen ? nil : enteredAt.map { $0 + Self.expandDelay }
-        case .expanded: pointerInside || menuOpen ? nil : leftAt.map { $0 + Self.collapseDelay }
+        case .resting: held ? nil : enteredAt.map { $0 + Self.expandDelay }
+        case .expanded: pointerInside || held ? nil : leftAt.map { $0 + Self.collapseDelay }
         case .pinned: nil
         }
     }

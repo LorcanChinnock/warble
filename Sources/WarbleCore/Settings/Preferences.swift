@@ -17,6 +17,8 @@ public enum PreferenceKey {
     public static let lyrics = "lyrics"
     /// Whether a sideways two-finger swipe over the notch skips to the next or previous track.
     public static let swipeToSkip = "swipeToSkip"
+    /// Whether the art in the player's card can be dragged into another app, as the image and the track's link.
+    public static let dragArtOut = "dragArtOut"
 
     public static func hotkey(_ action: WarbleAction) -> String { "hotkey.\(action.rawValue)" }
 }
@@ -33,6 +35,7 @@ public struct Preferences {
             PreferenceKey.trackChangeToast: false,
             PreferenceKey.lyrics: false,
             PreferenceKey.swipeToSkip: false,
+            PreferenceKey.dragArtOut: false,
         ]
         for action in WarbleAction.allCases {
             values[PreferenceKey.hotkey(action)] = action.defaultCombo?.encoded ?? ""
@@ -98,6 +101,10 @@ public struct Preferences {
 
     public var swipeToSkip: Bool {
         store.bool(forKey: PreferenceKey.swipeToSkip)
+    }
+
+    public var dragArtOut: Bool {
+        store.bool(forKey: PreferenceKey.dragArtOut)
     }
 
     /// `nil` means the user cleared the shortcut.

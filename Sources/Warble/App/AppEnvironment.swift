@@ -40,7 +40,8 @@ final class AppEnvironment {
             state: AppState(
                 stayVisibleAfterPausing: preferences.stayVisibleAfterPausing, idleHover: preferences.idleHover,
                 showsTrackToast: preferences.trackChangeToast, showsLyrics: preferences.lyrics,
-                swipeToSkip: preferences.swipeToSkip, checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
+                swipeToSkip: preferences.swipeToSkip, dragArtOut: preferences.dragArtOut,
+                checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
             ),
             clock: SystemClock(), scheduler: TimerScheduler()
         )

@@ -116,6 +116,9 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         if event == .click || event == .keyboard {
             dismiss(in: &state, except: display, at: now)
         }
+        if case .dragging(let dragging) = event {
+            state.surfaces[display]?.isDragging = dragging
+        }
         handle(event, on: display, in: &state, at: now)
     case .menu(let display, let open):
         state.surfaces[display]?.showsMenu = open
@@ -144,6 +147,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .swipeToSkipChanged(let on):
         state.swipeToSkip = on
         state.swipe = Swipe()
+    case .dragArtOutChanged(let on):
+        state.dragArtOut = on
     case .lyricsLoaded(let lyrics, let pass):
         state.lyrics.loaded(lyrics, pass: pass)
     case .tick:
@@ -258,6 +263,7 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
                 // Start over, so a pointer still on the notch when it's drawn again is reported as entering again.
                 state.surfaces[display]?.hover = HoverIntent()
                 state.surfaces[display]?.pointerInside = false
+                state.surfaces[display]?.isDragging = false
             }
             if old.notchState(before) == .expanded, state.notchState(surface) != .expanded {
                 // The checks and the lyrics show until the notch closes; the next open shows the player again.
@@ -279,13 +285,13 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
     var effects: [AppEffect] = []
     // A click anywhere else closes an open notch, and so does Escape with the pointer on it. Both stop at rest, so a
     // resting notch watches nothing and never takes Escape from the app in front. Escape is let go while a menu is
-    // open, so the key reaches the menu and closes it.
+    // open, so the key reaches the menu and closes it, and while the art is dragged out, so it cancels the drag.
     let watchesClicks = !open.isEmpty
     if watchesClicks != state.watchesClicks {
         state.watchesClicks = watchesClicks
         effects.append(.watchClicksOutside(watchesClicks))
     }
-    let takesEscape = open.contains(where: \.pointerInside) && !state.surfaces.values.contains(where: \.showsMenu)
+    let takesEscape = open.contains(where: \.pointerInside) && !state.surfaces.values.contains { $0.showsMenu || $0.isDragging }
     if takesEscape != state.takesEscape {
         state.takesEscape = takesEscape
         effects.append(.takeEscape(takesEscape))

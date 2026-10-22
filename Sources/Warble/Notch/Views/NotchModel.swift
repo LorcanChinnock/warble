@@ -18,6 +18,8 @@ final class NotchModel {
     var showsDoctor = false
     /// Whether the song playing has lyrics, so the player's card offers them.
     var hasLyrics = false
+    /// What dragging the art out of the player's card carries, or `nil` when Settings has it off or there's nothing.
+    var artDrag: ArtDrag?
     /// What Expanded holds. `NotchSurface` sets it with `state`, inside the same animation, so a change of card morphs.
     var card = NotchCard.player
     /// Whether the notch shows what's playing, rather than Idle. While Idle, `player` may still hold the paused track.
@@ -41,6 +43,8 @@ final class NotchModel {
     @ObservationIgnored var onShowDoctor: (Bool) -> Void = { _ in }
     /// Called to swap the open card between the player and the lyrics.
     @ObservationIgnored var onShowLyrics: (Bool) -> Void = { _ in }
+    /// Called with true when the art begins to be dragged out of the card, and false when the drag ends.
+    @ObservationIgnored var onDragArt: (Bool) -> Void = { _ in }
 
     init(player: PlayerModel, doctor: DoctorModel) {
         self.player = player
