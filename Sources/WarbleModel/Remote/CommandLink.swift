@@ -7,6 +7,9 @@ public enum CommandLink {
     public static let folder = "/usr/local/bin"
     /// Where Homebrew's cask links `warble` on Apple silicon.
     public static let homebrewFolder = "/opt/homebrew/bin"
+    /// Where Homebrew keeps the casks it installed on an Intel Mac. Its prefix is `/usr/local` there, so the cask's link
+    /// lands in `folder` itself, and a folder in here named for the command says Homebrew made it.
+    public static let intelCaskroom = "/usr/local/Caskroom"
     /// The command inside the app, in `Contents/MacOS`. It isn't called `warble` there, since that would collide with the
     /// app's own `Warble` executable on a case-insensitive volume.
     public static let executableName = "warble-cli"
@@ -32,11 +35,16 @@ public enum CommandLink {
     }
 
     /// What's installed as `name` for the `warble-cli` at `cli`.
-    public static func status(name: String, cli: String, folder: String = folder, homebrewFolder: String = homebrewFolder) -> Status {
+    public static func status(
+        name: String, cli: String, folder: String = folder, homebrewFolder: String = homebrewFolder, caskroom: String = intelCaskroom
+    ) -> Status {
         let link = (folder as NSString).appendingPathComponent(name)
         let target = destination(of: link)
         if let target, same(target, cli) {
-            return .linked
+            // On an Intel Mac the link in `folder` can be Homebrew's, and removing it would leave the cask's record not
+            // matching the disk, so the cask's folder is checked first.
+            let cask = (caskroom as NSString).appendingPathComponent(name)
+            return FileManager.default.fileExists(atPath: cask) ? .homebrew : .linked
         }
         if let brewed = destination(of: (homebrewFolder as NSString).appendingPathComponent(name)), same(brewed, cli) {
             return .homebrew

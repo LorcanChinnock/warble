@@ -140,8 +140,27 @@ public enum AgentSocket {
                 close(client)
                 return
             }
-            Task {
+            // On a queue of its own: a serial queue, unlike the shared pool, gets a thread even when all of the pool's are
+            // busy, so an answer never waits for work that holds every one of those, such as tests that block on it.
+            let queue = DispatchQueue(label: "dev.lorcan.Warble.agent-socket.answer")
+            Task(executorPreference: QueueExecutor(queue)) {
                 AgentSocket.reply(await handler(request), to: client)
+            }
+        }
+    }
+
+    /// Runs tasks' jobs on a queue rather than the threads of the shared pool.
+    final class QueueExecutor: TaskExecutor {
+        private let queue: DispatchQueue
+
+        init(_ queue: DispatchQueue) {
+            self.queue = queue
+        }
+
+        func enqueue(_ job: consuming ExecutorJob) {
+            let job = UnownedJob(job)
+            queue.async {
+                job.runSynchronously(on: self.asUnownedTaskExecutor())
             }
         }
     }
