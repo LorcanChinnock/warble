@@ -17,8 +17,10 @@ public enum AppAction: Equatable, Sendable {
     case showDoctor(display: String, Bool)
     /// A click outside, Escape, or Esc in a notch with the keyboard: every open notch closes, but `except`.
     case dismiss(except: String?)
-    /// A command from a notch button, a key in an open notch or a shortcut, which shows what it will do at once.
+    /// A command from a notch button or a key in an open notch, which shows what it will do at once.
     case command(PlaybackCommand)
+    /// One of Warble's actions, from a global shortcut, and later the command line, links and Shortcuts.
+    case perform(WarbleAction)
     /// Bring the app that's playing to the front, or while Idle the one that played last.
     case openApp
     /// Volume from the slider, a scroll over a notch, or the arrow keys in a notch with the keyboard. A scroll and a key

@@ -28,34 +28,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 store.dispatch(.lastPlayedLoaded(LastPlayed(bundleIdentifier: "com.apple.Music", appName: "Music", title: "Preview track with a title long enough to scroll", artist: "Preview artist")))
             }
         } else if preview == .resting {
-            store.dispatch(.playbackReported(PlaybackState(
-                bundleIdentifier: "com.apple.Music",
-                title: "Preview track with a title long enough to scroll",
-                artist: "Preview artist",
-                album: "Preview album",
-                duration: 240,
-                elapsed: 60,
-                elapsedTimestamp: .now,
-                rate: 1,
-                shuffle: .off,
-                repeatMode: .off
-            )))
-            // Next and previous change the preview track, such as from a shortcut, to show the track-change toast.
-            var track = 1
-            runner.send = { [weak store] command in
-                guard let store, var playback = store.state.playback else { return }
-                switch command {
-                case .nextTrack: track += 1
-                case .previousTrack: track = max(track - 1, 1)
-                default: return
+            let source = PreviewSource { [weak store] in store?.state.playback }
+            runner.source = source
+            Task {
+                for await state in source.states {
+                    store.dispatch(.playbackReported(state))
                 }
-                playback.title = "Preview track \(track) with a title long enough to scroll"
-                store.dispatch(.playbackReported(playback))
             }
         } else if let paths = Bundle.main.resourceURL.flatMap(AdapterSource.Paths.init(resources:)) {
             let source = AdapterSource(paths: paths)
             source.start()
-            runner.send = { command in Task { await source.send(command) } }
+            runner.source = source
             Task {
                 for await state in source.states {
                     store.dispatch(.playbackReported(state))
@@ -70,13 +53,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             store.dispatch(.adapterChanged(.missing))
             startFallback()
         }
-        environment.hotkeys.onPress = { [weak notch] action in
-            if let command = action.command {
-                notch?.perform(command)
-            } else {
-                notch?.toggleKeyboard()
-            }
-        }
+        environment.hotkeys.onPress = { [weak store] action in store?.dispatch(.perform(action)) }
         environment.hotkeys.start()
         self.notch = notch
         if let launch = Perf.millisecondsSinceLaunch() {
@@ -111,7 +88,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let store = environment.store
         fallback.onAutomationDenied = { [weak store] in store?.dispatch(.automationDenied) }
         fallback.start()
-        environment.runner.send = { command in Task { await fallback.send(command) } }
+        environment.runner.source = fallback
         Task {
             for await state in fallback.states {
                 store.dispatch(.playbackReported(state))

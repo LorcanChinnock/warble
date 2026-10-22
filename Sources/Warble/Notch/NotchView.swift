@@ -81,17 +81,35 @@ final class PlayerModel {
     @ObservationIgnored private var colourPicks = 0
     /// The name of the app that's playing, for VoiceOver.
     private(set) var appName: String?
-    @ObservationIgnored var onCommand: (PlaybackCommand) -> Void = { _ in }
-    /// Brings the app that's playing to the front.
-    @ObservationIgnored var onOpenApp: () -> Void = {}
     /// The output's volume from 0 to 1, read while Expanded shows; `nil` when it can't be changed.
     var volume: Double?
     var isMuted = false
-    @ObservationIgnored var onVolume: (Double) -> Void = { _ in }
     /// The outputs to offer and the one playing, read while Expanded shows.
     var outputs: [AudioOutput] = []
     var currentOutput: UInt32?
-    @ObservationIgnored var onSelectOutput: (UInt32) -> Void = { _ in }
+    /// Where the controls send what the user does, the one way in for every command.
+    @ObservationIgnored private let dispatch: (AppAction) -> Void
+
+    init(dispatch: @escaping (AppAction) -> Void) {
+        self.dispatch = dispatch
+    }
+
+    func send(_ command: PlaybackCommand) {
+        dispatch(.command(command))
+    }
+
+    /// Brings the app that's playing to the front, or while Idle the one that played last.
+    func openApp() {
+        dispatch(.openApp)
+    }
+
+    func setVolume(_ volume: Double) {
+        dispatch(.setVolume(volume))
+    }
+
+    func selectOutput(_ id: UInt32) {
+        dispatch(.selectOutput(id))
+    }
 
     /// Picks the colours off the main thread, then fades the glow to them.
     private func pickColours() {
@@ -227,7 +245,7 @@ private struct IdleCard: View {
         Group {
             if let lastPlayed = model.player.lastPlayed {
                 HStack(spacing: 12) {
-                    Button(action: model.player.onOpenApp) {
+                    Button(action: model.player.openApp) {
                         Artwork(image: model.player.lastPlayedArtwork, symbolSize: 20)
                             .frame(width: 48, height: 48)
                             .opacity(Native.dimmed)
@@ -252,7 +270,7 @@ private struct IdleCard: View {
                     .lineLimit(1)
                     .accessibilityElement(children: .combine)
                     Spacer(minLength: 0)
-                    Button { model.player.onCommand(.togglePlayPause) } label: {
+                    Button { model.player.send(.togglePlayPause) } label: {
                         Image(systemName: "play.fill")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundStyle(.white)
@@ -539,7 +557,7 @@ private struct ExpandedContent: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                Button(action: model.player.onOpenApp) {
+                Button(action: model.player.openApp) {
                     Artwork(image: artwork)
                         .frame(width: 56, height: 56)
                 }
@@ -577,13 +595,13 @@ private struct ExpandedContent: View {
                 }
             }
             Spacer(minLength: 0)
-            Scrubber(playback: playback) { model.player.onCommand(.seek(to: $0)) }
+            Scrubber(playback: playback) { model.player.send(.seek(to: $0)) }
             Spacer(minLength: 0)
-            PlaybackControls(playback: playback, send: model.player.onCommand)
+            PlaybackControls(playback: playback, send: model.player.send)
             Spacer(minLength: 0)
             HStack(spacing: 8) {
                 if let volume = model.player.volume {
-                    VolumeSlider(volume: model.player.isMuted ? 0 : volume, isMuted: model.player.isMuted, set: model.player.onVolume)
+                    VolumeSlider(volume: model.player.isMuted ? 0 : volume, isMuted: model.player.isMuted, set: model.player.setVolume)
                 } else {
                     Spacer(minLength: 0)
                 }
@@ -757,7 +775,7 @@ private struct OutputMenu: NSViewRepresentable {
     func updateNSView(_ view: OutputMenuView, context: Context) {
         view.outputs = model.player.outputs
         view.current = model.player.currentOutput
-        view.select = model.player.onSelectOutput
+        view.select = model.player.selectOutput
         view.onMenu = model.onMenu
     }
 
