@@ -29,6 +29,8 @@ public enum PreferenceKey {
     public static let hideFromCapture = "hideFromCapture"
     /// Whether a virtual notch shows the title of what's playing in its middle.
     public static let virtualTitle = "virtualTitle"
+    /// Whether `warble://` links do anything, in the Developer card. Off, Warble ignores them.
+    public static let answerLinks = "answerLinks"
 
     /// Whether the welcome window has been seen, or didn't need to be because Warble was in use before it existed.
     public static let hasSeenWelcome = "hasSeenWelcome"
@@ -54,6 +56,7 @@ public struct Preferences {
             PreferenceKey.dragArtOut: false,
             PreferenceKey.hideFromCapture: false,
             PreferenceKey.virtualTitle: true,
+            PreferenceKey.answerLinks: false,
             PreferenceKey.hasSeenWelcome: false,
         ]
         for action in WarbleAction.allCases {
@@ -152,6 +155,10 @@ public struct Preferences {
 
     public var virtualTitle: Bool {
         store.bool(forKey: PreferenceKey.virtualTitle)
+    }
+
+    public var answerLinks: Bool {
+        store.bool(forKey: PreferenceKey.answerLinks)
     }
 
     /// `nil` means the user cleared the shortcut.

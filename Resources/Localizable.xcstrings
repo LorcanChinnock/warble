@@ -63,6 +63,9 @@
     "Another app uses this shortcut. Try another." : {
 
     },
+    "Answer warble:// links" : {
+
+    },
     "Any app that plays, including your browser." : {
 
     },
@@ -102,6 +105,9 @@
     "Couldn't relaunch Warble" : {
 
     },
+    "Developer" : {
+
+    },
     "Displays" : {
 
     },
@@ -133,6 +139,9 @@
 
     },
     "Following %@. Other apps won't show for now." : {
+
+    },
+    "For scripts and launchers. Everything here starts off." : {
 
     },
     "Forward 30 seconds" : {
@@ -181,6 +190,9 @@
 
     },
     "Later" : {
+
+    },
+    "Links like warble://toggle control playback from a script, a launcher or Terminal." : {
 
     },
     "Lyrics" : {
@@ -433,6 +445,9 @@
     "Text size" : {
 
     },
+    "That link isn't one Warble knows. The guide lists the ones it does." : {
+
+    },
     "The line being sung, while a song plays." : {
 
     },
@@ -461,6 +476,9 @@
 
     },
     "To find a song's lyrics, Warble sends its title, artist, album and length to LRCLIB, a free lyrics library. Nothing is sent while this is off." : {
+
+    },
+    "Try it in Terminal with open warble://toggle. The user guide lists every link. While this is off, Warble ignores them." : {
 
     },
     "Turn off" : {

@@ -45,6 +45,7 @@ final class AppEnvironment {
                 swipeToSkip: preferences.swipeToSkip, podcastSkips: preferences.podcastSkips, dragArtOut: preferences.dragArtOut,
                 showsSleepTimer: preferences.sleepTimer,
                 hidesFromCapture: preferences.hideFromCapture, showsVirtualTitle: preferences.virtualTitle,
+                answersLinks: preferences.answerLinks,
                 checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
             ),
             clock: SystemClock(), scheduler: TimerScheduler()
@@ -70,6 +71,9 @@ final class AppEnvironment {
         let settingsWindow = settingsWindow
         let welcomeWindow = welcomeWindow
         platform.showWelcome = { [weak welcomeWindow] in welcomeWindow?.show() }
+        platform.openSettings = { [weak settingsWindow] name in
+            settingsWindow?.show(section: name.flatMap(SettingsSection.init(rawValue:)))
+        }
         let toast = toast
         hotkeys.onUnavailable = { failed in
             // Settings › Shortcuts says so under the shortcut, so the toast is for when it isn't showing.

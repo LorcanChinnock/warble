@@ -59,6 +59,8 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var hidesFromCapture: Bool
     /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns off.
     public internal(set) var showsVirtualTitle: Bool
+    /// Whether `warble://` links do anything, which the Developer card in Settings turns on.
+    public internal(set) var answersLinks: Bool
     /// The first-run demo of the notch and the welcome window after it, which happen once, on a first launch.
     public internal(set) var onboarding = Onboarding()
     /// What the effects last asked for, so each is asked for once per change.
@@ -71,6 +73,7 @@ public struct AppState: Equatable, Sendable {
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
         showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, podcastSkips: Bool = false,
         dragArtOut: Bool = false, showsSleepTimer: Bool = false, hidesFromCapture: Bool = false, showsVirtualTitle: Bool = true,
+        answersLinks: Bool = false,
         checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
@@ -84,6 +87,7 @@ public struct AppState: Equatable, Sendable {
         self.showsSleepTimer = showsSleepTimer
         self.hidesFromCapture = hidesFromCapture
         self.showsVirtualTitle = showsVirtualTitle
+        self.answersLinks = answersLinks
         lyrics = LyricsState(isOn: showsLyrics)
     }
 

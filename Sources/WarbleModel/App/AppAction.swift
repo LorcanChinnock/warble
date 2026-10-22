@@ -70,6 +70,10 @@ public enum AppAction: Equatable, Sendable {
     case sleepTimerSettingChanged(Bool)
     case hidesFromCaptureChanged(Bool)
     case virtualTitleChanged(Bool)
+    case linksChanged(Bool)
+    /// A `warble://` link was opened. It does what the notch's matching button does while Settings has links on, and
+    /// nothing while they're off.
+    case linkOpened(RemoteCommand)
     /// The lyrics found for the fetch numbered `pass`, or `nil` when there are none.
     case lyricsLoaded(Lyrics?, pass: Int)
     /// Warble opened, with whether it's the first time. Dispatched once, by `AppDelegate`.
