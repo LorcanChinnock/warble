@@ -1,5 +1,5 @@
 // Renders Resources/AppIcon.icns and docs/icon.png (for the README). Run: make icon, which adds
-// Sources/WarbleModel/IconBars.swift for the bars the menu bar icon shares.
+// Sources/WarbleModel/Design/IconBars.swift for the bars the menu bar icon shares.
 import AppKit
 
 let ink = NSColor(srgbRed: 0.07, green: 0.07, blue: 0.10, alpha: 1)

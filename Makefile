@@ -64,7 +64,7 @@ dist: bundle
 
 icon:
 	mkdir -p .build
-	cat Sources/WarbleModel/IconBars.swift scripts/make-icon.swift > .build/make-icon.swift
+	cat Sources/WarbleModel/Design/IconBars.swift scripts/make-icon.swift > .build/make-icon.swift
 	swift .build/make-icon.swift .
 
 clean:

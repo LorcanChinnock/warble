@@ -6,7 +6,7 @@ var dependencies: [Package.Dependency] = []
 var targets: [Target] = [
     .target(name: "WarbleModel"),
     // The tests read their recorded fixtures from the source tree.
-    .testTarget(name: "WarbleModelTests", dependencies: ["WarbleModel"], exclude: ["Fixtures"]),
+    .testTarget(name: "WarbleModelTests", dependencies: ["WarbleModel"], exclude: ["Playback/Fixtures"]),
 ]
 
 #if os(macOS)
