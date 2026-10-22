@@ -16,6 +16,8 @@ final class NotchModel {
     let doctor: DoctorModel
     /// Whether the open card shows the Doctor's checks rather than the player.
     var showsDoctor = false
+    /// Whether the song playing has lyrics, so the player's card offers them.
+    var hasLyrics = false
     /// What Expanded holds. `NotchSurface` sets it with `state`, inside the same animation, so a change of card morphs.
     var card = NotchCard.player
     /// Whether the notch shows what's playing, rather than Idle. While Idle, `player` may still hold the paused track.
@@ -30,11 +32,15 @@ final class NotchModel {
     var toast: TrackToast?
     /// The lyric line, while `state` is `lyrics`. Set with `state`, like `card`.
     var lyric: String?
+    /// The lines around the one being sung, while the card is `lyrics`. Set with `state`, like `card`.
+    var lyrics: LyricsExcerpt?
     @ObservationIgnored var onClick: () -> Void = {}
     /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
     @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }
     /// Called to swap the open card between the player and the checks.
     @ObservationIgnored var onShowDoctor: (Bool) -> Void = { _ in }
+    /// Called to swap the open card between the player and the lyrics.
+    @ObservationIgnored var onShowLyrics: (Bool) -> Void = { _ in }
 
     init(player: PlayerModel, doctor: DoctorModel) {
         self.player = player

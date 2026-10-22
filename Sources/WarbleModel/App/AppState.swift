@@ -85,7 +85,16 @@ public struct AppState: Equatable, Sendable {
     }
 
     func card(_ surface: Surface) -> NotchCard {
-        NotchCard(isPlaying: showsPlayback && playback != nil, needsAttention: needsAttention, showsDoctor: surface.showsDoctor)
+        NotchCard(
+            isPlaying: showsPlayback && playback != nil, needsAttention: needsAttention, showsDoctor: surface.showsDoctor,
+            showsLyrics: surface.showsLyrics && hasLyricsCard
+        )
+    }
+
+    /// Whether there's a lyrics card to show, which the player's card offers: the song playing has lyrics, which only
+    /// happens with lyrics on in Settings.
+    public var hasLyricsCard: Bool {
+        showsPlayback && playback != nil && lyrics.excerpt != nil
     }
 
     /// Without anything playing, a "!" or a card to open while Idle, a notch draws nothing, or only a blank notch, and
@@ -105,6 +114,8 @@ public struct AppState: Equatable, Sendable {
         public internal(set) var pointerInside = false
         /// Whether the open card shows the Doctor's checks rather than the player, until the notch closes.
         public internal(set) var showsDoctor = false
+        /// Whether the open card shows the lyrics rather than the player, until the notch closes.
+        public internal(set) var showsLyrics = false
         /// Whether a menu from this notch is open, which takes Escape for itself.
         public internal(set) var showsMenu = false
 

@@ -62,6 +62,9 @@ struct ExpandedContent: View {
                 }
                 OutputButton(model: model)
                     .frame(width: 34, height: 24)
+                if model.hasLyrics {
+                    LyricsButton(isOn: false) { model.onShowLyrics(true) }
+                }
             }
         }
         .padding(.horizontal, 16)

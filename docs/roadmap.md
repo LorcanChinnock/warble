@@ -56,7 +56,7 @@ Synced lyrics, gestures, podcast controls and source chips, each off until you t
 - [#129](https://github.com/LorcanChinnock/warble/issues/129) feat(lyrics): LRCLIB client and lyrics cache
 - [#35](https://github.com/LorcanChinnock/warble/issues/35) feat(lyrics): synced lyrics from LRCLIB
 - [#36](https://github.com/LorcanChinnock/warble/issues/36) feat(gestures): swipe over the notch to skip
-- [#131](https://github.com/LorcanChinnock/warble/issues/131) feat(gestures): force click for lyrics
+- [#131](https://github.com/LorcanChinnock/warble/issues/131) feat(lyrics): a lyrics card in the player
 - [#132](https://github.com/LorcanChinnock/warble/issues/132) feat(gestures): drag the album art out
 - [#37](https://github.com/LorcanChinnock/warble/issues/37) feat(player): skip 15 seconds and change speed for podcasts
 - [#38](https://github.com/LorcanChinnock/warble/issues/38) feat(notch): show the track-change toast in full screen

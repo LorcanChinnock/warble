@@ -1,6 +1,6 @@
 ---
 title: Show lyrics
-summary: See the line being sung under the notch while a song plays.
+summary: See the line being sung under the notch while a song plays, and more of the lyrics in the player.
 group: Playback
 ---
 
@@ -16,6 +16,15 @@ The next song you play shows its lyrics in a strip under the notch, a line at a 
 
 > [!NOTE]
 > To find a song's lyrics, Warble sends its title, artist, album and length to [LRCLIB](https://lrclib.net), a free lyrics library. Nothing else is sent, and nothing at all while lyrics are off. Warble keeps the lyrics it finds on your Mac, so each song is looked up once.
+
+## See more of the lyrics
+
+1. Open the player: hover over the notch, or click it.
+2. Click the lyrics button, the speech bubble at the bottom right.
+
+The player swaps for the lyrics: the line being sung in white, with the line before it and the next few after it. They move on with the song. To go back to the player, click the lyrics button again. It has a dot under it while the lyrics show.
+
+The button only appears when the song has lyrics. The next time you open the notch, it shows the player.
 
 ## When there are no lyrics
 

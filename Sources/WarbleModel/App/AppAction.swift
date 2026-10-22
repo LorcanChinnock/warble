@@ -15,6 +15,8 @@ public enum AppAction: Equatable, Sendable {
     case menu(display: String, open: Bool)
     /// The open card on `display` swapped to the Doctor's checks (true) or back to the player.
     case showDoctor(display: String, Bool)
+    /// The open card on `display` swapped to the lyrics (true) or back to the player.
+    case showLyrics(display: String, Bool)
     /// A click outside, Escape, or Esc in a notch with the keyboard: every open notch closes, but `except`.
     case dismiss(except: String?)
     /// A command from a notch button or a key in an open notch, which shows what it will do at once.
