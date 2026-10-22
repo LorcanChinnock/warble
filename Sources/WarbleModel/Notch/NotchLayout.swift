@@ -67,12 +67,16 @@ public enum NotchCard: Sendable {
     case doctor
     /// While Idle: the last track played and a button to resume it, or a line saying nothing has played yet.
     case idle
+    /// The song's lyrics around the line being sung, from the player's lyrics button.
+    case lyrics
 
-    /// What Expanded holds: the checks when asked for, what's playing, the checks again when one failed with nothing
-    /// playing, and otherwise the idle card.
-    public init(isPlaying: Bool, needsAttention: Bool, showsDoctor: Bool) {
+    /// What Expanded holds: the checks when asked for, the lyrics when asked for while a song with lyrics plays, what's
+    /// playing, the checks again when one failed with nothing playing, and otherwise the idle card.
+    public init(isPlaying: Bool, needsAttention: Bool, showsDoctor: Bool, showsLyrics: Bool = false) {
         if showsDoctor {
             self = .doctor
+        } else if isPlaying, showsLyrics {
+            self = .lyrics
         } else if isPlaying {
             self = .player
         } else {
@@ -149,7 +153,8 @@ public enum NotchLayout {
 
     private static func drop(_ card: NotchCard) -> CGFloat {
         switch card {
-        case .player: expandedDrop
+        // The lyrics card is the player's size, so its button stays under the pointer to swap back.
+        case .player, .lyrics: expandedDrop
         case .doctor: doctorDrop
         case .idle: idleDrop
         }

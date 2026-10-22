@@ -18,6 +18,9 @@ public struct LyricsState: Equatable, Sendable {
     public internal(set) var lyrics: Lyrics?
     /// The line showing now, or `nil` while paused, Idle, before the first line or with no lyrics.
     public internal(set) var line: Lyrics.Line?
+    /// The lines around the position, for the lyrics card, or `nil` with no lyrics for what's shown. Unlike `line` it
+    /// stays while paused.
+    public internal(set) var excerpt: LyricsExcerpt?
     /// When the next line starts, or `nil` when no line is due.
     public internal(set) var deadline: Date?
     /// Bumped by every fetch and by turning lyrics off, so an answer that arrives after a later one has begun is dropped.
@@ -70,7 +73,9 @@ public struct LyricsState: Equatable, Sendable {
             fetches += 1
             fetch = .fetchLyrics(wanted, pass: fetches)
         }
-        (line, deadline) = Self.line(in: wanted == query ? lyrics : nil, for: playback, at: now)
+        let shown = wanted == query ? lyrics : nil
+        (line, deadline) = Self.line(in: shown, for: playback, at: now)
+        excerpt = shown.flatMap { lyrics in playback.flatMap { LyricsExcerpt(lyrics, at: $0.elapsed(at: now) + Self.tolerance) } }
         return fetch
     }
 

@@ -115,6 +115,10 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .showDoctor(let display, let show):
         // From the resting "!", the click that follows opens the notch on the checks.
         state.surfaces[display]?.showsDoctor = show
+    case .showLyrics(let display, let show):
+        // Only from an open card, and only while there are lyrics to show; the button is there only then.
+        guard let surface = state.surfaces[display], state.notchState(surface) == .expanded, !show || state.hasLyricsCard else { break }
+        state.surfaces[display]?.showsLyrics = show
     case .dismiss(let except):
         dismiss(in: &state, except: except, at: now)
     case .stayVisibleChanged(let delay):
@@ -236,8 +240,9 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
                 state.surfaces[display]?.pointerInside = false
             }
             if old.notchState(before) == .expanded, state.notchState(surface) != .expanded {
-                // The checks show until the notch closes; the next open shows the player again.
+                // The checks and the lyrics show until the notch closes; the next open shows the player again.
                 state.surfaces[display]?.showsDoctor = false
+                state.surfaces[display]?.showsLyrics = false
             }
         }
         // The open card shows the track, so a toast has nothing left to say, even once the notch closes again. Nor has one

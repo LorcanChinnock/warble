@@ -82,6 +82,12 @@ private struct NotchContent: View {
         case (.expanded, .doctor, _):
             DoctorCard(model: model)
                 .padding(.top, model.notch.height)
+        case (.expanded, .lyrics, _):
+            if let lyrics = model.lyrics {
+                LyricsCard(lyrics: lyrics, model: model)
+                    .padding(.top, model.notch.height)
+                    .background { Glow(colours: colours) }
+            }
         case (.expanded, .idle, _):
             IdleCard(model: model)
                 .padding(.top, model.notch.height)

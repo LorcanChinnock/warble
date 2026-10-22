@@ -44,7 +44,7 @@ Or [download the latest release](https://warble.lorcanchinnock.com/download) and
 - **Every Mac.** Macs without a notch, and external displays, get a virtual one, and you choose which displays show it.
 - **Help when it can't see.** If something stops Warble seeing what's playing, a small "!" appears beside the notch. Click it to see what's wrong and how to fix it.
 - **For everyone.** Works with VoiceOver and with the keyboard alone, and follows Increase Contrast and Reduce Motion.
-- **Lyrics, if you want them.** Turn them on, and the line being sung shows under the notch, in step with the song.
+- **Lyrics, if you want them.** Turn them on, and the line being sung shows under the notch, in step with the song. Click the lyrics button in the player to see the lines around it.
 - **Settings, if you want them.** Open at login, a larger text size, how long a paused song stays, a message when the track changes, lyrics, and your own keyboard shortcuts, one of which opens the notch. Right-click the notch for Settings or to quit, even with the menu bar icon hidden.
 
 ## Privacy

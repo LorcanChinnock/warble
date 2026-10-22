@@ -16,6 +16,8 @@ public struct Lyrics: Equatable, Sendable {
 
     /// Sorted by `time`. Lines that start together keep the order of the file.
     public let lines: [Line]
+    /// The indices in `lines` of the lines with words, so the lyrics card finds its lines without walking every gap.
+    let sung: [Int]
 
     /// Parses LRC text, or returns `nil` when it has no timed lines, as with plain lyrics.
     ///
@@ -45,15 +47,23 @@ public struct Lyrics: Equatable, Sendable {
             timed += times.map { ($0, text) }
         }
         guard !timed.isEmpty else { return nil }
-        lines = timed.enumerated()
+        let lines = timed.enumerated()
             .sorted { ($0.element.milliseconds, $0.offset) < ($1.element.milliseconds, $1.offset) }
             .map { Line(time: TimeInterval(max($0.element.milliseconds - offset, 0)) / 1000, text: $0.element.text) }
+        self.lines = lines
+        sung = lines.indices.filter { !lines[$0].text.isEmpty }
     }
 
     /// The line showing at `position`: the last to start at or before it, or `nil` before the first line.
     public func line(at position: TimeInterval) -> Line? {
         let next = firstIndex(after: position)
         return next == 0 ? nil : lines[next - 1]
+    }
+
+    /// The index in `lines` of the line showing at `position`, or `nil` before the first line.
+    func index(at position: TimeInterval) -> Int? {
+        let next = firstIndex(after: position)
+        return next == 0 ? nil : next - 1
     }
 
     /// When the line showing at `position` gives way to the next, or `nil` after the last line starts.
