@@ -5,15 +5,20 @@ import WarbleCore
 /// The displays connected now, kept up to date for the menu and Settings.
 @MainActor
 @Observable
-final class Displays {
+final class Displays: DisplayProvider {
     private(set) var all: [NotchDisplay] = []
     private(set) var names: [String: String] = [:]
     @ObservationIgnored private var observer: NSObjectProtocol?
+    @ObservationIgnored var onChange: () -> Void = {}
+    var displays: [NotchDisplay] { all }
 
     init() {
         read()
         observer = NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated { self?.read() }
+            MainActor.assumeIsolated {
+                self?.read()
+                self?.onChange()
+            }
         }
     }
 

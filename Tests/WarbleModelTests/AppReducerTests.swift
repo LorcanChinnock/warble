@@ -8,8 +8,11 @@ private func track(_ title: String = "Song", playing: Bool = true) -> PlaybackSt
     PlaybackState(bundleIdentifier: "com.apple.Music", title: title, artist: "Artist", elapsedTimestamp: start, rate: playing ? 1 : 0)
 }
 
+private let notch = NotchHousing(display: "built-in", frame: CGRect(x: 856, y: 1205.5, width: 208, height: 37.5), isVirtual: false)
+
 private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
     var state = AppState()
+    _ = reduce(&state, .housingsChanged([notch]), now: start)
     for (action, offset) in actions {
         _ = reduce(&state, action, now: start + offset)
     }
@@ -17,7 +20,7 @@ private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
 }
 
 @Test func withNothingPlayingNothingIsDue() {
-    let nothing = state((.playbackReported(nil), 0), (.hoverChanged(true), 1), (.hoverChanged(false), 2), (.tick, 3))
+    let nothing = state((.playbackReported(nil), 0), (.tick, 3))
     #expect(nothing.playback == nil)
     #expect(!nothing.showsPlayback)
     #expect(nothing.deadline == nil)
@@ -66,11 +69,14 @@ private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
 }
 
 @Test func hoverHoldsAPausedTrackAndLeavingStartsTheWaitAgain() {
-    var held = state((.playbackReported(track(playing: false)), 0), (.hoverChanged(true), 2))
+    // A click pins the notch open, so only the pause's countdown could be due, and the pointer holds it.
+    var held = state((.playbackReported(track(playing: false)), 0), (.hover(display: "built-in", .click), 2), (.hover(display: "built-in", .click), 2))
+    #expect(held.hovering)
     #expect(held.deadline == nil)
     _ = reduce(&held, .tick, now: start + 60)
     #expect(held.showsPlayback)
-    _ = reduce(&held, .hoverChanged(false), now: start + 60)
+    _ = reduce(&held, .dismiss(except: nil), now: start + 60)
+    #expect(!held.hovering)
     #expect(held.deadline == start + 60 + IdleAfterPause.defaultDelay)
 }
 

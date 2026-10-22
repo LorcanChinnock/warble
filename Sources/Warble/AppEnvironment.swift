@@ -8,6 +8,8 @@ final class AppEnvironment {
     let settings: SettingsStore
     /// What the app has decided, which every notch draws.
     let store: Store
+    /// Carries out what the store asks for.
+    let runner: EffectRunner
     let updater: Updater
     let displays: Displays
     let loginItem: LoginItem
@@ -21,11 +23,18 @@ final class AppEnvironment {
         // Before anything reads a setting, so every read falls back to the registered default.
         Preferences.registerDefaults()
         settings = SettingsStore()
-        store = Store(state: AppState(stayVisibleAfterPausing: Preferences().stayVisibleAfterPausing), clock: SystemClock(), scheduler: TimerScheduler())
         updater = Updater()
         displays = Displays()
         loginItem = LoginItem()
         hotkeys = HotkeyCenter()
+        let preferences = Preferences()
+        store = Store(
+            state: AppState(stayVisibleAfterPausing: preferences.stayVisibleAfterPausing, idleHover: preferences.idleHover, showsTrackToast: preferences.trackChangeToast),
+            clock: SystemClock(), scheduler: TimerScheduler()
+        )
+        runner = EffectRunner(hotkeys: hotkeys)
+        store.perform = { [weak runner] in runner?.perform($0) }
+        runner.dispatch = { [weak store] in store?.dispatch($0) }
         navigation = SettingsNavigation()
         settingsWindow = SettingsWindow(navigation: navigation)
         toast = Toast(hotkeys: hotkeys, settings: settings)

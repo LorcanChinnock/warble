@@ -15,9 +15,24 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var idle: IdleAfterPause
     /// Whether the pointer is on a notch or a card is open, which holds off Idle.
     public internal(set) var hovering = false
+    /// One notch for each camera housing, real or virtual, by `NotchHousing.display`.
+    public internal(set) var surfaces: [String: Surface] = [:]
+    /// What a hover on the housing does while Idle.
+    public internal(set) var idleHover: IdleHover
+    /// Whether a Doctor check failed, which draws a resting notch with a "!" even when nothing is playing.
+    public internal(set) var needsAttention = false
+    /// The new track's title and artist, shown for a moment after a skip when Settings turns it on.
+    public internal(set) var toasts = ToastQueue<TrackToast>()
+    public internal(set) var showsTrackToast: Bool
+    /// What the effects last asked for, so each is asked for once per change.
+    public internal(set) var watchesClicks = false
+    public internal(set) var takesEscape = false
+    public internal(set) var followsVolume = false
 
-    public init(stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay) {
+    public init(stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed, showsTrackToast: Bool = false) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
+        self.idleHover = idleHover
+        self.showsTrackToast = showsTrackToast
     }
 
     /// Whether the notches draw what's playing: something is, and it isn't Idle.
@@ -26,6 +41,53 @@ public struct AppState: Equatable, Sendable {
     /// The earliest time something changes if nothing else happens, or `nil` when nothing is due, so `Store` runs one
     /// timer at most, and none while nothing plays.
     public var deadline: Date? {
-        [hideAt, idle.deadline].compactMap { $0 }.min()
+        ([hideAt, idle.deadline, toasts.deadline] + surfaces.values.map(\.hover.deadline)).compactMap { $0 }.min()
+    }
+
+    /// The state the notch over `display` draws.
+    public func notchState(_ display: String) -> NotchState? {
+        surfaces[display].map(notchState)
+    }
+
+    /// What the notch over `display` holds when Expanded.
+    public func card(_ display: String) -> NotchCard? {
+        surfaces[display].map(card)
+    }
+
+    func notchState(_ surface: Surface) -> NotchState {
+        NotchState(
+            surface.hover.state, isPlaying: showsPlayback, needsAttention: needsAttention, idleHover: idleHover,
+            isAlwaysShown: surface.isAlwaysShown, showsToast: toasts.current != nil
+        )
+    }
+
+    func card(_ surface: Surface) -> NotchCard {
+        NotchCard(isPlaying: showsPlayback && playback != nil, needsAttention: needsAttention, showsDoctor: surface.showsDoctor)
+    }
+
+    /// Without anything playing, a "!" or a card to open while Idle, a notch draws nothing, or only a blank notch, and
+    /// takes no hover or click.
+    func answersPointer(_ surface: Surface) -> Bool {
+        let state = notchState(surface)
+        return state != .hidden && !(state == .idle && idleHover == .nothing)
+    }
+
+    /// One display's notch.
+    public struct Surface: Equatable, Sendable {
+        /// Whether the housing is one Warble draws on a display without a notch.
+        public internal(set) var isVirtual: Bool
+        /// Whether a blank notch stays drawn over the housing while nothing is playing.
+        public internal(set) var isAlwaysShown: Bool
+        public internal(set) var hover = HoverIntent()
+        public internal(set) var pointerInside = false
+        /// Whether the open card shows the Doctor's checks rather than the player, until the notch closes.
+        public internal(set) var showsDoctor = false
+        /// Whether a menu from this notch is open, which takes Escape for itself.
+        public internal(set) var showsMenu = false
+
+        init(_ housing: NotchHousing) {
+            isVirtual = housing.isVirtual
+            isAlwaysShown = housing.isAlwaysShown
+        }
     }
 }

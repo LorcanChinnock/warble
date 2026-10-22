@@ -7,7 +7,7 @@ private let log = Logger.warble("hotkeys")
 
 @MainActor
 @Observable
-final class HotkeyCenter {
+final class HotkeyCenter: HotkeyRegistrar {
     @ObservationIgnored var onPress: ((WarbleAction) -> Void)?
     /// Called with the shortcuts macOS refused, as they read, so the user hears of it outside Settings.
     @ObservationIgnored var onUnavailable: ([String]) -> Void = { _ in }
