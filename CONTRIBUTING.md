@@ -36,7 +36,7 @@ Only `make dist` builds `Warble.app` with the update feed. Every other build is 
 | `make app` | Build and install without launching (`INSTALL_DIR=~/Applications make app` to install elsewhere) |
 | `make bundle` | Build and sign `build/WarbleDev.app` only |
 | `make dist` | Build a universal (Apple Silicon and Intel) `build/Warble.zip`, as the release workflow does |
-| `make icon` | Regenerate `Resources/AppIcon.icns` from `scripts/make-icon.swift`. Its bars come from `Sources/WarbleModel/IconBars.swift`, which the menu bar icon draws too |
+| `make icon` | Regenerate `Resources/AppIcon.icns` from `scripts/make-icon.swift`. Its bars come from `Sources/WarbleModel/Design/IconBars.swift`, which the menu bar icon draws too |
 | `make clean` | Remove build output |
 
 **Command Line Tools only:** the CLT's default SDK (27) makes SwiftUI's `@State` a macro whose compiler plugin ships only with Xcode. When Xcode isn't selected, the Makefile pins the newest 26.x SDK the CLT has and points the tests at the CLT's testing plugin, so use `make` rather than a bare `swift build`. With Xcode, nothing is pinned.
