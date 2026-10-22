@@ -1,6 +1,6 @@
 # Roadmap
 
-Each release has an issue, and each change in it is a sub-issue small enough for one pull request. The issues hold the detail; this page is the overview. Release numbers are targets, and work can move between them.
+Each release has an issue, and each change in it is a sub-issue small enough for one pull request. The issues hold the detail, including the state, actions, effects and tests each change adds to the store (CONTRIBUTING.md › Adding a feature); this page is the overview. Release numbers are targets, and work can move between them.
 
 ## [0.1 beta: the notch shows what's playing](https://github.com/LorcanChinnock/warble/issues/2)
 
@@ -20,7 +20,6 @@ The first public beta: what's playing in the notch, playback and volume controls
 - [#14](https://github.com/LorcanChinnock/warble/issues/14) feat(outputs): output device picker
 - [#15](https://github.com/LorcanChinnock/warble/issues/15) spike: following more than one player
 - [#16](https://github.com/LorcanChinnock/warble/issues/16) feat(model): source priority and ignore list
-- [#17](https://github.com/LorcanChinnock/warble/issues/17) feat(player): source chips
 - [#18](https://github.com/LorcanChinnock/warble/issues/18) feat(notch): album-art glow and fallback gradient
 - [#19](https://github.com/LorcanChinnock/warble/issues/19) feat(notch): Resting wings with album art and play-state bars
 - [#20](https://github.com/LorcanChinnock/warble/issues/20) feat(model): toast queue
@@ -28,7 +27,7 @@ The first public beta: what's playing in the notch, playback and volume controls
 - [#22](https://github.com/LorcanChinnock/warble/issues/22) feat(displays): virtual notch on external displays and Macs without a notch
 - [#23](https://github.com/LorcanChinnock/warble/issues/23) feat(doctor): explain why nothing is detected
 - [#24](https://github.com/LorcanChinnock/warble/issues/24) feat(app): notch right-click menu, menu bar icon setting, open at login
-- [#25](https://github.com/LorcanChinnock/warble/issues/25) feat(onboarding): welcome window and first-run notch demo
+- [#25](https://github.com/LorcanChinnock/warble/issues/25) feat(onboarding): welcome window
 - [#26](https://github.com/LorcanChinnock/warble/issues/26) feat(settings): Settings window with General, Notch and Players cards
 - [#27](https://github.com/LorcanChinnock/warble/issues/27) feat(accessibility): VoiceOver, keyboard control and Increase Contrast
 - [#28](https://github.com/LorcanChinnock/warble/issues/28) perf: set budgets for hover latency, idle CPU, memory and launch
@@ -46,20 +45,28 @@ The first public beta: what's playing in the notch, playback and volume controls
 - [#93](https://github.com/LorcanChinnock/warble/issues/93) feat(settings): Shortcuts section
 - [#114](https://github.com/LorcanChinnock/warble/issues/114) docs(site): a look of Warble's own, not Shot's
 - [#121](https://github.com/LorcanChinnock/warble/issues/121) refactor(app): one tested store, injected dependencies and feature folders
+- [#130](https://github.com/LorcanChinnock/warble/issues/130) feat(onboarding): first-run notch demo
+- [#135](https://github.com/LorcanChinnock/warble/issues/135) fix(shortcuts): the notch's Escape and a toast's ⌘Z can unregister each other
 
 ## [0.2: lyrics, gestures and podcasts](https://github.com/LorcanChinnock/warble/issues/33)
 
-Synced lyrics, gestures and podcast controls, each off until you turn it on.
+Synced lyrics, gestures, podcast controls and source chips, each off until you turn it on, plus the title in the middle of a virtual notch.
 
 - [#34](https://github.com/LorcanChinnock/warble/issues/34) feat(model): LRC parser and current-line lookup
+- [#129](https://github.com/LorcanChinnock/warble/issues/129) feat(lyrics): LRCLIB client and lyrics cache
 - [#35](https://github.com/LorcanChinnock/warble/issues/35) feat(lyrics): synced lyrics from LRCLIB
-- [#36](https://github.com/LorcanChinnock/warble/issues/36) feat(gestures): swipe to skip, force click for lyrics, drag the album art out
+- [#36](https://github.com/LorcanChinnock/warble/issues/36) feat(gestures): swipe over the notch to skip
+- [#131](https://github.com/LorcanChinnock/warble/issues/131) feat(gestures): force click for lyrics
+- [#132](https://github.com/LorcanChinnock/warble/issues/132) feat(gestures): drag the album art out
 - [#37](https://github.com/LorcanChinnock/warble/issues/37) feat(player): skip 15 seconds and change speed for podcasts
-- [#38](https://github.com/LorcanChinnock/warble/issues/38) feat(notch): toasts in full screen, and hiding during screen sharing
+- [#38](https://github.com/LorcanChinnock/warble/issues/38) feat(notch): show the track-change toast in full screen
+- [#133](https://github.com/LorcanChinnock/warble/issues/133) feat(notch): hide Warble while the screen is shared or recorded
+- [#17](https://github.com/LorcanChinnock/warble/issues/17) feat(player): source chips
+- [#113](https://github.com/LorcanChinnock/warble/issues/113) feat(notch): show the title in the middle of a virtual notch
 
 ## [0.3: for developers](https://github.com/LorcanChinnock/warble/issues/39)
 
-The `warble` command, `warble://` links, an MCP server for AI assistants, and Shortcuts actions.
+The `warble` command, `warble://` links, an MCP server for AI assistants, and Shortcuts actions. They share one table of commands, each of which does what the matching button in the notch does.
 
 - [#40](https://github.com/LorcanChinnock/warble/issues/40) feat(cli): the warble command
 - [#41](https://github.com/LorcanChinnock/warble/issues/41) feat(url): warble:// links
