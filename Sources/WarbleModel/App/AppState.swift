@@ -163,7 +163,13 @@ public struct AppState: Equatable, Sendable {
 
     /// Whether a sleep timer can run now: Settings has it on and something is playing, not about to be hidden.
     public var canSetSleepTimer: Bool {
-        showsSleepTimer && showsPlayback && hideAt == nil && playback?.isPlaying == true
+        hideAt == nil && keepsSleepTimer
+    }
+
+    /// Whether a running sleep timer stays: Settings has it on and something is playing. It outlasts the gap a source
+    /// leaves between tracks (`hideAt`), since the next track's report is what ends an End of track timer.
+    var keepsSleepTimer: Bool {
+        showsSleepTimer && showsPlayback && playback?.isPlaying == true
     }
 
     /// What dragging the art out of the player's card carries, or `nil` when it can't be dragged: Settings has it off,

@@ -227,7 +227,7 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
 /// plays, so a pause by hand, Idle, a source that stopped reporting or turning the setting off ends it.
 private func followSleepTimer(_ state: inout AppState, at now: Date) -> [AppEffect] {
     guard var timer = state.sleepTimer else { return [] }
-    guard state.canSetSleepTimer, let playback = state.playback else {
+    guard state.keepsSleepTimer, let playback = state.playback else {
         state.sleepTimer = nil
         return []
     }
@@ -236,7 +236,11 @@ private func followSleepTimer(_ state: inout AppState, at now: Date) -> [AppEffe
         return []
     }
     state.sleepTimer = nil
-    show(playback.playing(false, at: now), in: &state, at: now)
+    // In the gap between tracks the source has reported nothing, so the pause is sent but not shown, which would keep the
+    // track on screen after the hide.
+    if state.hideAt == nil {
+        show(playback.playing(false, at: now), in: &state, at: now)
+    }
     return [.send(.pause)]
 }
 

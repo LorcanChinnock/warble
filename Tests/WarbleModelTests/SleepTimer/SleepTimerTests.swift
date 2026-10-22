@@ -195,3 +195,32 @@ private func store(_ state: AppState) -> (Store, FakeClock, FakeScheduler) {
     #expect(!store.state.showsPlayback)
     #expect(scheduler.deadline == nil)
 }
+
+@Test func theGapBetweenTracksKeepsAFixedTimer() {
+    var state = playing(choosing: .thirtyMinutes)
+    _ = reduce(&state, .playbackReported(nil), now: start + 60)
+    #expect(state.sleepTimer?.deadline == start + 30 * 60)
+    _ = reduce(&state, .playbackReported(episode("Next")), now: start + 61)
+    #expect(state.sleepTimer?.deadline == start + 30 * 60)
+}
+
+@Test func aNewTrackAfterTheGapPausesAnEndOfTrackTimer() {
+    var state = playing(episode(duration: 600, elapsed: 100), choosing: .endOfTrack)
+    #expect(reduce(&state, .playbackReported(nil), now: start + 499).isEmpty)
+    #expect(state.sleepTimer != nil)
+    let next = PlaybackState(bundleIdentifier: "com.apple.podcasts", title: "Next", duration: 900, elapsedTimestamp: start + 500, rate: 1)
+    let effects = reduce(&state, .playbackReported(next), now: start + 500)
+    #expect(effects.contains(.send(.pause)))
+    #expect(state.playback?.isPlaying == false)
+    #expect(state.sleepTimer == nil)
+}
+
+@Test func aTimerDueInTheGapPausesWithoutKeepingTheTrackOnScreen() {
+    var state = playing(choosing: .fifteenMinutes)
+    _ = reduce(&state, .playbackReported(nil), now: start + 15 * 60 - 1)
+    let effects = reduce(&state, .tick, now: start + 15 * 60)
+    #expect(effects == [.send(.pause)])
+    #expect(state.sleepTimer == nil)
+    _ = reduce(&state, .tick, now: start + 15 * 60 - 1 + AppState.hideDelay)
+    #expect(state.playback == nil)
+}
