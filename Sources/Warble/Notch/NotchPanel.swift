@@ -19,7 +19,7 @@ final class NotchPanel: NSPanel {
     private var trackingArea: NSTrackingArea?
 
     @MainActor
-    init(model: NotchModel) {
+    init(model: NotchModel, settings: SettingsStore) {
         super.init(contentRect: .zero, styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: true)
         // Above the menu bar and its status items, which the wings partly cover, as Shot's recording pill sits. Higher
         // levels, such as boring.notch's .mainMenu + 3, would also cover pop-up menus that open under the menu bar.
@@ -35,7 +35,7 @@ final class NotchPanel: NSPanel {
         // an Idle virtual notch, drawn clear, still reports a hover.
         ignoresMouseEvents = false
         // Built once, so a change of state animates instead of replacing the view.
-        contentView = NSView(hosting: NotchView(model: model))
+        contentView = NSView(hosting: NotchView(model: model), settings: settings)
     }
 
     /// Fills `frame`, the larger of the shapes on screen. A window covers whole points, so over a notch with a half-point

@@ -34,7 +34,10 @@ final class DoctorModel {
     @ObservationIgnored private var refreshes = 0
     @ObservationIgnored private var observers: [NSObjectProtocol] = []
 
-    init() {
+    @ObservationIgnored private let updater: Updater
+
+    init(updater: Updater) {
+        self.updater = updater
         checks = Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
     }
 
@@ -72,7 +75,7 @@ final class DoctorModel {
         case .openAgain:
             Updater.relaunch()
         case .checkForUpdates:
-            Updater.shared.checkForUpdates()
+            updater.checkForUpdates()
         case .openAutomationSettings:
             NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Automation")!)
         case .openPlayer(let player):

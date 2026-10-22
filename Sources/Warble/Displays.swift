@@ -6,13 +6,11 @@ import WarbleCore
 @MainActor
 @Observable
 final class Displays {
-    static let shared = Displays()
-
     private(set) var all: [NotchDisplay] = []
     private(set) var names: [String: String] = [:]
     @ObservationIgnored private var observer: NSObjectProtocol?
 
-    private init() {
+    init() {
         read()
         observer = NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.read() }

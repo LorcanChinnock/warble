@@ -39,13 +39,12 @@ enum SettingsSection: String, CaseIterable, Identifiable {
 @MainActor
 @Observable
 final class SettingsNavigation {
-    static let shared = SettingsNavigation()
     var section: SettingsSection = .general
 }
 
 /// A sidebar of sections beside the chosen one, in standard controls that follow the system appearance.
 struct SettingsView: View {
-    @Bindable private var navigation = SettingsNavigation.shared
+    @Environment(SettingsNavigation.self) private var navigation
 
     var body: some View {
         HStack(spacing: 0) {
@@ -102,8 +101,8 @@ private struct GeneralSettings: View {
     @Setting(PreferenceKey.showMenuBarIcon) private var showMenuBarIcon: Bool
     @Setting(PreferenceKey.textSize) private var textSize: TextSize
     @Setting(PreferenceKey.stayVisibleAfterPausing) private var stayVisible: Double
-    private let displays = Displays.shared
-    private let loginItem = LoginItem.shared
+    @Environment(Displays.self) private var displays
+    @Environment(LoginItem.self) private var loginItem
 
     var body: some View {
         SectionPage(section: .general) {
@@ -208,7 +207,7 @@ private struct NotchSettings: View {
 }
 
 private struct ShortcutsSettings: View {
-    @State private var recorder = ShortcutRecorder()
+    @Environment(ShortcutRecorder.self) private var recorder
 
     var body: some View {
         SectionPage(section: .shortcuts) {
@@ -225,12 +224,12 @@ private struct ShortcutsSettings: View {
             }
         }
         // Switching pages or closing the window stops a recording, so no key stays caught.
-        .onDisappear { recorder.stop() }
+        .onDisappear { recorder.reset() }
     }
 }
 
 private struct AboutSettings: View {
-    private let updater = Updater.shared
+    @Environment(Updater.self) private var updater
     private static let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
     private static let guide = URL(string: "https://warble.lorcanchinnock.com/docs/")!
 

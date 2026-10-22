@@ -8,9 +8,9 @@ private let log = Logger.warble("hotkeys")
 @MainActor
 @Observable
 final class HotkeyCenter {
-    static let shared = HotkeyCenter()
-
     @ObservationIgnored var onPress: ((WarbleAction) -> Void)?
+    /// Called with the shortcuts macOS refused, as they read, so the user hears of it outside Settings.
+    @ObservationIgnored var onUnavailable: ([String]) -> Void = { _ in }
     /// The actions whose shortcut macOS refused, usually because another app has it. Settings says so under each.
     private(set) var unavailable: Set<WarbleAction> = []
     @ObservationIgnored private var refs: [EventHotKeyRef] = []
@@ -22,6 +22,12 @@ final class HotkeyCenter {
     @ObservationIgnored private var temporaryRef: EventHotKeyRef?
     @ObservationIgnored private var onTemporaryPress: (() -> Void)?
     private static let temporaryID = UInt32.max
+    /// The one Carbon's handler reaches, since a C callback can't capture it.
+    private static weak var current: HotkeyCenter?
+
+    init() {
+        Self.current = self
+    }
 
     /// Registers the shortcuts in Settings, and again whenever one changes, so a change works without a relaunch.
     func start() {
@@ -30,9 +36,9 @@ final class HotkeyCenter {
             return
         }
         // Any write to Warble's defaults; reloading registers again only when a shortcut changed.
-        defaultsObserver = NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: UserDefaults.standard, queue: .main) { _ in
+        defaultsObserver = NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: UserDefaults.standard, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated {
-                HotkeyCenter.shared.reloadFromPreferences()
+                self?.reloadFromPreferences()
             }
         }
     }
@@ -110,10 +116,8 @@ final class HotkeyCenter {
         if self.unavailable != unavailable {
             self.unavailable = unavailable
         }
-        // Settings › Shortcuts says so under the shortcut, so the toast is for when it isn't showing.
-        if !failed.isEmpty, !SettingsWindow.isShowing(.shortcuts) {
-            // Usually another app owns the shortcut, or two Warble actions share it.
-            Toast.error("Shortcut unavailable: \(failed.sorted().joined(separator: ", ")). Another app may use it, so choose a different one in Settings › Shortcuts.")
+        if !failed.isEmpty {
+            onUnavailable(failed)
         }
         log.notice("Registered \(self.refs.count) hotkeys")
     }
@@ -139,9 +143,9 @@ final class HotkeyCenter {
             // Carbon dispatches hotkey events on the main thread.
             MainActor.assumeIsolated {
                 if id.id == HotkeyCenter.temporaryID {
-                    HotkeyCenter.shared.onTemporaryPress?()
+                    HotkeyCenter.current?.onTemporaryPress?()
                 } else if WarbleAction.allCases.indices.contains(index) {
-                    HotkeyCenter.shared.onPress?(WarbleAction.allCases[index])
+                    HotkeyCenter.current?.onPress?(WarbleAction.allCases[index])
                 }
             }
             return noErr
