@@ -33,6 +33,11 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
             }
         }
         effects.append(.send(command))
+    case .skip(let seconds):
+        // A seek from where it is now, kept within the track, so it shows at once like any seek. With nothing shown, or
+        // a hide pending, there's no position to skip from, so it sends nothing.
+        guard state.showsPlayback, state.hideAt == nil, let playback = state.playback else { break }
+        return reduce(&state, .command(.seek(to: playback.position(skipping: seconds, at: now))), now: now)
     case .openApp:
         if let bundleIdentifier = state.playback?.bundleIdentifier ?? state.lastPlayed?.bundleIdentifier {
             effects.append(.openApp(bundleIdentifier: bundleIdentifier))

@@ -18,7 +18,7 @@ You can also open it from the keyboard and control it with the arrow keys. See [
 ## Play, pause and skip
 
 - Click the play or pause button in the middle.
-- Click the buttons either side of it to go back or skip to the next song.
+- Click the buttons either side of it to go back or skip to the next song. In a podcast or an audiobook they go back 15 seconds and forward 30 instead. See [Listen to podcasts](/docs/listen-to-podcasts/).
 - If the app has shuffle or repeat, their buttons appear at the left and right ends. Click repeat once to repeat everything, and again to repeat just the one song.
 
 The keyboard's play/pause, next and previous keys work as they always have. To use other keys, add your own in [Settings](/docs/settings/#shortcuts).

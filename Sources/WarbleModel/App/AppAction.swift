@@ -21,6 +21,8 @@ public enum AppAction: Equatable, Sendable {
     case dismiss(except: String?)
     /// A command from a notch button or a key in an open notch, which shows what it will do at once.
     case command(PlaybackCommand)
+    /// Back or forward through a podcast or audiobook by `by` seconds from where it is, from the player's card.
+    case skip(by: TimeInterval)
     /// One of Warble's actions, from a global shortcut, and later the command line, links and Shortcuts.
     case perform(WarbleAction)
     /// Bring the app that's playing to the front, or while Idle the one that played last.

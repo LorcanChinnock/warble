@@ -3,21 +3,34 @@ import Carbon.HIToolbox
 import SwiftUI
 import WarbleCore
 
-/// Previous, play or pause, and next in the middle, with shuffle and repeat either side when the app reports them.
+/// Previous, play or pause, and next in the middle, with shuffle and repeat either side when the app reports them. A
+/// podcast or audiobook (`skipsBySeconds`) has back 15 and forward 30 seconds where a song has previous and next.
 struct PlaybackControls: View {
     let playback: PlaybackState
+    let skipsBySeconds: Bool
     let send: (PlaybackCommand) -> Void
+    let skip: (TimeInterval) -> Void
 
     var body: some View {
         // Shuffle and repeat sit at the edges, over the middle three, so those stay centred whichever shows.
         ZStack {
             HStack(spacing: 12) {
-                control("backward.fill", size: 16) { send(.previousTrack) }
-                    .accessibilityLabel("Previous track")
+                if skipsBySeconds {
+                    control("gobackward.15", size: 17) { skip(-SpokenWord.back) }
+                        .accessibilityLabel("Back 15 seconds")
+                } else {
+                    control("backward.fill", size: 16) { send(.previousTrack) }
+                        .accessibilityLabel("Previous track")
+                }
                 control(playback.isPlaying ? "pause.fill" : "play.fill", size: 22) { send(.togglePlayPause) }
                     .accessibilityLabel(playback.isPlaying ? "Pause" : "Play")
-                control("forward.fill", size: 16) { send(.nextTrack) }
-                    .accessibilityLabel("Next track")
+                if skipsBySeconds {
+                    control("goforward.30", size: 17) { skip(SpokenWord.forward) }
+                        .accessibilityLabel("Forward 30 seconds")
+                } else {
+                    control("forward.fill", size: 16) { send(.nextTrack) }
+                        .accessibilityLabel("Next track")
+                }
             }
             HStack(spacing: 0) {
                 if let shuffle = playback.shuffle {

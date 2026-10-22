@@ -112,6 +112,7 @@ enum Key {
     static let artworkData = "artworkData"
     static let shuffleMode = "shuffleMode"
     static let repeatMode = "repeatMode"
+    static let mediaType = "mediaType"
 }
 
 extension PlaybackState {
@@ -141,8 +142,26 @@ extension PlaybackState {
             rate: playing ? (rate > 0 ? rate : 1) : 0,
             artwork: artwork,
             shuffle: payload[Key.shuffleMode]?.number.flatMap(ShuffleMode.init(adapterValue:)),
-            repeatMode: payload[Key.repeatMode]?.number.flatMap(RepeatMode.init(adapterValue:))
+            repeatMode: payload[Key.repeatMode]?.number.flatMap(RepeatMode.init(adapterValue:)),
+            mediaType: payload[Key.mediaType]?.string.map(MediaType.init(adapterValue:))
         )
+    }
+}
+
+extension MediaType {
+    /// MediaRemote's name for it, such as `MRMediaRemoteMediaTypePodcast`. The adapter passes on whatever the app set,
+    /// which isn't documented, so only the end of the name counts.
+    init(adapterValue: String) {
+        let name = adapterValue.lowercased()
+        self = if name.hasSuffix("podcast") {
+            .podcast
+        } else if name.hasSuffix("audiobook") {
+            .audiobook
+        } else if name.hasSuffix("music") {
+            .music
+        } else {
+            .other
+        }
     }
 }
 
