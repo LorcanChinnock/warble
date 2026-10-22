@@ -51,6 +51,9 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var podcastSkips: Bool
     /// Whether the art can be dragged out of the player's card, which Settings turns on.
     public internal(set) var dragArtOut: Bool
+    /// Whether every notch is left out of screen sharing, recordings and screenshots, which Settings turns on. The
+    /// window server does it, so nothing here watches for a capture and the notch draws the same either way.
+    public internal(set) var hidesFromCapture: Bool
     /// What the effects last asked for, so each is asked for once per change.
     public internal(set) var watchesClicks = false
     public internal(set) var takesEscape = false
@@ -60,7 +63,7 @@ public struct AppState: Equatable, Sendable {
     public init(
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
         showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, podcastSkips: Bool = false,
-        dragArtOut: Bool = false,
+        dragArtOut: Bool = false, hidesFromCapture: Bool = false,
         checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
@@ -71,6 +74,7 @@ public struct AppState: Equatable, Sendable {
         self.swipeToSkip = swipeToSkip
         self.podcastSkips = podcastSkips
         self.dragArtOut = dragArtOut
+        self.hidesFromCapture = hidesFromCapture
         lyrics = LyricsState(isOn: showsLyrics)
     }
 

@@ -79,6 +79,12 @@ final class NotchSurface {
         model.showsDoctor = surface.showsDoctor
         // A toast over a full-screen app lets clicks through to the app, since it takes no hover or click.
         panel.ignoresMouseEvents = surface.isFullScreen
+        // The window server leaves the panel out of every capture, ScreenCaptureKit's included, and still draws it. Set
+        // only on a change, since this runs on every dispatch, hovers included.
+        let sharing: NSWindow.SharingType = app.hidesFromCapture ? .none : .readOnly
+        if panel.sharingType != sharing {
+            panel.sharingType = sharing
+        }
     }
 
     /// Opens the notch with the keyboard in it, so VoiceOver and Keyboard navigation start there, or closes it. It

@@ -23,6 +23,8 @@ public enum PreferenceKey {
     public static let podcastSkips = "podcastSkips"
     /// Whether the art in the player's card can be dragged into another app, as the image and the track's link.
     public static let dragArtOut = "dragArtOut"
+    /// Whether the notch is left out of screen sharing, recordings and screenshots, while you still see it.
+    public static let hideFromCapture = "hideFromCapture"
 
     public static func hotkey(_ action: WarbleAction) -> String { "hotkey.\(action.rawValue)" }
 }
@@ -42,6 +44,7 @@ public struct Preferences {
             PreferenceKey.swipeToSkip: false,
             PreferenceKey.podcastSkips: false,
             PreferenceKey.dragArtOut: false,
+            PreferenceKey.hideFromCapture: false,
         ]
         for action in WarbleAction.allCases {
             values[PreferenceKey.hotkey(action)] = action.defaultCombo?.encoded ?? ""
@@ -119,6 +122,10 @@ public struct Preferences {
 
     public var dragArtOut: Bool {
         store.bool(forKey: PreferenceKey.dragArtOut)
+    }
+
+    public var hideFromCapture: Bool {
+        store.bool(forKey: PreferenceKey.hideFromCapture)
     }
 
     /// `nil` means the user cleared the shortcut.

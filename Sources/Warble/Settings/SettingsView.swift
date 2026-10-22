@@ -181,6 +181,7 @@ private struct NotchSettings: View {
     @Setting(PreferenceKey.swipeToSkip) private var swipeToSkip: Bool
     @Setting(PreferenceKey.dragArtOut) private var dragArtOut: Bool
     @Setting(PreferenceKey.podcastSkips) private var podcastSkips: Bool
+    @Setting(PreferenceKey.hideFromCapture) private var hideFromCapture: Bool
 
     var body: some View {
         SectionPage(section: .notch) {
@@ -265,6 +266,20 @@ private struct NotchSettings: View {
                 .accessibilityHint(Text("Go back 15 seconds or forward 30 in a podcast or audiobook."))
             } footer: {
                 Text("These buttons take the place of previous and next. Songs keep previous and next either way.")
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            Section {
+                Toggle(isOn: $hideFromCapture) {
+                    Text("Hide from screen sharing and recordings")
+                    Text("You still see the notch. People watching your screen don't.")
+                }
+                .accessibilityLabel(Text("Hide from screen sharing and recordings"))
+                .accessibilityHint(Text("You still see the notch. People watching your screen don't."))
+            } footer: {
+                Text("This covers sharing your screen in a call, screen recordings and screenshots.")
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, 10)

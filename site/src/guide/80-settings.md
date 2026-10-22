@@ -32,6 +32,7 @@ Every change takes effect straight away.
 - **Swipe over the notch to skip.** Off at first. Turn it on, and swiping left over the notch with two fingers skips to the next song, and swiping right goes back. It needs a trackpad, or a Magic Mouse. Scrolling up and down still changes the volume. See [Use gestures](/docs/use-gestures/).
 - **Skip by seconds in podcasts.** Off at first. Turn it on, and a podcast or an audiobook has back 15 seconds and forward 30 in place of previous and next. Songs keep previous and next. See [Listen to podcasts](/docs/listen-to-podcasts/).
 - **Drag the album art out of the player.** Off at first. Turn it on, and you can drag the art from the open player into another app: a folder gets the picture as a file, and a message or a note gets the picture. A click on the art still opens the app. See [Use gestures](/docs/use-gestures/#drag-the-album-art-out).
+- **Hide from screen sharing and recordings.** Off at first. Turn it on, and Warble stays out of what others see when you share your screen in a call, and out of your screen recordings and screenshots. You still see the notch and can use it as usual.
 
 > [!NOTE]
 > Warble's animations follow **Reduce motion** in System Settings › Accessibility › Display.
