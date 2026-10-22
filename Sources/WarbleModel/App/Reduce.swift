@@ -165,6 +165,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.podcastSkips = on
     case .dragArtOutChanged(let on):
         state.dragArtOut = on
+    case .hidesFromCaptureChanged(let on):
+        state.hidesFromCapture = on
     case .lyricsLoaded(let lyrics, let pass):
         state.lyrics.loaded(lyrics, pass: pass)
     case .tick:

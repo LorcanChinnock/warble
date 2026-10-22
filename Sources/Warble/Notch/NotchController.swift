@@ -61,6 +61,9 @@ final class NotchController {
                 if preferences.dragArtOut != state.dragArtOut {
                     self.store.dispatch(.dragArtOutChanged(preferences.dragArtOut))
                 }
+                if preferences.hideFromCapture != state.hidesFromCapture {
+                    self.store.dispatch(.hidesFromCaptureChanged(preferences.hideFromCapture))
+                }
                 if preferences.virtualNotchRules != self.rules {
                     self.layOut()
                 }

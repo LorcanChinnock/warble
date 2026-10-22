@@ -126,6 +126,9 @@
     "Help and user guide" : {
 
     },
+    "Hide from screen sharing and recordings" : {
+
+    },
     "Hide the \"!\" until Warble opens again" : {
 
     },
@@ -400,6 +403,9 @@
     "These buttons take the place of previous and next. Songs keep previous and next either way." : {
 
     },
+    "This covers sharing your screen in a call, screen recordings and screenshots." : {
+
+    },
     "This kept stopping, so Warble only follows Music and Spotify until you open it again." : {
 
     },
@@ -452,6 +458,9 @@
 
     },
     "Works with any app that plays." : {
+
+    },
+    "You still see the notch. People watching your screen don't." : {
 
     },
     "macOS" : {
