@@ -94,7 +94,7 @@ Everything the app decides goes through one store. `AppState` holds it, `AppActi
 6. **Views.** Views draw state and dispatch actions; they decide nothing. A view gets Warble's objects from the SwiftUI environment, never from a shared instance, and `AppEnvironment` builds them once.
 7. **Tests.** Test the feature through `reduce` and, for its effects, `EffectRunner` with fakes. Both run on Linux. Check what it does with nothing playing too.
 
-Nothing may sit between a hover or a click and the panel or the command: dispatch is synchronous, with no `Task` hop, Combine or async/await on that path.
+Nothing may sit between a hover or a click and the panel: dispatch is synchronous, with no `Task` hop, Combine or async/await on that path. A command's guess shows at once; the command itself goes to the player afterwards as an effect.
 
 ## Strings and translations
 
