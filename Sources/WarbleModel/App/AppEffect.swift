@@ -11,6 +11,8 @@ public enum AppEffect: Equatable, Sendable {
     case followVolume(Bool)
     /// Send a command to the app that's playing.
     case send(PlaybackCommand)
+    /// Open the notch the pointer is on with the keyboard in it, or close it again.
+    case toggleKeyboard
     case openApp(bundleIdentifier: String)
     case setVolume(Double)
     /// A light tick on a Force Touch trackpad.

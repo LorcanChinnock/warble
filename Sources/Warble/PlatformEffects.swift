@@ -5,6 +5,8 @@ import WarbleCore
 @MainActor
 final class PlatformEffects {
     private let dispatch: (AppAction) -> Void
+    /// Opens or closes the notch with the keyboard. The notch sets it, since it knows which notch the pointer is on.
+    var toggleKeyboard: () -> Void = {}
     private var clickMonitor: Any?
     private var playerObservers: [NSObjectProtocol] = []
 
@@ -29,6 +31,8 @@ final class PlatformEffects {
             }
         case .followPlayers(let follow):
             followPlayers(follow)
+        case .toggleKeyboard:
+            toggleKeyboard()
         default:
             break
         }

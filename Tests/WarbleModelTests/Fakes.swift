@@ -149,3 +149,13 @@ final class FakeLastPlayed: LastPlayedStore, @unchecked Sendable {
 func makeRunner(hotkeys: FakeHotkeys = FakeHotkeys(), volume: FakeVolume = FakeVolume(), outputs: FakeOutputs = FakeOutputs(), lastPlayed: FakeLastPlayed = FakeLastPlayed()) -> EffectRunner {
     EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed)
 }
+
+/// A player that records the commands it's sent.
+actor FakeSource: NowPlayingSource {
+    nonisolated let states = AsyncStream<PlaybackState?> { _ in }
+    private(set) var sent: [PlaybackCommand] = []
+
+    func send(_ command: PlaybackCommand) async {
+        sent.append(command)
+    }
+}

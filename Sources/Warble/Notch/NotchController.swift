@@ -14,7 +14,7 @@ final class NotchController {
 
     private let environment: AppEnvironment
     private var store: Store { environment.store }
-    private let player = PlayerModel()
+    private let player: PlayerModel
     private var doctor: DoctorModel { environment.doctor }
     private var volume: SystemVolume { environment.volume }
     /// One for each housing, by `NotchDisplay.id`.
@@ -26,12 +26,10 @@ final class NotchController {
 
     init(environment: AppEnvironment) {
         self.environment = environment
+        let store = environment.store
+        player = PlayerModel { [weak store] in store?.dispatch($0) }
         store.onChange = { [weak self] old, new, action in self?.stateChanged(from: old, to: new, by: action) }
-        let store = store
-        player.onCommand = { [weak self] in self?.perform($0) }
-        player.onOpenApp = { [weak store] in store?.dispatch(.openApp) }
-        player.onVolume = { [weak store] in store?.dispatch(.setVolume($0)) }
-        player.onSelectOutput = { [weak store] in store?.dispatch(.selectOutput($0)) }
+        environment.platform.toggleKeyboard = { [weak self] in self?.toggleKeyboard() }
         environment.displays.onChange = { [weak self] in self?.layOut() }
         // Any write to Warble's defaults; only a change of rule lays the notches out again.
         observers.append(NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: UserDefaults.standard, queue: .main) { [weak self] _ in
@@ -114,6 +112,12 @@ final class NotchController {
             log.notice("Adapter is \(String(describing: new.doctor.adapter), privacy: .public)")
         }
         doctor.apply(new.doctor)
+        if isPlayPause(action), old.hideAt == nil, old.playback != nil {
+            // Timed from the click or key to the first frame that shows the new state. The click's own window is the
+            // notch it was on; a shortcut has none.
+            let input = Perf.input
+            Perf.untilNextFrame("Play/pause", on: NSApp.currentEvent?.window?.screen ?? NSScreen.main, cause: input?.cause ?? "shortcut", since: input?.timestamp)
+        }
         if new.showsPlayback != old.showsPlayback {
             log.notice("Playback \(new.showsPlayback ? "shown" : "idle", privacy: .public)")
         }
@@ -136,9 +140,16 @@ final class NotchController {
         }
     }
 
+    private func isPlayPause(_ action: AppAction) -> Bool {
+        switch action {
+        case .command(.togglePlayPause), .command(.play), .command(.pause), .perform(.playPause): true
+        default: false
+        }
+    }
+
     /// Opens the notch on the display the pointer is on, or else the built-in one, with the keyboard in it, or closes it
     /// again. Any other notch that's open closes, as for a click.
-    func toggleKeyboard() {
+    private func toggleKeyboard() {
         let pointer = NSEvent.mouseLocation
         let screen = NSScreen.screens.first { NSMouseInRect(pointer, $0.frame, false) }
         let onScreen = surfaces.values.first { surface in screen.map { $0.frame.intersects(surface.housing) } ?? false }
@@ -154,10 +165,10 @@ final class NotchController {
         guard let key = NotchKey(keyCode: combo.keyCode, modifiers: combo.modifiers) else { return false }
         switch key {
         case .command(let command):
-            perform(command)
+            store.dispatch(.command(command))
         case .seek(let delta):
             if let playback, let position = NotchKey.position(seeking: delta, in: playback, at: .now) {
-                perform(.seek(to: position))
+                store.dispatch(.command(.seek(to: position)))
             }
         case .volume(let delta):
             store.dispatch(.volumeKey(delta: delta, volume: volume.volume, isMuted: volume.isMuted))
@@ -165,17 +176,6 @@ final class NotchController {
             store.dispatch(.dismiss(except: nil))
         }
         return true
-    }
-
-    /// Sends a command, which shows what it will do at once, and times play/pause to the first frame that shows it.
-    func perform(_ command: PlaybackCommand) {
-        let guesses = store.state.hideAt == nil && store.state.playback != nil
-        store.dispatch(.command(command))
-        if guesses, command == .togglePlayPause || command == .play || command == .pause {
-            // The click's own window is the notch it was on; a shortcut has none.
-            let input = Perf.input
-            Perf.untilNextFrame("Play/pause", on: NSApp.currentEvent?.window?.screen ?? NSScreen.main, cause: input?.cause ?? "shortcut", since: input?.timestamp)
-        }
     }
 
     /// Scrolling over a notch changes the volume, from the volume now, since the card with the slider may not be open.

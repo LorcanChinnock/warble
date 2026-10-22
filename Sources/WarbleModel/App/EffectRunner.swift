@@ -12,8 +12,8 @@ public final class EffectRunner {
     public var platform: (AppEffect) -> Void = { _ in }
     /// Where an answer goes back in as an action. The store sets it once both exist.
     public var dispatch: (AppAction) -> Void = { _ in }
-    /// Sends a command to the app that's playing.
-    public var send: (PlaybackCommand) -> Void = { _ in }
+    /// The app that's playing reports through it and takes commands, or `nil` before one starts.
+    public var source: (any NowPlayingSource)?
     /// The name of the app with a bundle identifier, for the idle card's VoiceOver label.
     public var appName: (String) -> String? = { _ in nil }
     /// Logs a failure, such as a save that didn't work.
@@ -54,7 +54,8 @@ public final class EffectRunner {
             outputs.select(id)
             readOutputs()
         case .send(let command):
-            send(command)
+            guard let source else { return }
+            Task { await source.send(command) }
         case .remember(let state, let pass):
             let store = lastPlayed
             let appName = appName(state.bundleIdentifier)
@@ -73,7 +74,7 @@ public final class EffectRunner {
                     logError("Couldn't save the last track played: \(error.localizedDescription)")
                 }
             }
-        case .watchClicksOutside, .openApp, .haptic, .gatherFacts, .followPlayers:
+        case .watchClicksOutside, .openApp, .haptic, .gatherFacts, .followPlayers, .toggleKeyboard:
             platform(effect)
         }
     }
