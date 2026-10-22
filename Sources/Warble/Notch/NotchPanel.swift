@@ -28,9 +28,9 @@ final class NotchPanel: NSPanel {
         backgroundColor = .clear
         hasShadow = false
         isReleasedWhenClosed = false
-        // Every Space, fixed in place while Spaces switch, and out of ⌘` cycling. No .fullScreenAuxiliary, so it stays
-        // off a full-screen app's Space, where the menu bar and notch area belong to that app.
-        collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
+        // Every Space, fixed in place while Spaces switch, and out of ⌘` cycling. A panel like this one joins a full-screen
+        // app's Space whatever it asks for, so it joins them all alike, and the store hides the notch over a full-screen app.
+        collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle, .fullScreenAuxiliary]
         // Set rather than left to its default, under which a window lets the pointer through where it draws nothing, so
         // an Idle virtual notch, drawn clear, still reports a hover.
         ignoresMouseEvents = false

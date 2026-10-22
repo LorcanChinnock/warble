@@ -7,6 +7,8 @@ public enum AppAction: Equatable, Sendable {
     case playbackReported(PlaybackState?)
     /// The housings the displays and their rules call for now.
     case housingsChanged([NotchHousing])
+    /// The displays that show a full-screen app now, by `NotchDisplay.id`.
+    case fullScreenChanged(Set<String>)
     /// The pointer entered or left the area of `display`'s notch that keeps it open.
     case pointer(display: String, inside: Bool)
     /// Something the user did to `display`'s notch. A click or the keyboard shortcut also closes any other notch.
