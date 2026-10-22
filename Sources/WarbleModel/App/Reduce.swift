@@ -117,8 +117,9 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
                 state.surfaces[display]?.showsDoctor = false
             }
         }
-        // The open card shows the track, so a toast has nothing left to say, even once the notch closes again.
-        if isOpen(state) {
+        // The open card shows the track, so a toast has nothing left to say, even once the notch closes again. Nor has one
+        // for a track no longer shown, which would come back if the same track reported again before its deadline.
+        if isOpen(state) || !state.showsPlayback {
             dismissToast(in: &state, at: now)
         }
         let hovering = state.surfaces.values.contains { state.notchState($0) == .expanded || $0.pointerInside }
