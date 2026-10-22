@@ -18,6 +18,13 @@ struct ExpandedContent: View {
                 }
                 .buttonStyle(.notch)
                 .accessibilityLabel(model.player.appName.map { Text("Open \($0)") } ?? Text("Open the app that's playing"))
+                .overlay {
+                    // With Settings on, a click still opens the app, and a drag takes the art into another app.
+                    if let drag = model.artDrag {
+                        ArtDragArea(drag: drag, image: artwork, onClick: model.player.openApp, onDragging: model.onDragArt)
+                            .accessibilityHidden(true)
+                    }
+                }
                 VStack(alignment: .leading, spacing: 2) {
                     Text(playback.title)
                         .font(.system(size: 15, weight: .semibold))

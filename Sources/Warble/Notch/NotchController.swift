@@ -52,6 +52,9 @@ final class NotchController {
                 if preferences.swipeToSkip != state.swipeToSkip {
                     self.store.dispatch(.swipeToSkipChanged(preferences.swipeToSkip))
                 }
+                if preferences.dragArtOut != state.dragArtOut {
+                    self.store.dispatch(.dragArtOutChanged(preferences.dragArtOut))
+                }
                 if preferences.virtualNotchRules != self.rules {
                     self.layOut()
                 }

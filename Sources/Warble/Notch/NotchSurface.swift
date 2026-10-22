@@ -58,6 +58,7 @@ final class NotchSurface {
         model.onMenu = { [weak self] open in self?.menu(open: open) }
         model.onShowDoctor = { show in dispatch(.showDoctor(display: display, show)) }
         model.onShowLyrics = { show in dispatch(.showLyrics(display: display, show)) }
+        model.onDragArt = { [weak self] dragging in self?.dragArt(dragging) }
         panel.onKey = { [weak self] event in self?.onKey(event) ?? false }
     }
 
@@ -71,6 +72,7 @@ final class NotchSurface {
         lyric = app.lyrics.line?.text
         lyrics = app.lyrics.excerpt
         model.hasLyrics = app.hasLyricsCard
+        model.artDrag = app.artDrag
         model.isVirtual = surface.isVirtual
         model.isAlwaysShown = surface.isAlwaysShown
         model.showsDoctor = surface.showsDoctor
@@ -142,6 +144,15 @@ final class NotchSurface {
         if !open {
             panel.recheckPointer()
         }
+    }
+
+    /// Keeps the card open while the art is dragged out of it. The drag ends wherever it drops, and AppKit may not have
+    /// reported the pointer leaving meanwhile, so once it ends the panel checks where the pointer is.
+    private func dragArt(_ dragging: Bool) {
+        if !dragging {
+            panel.recheckPointer()
+        }
+        dispatch(.hover(display: display, .dragging(dragging)))
     }
 
     /// Opens the right-click menu at the pointer, in any state, without opening or closing this notch. Any other notch

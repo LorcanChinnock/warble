@@ -178,6 +178,7 @@ private struct NotchSettings: View {
     @Setting(PreferenceKey.trackChangeToast) private var trackChangeToast: Bool
     @Setting(PreferenceKey.lyrics) private var lyrics: Bool
     @Setting(PreferenceKey.swipeToSkip) private var swipeToSkip: Bool
+    @Setting(PreferenceKey.dragArtOut) private var dragArtOut: Bool
 
     var body: some View {
         SectionPage(section: .notch) {
@@ -227,6 +228,20 @@ private struct NotchSettings: View {
                 .accessibilityHint(Text("Swipe left with two fingers for the next song, or right to go back."))
             } footer: {
                 Text("Needs a trackpad, or a Magic Mouse, where you swipe with one finger. Scrolling up and down over the notch still changes the volume.")
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            Section {
+                Toggle(isOn: $dragArtOut) {
+                    Text("Drag the album art out of the player")
+                    Text("Drag the art into another app to share the song.")
+                }
+                .accessibilityLabel(Text("Drag the album art out of the player"))
+                .accessibilityHint(Text("Drag the art into another app to share the song."))
+            } footer: {
+                Text("Drop it in a message, a note or a folder. It brings the picture, and a link to the song when the app playing gives one. A click on the art still opens the app.")
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, 10)

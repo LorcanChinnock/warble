@@ -19,7 +19,8 @@ public enum ScriptedPlayer: String, CaseIterable, Sendable {
     }
 
     /// Returns `{"stopped"}` when nothing is loaded, otherwise the list that `PlaybackState(player:report:at:)` reads:
-    /// state, title, artist, album, duration and position in seconds, shuffle, repeat, and Spotify's artwork URL.
+    /// state, title, artist, album, duration and position in seconds, shuffle, repeat, and Spotify's artwork URL and the
+    /// track's Spotify URI.
     public var stateScript: String {
         switch self {
         case .music:
@@ -40,7 +41,7 @@ public enum ScriptedPlayer: String, CaseIterable, Sendable {
             set repeatMode to "off"
             if song repeat is one then set repeatMode to "one"
             if song repeat is all then set repeatMode to "all"
-            return {playState, name of theTrack, artist of theTrack, album of theTrack, trackDuration, player position, shuffleMode, repeatMode, missing value}
+            return {playState, name of theTrack, artist of theTrack, album of theTrack, trackDuration, player position, shuffleMode, repeatMode, missing value, missing value}
             """)
         case .spotify:
             tell("""
@@ -52,7 +53,7 @@ public enum ScriptedPlayer: String, CaseIterable, Sendable {
             if shuffling then set shuffleMode to "songs"
             set repeatMode to "off"
             if repeating then set repeatMode to "all"
-            return {playState, name of theTrack, artist of theTrack, album of theTrack, (duration of theTrack) / 1000, player position, shuffleMode, repeatMode, artwork url of theTrack}
+            return {playState, name of theTrack, artist of theTrack, album of theTrack, (duration of theTrack) / 1000, player position, shuffleMode, repeatMode, artwork url of theTrack, spotify url of theTrack}
             """)
         }
     }
@@ -128,7 +129,7 @@ extension PlaybackState {
     /// What `player`'s `stateScript` reported at `date`, or `nil` when it's stopped, has no title or isn't a list Warble
     /// knows.
     public init?(player: ScriptedPlayer, report: [ScriptValue], at date: Date) {
-        guard report.count == 9, let state = report[0].text, state != "stopped",
+        guard report.count == 10, let state = report[0].text, state != "stopped",
               let title = report[1].text, !title.isEmpty else { return nil }
         func text(_ index: Int) -> String? {
             report[index].text.flatMap { $0.isEmpty ? nil : $0 }
@@ -144,13 +145,23 @@ extension PlaybackState {
             elapsedTimestamp: date,
             rate: state == "playing" ? 1 : 0,
             shuffle: text(6).flatMap(ShuffleMode.init(rawValue:)),
-            repeatMode: text(7).flatMap(RepeatMode.init(rawValue:))
+            repeatMode: text(7).flatMap(RepeatMode.init(rawValue:)),
+            link: text(9).flatMap(Self.link(spotifyURI:))
         )
+    }
+
+    /// The web link for a Spotify URI such as `spotify:track:<id>`, which opens in a browser or the app wherever it's
+    /// dropped, rather than only on a Mac with Spotify. Only a song or an episode has one: a local file or an ad doesn't.
+    static func link(spotifyURI uri: String) -> URL? {
+        let parts = uri.split(separator: ":", omittingEmptySubsequences: false)
+        guard parts.count == 3, parts[0] == "spotify", ["track", "episode"].contains(parts[1]), !parts[2].isEmpty,
+              parts[2].allSatisfy({ $0.isASCII && ($0.isLetter || $0.isNumber) }) else { return nil }
+        return URL(string: "https://open.spotify.com/\(parts[1])/\(parts[2])")
     }
 
     /// The artwork URL in a `stateScript` report, which only Spotify gives.
     public static func artworkURL(in report: [ScriptValue]) -> URL? {
-        guard report.count == 9 else { return nil }
+        guard report.count == 10 else { return nil }
         return report[8].text.flatMap { $0.isEmpty ? nil : URL(string: $0) }
     }
 

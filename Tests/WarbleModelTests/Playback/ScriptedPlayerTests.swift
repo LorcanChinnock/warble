@@ -6,9 +6,10 @@ private let reported = Date(timeIntervalSinceReferenceDate: 800_000_000)
 
 private func report(
     _ state: String = "playing", title: String = "Song", artist: ScriptValue = .text("Artist"),
-    duration: ScriptValue = .number(240), position: Double = 30, artworkURL: ScriptValue = .missing
+    duration: ScriptValue = .number(240), position: Double = 30, artworkURL: ScriptValue = .missing,
+    spotifyURI: ScriptValue = .missing
 ) -> [ScriptValue] {
-    [.text(state), .text(title), artist, .text("Album"), duration, .number(position), .text("songs"), .text("one"), artworkURL]
+    [.text(state), .text(title), artist, .text("Album"), duration, .number(position), .text("songs"), .text("one"), artworkURL, spotifyURI]
 }
 
 private func state(_ player: ScriptedPlayer, title: String = "Song", playing: Bool) -> PlaybackState {
@@ -141,4 +142,19 @@ private func state(_ player: ScriptedPlayer, title: String = "Song", playing: Bo
     let on = RepeatMode.off.next
     #expect(ScriptedPlayer.spotify.script(for: .setRepeat(on)).contains("set repeating to true\n"))
     #expect(ScriptedPlayer.spotify.script(for: .setRepeat(on.next)).contains("set repeating to false\n"))
+}
+
+@Test func spotifysTrackURIIsReadAsItsWebLink() throws {
+    let state = try #require(PlaybackState(player: .spotify, report: report(spotifyURI: .text("spotify:track:0aym2LBJBk9DAYuHHutrIl")), at: reported))
+    #expect(state.link == URL(string: "https://open.spotify.com/track/0aym2LBJBk9DAYuHHutrIl"))
+    #expect(PlaybackState.link(spotifyURI: "spotify:episode:4rOoJ6Egrf8K2IrywzwOMk") == URL(string: "https://open.spotify.com/episode/4rOoJ6Egrf8K2IrywzwOMk"))
+}
+
+@Test func aTrackWithoutAShareableURIHasNoLink() {
+    #expect(PlaybackState(player: .music, report: report(), at: reported)?.link == nil)
+    #expect(PlaybackState(player: .spotify, report: report(spotifyURI: .text("")), at: reported)?.link == nil)
+    #expect(PlaybackState.link(spotifyURI: "spotify:local:Artist:Album:Song:240") == nil)
+    #expect(PlaybackState.link(spotifyURI: "spotify:ad:000000012c603a6600000020316a17a1") == nil)
+    #expect(PlaybackState.link(spotifyURI: "spotify:track:") == nil)
+    #expect(PlaybackState.link(spotifyURI: "https://example.com") == nil)
 }

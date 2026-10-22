@@ -19,6 +19,8 @@ public struct PlaybackState: Equatable, Sendable {
     /// `nil` when the source doesn't say.
     public var shuffle: ShuffleMode?
     public var repeatMode: RepeatMode?
+    /// A link to the track that opens anywhere, such as Spotify's, where the source gives one.
+    public var link: URL?
 
     public init(
         bundleIdentifier: String,
@@ -31,7 +33,8 @@ public struct PlaybackState: Equatable, Sendable {
         rate: Double = 0,
         artwork: Data? = nil,
         shuffle: ShuffleMode? = nil,
-        repeatMode: RepeatMode? = nil
+        repeatMode: RepeatMode? = nil,
+        link: URL? = nil
     ) {
         self.bundleIdentifier = bundleIdentifier
         self.title = title
@@ -44,6 +47,7 @@ public struct PlaybackState: Equatable, Sendable {
         self.artwork = artwork
         self.shuffle = shuffle
         self.repeatMode = repeatMode
+        self.link = link
     }
 
     public var isPlaying: Bool { rate != 0 }

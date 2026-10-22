@@ -19,21 +19,39 @@ private var missingValue: NSAppleEventDescriptor { NSAppleEventDescriptor(typeCo
     #expect(ScriptValue(nil) == .missing)
 }
 
-@Test func aListReadsAsAStateReport() throws {
+/// What a state script returns, read back the way `ScriptSource` reads it.
+private func stateReport(_ items: [NSAppleEventDescriptor]) -> [ScriptValue] {
     let list = NSAppleEventDescriptor.list()
-    let items = [
-        NSAppleEventDescriptor(string: "playing"), NSAppleEventDescriptor(string: "Song"), NSAppleEventDescriptor(string: "Artist"),
-        NSAppleEventDescriptor(string: "Album"), NSAppleEventDescriptor(double: 240), NSAppleEventDescriptor(double: 30),
-        NSAppleEventDescriptor(string: "off"), NSAppleEventDescriptor(string: "all"), missingValue,
-    ]
     for (index, item) in items.enumerated() {
         list.insert(item, at: index + 1)
     }
-    let report = (0..<list.numberOfItems).map { ScriptValue(list.atIndex($0 + 1)) }
+    return (0..<list.numberOfItems).map { ScriptValue(list.atIndex($0 + 1)) }
+}
+
+@Test func aListReadsAsAStateReport() throws {
+    let report = stateReport([
+        NSAppleEventDescriptor(string: "playing"), NSAppleEventDescriptor(string: "Song"), NSAppleEventDescriptor(string: "Artist"),
+        NSAppleEventDescriptor(string: "Album"), NSAppleEventDescriptor(double: 240), NSAppleEventDescriptor(double: 30),
+        NSAppleEventDescriptor(string: "off"), NSAppleEventDescriptor(string: "all"), missingValue, missingValue,
+    ])
     let state = try #require(PlaybackState(player: .music, report: report, at: .now))
     #expect(state.title == "Song")
     #expect(state.duration == 240)
     #expect(state.repeatMode == .all)
+    #expect(state.link == nil)
+}
+
+@Test func spotifysLinkIsReadIntoTheState() throws {
+    let report = stateReport([
+        NSAppleEventDescriptor(string: "playing"), NSAppleEventDescriptor(string: "Song"), NSAppleEventDescriptor(string: "Artist"),
+        NSAppleEventDescriptor(string: "Album"), NSAppleEventDescriptor(double: 240), NSAppleEventDescriptor(double: 30),
+        NSAppleEventDescriptor(string: "off"), NSAppleEventDescriptor(string: "off"),
+        NSAppleEventDescriptor(string: "https://i.scdn.co/image/ab67616d0000b273"),
+        NSAppleEventDescriptor(string: "spotify:track:0aym2LBJBk9DAYuHHutrIl"),
+    ])
+    let state = try #require(PlaybackState(player: .spotify, report: report, at: .now))
+    #expect(state.link == URL(string: "https://open.spotify.com/track/0aym2LBJBk9DAYuHHutrIl"))
+    #expect(PlaybackState.artworkURL(in: report) == URL(string: "https://i.scdn.co/image/ab67616d0000b273"))
 }
 
 @Test func artworkIsTheBytesReturnedAndMissingValueIsNone() {

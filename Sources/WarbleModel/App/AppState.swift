@@ -43,6 +43,8 @@ public struct AppState: Equatable, Sendable {
     /// Whether a sideways swipe over a notch skips, which Settings turns on, and the trackpad gesture under way.
     public internal(set) var swipeToSkip: Bool
     public internal(set) var swipe = Swipe()
+    /// Whether the art can be dragged out of the player's card, which Settings turns on.
+    public internal(set) var dragArtOut: Bool
     /// What the effects last asked for, so each is asked for once per change.
     public internal(set) var watchesClicks = false
     public internal(set) var takesEscape = false
@@ -51,13 +53,15 @@ public struct AppState: Equatable, Sendable {
     /// `checks` are what the Doctor finds before it has asked macOS anything: what it finds while the adapter works.
     public init(
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
-        showsTrackToast: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, checks: [Doctor.Check] = []
+        showsTrackToast: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, dragArtOut: Bool = false,
+        checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
         doctor = DoctorState(checks: checks)
         self.idleHover = idleHover
         self.showsTrackToast = showsTrackToast
         self.swipeToSkip = swipeToSkip
+        self.dragArtOut = dragArtOut
         lyrics = LyricsState(isOn: showsLyrics)
     }
 
@@ -101,6 +105,13 @@ public struct AppState: Equatable, Sendable {
         showsPlayback && playback != nil && lyrics.excerpt != nil
     }
 
+    /// What dragging the art out of the player's card carries, or `nil` when it can't be dragged: Settings has it off,
+    /// nothing is playing, or the track has neither a link nor art.
+    public var artDrag: ArtDrag? {
+        guard dragArtOut, showsPlayback, let playback else { return nil }
+        return ArtDrag(playback)
+    }
+
     /// Without anything playing, a "!" or a card to open while Idle, a notch draws nothing, or only a blank notch, and
     /// takes no hover or click.
     func answersPointer(_ surface: Surface) -> Bool {
@@ -122,6 +133,8 @@ public struct AppState: Equatable, Sendable {
         public internal(set) var showsLyrics = false
         /// Whether a menu from this notch is open, which takes Escape for itself.
         public internal(set) var showsMenu = false
+        /// Whether the art is being dragged out of this notch's card, which lets go of Escape so the key cancels the drag.
+        public internal(set) var isDragging = false
 
         init(_ housing: NotchHousing) {
             isVirtual = housing.isVirtual

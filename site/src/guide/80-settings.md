@@ -1,6 +1,6 @@
 ---
 title: Settings
-summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a new song shows its title, whether lyrics show, whether a swipe skips, and set keyboard shortcuts, including one that opens the notch.
+summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a new song shows its title, whether lyrics show, whether a swipe skips, whether the album art can be dragged out, and set keyboard shortcuts, including one that opens the notch.
 group: Reference
 ---
 
@@ -29,6 +29,7 @@ Every change takes effect straight away.
 - **Show a message when the track changes.** Off at first. Turn it on, and when a new song starts, its title and artist slide out of the notch for two seconds, so you can see what's on without pointing at it. Skip a few songs in a row and you see only the last one. Point at the notch or click the message to open the full player.
 - **Show lyrics under the notch.** Off at first. Turn it on, and the line being sung shows under the notch while a song plays. To find the lyrics, Warble sends the song's title, artist, album and length to LRCLIB, a free lyrics library. The player then has a lyrics button that shows the lines around it. See [Show lyrics](/docs/show-lyrics/).
 - **Swipe over the notch to skip.** Off at first. Turn it on, and swiping left over the notch with two fingers skips to the next song, and swiping right goes back. It needs a trackpad, or a Magic Mouse. Scrolling up and down still changes the volume. See [Use gestures](/docs/use-gestures/).
+- **Drag the album art out of the player.** Off at first. Turn it on, and you can drag the art from the open player into another app: a folder gets the picture as a file, and a message or a note gets the picture. A click on the art still opens the app. See [Use gestures](/docs/use-gestures/#drag-the-album-art-out).
 
 > [!NOTE]
 > Warble's animations follow **Reduce motion** in System Settings › Accessibility › Display.
