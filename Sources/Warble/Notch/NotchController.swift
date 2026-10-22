@@ -12,53 +12,26 @@ final class NotchController {
     /// What's playing as the notch shows it, which `Store` keeps from what the sources report.
     var playback: PlaybackState? { store.state.playback }
 
-    /// What the idle card shows before anything plays. The preview sets it instead of reading the saved one.
-    var lastPlayed: LastPlayed? {
-        get { player.lastPlayed }
-        set { player.lastPlayed = newValue }
-    }
-    /// Where the last track played is kept across launches, or `nil` to keep it only in memory, as the preview does.
-    private let lastPlayedStore: LastPlayedStore?
-    /// The state last remembered, so a pause or a seek doesn't write to disk again.
-    private var remembered: PlaybackState?
-    /// Bumped by every track remembered, so one whose art finishes shrinking after the next has begun is dropped.
-    private var remembers = 0
-    /// The write in flight, which the next one waits for, so the file always ends up holding the latest track.
-    private var saving: Task<Void, Never>?
-
-    /// Sends a command to the app that's playing. Unset, as in the preview, a command only changes what the notch shows.
-    var send: (PlaybackCommand) -> Void = { _ in }
-
-    /// The checks behind the "!". `AppDelegate` tells it how the adapter is doing.
-    let doctor: DoctorModel
     private let environment: AppEnvironment
     private var store: Store { environment.store }
     private let player = PlayerModel()
-    private let volume = SystemVolume()
-    private var followsVolume = false
-    private let outputs = AudioOutputs()
+    private var doctor: DoctorModel { environment.doctor }
+    private var volume: SystemVolume { environment.volume }
     /// One for each housing, by `NotchDisplay.id`.
     private var surfaces: [String: NotchSurface] = [:]
     private var rules: [String: VirtualNotchRule] = [:]
     /// While the displays or their rules change, the notches move at once rather than morph.
     private var layingOut = false
-    private var clickMonitor: Any?
     private var observers: [NSObjectProtocol] = []
 
-    init(lastPlayedStore: LastPlayedStore?, environment: AppEnvironment) {
-        self.lastPlayedStore = lastPlayedStore
+    init(environment: AppEnvironment) {
         self.environment = environment
-        doctor = DoctorModel(updater: environment.updater)
         store.onChange = { [weak self] old, new, action in self?.stateChanged(from: old, to: new, by: action) }
-        environment.runner.platform = { [weak self] in self?.perform($0) }
+        let store = store
         player.onCommand = { [weak self] in self?.perform($0) }
-        player.onOpenApp = { [weak self] in self?.openApp() }
-        player.onVolume = { [weak self] in self?.setVolume($0) }
-        player.onSelectOutput = { [weak self] in self?.selectOutput($0) }
-        doctor.onChange = { [weak self] in
-            guard let self else { return }
-            self.store.dispatch(.attentionChanged(self.doctor.needsAttention))
-        }
+        player.onOpenApp = { [weak store] in store?.dispatch(.openApp) }
+        player.onVolume = { [weak store] in store?.dispatch(.setVolume($0)) }
+        player.onSelectOutput = { [weak store] in store?.dispatch(.selectOutput($0)) }
         environment.displays.onChange = { [weak self] in self?.layOut() }
         // Any write to Warble's defaults; only a change of rule lays the notches out again.
         observers.append(NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: UserDefaults.standard, queue: .main) { [weak self] _ in
@@ -81,42 +54,6 @@ final class NotchController {
             }
         })
         layOut()
-        loadLastPlayed()
-    }
-
-    /// Reads the track saved last time, unless one has played since Warble opened.
-    private func loadLastPlayed() {
-        guard let store = lastPlayedStore else { return }
-        Task { [weak self] in
-            let saved = await Task.detached(priority: .utility) { store.load() }.value
-            guard let self, self.remembered == nil, let saved else { return }
-            self.player.lastPlayed = saved
-        }
-    }
-
-    /// Keeps `state` as the last track played, with a small copy of its art, and saves it for the next launch. Only a
-    /// new track or new art does any work.
-    private func remember(_ state: PlaybackState) {
-        guard LastPlayed.changes(from: remembered, to: state) else { return }
-        remembered = state
-        remembers += 1
-        let pass = remembers
-        let appName = player.appName
-        Task { [weak self] in
-            let lastPlayed = await Task.detached(priority: .utility) { LastPlayedStore.remembering(state, appName: appName) }.value
-            guard let self, pass == self.remembers else { return }
-            self.player.lastPlayed = lastPlayed
-            guard let store = self.lastPlayedStore else { return }
-            let previous = self.saving
-            self.saving = Task.detached(priority: .utility) {
-                await previous?.value
-                do {
-                    try store.save(lastPlayed)
-                } catch {
-                    log.error("Couldn't save the last track played: \(error.localizedDescription, privacy: .public)")
-                }
-            }
-        }
     }
 
     /// Puts a surface over each housing the displays and their rules call for, moving the ones that stay and removing
@@ -150,20 +87,33 @@ final class NotchController {
         surface.makeMenu = { [weak self] in
             guard let self else { return nil }
             return NotchMenu.make(source: self.playback?.bundleIdentifier ?? self.player.lastPlayed?.bundleIdentifier, updater: self.environment.updater, settingsWindow: self.environment.settingsWindow) { [weak self] in
-                self?.openApp()
+                self?.store.dispatch(.openApp)
             }
         }
         return surface
     }
 
-    /// Draws what `Store` decided: the track, the last one played, and each notch's state.
+    /// Draws what `Store` decided: the track, the last one played, the volume and outputs, the Doctor's checks, and each
+    /// notch's state.
     private func stateChanged(from old: AppState, to new: AppState, by action: AppAction) {
         if new.playback != old.playback {
             player.playback = new.playback
-            if let playback = new.playback {
-                remember(playback)
-            }
         }
+        if new.lastPlayed != old.lastPlayed {
+            player.lastPlayed = new.lastPlayed
+        }
+        if new.volume != old.volume || new.isMuted != old.isMuted {
+            player.volume = new.volume
+            player.isMuted = new.isMuted
+        }
+        if new.outputs != old.outputs || new.currentOutput != old.currentOutput {
+            player.outputs = new.outputs
+            player.currentOutput = new.currentOutput
+        }
+        if new.doctor.adapter != old.doctor.adapter {
+            log.notice("Adapter is \(String(describing: new.doctor.adapter), privacy: .public)")
+        }
+        doctor.apply(new.doctor)
         if new.showsPlayback != old.showsPlayback {
             log.notice("Playback \(new.showsPlayback ? "shown" : "idle", privacy: .public)")
         }
@@ -183,24 +133,6 @@ final class NotchController {
             default:
                 break
             }
-        }
-    }
-
-    /// Carries out the effects that need AppKit.
-    private func perform(_ effect: AppEffect) {
-        switch effect {
-        case .watchClicksOutside(let watch):
-            watchClicksOutside(watch)
-        case .followVolume(let follow):
-            followVolume(follow)
-        case .notchOpened:
-            // Opening a notch checks again whatever the Doctor found, in case the user fixed it, such as in System
-            // Settings, which tells Warble nothing.
-            if doctor.adapter != .working {
-                doctor.refresh()
-            }
-        case .takeEscape:
-            break
         }
     }
 
@@ -228,110 +160,29 @@ final class NotchController {
                 perform(.seek(to: position))
             }
         case .volume(let delta):
-            if let current = volume.volume {
-                setVolume(NotchKey.volume(changing: volume.isMuted ? 0 : current, by: delta))
-            }
+            store.dispatch(.volumeKey(delta: delta, volume: volume.volume, isMuted: volume.isMuted))
         case .close:
             store.dispatch(.dismiss(except: nil))
         }
         return true
     }
 
-    /// Shows what a command will do before the app reports back, so a click on play/pause answers at once. Skipping waits
-    /// for the app, since only it knows the next track. The app's next report replaces the guess either way. While a hide
-    /// is pending there's no guess, since setting one would cancel the hide and keep a stopped track on screen.
+    /// Sends a command, which shows what it will do at once, and times play/pause to the first frame that shows it.
     func perform(_ command: PlaybackCommand) {
-        if store.state.hideAt == nil, let current = playback {
-            var guess = current
-            switch command {
-            case .play: guess = current.playing(true, at: .now)
-            case .pause: guess = current.playing(false, at: .now)
-            case .togglePlayPause: guess = current.playing(!current.isPlaying, at: .now)
-            case .seek(let position): guess = current.seeked(to: position, at: .now)
-            case .setShuffle(let mode): guess.shuffle = mode
-            case .setRepeat(let mode): guess.repeatMode = mode
-            case .nextTrack, .previousTrack: break
-            }
-            if guess != current {
-                store.dispatch(.playbackReported(guess))
-            }
-            if command == .togglePlayPause || command == .play || command == .pause {
-                // The click's own window is the notch it was on; a shortcut has none.
-                let input = Perf.input
-                Perf.untilNextFrame("Play/pause", on: NSApp.currentEvent?.window?.screen ?? NSScreen.main, cause: input?.cause ?? "shortcut", since: input?.timestamp)
-            }
+        let guesses = store.state.hideAt == nil && store.state.playback != nil
+        store.dispatch(.command(command))
+        if guesses, command == .togglePlayPause || command == .play || command == .pause {
+            // The click's own window is the notch it was on; a shortcut has none.
+            let input = Perf.input
+            Perf.untilNextFrame("Play/pause", on: NSApp.currentEvent?.window?.screen ?? NSScreen.main, cause: input?.cause ?? "shortcut", since: input?.timestamp)
         }
-        send(command)
     }
 
-    /// Brings the app that's playing to the front, or while Idle the one that played last, opening it if it's quit.
-    private func openApp() {
-        guard let bundleIdentifier = playback?.bundleIdentifier ?? player.lastPlayed?.bundleIdentifier,
-              let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) else { return }
-        NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
-    }
-
-    /// Scrolling over the notch changes the volume, with a light tick on a Force Touch trackpad at each tenth.
+    /// Scrolling over a notch changes the volume, from the volume now, since the card with the slider may not be open.
     private func scroll(_ event: NSEvent) {
-        guard let current = volume.volume, event.scrollingDeltaY != 0 else { return }
-        let from = volume.isMuted ? 0 : current
-        let to = VolumeScroll.volume(
-            after: event.scrollingDeltaY, from: from,
-            precise: event.hasPreciseScrollingDeltas, inverted: event.isDirectionInvertedFromDevice
-        )
-        guard to != from else { return }
-        setVolume(to)
-        if VolumeScroll.crossesTick(from: from, to: to) {
-            NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .now)
-        }
-    }
-
-    private func setVolume(_ value: Double) {
-        volume.set(value)
-        readVolume()
-    }
-
-    private func readVolume() {
-        player.volume = volume.volume
-        player.isMuted = volume.isMuted
-    }
-
-    /// Reads the volume and the outputs, and follows changes from the volume keys and elsewhere, only while the slider
-    /// shows.
-    private func followVolume(_ follow: Bool) {
-        guard follow != followsVolume else { return }
-        followsVolume = follow
-        if follow {
-            readVolume()
-            readOutputs()
-            volume.startListening { [weak self] in self?.readVolume() }
-            outputs.startListening { [weak self] in self?.readOutputs() }
-        } else {
-            volume.stopListening()
-            outputs.stopListening()
-        }
-    }
-
-    private func readOutputs() {
-        player.outputs = outputs.all
-        player.currentOutput = outputs.current
-    }
-
-    /// `SystemVolume` moves to the new output, and its listener reads the new output's volume.
-    private func selectOutput(_ id: UInt32) {
-        outputs.select(id)
-        readOutputs()
-    }
-
-    /// Clicks in other apps close the open notches; a click on the panel itself is the panel's own.
-    private func watchClicksOutside(_ watch: Bool) {
-        if watch, clickMonitor == nil {
-            clickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown]) { [weak self] _ in
-                MainActor.assumeIsolated { self?.store.dispatch(.dismiss(except: nil)) }
-            }
-        } else if !watch, let monitor = clickMonitor {
-            NSEvent.removeMonitor(monitor)
-            clickMonitor = nil
-        }
+        store.dispatch(.scrolled(
+            delta: event.scrollingDeltaY, precise: event.hasPreciseScrollingDeltas, inverted: event.isDirectionInvertedFromDevice,
+            volume: volume.volume, isMuted: volume.isMuted
+        ))
     }
 }

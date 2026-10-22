@@ -9,6 +9,19 @@ public enum AppEffect: Equatable, Sendable {
     case takeEscape(Bool)
     /// Read the volume and outputs and follow their changes (true), only while the player's card is open.
     case followVolume(Bool)
-    /// A notch opened, so the Doctor can check again whatever it found.
-    case notchOpened
+    /// Send a command to the app that's playing.
+    case send(PlaybackCommand)
+    case openApp(bundleIdentifier: String)
+    case setVolume(Double)
+    /// A light tick on a Force Touch trackpad.
+    case haptic
+    case selectOutput(UInt32)
+    /// Shrink the art of `PlaybackState` for the idle card, then answer `.remembered` with `pass`.
+    case remember(PlaybackState, pass: Int)
+    /// Save the last track played for the next launch; the latest save wins.
+    case saveLastPlayed(LastPlayed)
+    /// Gather the Doctor's facts, then answer `.factsGathered` with `pass`.
+    case gatherFacts(Doctor.Adapter, pass: Int)
+    /// Watch Music and Spotify open and quit (true), or stop.
+    case followPlayers(Bool)
 }

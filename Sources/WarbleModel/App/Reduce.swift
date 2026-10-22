@@ -5,6 +5,7 @@ import Foundation
 public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [AppEffect] {
     let old = state
     var notice: Notice<TrackToast>?
+    var effects: [AppEffect] = []
     switch action {
     case .playbackReported(let playback):
         if playback == nil, state.playback != nil {
@@ -16,6 +17,75 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
             }
             show(playback, in: &state, at: now)
         }
+    case .command(let command):
+        // Shows what a command will do before the app reports back, so a click on play/pause answers at once. Skipping
+        // waits for the app, since only it knows the next track, and the app's next report replaces the guess either way.
+        // While a hide is pending there's no guess, since one would cancel the hide and keep a stopped track on screen.
+        if state.hideAt == nil, let current = state.playback {
+            let guess = current.guessing(command, at: now)
+            if guess != current {
+                show(guess, in: &state, at: now)
+            }
+        }
+        effects.append(.send(command))
+    case .openApp:
+        if let bundleIdentifier = state.playback?.bundleIdentifier ?? state.lastPlayed?.bundleIdentifier {
+            effects.append(.openApp(bundleIdentifier: bundleIdentifier))
+        }
+    case .setVolume(let volume):
+        effects.append(.setVolume(volume))
+    case .scrolled(let delta, let precise, let inverted, let volume, let isMuted):
+        // Scrolling over the notch changes the volume, with a light tick on a Force Touch trackpad at each tenth.
+        guard let volume, delta != 0 else { break }
+        let from = isMuted ? 0 : volume
+        let to = VolumeScroll.volume(after: delta, from: from, precise: precise, inverted: inverted)
+        guard to != from else { break }
+        effects.append(.setVolume(to))
+        if VolumeScroll.crossesTick(from: from, to: to) {
+            effects.append(.haptic)
+        }
+    case .volumeKey(let delta, let volume, let isMuted):
+        if let volume {
+            effects.append(.setVolume(NotchKey.volume(changing: isMuted ? 0 : volume, by: delta)))
+        }
+    case .volumeRead(let volume, let isMuted):
+        state.volume = volume
+        state.isMuted = isMuted
+    case .selectOutput(let id):
+        effects.append(.selectOutput(id))
+    case .outputsRead(let outputs, let current):
+        state.outputs = outputs
+        state.currentOutput = current
+    case .lastPlayedLoaded(let saved):
+        // A track that played since Warble opened is newer than the one saved.
+        if state.remembered == nil, let saved {
+            state.lastPlayed = saved
+        }
+    case .remembered(let lastPlayed, let pass):
+        guard pass == state.remembers else { break }
+        state.lastPlayed = lastPlayed
+        effects.append(.saveLastPlayed(lastPlayed))
+    case .adapterChanged(let adapter):
+        guard adapter != state.doctor.adapter else { break }
+        let followed = state.doctor.adapter != .working
+        state.doctor.adapter = adapter
+        if (adapter != .working) != followed {
+            effects.append(.followPlayers(adapter != .working))
+        }
+        effects.append(refreshDoctor(&state))
+    case .factsGathered(let facts, let pass):
+        guard pass == state.doctor.refreshes else { break }
+        update(Doctor.checks(facts), in: &state.doctor)
+    case .playersChanged, .automationDenied:
+        effects.append(refreshDoctor(&state))
+    case .fallbackReported:
+        // Only while Automation fails, so a player that plays after the user allowed it clears the "!" without asking
+        // macOS on every change of track.
+        if state.doctor.checks.contains(where: { $0.kind == .automation && $0.outcome == .fail }) {
+            effects.append(refreshDoctor(&state))
+        }
+    case .notNow:
+        state.doctor.dismissed.formUnion(state.doctor.checks.filter { $0.outcome == .fail }.map(\.kind))
     case .housingsChanged(let housings):
         var surfaces: [String: AppState.Surface] = [:]
         for housing in housings {
@@ -42,8 +112,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.surfaces[display]?.showsDoctor = show
     case .dismiss(let except):
         dismiss(in: &state, except: except, at: now)
-    case .attentionChanged(let needsAttention):
-        state.needsAttention = needsAttention
     case .stayVisibleChanged(let delay):
         state.idle.delay = delay
         state.idle.advance(to: now)
@@ -64,12 +132,54 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
             state.surfaces[display]?.hover.advance(to: now)
         }
     }
-    let effects = settle(&state, from: old, at: now)
+    effects += settle(&state, from: old, at: now)
     // After Idle has had its say, so a track that's no longer shown has nothing to announce.
     if let notice, state.showsTrackToast, state.showsPlayback, !isOpen(state) {
         state.toasts.post(notice, at: now)
     }
+    if let playback = state.playback, playback != old.playback {
+        effects += remember(playback, in: &state)
+    }
     return effects
+}
+
+/// Keeps `playback` as the last track played, with a small copy of its art, and saves it for the next launch. Only a new
+/// track or new art does any work.
+private func remember(_ playback: PlaybackState, in state: inout AppState) -> [AppEffect] {
+    guard LastPlayed.changes(from: state.remembered, to: playback) else { return [] }
+    state.remembered = playback
+    state.remembers += 1
+    return [.remember(playback, pass: state.remembers)]
+}
+
+/// Gathers the Doctor's facts again. While the adapter works no check needs macOS, so the facts take no work.
+private func refreshDoctor(_ state: inout AppState) -> AppEffect {
+    state.doctor.refreshes += 1
+    return .gatherFacts(state.doctor.adapter, pass: state.doctor.refreshes)
+}
+
+private func update(_ checks: [Doctor.Check], in doctor: inout DoctorState) {
+    guard checks != doctor.checks else { return }
+    // A check that passes again can fail again later, and then it needs the "!".
+    doctor.dismissed.subtract(checks.filter { $0.outcome != .fail }.map(\.kind))
+    doctor.checks = checks
+}
+
+extension PlaybackState {
+    /// What `command` will make of this state, as far as Warble can tell before the app reports back.
+    func guessing(_ command: PlaybackCommand, at date: Date) -> PlaybackState {
+        var guess = self
+        switch command {
+        case .play: guess = playing(true, at: date)
+        case .pause: guess = playing(false, at: date)
+        case .togglePlayPause: guess = playing(!isPlaying, at: date)
+        case .seek(let position): guess = seeked(to: position, at: date)
+        case .setShuffle(let mode): guess.shuffle = mode
+        case .setRepeat(let mode): guess.repeatMode = mode
+        case .nextTrack, .previousTrack: break
+        }
+        return guess
+    }
 }
 
 private func show(_ playback: PlaybackState?, in state: inout AppState, at now: Date) {
@@ -148,8 +258,10 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
         state.followsVolume = followsVolume
         effects.append(.followVolume(followsVolume))
     }
-    if watchesClicks, !isOpen(old) {
-        effects.append(.notchOpened)
+    // Opening a notch checks again whatever the Doctor found, in case the user fixed it, such as in System Settings,
+    // which tells Warble nothing.
+    if watchesClicks, !isOpen(old), state.doctor.adapter != .working {
+        effects.append(refreshDoctor(&state))
     }
     return effects
 }

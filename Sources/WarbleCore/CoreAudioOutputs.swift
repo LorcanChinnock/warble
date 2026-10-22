@@ -7,7 +7,7 @@ private let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Warble", ca
 /// The Mac's sound outputs and which one plays, through Core Audio. Choosing one sets the default output, as the Sound
 /// settings do, which needs no permission. AirPlay receivers aren't Core Audio devices, so they never appear here.
 @MainActor
-public final class AudioOutputs {
+public final class CoreAudioOutputs: AudioOutputs {
     private var onChange: (() -> Void)?
     private var listeners: [(address: AudioObjectPropertyAddress, block: AudioObjectPropertyListenerBlock)] = []
 
