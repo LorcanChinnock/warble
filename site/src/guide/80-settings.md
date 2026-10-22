@@ -1,6 +1,6 @@
 ---
 title: Settings
-summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a new song shows its title and whether lyrics show, and set keyboard shortcuts, including one that opens the notch.
+summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a new song shows its title, whether lyrics show, whether a swipe skips, and set keyboard shortcuts, including one that opens the notch.
 group: Reference
 ---
 
@@ -28,6 +28,7 @@ Every change takes effect straight away.
 - **When nothing is playing, hover shows.** **Last Played** shows the card with the last song you played, so you can [pick up where you left off](/docs/pick-up-where-you-left-off/). **Nothing** keeps Warble out of sight until something plays.
 - **Show a message when the track changes.** Off at first. Turn it on, and when a new song starts, its title and artist slide out of the notch for two seconds, so you can see what's on without pointing at it. Skip a few songs in a row and you see only the last one. Point at the notch or click the message to open the full player.
 - **Show lyrics under the notch.** Off at first. Turn it on, and the line being sung shows under the notch while a song plays. To find the lyrics, Warble sends the song's title, artist, album and length to LRCLIB, a free lyrics library. The player then has a lyrics button that shows the lines around it. See [Show lyrics](/docs/show-lyrics/).
+- **Swipe over the notch to skip.** Off at first. Turn it on, and swiping left over the notch with two fingers skips to the next song, and swiping right goes back. It needs a trackpad, or a Magic Mouse. Scrolling up and down still changes the volume. See [Use gestures](/docs/use-gestures/).
 
 > [!NOTE]
 > Warble's animations follow **Reduce motion** in System Settings › Accessibility › Display.

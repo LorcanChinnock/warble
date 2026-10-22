@@ -39,15 +39,23 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         }
     case .setVolume(let volume):
         effects.append(.setVolume(volume))
-    case .scrolled(let delta, let precise, let inverted, let volume, let isMuted):
-        // Scrolling over the notch changes the volume, with a light tick on a Force Touch trackpad at each tenth.
-        guard let volume, delta != 0 else { break }
-        let from = isMuted ? 0 : volume
-        let to = VolumeScroll.volume(after: delta, from: from, precise: precise, inverted: inverted)
-        guard to != from else { break }
-        effects.append(.setVolume(to))
-        if VolumeScroll.crossesTick(from: from, to: to) {
-            effects.append(.haptic)
+    case .scrolled(let delta, let across, let phase, let precise, let inverted, let volume, let isMuted):
+        // Scrolling over the notch changes the volume. With swipe to skip on, a trackpad gesture goes one way only, so a
+        // sideways swipe skips once and leaves the volume alone. A wheel has no gesture and only scrolls.
+        guard state.swipeToSkip, precise, let phase else {
+            effects += scroll(delta, precise: precise, inverted: inverted, volume: volume, isMuted: isMuted)
+            break
+        }
+        switch state.swipe.handle(across: across, down: delta, phase: phase, inverted: inverted) {
+        case .volume(let delta):
+            effects += scroll(delta, precise: precise, inverted: inverted, volume: volume, isMuted: isMuted)
+        case .skip(let command):
+            // Skipping needs something to skip; with nothing playing the swipe does nothing.
+            if state.showsPlayback, state.playback != nil {
+                effects += [.send(command), .haptic]
+            }
+        case .nothing:
+            break
         }
     case .volumeKey(let delta, let volume, let isMuted):
         if let volume {
@@ -133,6 +141,9 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         }
     case .lyricsChanged(let on):
         state.lyrics.turn(on: on)
+    case .swipeToSkipChanged(let on):
+        state.swipeToSkip = on
+        state.swipe = Swipe()
     case .lyricsLoaded(let lyrics, let pass):
         state.lyrics.loaded(lyrics, pass: pass)
     case .tick:
@@ -158,6 +169,15 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         effects.append(fetch)
     }
     return effects
+}
+
+/// The volume a scroll of `delta` sets, with a light tick on a Force Touch trackpad at each tenth.
+private func scroll(_ delta: Double, precise: Bool, inverted: Bool, volume: Double?, isMuted: Bool) -> [AppEffect] {
+    guard let volume, delta != 0 else { return [] }
+    let from = isMuted ? 0 : volume
+    let to = VolumeScroll.volume(after: delta, from: from, precise: precise, inverted: inverted)
+    guard to != from else { return [] }
+    return VolumeScroll.crossesTick(from: from, to: to) ? [.setVolume(to), .haptic] : [.setVolume(to)]
 }
 
 /// Keeps `playback` as the last track played, with a small copy of its art, and saves it for the next launch. Only a new

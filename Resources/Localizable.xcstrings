@@ -144,6 +144,9 @@
     "MIT License" : {
 
     },
+    "Needs a trackpad, or a Magic Mouse, where you swipe with one finger. Scrolling up and down over the notch still changes the volume." : {
+
+    },
     "Needs fixing" : {
 
     },
@@ -341,6 +344,12 @@
 
     },
     "Supported." : {
+
+    },
+    "Swipe left with two fingers for the next song, or right to go back." : {
+
+    },
+    "Swipe over the notch to skip" : {
 
     },
     "Text size" : {

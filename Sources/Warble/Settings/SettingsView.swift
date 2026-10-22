@@ -177,6 +177,7 @@ private struct NotchSettings: View {
     @Setting(PreferenceKey.idleHover) private var idleHover: IdleHover
     @Setting(PreferenceKey.trackChangeToast) private var trackChangeToast: Bool
     @Setting(PreferenceKey.lyrics) private var lyrics: Bool
+    @Setting(PreferenceKey.swipeToSkip) private var swipeToSkip: Bool
 
     var body: some View {
         SectionPage(section: .notch) {
@@ -212,6 +213,20 @@ private struct NotchSettings: View {
                 .accessibilityHint(Text("The line being sung, while a song plays."))
             } footer: {
                 Text("To find a song's lyrics, Warble sends its title, artist, album and length to LRCLIB, a free lyrics library. Nothing is sent while this is off.")
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            Section {
+                Toggle(isOn: $swipeToSkip) {
+                    Text("Swipe over the notch to skip")
+                    Text("Swipe left with two fingers for the next song, or right to go back.")
+                }
+                .accessibilityLabel(Text("Swipe over the notch to skip"))
+                .accessibilityHint(Text("Swipe left with two fingers for the next song, or right to go back."))
+            } footer: {
+                Text("Needs a trackpad, or a Magic Mouse, where you swipe with one finger. Scrolling up and down over the notch still changes the volume.")
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, 10)

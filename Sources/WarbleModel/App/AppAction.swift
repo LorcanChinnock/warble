@@ -28,7 +28,12 @@ public enum AppAction: Equatable, Sendable {
     /// Volume from the slider, a scroll over a notch, or the arrow keys in a notch with the keyboard. A scroll and a key
     /// carry the volume read just before, since the card that follows it may not be open.
     case setVolume(Double)
-    case scrolled(delta: Double, precise: Bool, inverted: Bool, volume: Double?, isMuted: Bool)
+    /// A scroll over a notch: `delta` up and down, as `NSEvent.scrollingDeltaY` reports it, `across` as `scrollingDeltaX`
+    /// does, and the `phase` of the trackpad gesture it's part of, or `nil` for a mouse wheel. A sideways swipe skips
+    /// when Settings turns it on.
+    case scrolled(
+        delta: Double, across: Double = 0, phase: Swipe.Phase? = nil, precise: Bool, inverted: Bool, volume: Double?, isMuted: Bool
+    )
     case volumeKey(delta: Double, volume: Double?, isMuted: Bool)
     case volumeRead(Double?, isMuted: Bool)
     case selectOutput(UInt32)
@@ -52,6 +57,7 @@ public enum AppAction: Equatable, Sendable {
     case idleHoverChanged(IdleHover)
     case trackToastChanged(Bool)
     case lyricsChanged(Bool)
+    case swipeToSkipChanged(Bool)
     /// The lyrics found for the fetch numbered `pass`, or `nil` when there are none.
     case lyricsLoaded(Lyrics?, pass: Int)
     /// `AppState.deadline` came due.

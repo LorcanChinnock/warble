@@ -40,6 +40,9 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var showsTrackToast: Bool
     /// The current lyric line, which a resting notch shows under it when Settings turns lyrics on.
     public internal(set) var lyrics: LyricsState
+    /// Whether a sideways swipe over a notch skips, which Settings turns on, and the trackpad gesture under way.
+    public internal(set) var swipeToSkip: Bool
+    public internal(set) var swipe = Swipe()
     /// What the effects last asked for, so each is asked for once per change.
     public internal(set) var watchesClicks = false
     public internal(set) var takesEscape = false
@@ -48,12 +51,13 @@ public struct AppState: Equatable, Sendable {
     /// `checks` are what the Doctor finds before it has asked macOS anything: what it finds while the adapter works.
     public init(
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
-        showsTrackToast: Bool = false, showsLyrics: Bool = false, checks: [Doctor.Check] = []
+        showsTrackToast: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
         doctor = DoctorState(checks: checks)
         self.idleHover = idleHover
         self.showsTrackToast = showsTrackToast
+        self.swipeToSkip = swipeToSkip
         lyrics = LyricsState(isOn: showsLyrics)
     }
 
