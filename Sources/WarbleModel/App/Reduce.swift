@@ -42,6 +42,16 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         // a hide pending, there's no position to skip from, so it sends nothing.
         guard state.showsPlayback, state.hideAt == nil, let playback = state.playback else { break }
         return reduce(&state, .command(.seek(to: playback.position(skipping: seconds, at: now))), now: now)
+    case .setSleepTimer(let choice):
+        // Replaces the one running. Only while something plays, since a timer with nothing playing has nothing to pause,
+        // and End of track needs a track with a length.
+        if let choice {
+            if state.canSetSleepTimer, let playback = state.playback {
+                state.sleepTimer = SleepTimer(choice, playback: playback, at: now) ?? state.sleepTimer
+            }
+        } else {
+            state.sleepTimer = nil
+        }
     case .openApp:
         if let bundleIdentifier = state.playback?.bundleIdentifier ?? state.lastPlayed?.bundleIdentifier {
             effects.append(.openApp(bundleIdentifier: bundleIdentifier))
@@ -167,6 +177,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.swipe = Swipe()
     case .podcastSkipsChanged(let on):
         state.podcastSkips = on
+    case .sleepTimerSettingChanged(let on):
+        state.showsSleepTimer = on
     case .dragArtOutChanged(let on):
         state.dragArtOut = on
     case .hidesFromCaptureChanged(let on):
@@ -194,6 +206,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
             state.surfaces[display]?.hover.advance(to: now)
         }
     }
+    // Before Idle is settled, so the pause it guesses is treated like any other pause.
+    effects += followSleepTimer(&state, at: now)
     effects += settle(&state, from: old, at: now)
     // After Idle has had its say, so a track that's no longer shown has nothing to announce.
     if let notice, state.showsTrackToast, state.showsPlayback, !isOpen(state) {
@@ -207,6 +221,23 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         effects.append(fetch)
     }
     return effects
+}
+
+/// Keeps the sleep timer in step with what's playing, and pauses at once when it's due. It lasts only while something
+/// plays, so a pause by hand, Idle, a source that stopped reporting or turning the setting off ends it.
+private func followSleepTimer(_ state: inout AppState, at now: Date) -> [AppEffect] {
+    guard var timer = state.sleepTimer else { return [] }
+    guard state.canSetSleepTimer, let playback = state.playback else {
+        state.sleepTimer = nil
+        return []
+    }
+    guard timer.follow(playback, at: now) == .due else {
+        state.sleepTimer = timer
+        return []
+    }
+    state.sleepTimer = nil
+    show(playback.playing(false, at: now), in: &state, at: now)
+    return [.send(.pause)]
 }
 
 /// Whether `action` is the user touching a notch or something starting to play, which ends the first-run demo.

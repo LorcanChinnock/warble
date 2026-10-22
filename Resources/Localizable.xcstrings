@@ -27,6 +27,18 @@
     "%@ shortcut" : {
 
     },
+    "%lld min left" : {
+
+    },
+    "1 hour" : {
+
+    },
+    "15 minutes" : {
+
+    },
+    "30 minutes" : {
+
+    },
     "A long title fades out and scrolls once when the song changes, unless Reduce Motion is on. The track-change message skips a virtual notch that shows the title, since the title says the same." : {
 
     },
@@ -106,6 +118,12 @@
 
     },
     "Drop it in a message, a note or a folder. It brings the picture, and a link to the song when the app playing gives one. A click on the art still opens the app." : {
+
+    },
+    "End" : {
+
+    },
+    "End of track" : {
 
     },
     "Every display connected now has a notch." : {
@@ -286,6 +304,9 @@
     "Pause" : {
 
     },
+    "Pause after 15 minutes, 30 minutes, an hour or at the end of the track." : {
+
+    },
     "Paused" : {
 
     },
@@ -361,6 +382,9 @@
     "Show a message when the track changes" : {
 
     },
+    "Show a sleep timer in the player" : {
+
+    },
     "Show icon in the menu bar" : {
 
     },
@@ -386,6 +410,9 @@
 
     },
     "Skip by seconds in podcasts" : {
+
+    },
+    "Sleep timer" : {
 
     },
     "Standard" : {
@@ -418,6 +445,9 @@
     "The notch stays hidden behind the camera until you point at it." : {
 
     },
+    "The timer button sits beside the output button. A timer stops if you pause, and it never starts by itself." : {
+
+    },
     "Then the notch hides until something plays." : {
 
     },
@@ -431,6 +461,9 @@
 
     },
     "To find a song's lyrics, Warble sends its title, artist, album and length to LRCLIB, a free lyrics library. Nothing is sent while this is off." : {
+
+    },
+    "Turn off" : {
 
     },
     "Turned off in System Settings. Turn Warble on in Login Items to open it at login again." : {
