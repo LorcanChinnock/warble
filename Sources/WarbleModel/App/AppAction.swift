@@ -60,6 +60,7 @@ public enum AppAction: Equatable, Sendable {
     case stayVisibleChanged(TimeInterval)
     case idleHoverChanged(IdleHover)
     case trackToastChanged(Bool)
+    case toastsInFullScreenChanged(Bool)
     case lyricsChanged(Bool)
     case swipeToSkipChanged(Bool)
     case dragArtOutChanged(Bool)

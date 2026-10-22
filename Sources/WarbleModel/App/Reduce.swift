@@ -154,6 +154,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         if !shows {
             dismissToast(in: &state, at: now)
         }
+    case .toastsInFullScreenChanged(let on):
+        state.toastsInFullScreen = on
     case .lyricsChanged(let on):
         state.lyrics.turn(on: on)
     case .swipeToSkipChanged(let on):
