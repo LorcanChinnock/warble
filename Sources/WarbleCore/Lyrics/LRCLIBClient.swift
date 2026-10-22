@@ -4,10 +4,8 @@ import Foundation
 /// Fetches a track's synced lyrics from LRCLIB (lrclib.net) and keeps each answer in a cache on disk, "no lyrics"
 /// included, so a track is asked for once. The cache is the only place lyrics are kept, and clearing it is safe.
 ///
-/// Requests go one at a time, in the order they're asked for, and after a 429 the next waits out `Retry-After`. A call
-/// still waiting its turn when a newer one is asked for returns nothing and sends nothing, so skipping through ten
-/// tracks asks for the one playing rather than all ten. A request that fails, by a 503 or no network, returns nothing
-/// and is asked again next time. "No lyrics" is asked again after `noLyricsExpiry`, in case someone has added them.
+/// Requests go one at a time, in the order they're asked for, and after a 429 the next waits out `Retry-After`. A
+/// request that fails, by a 503 or no network, returns nothing and is asked again next time. "No lyrics" is asked again after `noLyricsExpiry`, in case someone has added them.
 public actor LRCLIBClient: LyricsProvider {
     public static let endpoint = URL(string: "https://lrclib.net/api/get")!
     /// The longest Warble waits after a 429, whatever `Retry-After` says, and how long it waits when it says nothing.
@@ -27,8 +25,6 @@ public actor LRCLIBClient: LyricsProvider {
     private var queue: Task<Void, Never>?
     /// When the next request may go, after a 429.
     private var notBefore: Date?
-    /// Counts the calls, so one that waited its turn can tell whether a newer one came after it.
-    private var calls = 0
 
     /// `cache` is a folder of its own, created when the first answer is saved. `version` is Warble's, sent in the
     /// `User-Agent` as LRCLIB asks.
@@ -56,16 +52,9 @@ public actor LRCLIBClient: LyricsProvider {
     /// The track's synced lyrics as LRC text, or `nil` when LRCLIB has none or the request fails.
     public func lyrics(for query: LyricsQuery) async -> String? {
         if let cached = cached(query) { return cached.lrc }
-        calls += 1
-        let call = calls
         let previous = queue
         let request = Task {
-            if let previous {
-                await previous.value
-                // A call for the same track may have been answered while this one waited.
-                if let cached = self.cached(query) { return cached.lrc }
-                guard self.calls == call else { return nil }
-            }
+            await previous?.value
             return await self.fetch(query)
         }
         queue = Task { _ = await request.value }
@@ -89,6 +78,8 @@ public actor LRCLIBClient: LyricsProvider {
     }
 
     private func fetch(_ query: LyricsQuery) async -> String? {
+        // A call for the same track may have been answered while this one waited.
+        if let cached = cached(query) { return cached.lrc }
         if let notBefore {
             // Bounded again in case the clock has moved back since.
             let wait = min(notBefore.timeIntervalSince(clock.now), Self.longestWait)

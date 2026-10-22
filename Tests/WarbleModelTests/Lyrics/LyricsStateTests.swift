@@ -264,15 +264,27 @@ private struct Run {
     let runner = makeRunner(lyrics: provider)
     var dispatched: [AppAction] = []
     runner.dispatch = { dispatched.append($0) }
-    let query = LyricsQuery(song)!
-    runner.perform(.fetchLyrics(query, pass: 4))
+    runner.perform(.fetchLyrics(LyricsQuery(song)!, pass: 4))
+    await runner.finish()
     runner.perform(.fetchLyrics(LyricsQuery(next("Unknown"))!, pass: 5))
     await runner.finish()
-    #expect(Set(provider.asked) == [query, LyricsQuery(next("Unknown"))!])
-    // The two answers may come back in either order.
-    #expect(dispatched.count == 2)
-    #expect(dispatched.contains(.lyricsLoaded(grace, pass: 4)))
-    #expect(dispatched.contains(.lyricsLoaded(nil, pass: 5)))
+    #expect(provider.asked == [LyricsQuery(song)!, LyricsQuery(next("Unknown"))!])
+    #expect(dispatched == [.lyricsLoaded(grace, pass: 4), .lyricsLoaded(nil, pass: 5)])
+}
+
+@MainActor
+@Test func fetchesAskedForBeforeTheirTurnAreDroppedAndTheLatestIsAlwaysAsked() async {
+    let provider = FakeLyrics(["Amazing Grace": lrc])
+    let runner = makeRunner(lyrics: provider)
+    var dispatched: [AppAction] = []
+    runner.dispatch = { dispatched.append($0) }
+    // A quick run of skips: each fetch is asked for before the one before it has begun.
+    for (pass, title) in [(1, "One"), (2, "Two"), (3, "Amazing Grace")] {
+        runner.perform(.fetchLyrics(LyricsQuery(next(title))!, pass: pass))
+    }
+    await runner.finish()
+    #expect(provider.asked == [LyricsQuery(song)!])
+    #expect(dispatched == [.lyricsLoaded(grace, pass: 3)])
 }
 
 @MainActor

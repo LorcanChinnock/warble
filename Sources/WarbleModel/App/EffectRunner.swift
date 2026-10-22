@@ -25,6 +25,11 @@ public final class EffectRunner {
     private var followsVolume = false
     /// The write in flight, which the next one waits for, so the file always ends up holding the latest track.
     private var saving: Task<Void, Never>?
+    /// The lyrics fetch in flight, which the next waits for, and the pass of the latest asked for. A fetch whose turn
+    /// comes after a newer one was asked for is dropped unsent, so skipping through ten tracks asks for the one in
+    /// flight and the latest, never the eight between, and the latest is always asked.
+    private var fetching: Task<Void, Never>?
+    private var latestFetch: Int?
     /// The reads under way, each gone once it answers.
     private var reading: [UUID: Task<Void, Never>] = [:]
 
@@ -81,12 +86,17 @@ public final class EffectRunner {
                 }
             }
         case .fetchLyrics(let query, let pass):
-            // Parsed off the main actor too, since a song's lyrics can run to hundreds of lines.
+            latestFetch = pass
+            let previous = fetching
             let provider = lyrics
-            read {
-                await Task.detached(priority: .utility) { await provider?.lyrics(for: query).flatMap(Lyrics.init(lrc:)) }.value
-            } answer: {
-                .lyricsLoaded($0, pass: pass)
+            fetching = Task { [weak self] in
+                await previous?.value
+                guard let self, pass == self.latestFetch else { return }
+                // Parsed off the main actor too, since a song's lyrics can run to hundreds of lines.
+                let found = await Task.detached(priority: .utility) {
+                    await provider?.lyrics(for: query).flatMap(Lyrics.init(lrc:))
+                }.value
+                self.dispatch(.lyricsLoaded(found, pass: pass))
             }
         case .watchClicksOutside, .openApp, .haptic, .gatherFacts, .followPlayers, .toggleKeyboard:
             platform(effect)
@@ -115,6 +125,7 @@ public final class EffectRunner {
             await read.value
         }
         await saving?.value
+        await fetching?.value
     }
 
     /// Reads the volume and the outputs, and follows changes from the volume keys and elsewhere, only while the slider
