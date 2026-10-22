@@ -17,6 +17,8 @@ public enum NotchState: String, CaseIterable, Sendable {
     case toast
     /// Resting, with the current lyric line in a strip below, while a song with lyrics plays and Settings turns them on.
     case lyrics
+    /// Idle, with a hint in a strip below, during the first-run demo.
+    case hint
     /// Hovered or clicked: the full card with the art and room for the controls.
     case expanded
 
@@ -103,6 +105,8 @@ public enum NotchLayout {
     public static let idleDrop: CGFloat = 76
     /// How far a track-change toast reaches below the camera housing: a line for the title and one for the artist.
     public static let toastDrop: CGFloat = 40
+    /// How far the first-run demo's hint reaches below the camera housing: one line.
+    public static let hintDrop: CGFloat = 30
     /// How far the lyrics strip reaches below the camera housing: one line.
     public static let lyricsDrop: CGFloat = 26
     /// Room either side of the notch once expanded, for the art beside the text. Measured from the notch, so the card
@@ -137,6 +141,8 @@ public enum NotchLayout {
             CGRect(x: notch.minX - wing(notch: notch), y: notch.minY, width: notch.width + 2 * wing(notch: notch), height: notch.height)
         case .toast:
             CGRect(x: notch.minX - wing(notch: notch), y: notch.minY - toastDrop, width: notch.width + 2 * wing(notch: notch), height: notch.height + toastDrop)
+        case .hint:
+            CGRect(x: notch.minX - expandedWing, y: notch.minY - hintDrop, width: notch.width + 2 * expandedWing, height: notch.height + hintDrop)
         case .lyrics:
             CGRect(x: notch.minX - wing(notch: notch), y: notch.minY - lyricsDrop, width: notch.width + 2 * wing(notch: notch), height: notch.height + lyricsDrop)
         case .expanded:
@@ -165,7 +171,7 @@ public enum NotchLayout {
     /// open it, and the whole panel once it's open.
     public static func hoverArea(_ state: NotchState, notch: CGRect, card: NotchCard = .player) -> CGRect? {
         switch state {
-        case .idle, .resting, .toast, .lyrics: notch
+        case .idle, .resting, .toast, .lyrics, .hint: notch
         case .hidden, .expanded: frame(state, notch: notch, card: card)
         }
     }

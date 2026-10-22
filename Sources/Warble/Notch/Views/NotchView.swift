@@ -106,6 +106,11 @@ private struct NotchContent: View {
                         .transition(ContentTransition())
                 }
             }
+        case (.hint, _, _):
+            VStack(spacing: 0) {
+                Color.clear.frame(height: model.notch.height)
+                DemoHint()
+            }
         case (.resting, _, nil):
             RestingContent(playback: nil, artwork: nil, notch: model.notch, model: model)
         default:

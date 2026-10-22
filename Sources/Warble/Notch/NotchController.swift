@@ -127,9 +127,16 @@ final class NotchController {
 
     /// Draws what `Store` decided: the track, the last one played, the volume and outputs, the Doctor's checks, and each
     /// notch's state.
+    /// What's playing, or the demo's track while the first-run demo plays one.
+    private static func shown(_ state: AppState) -> PlaybackState? {
+        guard state.onboarding.demo.showsTrack, let start = state.onboarding.demo.startedAt else { return state.playback }
+        return DemoTrack.playback(startedAt: start)
+    }
+
     private func stateChanged(from old: AppState, to new: AppState, by action: AppAction) {
-        if new.playback != old.playback {
-            player.playback = new.playback
+        let shown = Self.shown(new)
+        if shown != Self.shown(old) {
+            player.playback = shown
         }
         if new.lastPlayed != old.lastPlayed {
             player.lastPlayed = new.lastPlayed

@@ -67,7 +67,7 @@ final class NotchSurface {
         guard let surface = app.surfaces[display], let state = app.notchState(display), let card = app.card(display) else { return }
         self.state = state
         self.card = card
-        isPlaying = app.showsPlayback
+        isPlaying = app.showsPlayback || app.onboarding.demo.showsTrack
         toast = app.toasts.current?.content
         lyric = app.lyrics.line?.text
         lyrics = app.lyrics.excerpt
