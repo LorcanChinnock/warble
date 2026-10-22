@@ -63,6 +63,7 @@ public enum AppAction: Equatable, Sendable {
     case toastsInFullScreenChanged(Bool)
     case lyricsChanged(Bool)
     case swipeToSkipChanged(Bool)
+    case podcastSkipsChanged(Bool)
     case dragArtOutChanged(Bool)
     /// The lyrics found for the fetch numbered `pass`, or `nil` when there are none.
     case lyricsLoaded(Lyrics?, pass: Int)

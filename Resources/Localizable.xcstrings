@@ -120,6 +120,9 @@
     "General" : {
 
     },
+    "Go back 15 seconds or forward 30 in a podcast or audiobook." : {
+
+    },
     "Help and user guide" : {
 
     },
@@ -358,6 +361,9 @@
     "Shuffle" : {
 
     },
+    "Skip by seconds in podcasts" : {
+
+    },
     "Standard" : {
 
     },
@@ -389,6 +395,9 @@
 
     },
     "Then the notch hides until something plays." : {
+
+    },
+    "These buttons take the place of previous and next. Songs keep previous and next either way." : {
 
     },
     "This kept stopping, so Warble only follows Music and Spotify until you open it again." : {

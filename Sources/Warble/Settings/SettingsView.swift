@@ -180,6 +180,7 @@ private struct NotchSettings: View {
     @Setting(PreferenceKey.lyrics) private var lyrics: Bool
     @Setting(PreferenceKey.swipeToSkip) private var swipeToSkip: Bool
     @Setting(PreferenceKey.dragArtOut) private var dragArtOut: Bool
+    @Setting(PreferenceKey.podcastSkips) private var podcastSkips: Bool
 
     var body: some View {
         SectionPage(section: .notch) {
@@ -250,6 +251,20 @@ private struct NotchSettings: View {
                 .accessibilityHint(Text("Drag the art into another app to share the song."))
             } footer: {
                 Text("Drop it in a message, a note or a folder. It brings the picture, and a link to the song when the app playing gives one. A click on the art still opens the app.")
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            Section {
+                Toggle(isOn: $podcastSkips) {
+                    Text("Skip by seconds in podcasts")
+                    Text("Go back 15 seconds or forward 30 in a podcast or audiobook.")
+                }
+                .accessibilityLabel(Text("Skip by seconds in podcasts"))
+                .accessibilityHint(Text("Go back 15 seconds or forward 30 in a podcast or audiobook."))
+            } footer: {
+                Text("These buttons take the place of previous and next. Songs keep previous and next either way.")
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, 10)

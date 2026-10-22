@@ -30,6 +30,7 @@ Every change takes effect straight away.
   - **Show it over full-screen apps too.** Off at first, and only there while the message above is on. Turn it on, and the message also slides out over an app in full screen, such as a film or a game, then goes. The notch itself still stays out of a full-screen app.
 - **Show lyrics under the notch.** Off at first. Turn it on, and the line being sung shows under the notch while a song plays. To find the lyrics, Warble sends the song's title, artist, album and length to LRCLIB, a free lyrics library. The player then has a lyrics button that shows the lines around it. See [Show lyrics](/docs/show-lyrics/).
 - **Swipe over the notch to skip.** Off at first. Turn it on, and swiping left over the notch with two fingers skips to the next song, and swiping right goes back. It needs a trackpad, or a Magic Mouse. Scrolling up and down still changes the volume. See [Use gestures](/docs/use-gestures/).
+- **Skip by seconds in podcasts.** Off at first. Turn it on, and a podcast or an audiobook has back 15 seconds and forward 30 in place of previous and next. Songs keep previous and next. See [Listen to podcasts](/docs/listen-to-podcasts/).
 - **Drag the album art out of the player.** Off at first. Turn it on, and you can drag the art from the open player into another app: a folder gets the picture as a file, and a message or a note gets the picture. A click on the art still opens the app. See [Use gestures](/docs/use-gestures/#drag-the-album-art-out).
 
 > [!NOTE]
