@@ -49,6 +49,9 @@ public enum AppAction: Equatable, Sendable {
     case stayVisibleChanged(TimeInterval)
     case idleHoverChanged(IdleHover)
     case trackToastChanged(Bool)
+    case lyricsChanged(Bool)
+    /// The lyrics found for the fetch numbered `pass`, or `nil` when there are none.
+    case lyricsLoaded(Lyrics?, pass: Int)
     /// `AppState.deadline` came due.
     case tick
 }

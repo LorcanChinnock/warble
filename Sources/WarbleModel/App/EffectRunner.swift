@@ -8,6 +8,8 @@ public final class EffectRunner {
     private let volume: any VolumeControl
     private let outputs: any AudioOutputs
     private let lastPlayed: any LastPlayedStore
+    /// Where lyrics come from, or `nil` when there's nowhere to ask, so every fetch finds none.
+    private let lyrics: (any LyricsProvider)?
     /// Carries out the effects that need AppKit. The app sets it, since it owns what they change.
     public var platform: (AppEffect) -> Void = { _ in }
     /// Where an answer goes back in as an action. The store sets it once both exist.
@@ -26,11 +28,15 @@ public final class EffectRunner {
     /// The reads under way, each gone once it answers.
     private var reading: [UUID: Task<Void, Never>] = [:]
 
-    public init(hotkeys: any HotkeyRegistrar, volume: any VolumeControl, outputs: any AudioOutputs, lastPlayed: any LastPlayedStore) {
+    public init(
+        hotkeys: any HotkeyRegistrar, volume: any VolumeControl, outputs: any AudioOutputs, lastPlayed: any LastPlayedStore,
+        lyrics: (any LyricsProvider)?
+    ) {
         self.hotkeys = hotkeys
         self.volume = volume
         self.outputs = outputs
         self.lastPlayed = lastPlayed
+        self.lyrics = lyrics
     }
 
     public func perform(_ effect: AppEffect) {
@@ -73,6 +79,14 @@ public final class EffectRunner {
                 } catch {
                     logError("Couldn't save the last track played: \(error.localizedDescription)")
                 }
+            }
+        case .fetchLyrics(let query, let pass):
+            // Parsed off the main actor too, since a song's lyrics can run to hundreds of lines.
+            let provider = lyrics
+            read {
+                await Task.detached(priority: .utility) { await provider?.lyrics(for: query).flatMap(Lyrics.init(lrc:)) }.value
+            } answer: {
+                .lyricsLoaded($0, pass: pass)
             }
         case .watchClicksOutside, .openApp, .haptic, .gatherFacts, .followPlayers, .toggleKeyboard:
             platform(effect)

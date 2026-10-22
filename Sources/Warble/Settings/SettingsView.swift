@@ -176,6 +176,7 @@ private struct GeneralSettings: View {
 private struct NotchSettings: View {
     @Setting(PreferenceKey.idleHover) private var idleHover: IdleHover
     @Setting(PreferenceKey.trackChangeToast) private var trackChangeToast: Bool
+    @Setting(PreferenceKey.lyrics) private var lyrics: Bool
 
     var body: some View {
         SectionPage(section: .notch) {
@@ -197,6 +198,20 @@ private struct NotchSettings: View {
                 .accessibilityHint(Text("The new song's title and artist slide out of the notch for two seconds."))
             } footer: {
                 Text("Animations follow Reduce Motion in System Settings › Accessibility › Display.")
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            Section {
+                Toggle(isOn: $lyrics) {
+                    Text("Show lyrics under the notch")
+                    Text("The line being sung, while a song plays.")
+                }
+                .accessibilityLabel(Text("Show lyrics under the notch"))
+                .accessibilityHint(Text("The line being sung, while a song plays."))
+            } footer: {
+                Text("To find a song's lyrics, Warble sends its title, artist, album and length to LRCLIB, a free lyrics library. Nothing is sent while this is off.")
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, 10)

@@ -171,6 +171,24 @@ private func client(_ server: Server, cache: URL, clock: SleepingClock = Sleepin
     #expect(server.requests.count == 1)
 }
 
+@Test func noLyricsIsAskedForAgainAfterThirtyDays() async throws {
+    let cache = try temporaryFolder()
+    defer { try? FileManager.default.removeItem(at: cache) }
+    let server = Server(Reply(status: 404), .lyrics(synced))
+    let clock = SleepingClock()
+    let lyrics = client(server, cache: cache, clock: clock)
+    #expect(await lyrics.lyrics(for: grace) == nil)
+    clock.sleep(LRCLIBClient.noLyricsExpiry - 1)
+    #expect(await lyrics.lyrics(for: grace) == nil)
+    #expect(server.requests.count == 1)
+    clock.sleep(1)
+    #expect(await lyrics.lyrics(for: grace) == synced)
+    // Lyrics found don't expire.
+    clock.sleep(LRCLIBClient.noLyricsExpiry * 10)
+    #expect(await lyrics.lyrics(for: grace) == synced)
+    #expect(server.requests.count == 2)
+}
+
 @Test func plainLyricsOrAnInstrumentalAreNoLyricsAndArentAskedForAgain() async throws {
     let cache = try temporaryFolder()
     defer { try? FileManager.default.removeItem(at: cache) }
@@ -276,4 +294,24 @@ private func client(_ server: Server, cache: URL, clock: SleepingClock = Sleepin
     async let second = lyrics.lyrics(for: grace)
     #expect(await [first, second] == [synced, synced])
     #expect(server.requests.count == 1)
+}
+
+@Test func aCallStillWaitingWhenANewerOneIsAskedForSendsNothing() async throws {
+    let cache = try temporaryFolder()
+    defer { try? FileManager.default.removeItem(at: cache) }
+    let server = Server(.lyrics(synced), delay: 0.5)
+    let lyrics = client(server, cache: cache)
+    let skipped = LyricsQuery(artist: "Traditional", title: "Greensleeves", album: "Folk", duration: 150)
+    // Each a moment after the one before, so they're asked in order while the first is in flight.
+    let first = Task { await lyrics.lyrics(for: grace) }
+    try await Task.sleep(for: .milliseconds(100))
+    let second = Task { await lyrics.lyrics(for: skipped) }
+    try await Task.sleep(for: .milliseconds(100))
+    let third = Task { await lyrics.lyrics(for: fair) }
+    #expect(await [first.value, second.value, third.value] == [synced, nil, synced])
+    let titles = server.requests.compactMap { request in
+        request.url.flatMap { URLComponents(url: $0, resolvingAgainstBaseURL: false)?.queryItems?.first { $0.name == "track_name" }?.value }
+    }
+    #expect(titles == ["Amazing Grace", "Scarborough Fair"])
+    #expect(server.requests.count == 2)
 }

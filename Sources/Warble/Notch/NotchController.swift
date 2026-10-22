@@ -46,6 +46,9 @@ final class NotchController {
                 if preferences.trackChangeToast != state.showsTrackToast {
                     self.store.dispatch(.trackToastChanged(preferences.trackChangeToast))
                 }
+                if preferences.lyrics != state.lyrics.isOn {
+                    self.store.dispatch(.lyricsChanged(preferences.lyrics))
+                }
                 if preferences.virtualNotchRules != self.rules {
                     self.layOut()
                 }

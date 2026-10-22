@@ -135,6 +135,9 @@
     "Later" : {
 
     },
+    "Lyrics: %@" : {
+
+    },
     "MIT License" : {
 
     },
@@ -313,6 +316,9 @@
     "Show icon in the menu bar" : {
 
     },
+    "Show lyrics under the notch" : {
+
+    },
     "Show what's wrong" : {
 
     },
@@ -331,6 +337,9 @@
     "Text size" : {
 
     },
+    "The line being sung, while a song plays." : {
+
+    },
     "The media keys on your keyboard already work. These are for when you want another key." : {
 
     },
@@ -344,6 +353,9 @@
 
     },
     "This kept stopping, so Warble only follows Music and Spotify until you open it again." : {
+
+    },
+    "To find a song's lyrics, Warble sends its title, artist, album and length to LRCLIB, a free lyrics library. Nothing is sent while this is off." : {
 
     },
     "Turned off in System Settings. Turn Warble on in Login Items to open it at login again." : {

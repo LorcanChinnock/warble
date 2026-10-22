@@ -7,7 +7,7 @@ private let log = Logger.warble("app")
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Built with the delegate, before the menu bar scene reads it.
-    let environment = AppEnvironment(lastPlayed: AppDelegate.lastPlayedStore())
+    let environment = AppEnvironment(lastPlayed: AppDelegate.lastPlayedStore(), lyrics: AppDelegate.lyricsProvider())
     private var notch: NotchController?
     private var source: AdapterSource?
     private var fallback: ScriptSource?
@@ -75,6 +75,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return LastPlayedInMemory()
         }
         return file
+    }
+
+    /// LRCLIB, with its cache in Caches, or for the preview a few made-up lines, so the preview sends nothing.
+    private static func lyricsProvider() -> (any LyricsProvider)? {
+        guard preview != .resting else { return PreviewLyrics() }
+        guard let bundleIdentifier = Bundle.main.bundleIdentifier else { return nil }
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0"
+        return LRCLIBClient.standard(bundleIdentifier: bundleIdentifier, version: version)
     }
 
     func applicationWillTerminate(_ notification: Notification) {

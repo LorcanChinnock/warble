@@ -4,15 +4,19 @@ import Foundation
 /// Fetches a track's synced lyrics from LRCLIB (lrclib.net) and keeps each answer in a cache on disk, "no lyrics"
 /// included, so a track is asked for once. The cache is the only place lyrics are kept, and clearing it is safe.
 ///
-/// Requests go one at a time, in the order they're asked for, and after a 429 the next waits out `Retry-After`. A
-/// request that fails, by a 503 or no network, returns nothing and is asked again next time.
-public actor LRCLIBClient {
+/// Requests go one at a time, in the order they're asked for, and after a 429 the next waits out `Retry-After`. A call
+/// still waiting its turn when a newer one is asked for returns nothing and sends nothing, so skipping through ten
+/// tracks asks for the one playing rather than all ten. A request that fails, by a 503 or no network, returns nothing
+/// and is asked again next time. "No lyrics" is asked again after `noLyricsExpiry`, in case someone has added them.
+public actor LRCLIBClient: LyricsProvider {
     public static let endpoint = URL(string: "https://lrclib.net/api/get")!
     /// The longest Warble waits after a 429, whatever `Retry-After` says, and how long it waits when it says nothing.
     static let longestWait: TimeInterval = 300
     static let defaultWait: TimeInterval = 60
     /// Longer synced lyrics than this are taken as none. A ten-minute song's are about 10 KB.
     static let largestLyrics = 256 * 1024
+    /// How long "no lyrics" is kept before LRCLIB is asked again. Lyrics found are kept until the cache is cleared.
+    static let noLyricsExpiry: TimeInterval = 30 * 86_400
 
     private let session: URLSession
     private let cache: URL
@@ -23,6 +27,8 @@ public actor LRCLIBClient {
     private var queue: Task<Void, Never>?
     /// When the next request may go, after a 429.
     private var notBefore: Date?
+    /// Counts the calls, so one that waited its turn can tell whether a newer one came after it.
+    private var calls = 0
 
     /// `cache` is a folder of its own, created when the first answer is saved. `version` is Warble's, sent in the
     /// `User-Agent` as LRCLIB asks.
@@ -50,9 +56,16 @@ public actor LRCLIBClient {
     /// The track's synced lyrics as LRC text, or `nil` when LRCLIB has none or the request fails.
     public func lyrics(for query: LyricsQuery) async -> String? {
         if let cached = cached(query) { return cached.lrc }
+        calls += 1
+        let call = calls
         let previous = queue
         let request = Task {
-            await previous?.value
+            if let previous {
+                await previous.value
+                // A call for the same track may have been answered while this one waited.
+                if let cached = self.cached(query) { return cached.lrc }
+                guard self.calls == call else { return nil }
+            }
             return await self.fetch(query)
         }
         queue = Task { _ = await request.value }
@@ -76,8 +89,6 @@ public actor LRCLIBClient {
     }
 
     private func fetch(_ query: LyricsQuery) async -> String? {
-        // A call for the same track may have been answered while this one waited.
-        if let cached = cached(query) { return cached.lrc }
         if let notBefore {
             // Bounded again in case the clock has moved back since.
             let wait = min(notBefore.timeIntervalSince(clock.now), Self.longestWait)
@@ -93,10 +104,10 @@ public actor LRCLIBClient {
             let lrc = answer.syncedLyrics.flatMap { lrc in
                 answer.instrumental != true && !lrc.isEmpty && lrc.utf8.count <= Self.largestLyrics ? lrc : nil
             }
-            save(Entry(key: query.cacheKey, lrc: lrc))
+            save(Entry(key: query.cacheKey, lrc: lrc, saved: clock.now))
             return lrc
         case 404:
-            save(Entry(key: query.cacheKey, lrc: nil))
+            save(Entry(key: query.cacheKey, lrc: nil, saved: clock.now))
             return nil
         case 429:
             let now = clock.now
@@ -138,6 +149,8 @@ public actor LRCLIBClient {
         var key: String
         /// `nil` when LRCLIB has no synced lyrics for the track.
         var lrc: String?
+        /// When the answer was saved, which "no lyrics" expires from.
+        var saved: Date?
     }
 
     private struct Answer: Decodable {
@@ -150,12 +163,18 @@ public actor LRCLIBClient {
         return cache.appendingPathComponent("\(hash).json")
     }
 
-    /// The cached answer for `query`, or `nil` when there's none or it can't be read.
+    /// The cached answer for `query`, or `nil` when there's none, it can't be read, or it's "no lyrics" that has
+    /// expired. One without a date, or dated in the future by a clock that has since moved back, has expired.
     private func cached(_ query: LyricsQuery) -> Entry? {
         let key = query.cacheKey
         guard let data = try? Data(contentsOf: file(for: key)),
               let entry = try? JSONDecoder().decode(Entry.self, from: data), entry.key == key
         else { return nil }
+        if entry.lrc == nil {
+            guard let saved = entry.saved else { return nil }
+            let age = clock.now.timeIntervalSince(saved)
+            guard age >= 0, age < Self.noLyricsExpiry else { return nil }
+        }
         return entry
     }
 

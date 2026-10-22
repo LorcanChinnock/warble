@@ -15,6 +15,8 @@ public enum NotchState: String, CaseIterable, Sendable {
     case resting
     /// Resting, with the new track's title and artist in a strip that slides out below for a moment after a skip.
     case toast
+    /// Resting, with the current lyric line in a strip below, while a song with lyrics plays and Settings turns them on.
+    case lyrics
     /// Hovered or clicked: the full card with the art and room for the controls.
     case expanded
 
@@ -28,12 +30,18 @@ public enum NotchState: String, CaseIterable, Sendable {
 
     /// How far `hover` has opened the notch, given whether anything is playing, whether a Doctor check failed, what
     /// the housing does on a hover while Idle, whether it stays drawn then (`NotchHousing.isAlwaysShown`), and whether a
-    /// track-change toast is showing, which only a resting notch with something playing draws.
-    public init(_ hover: HoverState, isPlaying: Bool, needsAttention: Bool, idleHover: IdleHover, isAlwaysShown: Bool = false, showsToast: Bool = false) {
+    /// track-change toast or a lyric line is showing, which only a resting notch with something playing draws. The toast
+    /// takes the strip from the lyrics while it shows.
+    public init(
+        _ hover: HoverState, isPlaying: Bool, needsAttention: Bool, idleHover: IdleHover, isAlwaysShown: Bool = false,
+        showsToast: Bool = false, showsLyrics: Bool = false
+    ) {
         if isPlaying || needsAttention {
             self.init(hover)
             if self == .resting, isPlaying, showsToast {
                 self = .toast
+            } else if self == .resting, isPlaying, showsLyrics {
+                self = .lyrics
             }
         } else if idleHover == .nothing {
             self = isAlwaysShown ? .idle : .hidden
@@ -91,6 +99,8 @@ public enum NotchLayout {
     public static let idleDrop: CGFloat = 76
     /// How far a track-change toast reaches below the camera housing: a line for the title and one for the artist.
     public static let toastDrop: CGFloat = 40
+    /// How far the lyrics strip reaches below the camera housing: one line.
+    public static let lyricsDrop: CGFloat = 26
     /// Room either side of the notch once expanded, for the art beside the text. Measured from the notch, so the card
     /// keeps its proportion to each Mac's camera housing.
     public static let expandedWing: CGFloat = 70
@@ -123,6 +133,8 @@ public enum NotchLayout {
             CGRect(x: notch.minX - wing(notch: notch), y: notch.minY, width: notch.width + 2 * wing(notch: notch), height: notch.height)
         case .toast:
             CGRect(x: notch.minX - wing(notch: notch), y: notch.minY - toastDrop, width: notch.width + 2 * wing(notch: notch), height: notch.height + toastDrop)
+        case .lyrics:
+            CGRect(x: notch.minX - wing(notch: notch), y: notch.minY - lyricsDrop, width: notch.width + 2 * wing(notch: notch), height: notch.height + lyricsDrop)
         case .expanded:
             CGRect(x: notch.minX - expandedWing, y: notch.minY - drop(card), width: notch.width + 2 * expandedWing, height: notch.height + drop(card))
         }
@@ -144,11 +156,11 @@ public enum NotchLayout {
     }
 
     /// Where the pointer counts as on the notch in `state`, for `HoverIntent`: only the camera housing while Idle,
-    /// resting or showing a toast, so a pointer crossing the wings, the menu bar or a toast on its way elsewhere doesn't
+    /// resting or showing a toast or lyrics, so a pointer crossing the wings, the menu bar or a strip on its way elsewhere doesn't
     /// open it, and the whole panel once it's open.
     public static func hoverArea(_ state: NotchState, notch: CGRect, card: NotchCard = .player) -> CGRect? {
         switch state {
-        case .idle, .resting, .toast: notch
+        case .idle, .resting, .toast, .lyrics: notch
         case .hidden, .expanded: frame(state, notch: notch, card: card)
         }
     }

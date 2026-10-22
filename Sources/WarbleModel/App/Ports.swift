@@ -72,3 +72,9 @@ public protocol LastPlayedStore: Sendable {
     func save(_ lastPlayed: LastPlayed) throws
     func remembering(_ state: PlaybackState, appName: String?) -> LastPlayed
 }
+
+/// Where a track's synced lyrics come from. Only asked while Settings turns lyrics on.
+public protocol LyricsProvider: Sendable {
+    /// The track's synced lyrics as LRC text, or `nil` when there are none or they can't be had.
+    func lyrics(for query: LyricsQuery) async -> String?
+}

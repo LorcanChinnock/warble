@@ -145,9 +145,35 @@ final class FakeLastPlayed: LastPlayedStore, @unchecked Sendable {
     }
 }
 
+/// Answers each track with the LRC a test gives it, and records what it was asked.
+final class FakeLyrics: LyricsProvider, @unchecked Sendable {
+    private let lock = NSLock()
+    private var _asked: [LyricsQuery] = []
+    /// LRC text by track title.
+    var lrc: [String: String] = [:]
+
+    var asked: [LyricsQuery] {
+        lock.withLock { _asked }
+    }
+
+    init(_ lrc: [String: String] = [:]) {
+        self.lrc = lrc
+    }
+
+    func lyrics(for query: LyricsQuery) async -> String? {
+        lock.withLock {
+            _asked.append(query)
+            return lrc[query.title]
+        }
+    }
+}
+
 @MainActor
-func makeRunner(hotkeys: FakeHotkeys = FakeHotkeys(), volume: FakeVolume = FakeVolume(), outputs: FakeOutputs = FakeOutputs(), lastPlayed: FakeLastPlayed = FakeLastPlayed()) -> EffectRunner {
-    EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed)
+func makeRunner(
+    hotkeys: FakeHotkeys = FakeHotkeys(), volume: FakeVolume = FakeVolume(), outputs: FakeOutputs = FakeOutputs(),
+    lastPlayed: FakeLastPlayed = FakeLastPlayed(), lyrics: FakeLyrics = FakeLyrics()
+) -> EffectRunner {
+    EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, lyrics: lyrics)
 }
 
 /// A player that records the commands it's sent.

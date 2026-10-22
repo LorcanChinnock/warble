@@ -21,6 +21,7 @@ final class NotchSurface {
     private(set) var card = NotchCard.player
     private var isPlaying = false
     private var toast: TrackToast?
+    private var lyric: String?
     /// Builds the menu a right-click opens, when it opens.
     var makeMenu: () -> NSMenu? = { nil }
     /// Called with each key the open notch's controls didn't use while it has the keyboard; true when it did something.
@@ -65,6 +66,7 @@ final class NotchSurface {
         self.card = card
         isPlaying = app.showsPlayback
         toast = app.toasts.current?.content
+        lyric = app.lyrics.line?.text
         model.isVirtual = surface.isVirtual
         model.isAlwaysShown = surface.isAlwaysShown
         model.showsDoctor = surface.showsDoctor
@@ -162,6 +164,7 @@ final class NotchSurface {
         let card = card
         let isPlaying = isPlaying
         let toast = state == .toast ? toast : nil
+        let lyric = state == .lyrics ? lyric : nil
         guard let frame = NotchLayout.frame(state, notch: notch, card: card) else {
             guard shown != nil else { return }
             shown = nil
@@ -182,7 +185,9 @@ final class NotchSurface {
             }
             return
         }
-        guard shown?.state != state || shown?.frame != frame || model.card != card || model.isPlaying != isPlaying || model.toast != toast else { return }
+        guard shown?.state != state || shown?.frame != frame || model.card != card || model.isPlaying != isPlaying || model.toast != toast
+            || model.lyric != lyric
+        else { return }
         let previous = shown
         shown = (state, frame)
         morphs += 1
@@ -210,6 +215,7 @@ final class NotchSurface {
                 model.card = card
                 model.isPlaying = isPlaying
                 model.toast = toast
+                model.lyric = lyric
             } completion: { [weak self] in
                 guard let self, morph == self.morphs, self.panelFrame != frame else { return }
                 self.show(in: frame)
@@ -219,6 +225,7 @@ final class NotchSurface {
             model.card = card
             model.isPlaying = isPlaying
             model.toast = toast
+            model.lyric = lyric
             show(in: frame)
         }
         panel.track(NotchLayout.hoverArea(state, notch: notch, card: card) ?? .zero)

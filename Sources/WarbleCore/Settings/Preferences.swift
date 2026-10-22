@@ -13,6 +13,8 @@ public enum PreferenceKey {
     public static let idleHover = "idleHover"
     /// Whether the new track's title and artist slide out of the notch for a moment when the track changes.
     public static let trackChangeToast = "trackChangeToast"
+    /// Whether a resting notch shows the current lyric line, looked up on LRCLIB. Off, nothing is sent there.
+    public static let lyrics = "lyrics"
 
     public static func hotkey(_ action: WarbleAction) -> String { "hotkey.\(action.rawValue)" }
 }
@@ -27,6 +29,7 @@ public struct Preferences {
             PreferenceKey.stayVisibleAfterPausing: IdleAfterPause.defaultDelay,
             PreferenceKey.idleHover: IdleHover.lastPlayed.rawValue,
             PreferenceKey.trackChangeToast: false,
+            PreferenceKey.lyrics: false,
         ]
         for action in WarbleAction.allCases {
             values[PreferenceKey.hotkey(action)] = action.defaultCombo?.encoded ?? ""
@@ -84,6 +87,10 @@ public struct Preferences {
 
     public var trackChangeToast: Bool {
         store.bool(forKey: PreferenceKey.trackChangeToast)
+    }
+
+    public var lyrics: Bool {
+        store.bool(forKey: PreferenceKey.lyrics)
     }
 
     /// `nil` means the user cleared the shortcut.
