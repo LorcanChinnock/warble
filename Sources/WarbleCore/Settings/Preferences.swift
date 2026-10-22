@@ -19,6 +19,8 @@ public enum PreferenceKey {
     public static let lyrics = "lyrics"
     /// Whether a sideways two-finger swipe over the notch skips to the next or previous track.
     public static let swipeToSkip = "swipeToSkip"
+    /// Whether a podcast or audiobook has back 15 and forward 30 seconds in place of previous and next.
+    public static let podcastSkips = "podcastSkips"
     /// Whether the art in the player's card can be dragged into another app, as the image and the track's link.
     public static let dragArtOut = "dragArtOut"
 
@@ -38,6 +40,7 @@ public struct Preferences {
             PreferenceKey.toastsInFullScreen: false,
             PreferenceKey.lyrics: false,
             PreferenceKey.swipeToSkip: false,
+            PreferenceKey.podcastSkips: false,
             PreferenceKey.dragArtOut: false,
         ]
         for action in WarbleAction.allCases {
@@ -108,6 +111,10 @@ public struct Preferences {
 
     public var swipeToSkip: Bool {
         store.bool(forKey: PreferenceKey.swipeToSkip)
+    }
+
+    public var podcastSkips: Bool {
+        store.bool(forKey: PreferenceKey.podcastSkips)
     }
 
     public var dragArtOut: Bool {

@@ -47,6 +47,8 @@ public struct AppState: Equatable, Sendable {
     /// Whether a sideways swipe over a notch skips, which Settings turns on, and the trackpad gesture under way.
     public internal(set) var swipeToSkip: Bool
     public internal(set) var swipe = Swipe()
+    /// Whether a podcast or audiobook skips by seconds rather than by track, which Settings turns on.
+    public internal(set) var podcastSkips: Bool
     /// Whether the art can be dragged out of the player's card, which Settings turns on.
     public internal(set) var dragArtOut: Bool
     /// What the effects last asked for, so each is asked for once per change.
@@ -57,7 +59,8 @@ public struct AppState: Equatable, Sendable {
     /// `checks` are what the Doctor finds before it has asked macOS anything: what it finds while the adapter works.
     public init(
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
-        showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, dragArtOut: Bool = false,
+        showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, podcastSkips: Bool = false,
+        dragArtOut: Bool = false,
         checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
@@ -66,6 +69,7 @@ public struct AppState: Equatable, Sendable {
         self.showsTrackToast = showsTrackToast
         self.toastsInFullScreen = toastsInFullScreen
         self.swipeToSkip = swipeToSkip
+        self.podcastSkips = podcastSkips
         self.dragArtOut = dragArtOut
         lyrics = LyricsState(isOn: showsLyrics)
     }
@@ -113,10 +117,10 @@ public struct AppState: Equatable, Sendable {
         showsPlayback && playback != nil && lyrics.excerpt != nil
     }
 
-    /// Whether the player's card skips back and forward by seconds rather than by track: a podcast or audiobook is
-    /// playing, with a length to move through.
+    /// Whether the player's card skips back and forward by seconds rather than by track: Settings turns it on, and a
+    /// podcast or audiobook is playing, with a length to move through.
     public var skipsBySeconds: Bool {
-        guard showsPlayback, let playback, playback.duration != nil else { return false }
+        guard podcastSkips, showsPlayback, let playback, playback.duration != nil else { return false }
         return SpokenWord.contains(playback)
     }
 

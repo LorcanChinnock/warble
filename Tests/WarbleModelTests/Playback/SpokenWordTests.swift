@@ -31,8 +31,8 @@ private func replay(_ name: String, count: Int = .max) throws -> PlaybackState? 
     return stream.state
 }
 
-private func playing(_ playback: PlaybackState) -> AppState {
-    var state = AppState()
+private func playing(_ playback: PlaybackState, podcastSkips: Bool = true) -> AppState {
+    var state = AppState(podcastSkips: podcastSkips)
     _ = reduce(&state, .playbackReported(playback), now: start)
     return state
 }
@@ -142,4 +142,16 @@ private func playing(_ playback: PlaybackState) -> AppState {
         await Task.yield()
     }
     #expect(await source.sent == [.seek(to: 1185)])
+}
+
+@Test func withTheSettingOffAPodcastKeepsPreviousAndNext() {
+    #expect(!playing(episode, podcastSkips: false).skipsBySeconds)
+}
+
+@Test func turningTheSettingOnAndOffGivesAndTakesTheSkips() {
+    var state = playing(episode, podcastSkips: false)
+    _ = reduce(&state, .podcastSkipsChanged(true), now: start + 1)
+    #expect(state.skipsBySeconds)
+    _ = reduce(&state, .podcastSkipsChanged(false), now: start + 2)
+    #expect(!state.skipsBySeconds)
 }

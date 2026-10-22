@@ -161,6 +161,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .swipeToSkipChanged(let on):
         state.swipeToSkip = on
         state.swipe = Swipe()
+    case .podcastSkipsChanged(let on):
+        state.podcastSkips = on
     case .dragArtOutChanged(let on):
         state.dragArtOut = on
     case .lyricsLoaded(let lyrics, let pass):

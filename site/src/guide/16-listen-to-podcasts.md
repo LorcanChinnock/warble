@@ -1,10 +1,16 @@
 ---
 title: Listen to podcasts
-summary: Skip back 15 seconds or forward 30 in a podcast or audiobook.
+summary: Turn on skipping back 15 seconds or forward 30 in a podcast or audiobook.
 group: Playback
 ---
 
-When a podcast or an audiobook plays, the player's buttons change to suit it. There's nothing to turn on.
+Turn this on, and when a podcast or an audiobook plays, the player's buttons change to suit it.
+
+## Turn it on
+
+1. Right-click the notch, or click the Warble icon in the menu bar, and choose **Settings…**.
+2. Choose **Notch**.
+3. Turn on **Skip by seconds in podcasts**.
 
 ## Skip back and forward
 
@@ -14,7 +20,7 @@ When a podcast or an audiobook plays, the player's buttons change to suit it. Th
 
 The bar under the episode moves the moment you click. Going back near the start stops at the start, and going forward near the end stops at the end.
 
-Songs keep their previous and next buttons, so music looks the same as before.
+Songs keep their previous and next buttons, so music looks the same as before. With the setting off, podcasts keep them too.
 
 ## Which apps count
 
