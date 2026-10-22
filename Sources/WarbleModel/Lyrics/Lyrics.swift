@@ -20,7 +20,7 @@ public struct Lyrics: Equatable, Sendable {
     /// Parses LRC text, or returns `nil` when it has no timed lines, as with plain lyrics.
     ///
     /// A line can start with several timestamps, `[00:12.00][00:48.50] Chorus`, and is then repeated at each. Timestamps
-    /// are `[mm:ss]` with up to three digits of fraction after a `.` or `:`. `[offset:+500]` moves every line earlier by
+    /// are `[mm:ss]`, with up to four digits of minutes and three of fraction after a `.` or `:`. `[offset:+500]` moves every line earlier by
     /// that many milliseconds, wherever it is in the file; a negative offset moves them later. Other tags (`[ar:]`,
     /// `[ti:]`, `[length:]` and the like), lines without a timestamp and enhanced LRC's word times (`<00:12.30>`) are
     /// dropped.
@@ -88,19 +88,21 @@ public struct Lyrics: Equatable, Sendable {
             fraction = seconds[seconds.index(after: dot)...]
             seconds = seconds[..<dot]
         }
-        guard let minutes = digits(parts[0]), let whole = digits(seconds), seconds.count <= 2,
+        // Up to four digits of minutes, so a line anyone can edit on LRCLIB can't overflow the arithmetic below.
+        guard parts[0].count <= 4, let minutes = digits(parts[0]), let whole = digits(seconds), seconds.count <= 2,
               fraction.map({ digits($0) != nil }) ?? true
         else { return nil }
         let thousandths = Int(String(((fraction ?? "") + "000").prefix(3)))!
         return (minutes * 60 + whole) * 1000 + thousandths
     }
 
-    /// The milliseconds of an `offset:` tag, such as `offset:+500` or `offset: -250`.
+    /// The milliseconds of an `offset:` tag, such as `offset:+500` or `offset: -250`, kept within a day either way.
     private static func offset(_ tag: Substring) -> Int? {
         guard let colon = tag.firstIndex(of: ":"),
               tag[..<colon].trimmingCharacters(in: .whitespaces).lowercased() == "offset"
         else { return nil }
-        return Int(tag[tag.index(after: colon)...].trimmingCharacters(in: .whitespaces))
+        let day = 86_400_000
+        return Int(tag[tag.index(after: colon)...].trimmingCharacters(in: .whitespaces)).map { min(max($0, -day), day) }
     }
 
     private static func digits(_ text: Substring) -> Int? {

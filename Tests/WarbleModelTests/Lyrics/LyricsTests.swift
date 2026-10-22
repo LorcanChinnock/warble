@@ -162,3 +162,13 @@ private func lyrics(_ lrc: String) throws -> Lyrics {
     #expect(answer.syncedLyrics == nil)
     #expect(Lyrics(lrc: answer.syncedLyrics ?? "") == nil)
 }
+
+@Test func hugeMinutesAreDroppedRatherThanOverflowing() throws {
+    let lrc = "[9999999999999999:00] a\n[99999:00.00] b\n[9999:00.00] Kept <9999999999999999:00>"
+    #expect(try lyrics(lrc).lines == [.init(time: 599_940, text: "Kept <9999999999999999:00>")])
+}
+
+@Test func aHugeOffsetIsKeptWithinADay() throws {
+    #expect(try lyrics("[offset:-9223372036854775807]\n[00:01.00] x").lines.map(\.time) == [86_401])
+    #expect(try lyrics("[offset:9223372036854775807]\n[00:01.00] x").lines.map(\.time) == [0])
+}
