@@ -13,7 +13,7 @@ When a song starts, the notch slides out from behind the camera to show the albu
 1. Hover over the notch, or click it. A short card drops down with the last song you played and the app that played it.
 2. Click the play button on the right to carry on from where you stopped.
 
-If the app is still open, the song carries on from where you paused it. If you've quit the app or restarted your Mac, Spotify opens and carries on, and any other app opens for you to press play there.
+If the app is still open, the song carries on from where you paused it. If you've quit the app or restarted your Mac, Spotify opens and carries on. Most other apps open and start playing by themselves once they're ready. If one hasn't started after about 10 seconds, it stays open for you to press play. Music and browsers just open.
 
 ### Songs and videos in a browser
 

@@ -112,6 +112,52 @@ private struct Run {
     #expect(run.effects == [.launchAndPlay(.spotify)])
 }
 
+private let podcast = PlaybackState(bundleIdentifier: "com.apple.podcasts", title: "Episode", artist: "Show", duration: 2000, elapsed: 300, elapsedTimestamp: start, rate: 0, shuffle: .off, repeatMode: .off)
+
+@Test func resumingAnotherAppOpensItThenPlaysOnceItReportsASession() {
+    var run = Run(playing: nil)
+    run.send(.lastPlayedLoaded(LastPlayed(bundleIdentifier: "com.apple.podcasts", title: "Episode")))
+    run.send(.resumeLastPlayed)
+    #expect(run.effects == [.openApp(bundleIdentifier: "com.apple.podcasts")])
+    #expect(run.state.deadline == start + AwaitedSession.timeout)
+    run.effects = []
+    run.send(.playbackReported(podcast), after: 3)
+    #expect(run.effects.contains(.send(.play)))
+    #expect(run.state.awaited == nil)
+    #expect(run.state.deadline == nil)
+}
+
+@Test func anAppThatNeverReportsIsLeftOpenAndStopsBeingWaitedFor() {
+    var run = Run(playing: nil)
+    run.send(.lastPlayedLoaded(LastPlayed(bundleIdentifier: "com.apple.podcasts", title: "Episode")))
+    run.send(.resumeLastPlayed)
+    run.effects = []
+    run.send(.tick, after: AwaitedSession.timeout)
+    #expect(run.state.awaited == nil)
+    run.send(.playbackReported(podcast))
+    #expect(!run.effects.contains(.send(.play)))
+}
+
+@Test func anotherAppReportingFirstCancelsTheWaitAndNothingIsPlayed() {
+    var run = Run(playing: nil)
+    run.send(.lastPlayedLoaded(LastPlayed(bundleIdentifier: "com.apple.podcasts", title: "Episode")))
+    run.send(.resumeLastPlayed)
+    run.effects = []
+    run.send(.playbackReported(song), after: 1)
+    #expect(run.state.awaited == nil)
+    #expect(!run.effects.contains(.send(.play)))
+}
+
+@Test func musicAndBrowsersAreOpenedButNeverWaitedFor() {
+    for bundleIdentifier in ["com.apple.Music", "com.google.Chrome"] {
+        var run = Run(playing: nil)
+        run.send(.lastPlayedLoaded(LastPlayed(bundleIdentifier: bundleIdentifier, title: "Track")))
+        run.send(.resumeLastPlayed)
+        #expect(run.effects == [.openApp(bundleIdentifier: bundleIdentifier)])
+        #expect(run.state.awaited == nil)
+    }
+}
+
 // MARK: Volume and outputs
 
 @Test func theVolumeIsFollowedOnlyWhileThePlayersCardIsOpen() {

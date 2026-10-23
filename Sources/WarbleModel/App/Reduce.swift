@@ -19,6 +19,13 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
             }
             show(playback, in: &state, at: now)
         }
+        if let awaited = state.awaited, let playback {
+            // The app it opened has a session, so play it. A report from any other app means the user moved on.
+            state.awaited = nil
+            if playback.bundleIdentifier == awaited.bundleIdentifier, !playback.isPlaying {
+                return reduce(&state, .command(.play), now: now)
+            }
+        }
     case .perform(let action):
         if let command = action.command {
             return reduce(&state, .command(command), now: now)
@@ -49,7 +56,7 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .resumeLastPlayed:
         // Idle with a session still reporting means a paused track, which the app can resume. With no session, a play
         // command would go nowhere, so open the track if it has a link. Spotify reopens on the track it had, so launch it
-        // and play. A tab with a saved address opens it in its browser. Anything else just opens its app.
+        // and play. A tab with a saved address opens it in its browser. Any other app opens, then plays once it reports a session.
         if state.playback != nil {
             return reduce(&state, .command(.play), now: now)
         } else if let url = state.lastPlayed?.resumeURL {
@@ -58,6 +65,9 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
             effects.append(.launchAndPlay(player))
         } else if let bundleIdentifier = state.lastPlayed?.bundleIdentifier {
             effects.append(.openApp(bundleIdentifier: bundleIdentifier))
+            if AwaitedSession.waitsFor(bundleIdentifier) {
+                state.awaited = AwaitedSession(bundleIdentifier: bundleIdentifier, at: now)
+            }
         }
     case .setVolume(let volume):
         effects.append(.setVolume(volume))
@@ -112,6 +122,9 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .tick:
         if let hideAt = state.hideAt, hideAt <= now {
             show(nil, in: &state, at: now)
+        }
+        if let awaited = state.awaited, awaited.deadline <= now {
+            state.awaited = nil
         }
         state.idle.advance(to: now)
         effects += state.toast.reduce(action, shared: state.shared, at: now)

@@ -9,6 +9,8 @@ public struct AppState: Equatable, Sendable {
 
     /// What's playing as the notch shows it, which outlasts a source's report of nothing by `hideDelay`.
     public internal(set) var playback: PlaybackState?
+    /// The app the idle card just opened, which Warble sends play once it reports a session, or `nil`.
+    public internal(set) var awaited: AwaitedSession?
     /// When `playback` goes after a report of nothing, or `nil` when no hide is pending.
     public internal(set) var hideAt: Date?
     /// Hides a paused track a while after the pause, unless the pointer is on a notch.
@@ -124,7 +126,7 @@ public struct AppState: Equatable, Sendable {
     /// Where each part of the state keeps its deadline: a feature that can come due on its own adds one line here. Key paths
     /// rather than the features themselves, so asking for the deadline copies and boxes nothing.
     private static let deadlines: [any KeyPath<AppState, Date?> & Sendable] = [
-        \.hideAt, \.idle.deadline, \.toast.deadline, \.lyrics.deadline, \.sleep.deadline, \.onboarding.deadline,
+        \.hideAt, \.awaited?.deadline, \.idle.deadline, \.toast.deadline, \.lyrics.deadline, \.sleep.deadline, \.onboarding.deadline,
         \.scroll.deadline, \.last.deadline, \.doctor.deadline, \.notches.deadline,
     ]
 
