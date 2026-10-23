@@ -74,7 +74,7 @@ Tests/WarbleCoreTests/  WarbleCore's Swift Testing suite
 Resources/              Info.plist, the app icon and the string catalog
 scripts/                Bundling, install, signing certificate, icon, lint and the Homebrew cask
 Vendor/                 MediaRemote Adapter, as a git submodule
-docs/                   The roadmap, performance budgets, images for the README and the user guide, and demo/, a made-up player to record
+docs/                   The roadmap, per-feature architecture notes (architecture/), performance budgets, images for the README and the user guide, and demo/, a made-up player to record
 site/                   The website (see site/README.md)
 ```
 
@@ -93,6 +93,8 @@ Everything the app decides goes through one store. `AppState` holds it, `AppActi
 5. **Folders.** Put the feature's files in a folder of its name in each target that has any, and its tests in the same folder under `Tests/WarbleModelTests`.
 6. **Views.** Views draw state and dispatch actions; they decide nothing. A view gets Warble's objects from the SwiftUI environment, never from a shared instance, and `AppEnvironment` builds them once.
 7. **Tests.** Test the feature through `reduce` and, for its effects, `EffectRunner` with fakes. Both run on Linux. Check what it does with nothing playing too.
+
+Each feature has a note in [docs/architecture](docs/architecture), listed in CLAUDE.md. Read the one for the feature you change, and update it in the same pull request.
 
 Nothing may sit between a hover or a click and the panel: dispatch is synchronous, with no `Task` hop, Combine or async/await on that path. A command's guess shows at once; the command itself goes to the player afterwards as an effect.
 
