@@ -219,24 +219,3 @@ public struct AppState: Equatable, Sendable {
         }
     }
 }
-
-/// The Doctor's checks for every notch, and the "!" they put on it when one fails. It checks again only when something
-/// changes: the adapter stops, a player opens or quits, macOS refuses a script, or a notch opens. While the adapter
-/// works every check passes without asking macOS anything.
-public struct DoctorState: Equatable, Sendable {
-    /// The adapter as the app last saw it. Anything but `.working` follows players opening and quitting.
-    public internal(set) var adapter = Doctor.Adapter.working
-    public internal(set) var checks: [Doctor.Check]
-    /// The failures the user put off with Not now, until Warble opens again or another check fails.
-    public internal(set) var dismissed: Set<Doctor.Kind> = []
-    /// Bumped by every refresh, so facts that arrive after a later refresh has begun are dropped.
-    public internal(set) var refreshes = 0
-
-    public var needsAttention: Bool {
-        Doctor.needsAttention(checks, dismissed: dismissed)
-    }
-
-    init(checks: [Doctor.Check]) {
-        self.checks = checks
-    }
-}
