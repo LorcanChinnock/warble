@@ -8,6 +8,8 @@ public final class EffectRunner {
     private let volume: any VolumeControl
     private let outputs: any AudioOutputs
     private let lastPlayed: any LastPlayedStore
+    /// Makes what's kept of a report, with its art shrunk for the idle card. Slow, so it runs off the main actor.
+    private let remember: @Sendable (PlaybackState, String?) -> LastPlayed
     /// Where lyrics come from, or `nil` when there's nowhere to ask, so every fetch finds none.
     private let lyrics: (any LyricsProvider)?
     /// Carries out the effects that need AppKit. The app sets it, since it owns what they change.
@@ -35,12 +37,13 @@ public final class EffectRunner {
 
     public init(
         hotkeys: any HotkeyRegistrar, volume: any VolumeControl, outputs: any AudioOutputs, lastPlayed: any LastPlayedStore,
-        lyrics: (any LyricsProvider)?
+        remember: @escaping @Sendable (PlaybackState, String?) -> LastPlayed, lyrics: (any LyricsProvider)?
     ) {
         self.hotkeys = hotkeys
         self.volume = volume
         self.outputs = outputs
         self.lastPlayed = lastPlayed
+        self.remember = remember
         self.lyrics = lyrics
     }
 
@@ -68,9 +71,9 @@ public final class EffectRunner {
             guard let source else { return }
             Task { await source.send(command) }
         case .remember(let state, let pass):
-            let store = lastPlayed
+            let remember = remember
             let appName = appName(state.bundleIdentifier)
-            read { await Task.detached(priority: .utility) { store.remembering(state, appName: appName) }.value } answer: {
+            read { await Task.detached(priority: .utility) { remember(state, appName) }.value } answer: {
                 .remembered($0, pass: pass)
             }
         case .saveLastPlayed(let track):

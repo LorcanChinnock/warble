@@ -34,10 +34,6 @@ public struct LastPlayedFile: LastPlayedStore {
         try JSONEncoder().encode(lastPlayed).write(to: url, options: .atomic)
     }
 
-    public func remembering(_ state: PlaybackState, appName: String?) -> LastPlayed {
-        Self.remembering(state, appName: appName)
-    }
-
     /// `state` as it's remembered, with its art shrunk to `artworkPixels` on its longest side.
     public static func remembering(_ state: PlaybackState, appName: String?) -> LastPlayed {
         LastPlayed(
@@ -63,18 +59,5 @@ public struct LastPlayedFile: LastPlayedStore {
         CGImageDestinationAddImage(destination, image, [kCGImageDestinationLossyCompressionQuality: 0.8] as CFDictionary)
         guard CGImageDestinationFinalize(destination) else { return nil }
         return output as Data
-    }
-}
-
-/// Keeps the last track played only while Warble runs, as the preview does, so it neither reads nor saves the real one.
-public struct LastPlayedInMemory: LastPlayedStore {
-    public init() {}
-
-    public func load() -> LastPlayed? { nil }
-
-    public func save(_ lastPlayed: LastPlayed) throws {}
-
-    public func remembering(_ state: PlaybackState, appName: String?) -> LastPlayed {
-        LastPlayedFile.remembering(state, appName: appName)
     }
 }

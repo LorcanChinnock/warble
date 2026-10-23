@@ -66,11 +66,39 @@ public protocol AudioOutputs: AnyObject {
     func stopListening()
 }
 
-/// Where the last track played is kept across launches, and how its art is shrunk for the idle card.
+/// Where the last track played is kept across launches.
 public protocol LastPlayedStore: Sendable {
     func load() -> LastPlayed?
     func save(_ lastPlayed: LastPlayed) throws
-    func remembering(_ state: PlaybackState, appName: String?) -> LastPlayed
+}
+
+/// Keeps the last track played only while Warble runs, so the preview neither reads nor saves the real one, and a test
+/// can see what was saved. Open so a test can slow a save down.
+open class LastPlayedInMemory: LastPlayedStore, @unchecked Sendable {
+    private let lock = NSLock()
+    private var _saved: [LastPlayed] = []
+    private var _stored: LastPlayed?
+
+    /// What `load` returns. Saving doesn't change it, since the preview starts from what it's given.
+    public var stored: LastPlayed? {
+        get { lock.withLock { _stored } }
+        set { lock.withLock { _stored = newValue } }
+    }
+
+    /// Every track saved, in the order the saves landed.
+    public var saved: [LastPlayed] {
+        lock.withLock { _saved }
+    }
+
+    public init() {}
+
+    public func load() -> LastPlayed? {
+        stored
+    }
+
+    open func save(_ lastPlayed: LastPlayed) throws {
+        lock.withLock { _saved.append(lastPlayed) }
+    }
 }
 
 /// Where a track's synced lyrics come from. Only asked while Settings turns lyrics on.
