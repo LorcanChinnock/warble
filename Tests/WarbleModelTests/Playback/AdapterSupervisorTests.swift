@@ -69,3 +69,51 @@ import Testing
     _ = supervisor.testExited(status: 1)
     #expect(supervisor.lastTestStatus == 1)
 }
+
+@Test func theBackendIsTheAdapterUntilItExits() {
+    var supervisor = AdapterSupervisor()
+    #expect(supervisor.backend == .adapter)
+    _ = supervisor.streamExited(afterRunning: 300)
+    #expect(supervisor.backend == .restarting)
+    _ = supervisor.testExited(status: 0)
+    #expect(supervisor.backend == .adapter)
+}
+
+@Test func aTestThatTimesOutKeepsRestartingUntilTheRetriesRunOut() {
+    var supervisor = AdapterSupervisor()
+    _ = supervisor.streamExited(afterRunning: 300)
+    for _ in AdapterSupervisor.testRetryDelays {
+        _ = supervisor.testExited(status: 3)
+        #expect(supervisor.backend == .restarting)
+    }
+    _ = supervisor.testExited(status: 3)
+    #expect(supervisor.backend == .script(because: .gaveUp(testStatus: 3)))
+}
+
+@Test func aTestThatCantRunSwitchesToAppleScript() {
+    var supervisor = AdapterSupervisor()
+    _ = supervisor.streamExited(afterRunning: 300)
+    _ = supervisor.testExited(status: 1)
+    #expect(supervisor.backend == .script(because: .gaveUp(testStatus: 1)))
+}
+
+@Test func tooManyExitsInARowSwitchToAppleScriptWithTheLastTestStatus() {
+    var supervisor = AdapterSupervisor()
+    for _ in AdapterSupervisor.restartDelays {
+        _ = supervisor.streamExited(afterRunning: 0.5)
+        _ = supervisor.testExited(status: 0)
+    }
+    _ = supervisor.streamExited(afterRunning: 0.5)
+    #expect(supervisor.backend == .script(because: .gaveUp(testStatus: 0)))
+}
+
+@Test func anAdapterThatIsntBundledStartsOnAppleScript() {
+    #expect(AdapterSupervisor(bundled: false).backend == .script(because: .notBundled))
+}
+
+@Test func theDoctorReadsItsAdapterFactFromTheBackend() {
+    #expect(Doctor.Adapter(.adapter) == .working)
+    #expect(Doctor.Adapter(.restarting) == .working)
+    #expect(Doctor.Adapter(.script(because: .notBundled)) == .missing)
+    #expect(Doctor.Adapter(.script(because: .gaveUp(testStatus: 4))) == .stopped(testStatus: 4))
+}
