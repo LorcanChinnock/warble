@@ -10,6 +10,12 @@ enum Native {
     static let secondary = ContrastAware(standard: Color(white: 0.6), increased: Color(white: 0.8))
     /// The unfilled part of the position and volume bars, brighter with Increase Contrast so the bar's end shows.
     static let track = ContrastAware(standard: Color(white: 1, opacity: 0.2), increased: Color(white: 1, opacity: 0.45))
+    /// A group of Settings rows, a shade lighter than the black window. Its rows are told apart by hairlines in `track`.
+    static let group = ContrastAware(standard: Color(white: 1, opacity: 0.08), increased: Color(white: 1, opacity: 0.16))
+    /// The chosen sidebar row, and a button's fill in Settings: a soft white with no accent colour.
+    static let selection = ContrastAware(standard: Color(white: 1, opacity: 0.14), increased: Color(white: 1, opacity: 0.26))
+    /// Corner radius of a group of Settings rows.
+    static let groupRadius: CGFloat = 12
     /// Bottom corner radius of the expanded card, rounder than the housing's as the card is larger.
     static let expandedRadius: CGFloat = 24
 

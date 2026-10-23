@@ -28,26 +28,39 @@ final class Displays: DisplayProvider {
     }
 }
 
-/// A display's `VirtualNotchRule`, for one without a camera housing. The menu bar menu and Settings both show it.
+extension VirtualNotchRule {
+    var label: Text {
+        switch self {
+        case .off: Text("Off")
+        case .always: Text("Always")
+        case .noNotch: Text("When There's No Notch")
+        }
+    }
+}
+
+extension Binding where Value == [String: String] {
+    /// `display`'s rule in the stored rules, or the one it follows until it's given one.
+    func virtualNotchRule(for display: NotchDisplay) -> Binding<VirtualNotchRule> {
+        Binding<VirtualNotchRule> {
+            wrappedValue[display.id].flatMap(VirtualNotchRule.init(rawValue:)) ?? .default(isMain: display.isMain)
+        } set: {
+            wrappedValue[display.id] = $0.rawValue
+        }
+    }
+}
+
+/// A display's `VirtualNotchRule`, for one without a camera housing, as a standard picker for the menu bar menu.
 struct VirtualNotchPicker: View {
     let display: NotchDisplay
     let name: String
     @Setting(PreferenceKey.virtualNotch) private var rules: [String: String]
 
     var body: some View {
-        Picker(name, selection: rule) {
-            Text("Off").tag(VirtualNotchRule.off)
-            Text("Always").tag(VirtualNotchRule.always)
-            Text("When There's No Notch").tag(VirtualNotchRule.noNotch)
+        Picker(name, selection: $rules.virtualNotchRule(for: display)) {
+            ForEach(VirtualNotchRule.allCases, id: \.self) { rule in
+                rule.label.tag(rule)
+            }
         }
         .accessibilityLabel(Text(verbatim: name))
-    }
-
-    private var rule: Binding<VirtualNotchRule> {
-        Binding {
-            rules[display.id].flatMap(VirtualNotchRule.init(rawValue:)) ?? .default(isMain: display.isMain)
-        } set: {
-            rules[display.id] = $0.rawValue
-        }
     }
 }
