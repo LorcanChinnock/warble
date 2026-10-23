@@ -2,11 +2,10 @@
 // Sources/WarbleModel/Design/IconBars.swift for the bars the menu bar icon shares.
 import AppKit
 
-let tileTop = NSColor(srgbRed: 0.16, green: 0.16, blue: 0.18, alpha: 1)
-let tileBottom = NSColor(srgbRed: 0.08, green: 0.08, blue: 0.09, alpha: 1)
-let housing = NSColor.black
-let mark = NSColor.white
-let glow = NSColor(srgbRed: 1, green: 0.48, blue: 0.71, alpha: 1)
+let ink = NSColor(srgbRed: 0.07, green: 0.07, blue: 0.10, alpha: 1)
+let yellow = NSColor(srgbRed: 1, green: 0.83, blue: 0.23, alpha: 1)
+let yellowLight = NSColor(srgbRed: 1, green: 0.89, blue: 0.40, alpha: 1)
+let pink = NSColor(srgbRed: 1, green: 0.48, blue: 0.71, alpha: 1)
 
 func render(size: Int) -> Data {
     let rep = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: size, pixelsHigh: size, bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)!
@@ -21,14 +20,13 @@ func render(size: Int) -> Data {
     let radius: CGFloat = 185
     let tile = NSBezierPath(roundedRect: body, xRadius: radius, yRadius: radius)
     ctx.saveGState()
-    ctx.setShadow(offset: CGSize(width: 0, height: -12), blur: 28, color: NSColor.black.withAlphaComponent(0.4).cgColor)
-    tileBottom.setFill()
+    ctx.setShadow(offset: CGSize(width: 0, height: -12), blur: 28, color: NSColor.black.withAlphaComponent(0.3).cgColor)
+    yellow.setFill()
     tile.fill()
     ctx.restoreGState()
-    NSGradient(starting: tileTop, ending: tileBottom)!.draw(in: tile, angle: -90)
+    NSGradient(starting: yellowLight, ending: yellow)!.draw(in: tile, angle: -90)
 
-    // The camera housing at the top edge, pure black as on the Mac, with the glow the open card takes from the
-    // artwork behind the middle bar and three white bars below it.
+    // A notch at the top edge with three equaliser bars singing below it. A placeholder until the final mark.
     let notch = NSBezierPath()
     let notchRect = CGRect(x: body.midX - 210, y: body.maxY - 190, width: 420, height: 190)
     let corner: CGFloat = 90
@@ -41,16 +39,14 @@ func render(size: Int) -> Data {
     notch.close()
     ctx.saveGState()
     tile.addClip()
-    housing.setFill()
+    ink.setFill()
     notch.fill()
-    let accentBar = IconBars.rects[IconBars.accent]
-    NSGradient(colors: [glow.withAlphaComponent(0.55), glow.withAlphaComponent(0)])!
-        .draw(fromCenter: CGPoint(x: accentBar.midX, y: accentBar.midY), radius: 0, toCenter: CGPoint(x: accentBar.midX, y: accentBar.midY), radius: 330, options: [])
     ctx.restoreGState()
 
-    for rect in IconBars.rects {
-        mark.setFill()
-        NSBezierPath(roundedRect: rect, xRadius: rect.width / 2, yRadius: rect.width / 2).fill()
+    for (index, rect) in IconBars.rects.enumerated() {
+        let bar = NSBezierPath(roundedRect: rect, xRadius: rect.width / 2, yRadius: rect.width / 2)
+        (index == IconBars.accent ? pink : ink).setFill()
+        bar.fill()
     }
 
     NSGraphicsContext.restoreGraphicsState()
