@@ -2,8 +2,8 @@ import Foundation
 
 /// Synced lyrics for the track playing, and the line a resting notch shows under it. It's off until Settings turns it
 /// on, and then asks for a track's lyrics once, when the track first plays. Like `HoverIntent` it holds no timer: while a
-/// line shows, `deadline` is when the next starts, and `update(for:at:)` moves it on.
-public struct LyricsState: Equatable, Sendable {
+/// line shows, `deadline` is when the next starts, and `follow(_:at:)` moves it on.
+public struct LyricsState: Feature {
     /// How far ahead of the position a line is looked up, more than rounding leaves between a deadline and the position
     /// worked out at it and less than anyone could see, so the line due at a deadline is the one that shows.
     static let tolerance: TimeInterval = 0.01
@@ -42,6 +42,16 @@ public struct LyricsState: Equatable, Sendable {
         return query
     }
 
+    /// Settings turning lyrics on or off, and the answer to a fetch.
+    mutating func reduce(_ action: AppAction, at now: Date) -> [AppEffect] {
+        switch action {
+        case .lyricsChanged(let on): turn(on: on)
+        case .lyricsLoaded(let lyrics, let pass): loaded(lyrics, pass: pass)
+        default: break
+        }
+        return []
+    }
+
     /// Turns lyrics on or off. Off forgets them and drops any answer still on its way.
     mutating func turn(on: Bool) {
         guard on != isOn else { return }
@@ -62,7 +72,7 @@ public struct LyricsState: Equatable, Sendable {
     /// Brings the line up to date for `playback`, what the notch shows, at `now`, and returns the fetch to ask for when
     /// it's a track whose lyrics haven't been asked for. Only a track that plays is looked up, so a pause, a seek or new
     /// art never asks again, and nothing is asked for a track that's only been paused.
-    mutating func update(for playback: PlaybackState?, at now: Date) -> AppEffect? {
+    mutating func follow(_ playback: PlaybackState?, at now: Date) -> [AppEffect] {
         let wanted = query(for: playback)
         var fetch: AppEffect?
         if let wanted, wanted != query, playback?.isPlaying == true {
@@ -74,7 +84,7 @@ public struct LyricsState: Equatable, Sendable {
         let shown = wanted == query ? lyrics : nil
         (line, deadline) = Self.line(in: shown, for: playback, at: now)
         excerpt = shown.flatMap { lyrics in playback.flatMap { LyricsExcerpt(lyrics, at: $0.elapsed(at: now) + Self.tolerance) } }
-        return fetch
+        return fetch.map { [$0] } ?? []
     }
 
     /// The line showing in `lyrics` while `playback` plays at `now`, and when the next starts. Nothing shows while
