@@ -16,6 +16,11 @@ public struct Notches: Feature {
     /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns off.
     public internal(set) var showsVirtualTitle: Bool
 
+    /// What the effects last asked for, so each is asked for once per change.
+    public internal(set) var watchesClicks = false
+    public internal(set) var takesEscape = false
+    public internal(set) var followsVolume = false
+
     public init(idleHover: IdleHover = .lastPlayed, hidesFromCapture: Bool = false, showsVirtualTitle: Bool = true) {
         self.idleHover = idleHover
         self.hidesFromCapture = hidesFromCapture
@@ -83,6 +88,51 @@ public struct Notches: Feature {
             break
         }
         return []
+    }
+
+    /// Brings the notches up to date with what the rest of the state did since `old`: a notch that stops answering the
+    /// pointer starts its hover over, and one that closes shows the player again next time.
+    mutating func settle(from old: Notches, oldShared: SharedState, shared: SharedState) {
+        for (display, surface) in surfaces {
+            guard let before = old.surfaces[display] else { continue }
+            if old.answersPointer(before, oldShared), !answersPointer(surface, shared) {
+                // Start over, so a pointer still on the notch when it's drawn again is reported as entering again.
+                surfaces[display]?.hover = HoverIntent()
+                surfaces[display]?.pointerInside = false
+                surfaces[display]?.isDragging = false
+            }
+            if old.notchState(before, oldShared) == .expanded, notchState(surface, shared) != .expanded {
+                // The checks and the lyrics show until the notch closes; the next open shows the player again.
+                surfaces[display]?.showsDoctor = false
+                surfaces[display]?.showsLyrics = false
+            }
+        }
+    }
+
+    /// Asks for the effects that follow from which notches are open, each once when its reason changes.
+    mutating func follow(_ shared: SharedState, at now: Date) -> [AppEffect] {
+        let open = surfaces.values.filter { notchState($0, shared) == .expanded }
+        var effects: [AppEffect] = []
+        // A click anywhere else closes an open notch, and so does Escape with the pointer on it. Both stop at rest, so a
+        // resting notch watches nothing and never takes Escape from the app in front. Escape is let go while a menu is
+        // open, so the key reaches the menu and closes it, and while the art is dragged out, so it cancels the drag.
+        let watchesClicks = !open.isEmpty
+        if watchesClicks != self.watchesClicks {
+            self.watchesClicks = watchesClicks
+            effects.append(.watchClicksOutside(watchesClicks))
+        }
+        let takesEscape = open.contains(where: \.pointerInside) && !surfaces.values.contains { $0.showsMenu || $0.isDragging }
+        if takesEscape != self.takesEscape {
+            self.takesEscape = takesEscape
+            effects.append(.takeEscape(takesEscape))
+        }
+        // Only the player's card has a slider and an output menu.
+        let followsVolume = open.contains { card($0, shared) == .player }
+        if followsVolume != self.followsVolume {
+            self.followsVolume = followsVolume
+            effects.append(.followVolume(followsVolume))
+        }
+        return effects
     }
 
     // MARK: Selectors

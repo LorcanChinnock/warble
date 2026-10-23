@@ -157,20 +157,7 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
     var shared = state.shared
     for _ in 0..<4 {
         shared = state.shared
-        for (display, surface) in state.surfaces {
-            guard let before = old.surfaces[display] else { continue }
-            if old.notches.answersPointer(before, oldShared), !state.notches.answersPointer(surface, shared) {
-                // Start over, so a pointer still on the notch when it's drawn again is reported as entering again.
-                state.surfaces[display]?.hover = HoverIntent()
-                state.surfaces[display]?.pointerInside = false
-                state.surfaces[display]?.isDragging = false
-            }
-            if old.notches.notchState(before, oldShared) == .expanded, state.notches.notchState(surface, shared) != .expanded {
-                // The checks and the lyrics show until the notch closes; the next open shows the player again.
-                state.surfaces[display]?.showsDoctor = false
-                state.surfaces[display]?.showsLyrics = false
-            }
-        }
+        state.notches.settle(from: old.notches, oldShared: oldShared, shared: shared)
         // The open card shows the track, so a toast has nothing left to say, even once the notch closes again. Nor has one
         // for a track no longer shown, which would come back if the same track reported again before its deadline.
         if state.notches.isOpen(shared) || !state.showsPlayback {
@@ -183,27 +170,7 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
         state.idle.handle(hovering ? .hoverStarted : .hoverEnded, at: now)
     }
     shared = state.shared
-    let open = state.surfaces.values.filter { state.notches.notchState($0, shared) == .expanded }
-    var effects: [AppEffect] = []
-    // A click anywhere else closes an open notch, and so does Escape with the pointer on it. Both stop at rest, so a
-    // resting notch watches nothing and never takes Escape from the app in front. Escape is let go while a menu is
-    // open, so the key reaches the menu and closes it, and while the art is dragged out, so it cancels the drag.
-    let watchesClicks = !open.isEmpty
-    if watchesClicks != state.watchesClicks {
-        state.watchesClicks = watchesClicks
-        effects.append(.watchClicksOutside(watchesClicks))
-    }
-    let takesEscape = open.contains(where: \.pointerInside) && !state.surfaces.values.contains { $0.showsMenu || $0.isDragging }
-    if takesEscape != state.takesEscape {
-        state.takesEscape = takesEscape
-        effects.append(.takeEscape(takesEscape))
-    }
-    // Only the player's card has a slider and an output menu.
-    let followsVolume = open.contains { state.notches.card($0, shared) == .player }
-    if followsVolume != state.followsVolume {
-        state.followsVolume = followsVolume
-        effects.append(.followVolume(followsVolume))
-    }
+    var effects = state.notches.follow(shared, at: now)
     // The command line's socket is open only while Settings has it on, and is asked for once each time that changes. A
     // Warble that opens with it on asks on its first action.
     if state.listensForCommands != state.listening {
@@ -212,7 +179,7 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
     }
     // Opening a notch checks again whatever the Doctor found, in case the user fixed it, such as in System Settings,
     // which tells Warble nothing.
-    if watchesClicks, !old.notches.isOpen(oldShared), state.doctor.adapter != .working {
+    if state.notches.watchesClicks, !old.notches.watchesClicks, state.doctor.adapter != .working {
         effects.append(state.doctor.refresh())
     }
     return effects

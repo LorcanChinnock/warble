@@ -83,9 +83,18 @@ public struct AppState: Equatable, Sendable {
     /// The first-run demo of the notch and the welcome window after it, which happen once, on a first launch.
     public internal(set) var onboarding = Onboarding()
     /// What the effects last asked for, so each is asked for once per change.
-    public internal(set) var watchesClicks = false
-    public internal(set) var takesEscape = false
-    public internal(set) var followsVolume = false
+    public internal(set) var watchesClicks: Bool {
+        get { notches.watchesClicks }
+        set { notches.watchesClicks = newValue }
+    }
+    public internal(set) var takesEscape: Bool {
+        get { notches.takesEscape }
+        set { notches.takesEscape = newValue }
+    }
+    public internal(set) var followsVolume: Bool {
+        get { notches.followsVolume }
+        set { notches.followsVolume = newValue }
+    }
     public internal(set) var listening = false
 
     /// `checks` are what the Doctor finds before it has asked macOS anything: what it finds while the adapter works.
@@ -112,10 +121,17 @@ public struct AppState: Equatable, Sendable {
     /// Whether the notches draw what's playing: something is, and it isn't Idle.
     public var showsPlayback: Bool { !idle.isIdle }
 
+    /// Where each part of the state keeps its deadline: a feature that can come due on its own adds one line here. Key paths
+    /// rather than the features themselves, so asking for the deadline copies and boxes nothing.
+    private static let deadlines: [any KeyPath<AppState, Date?> & Sendable] = [
+        \.hideAt, \.idle.deadline, \.toast.deadline, \.lyrics.deadline, \.sleep.deadline, \.onboarding.deadline,
+        \.scroll.deadline, \.last.deadline, \.doctor.deadline, \.notches.deadline,
+    ]
+
     /// The earliest time something changes if nothing else happens, or `nil` when nothing is due, so `Store` runs one
     /// timer at most, and none while nothing plays.
     public var deadline: Date? {
-        [hideAt, idle.deadline, toast.deadline, lyrics.deadline, onboarding.deadline, sleep.deadline, notches.deadline].compactMap { $0 }.min()
+        Self.deadlines.compactMap { self[keyPath: $0] }.min()
     }
 
     /// The state the notch over `display` draws.
