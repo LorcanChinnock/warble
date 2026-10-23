@@ -98,6 +98,19 @@ public enum ScriptedPlayer: String, CaseIterable, Sendable {
 
     /// `body` sent to this player, by bundle ID so a renamed app still answers, giving up after 5 seconds rather than
     /// the default 2 minutes when the player hangs.
+    /// Opens the player if it has quit and plays, which resumes the track it reopens on. The timeout is long because
+    /// the first command waits for the app to start.
+    public var launchAndPlayScript: String {
+        """
+        with timeout of 30 seconds
+            tell application id "\(bundleIdentifier)"
+                launch
+                play
+            end tell
+        end timeout
+        """
+    }
+
     private func tell(_ body: String) -> String {
         """
         with timeout of 5 seconds
