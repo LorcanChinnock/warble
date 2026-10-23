@@ -172,8 +172,7 @@ final class NotchController {
             log.notice("Playback \(new.showsPlayback ? "shown" : "idle", privacy: .public)")
         }
         for (display, surface) in surfaces {
-            surface.apply(new)
-            surface.update(animated: !layingOut)
+            surface.render(new, animated: !layingOut)
             guard old.notchState(display) != .expanded, new.notchState(display) == .expanded else { continue }
             switch action {
             case .hover(_, .click):

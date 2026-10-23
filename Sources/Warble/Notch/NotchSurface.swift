@@ -16,7 +16,7 @@ final class NotchSurface {
     /// Whether the housing is one Warble draws on a display without a notch.
     var isVirtual: Bool { model.isVirtual }
     /// What the store decided: the state, what Expanded holds, whether anything is playing rather than Idle, the toast
-    /// showing and whether the open card shows the Doctor's checks. `update` draws them.
+    /// showing and whether the open card shows the Doctor's checks. `render` draws them.
     private(set) var state = NotchState.hidden
     private(set) var card = NotchCard.player
     private var isPlaying = false
@@ -63,8 +63,15 @@ final class NotchSurface {
         panel.onKey = { [weak self] event in self?.onKey(event) ?? false }
     }
 
-    /// Takes what the store decided for this notch, which the next `update` draws.
-    func apply(_ app: AppState) {
+    /// Draws what the store decided for this notch: takes its state, then morphs to it, growing the panel before the morph
+    /// and shrinking it after. The one call per change, so nothing is set outside the animation or twice.
+    func render(_ app: AppState, animated: Bool) {
+        apply(app)
+        update(animated: animated)
+    }
+
+    /// Takes what the store decided for this notch, which `update` draws.
+    private func apply(_ app: AppState) {
         guard let surface = app.surfaces[display], let state = app.notchState(display), let card = app.card(display) else { return }
         self.state = state
         self.card = card
@@ -184,7 +191,7 @@ final class NotchSurface {
         Perf.untilNextFrame("Expand", on: panel.screen, cause: cause, since: start)
     }
 
-    func update(animated: Bool = true) {
+    private func update(animated: Bool) {
         let state = state
         let notch = housing
         if state != .expanded {
