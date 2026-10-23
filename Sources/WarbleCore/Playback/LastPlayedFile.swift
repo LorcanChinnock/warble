@@ -41,7 +41,8 @@ public struct LastPlayedFile: LastPlayedStore {
             appName: appName,
             title: state.title,
             artist: state.artist,
-            artwork: state.artwork.flatMap { thumbnail($0, pixels: artworkPixels) }
+            artwork: state.artwork.flatMap { thumbnail($0, pixels: artworkPixels) },
+            link: state.link
         )
     }
 

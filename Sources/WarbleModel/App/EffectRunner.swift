@@ -101,7 +101,7 @@ public final class EffectRunner {
                 }.value
                 self.dispatch(.lyricsLoaded(found, pass: pass))
             }
-        case .watchClicksOutside, .openApp, .haptic, .gatherFacts, .followPlayers, .toggleKeyboard, .showWelcome, .openSettings, .listenForCommands:
+        case .watchClicksOutside, .openApp, .openLink, .haptic, .gatherFacts, .followPlayers, .toggleKeyboard, .showWelcome, .openSettings, .listenForCommands:
             platform(effect)
         }
     }

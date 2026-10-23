@@ -191,7 +191,7 @@ final class NotchController {
 
     private func isPlayPause(_ action: AppAction) -> Bool {
         switch action {
-        case .command(.togglePlayPause), .command(.play), .command(.pause), .perform(.playPause): true
+        case .command(.togglePlayPause), .command(.play), .command(.pause), .perform(.playPause), .resumeLastPlayed: true
         default: false
         }
     }

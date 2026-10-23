@@ -13,6 +13,8 @@ When a song starts, the notch slides out from behind the camera to show the albu
 1. Hover over the notch, or click it. A short card drops down with the last song you played and the app that played it.
 2. Click the play button on the right to carry on from where you stopped.
 
+If the app is still open, the song carries on from where you paused it. If you've quit the app or restarted your Mac, Warble opens the song again in Spotify. For other apps, such as a video in a browser, it opens the app and you press play there.
+
 The card grows into the full player as the song starts, with all the controls.
 
 > [!TIP]

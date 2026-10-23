@@ -66,6 +66,11 @@ final class PlayerModel {
         dispatch(.openApp)
     }
 
+    /// Plays the last track again from the idle card.
+    func resumeLastPlayed() {
+        dispatch(.resumeLastPlayed)
+    }
+
     func setVolume(_ volume: Double) {
         dispatch(.setVolume(volume))
     }

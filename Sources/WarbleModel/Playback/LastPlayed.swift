@@ -10,13 +10,27 @@ public struct LastPlayed: Codable, Equatable, Sendable {
     public var artist: String?
     /// A small copy of the art, encoded, so the saved track stays a few kilobytes.
     public var artwork: Data?
+    /// The track's web link where its source gave one (`PlaybackState.link`). Absent from tracks saved by older versions.
+    public var link: URL?
 
-    public init(bundleIdentifier: String, appName: String? = nil, title: String, artist: String? = nil, artwork: Data? = nil) {
+    public init(
+        bundleIdentifier: String, appName: String? = nil, title: String, artist: String? = nil, artwork: Data? = nil, link: URL? = nil
+    ) {
         self.bundleIdentifier = bundleIdentifier
         self.appName = appName
         self.title = title
         self.artist = artist
         self.artwork = artwork
+        self.link = link
+    }
+
+    /// What starts the track again when its app has no session to resume. A Spotify link becomes its `spotify:` URI,
+    /// which opens the app and plays the track, where the web link would open a browser; any other link is used as it is.
+    public var resumeURL: URL? {
+        guard let link else { return nil }
+        let parts = link.pathComponents
+        guard link.host == "open.spotify.com", parts.count == 3, parts[0] == "/" else { return link }
+        return URL(string: "spotify:\(parts[1]):\(parts[2])")
     }
 
     /// Whether `state` is worth remembering in place of `previous`, the state last remembered: a new track, or the art

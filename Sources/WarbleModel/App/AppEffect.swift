@@ -14,6 +14,8 @@ public enum AppEffect: Equatable, Sendable {
     /// Open the notch the pointer is on with the keyboard in it, or close it again.
     case toggleKeyboard
     case openApp(bundleIdentifier: String)
+    /// Open a link in whatever app handles it.
+    case openLink(URL)
     case setVolume(Double)
     /// A light tick on a Force Touch trackpad.
     case haptic

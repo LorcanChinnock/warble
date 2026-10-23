@@ -46,6 +46,16 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         if let bundleIdentifier = state.playback?.bundleIdentifier ?? state.lastPlayed?.bundleIdentifier {
             effects.append(.openApp(bundleIdentifier: bundleIdentifier))
         }
+    case .resumeLastPlayed:
+        // Idle with a session still reporting means a paused track, which the app can resume. With no session, a play
+        // command would go nowhere, so open the track if it has a link and otherwise the app.
+        if state.playback != nil {
+            return reduce(&state, .command(.play), now: now)
+        } else if let url = state.lastPlayed?.resumeURL {
+            effects.append(.openLink(url))
+        } else if let bundleIdentifier = state.lastPlayed?.bundleIdentifier {
+            effects.append(.openApp(bundleIdentifier: bundleIdentifier))
+        }
     case .setVolume(let volume):
         effects.append(.setVolume(volume))
     case .scrolled, .swipeToSkipChanged:
