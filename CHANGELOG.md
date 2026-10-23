@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.0-beta.7](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.6...v0.1.0-beta.7) (2026-10-23)
+
+
+### Features
+
+* **player:** reopen a browser track from the idle card ([#198](https://github.com/LorcanChinnock/warble/issues/198)) ([521590f](https://github.com/LorcanChinnock/warble/commit/521590fc3096bbda696dd3483d259b5cf6b1b063))
+
+
+### Bug Fixes
+
+* **displays:** put the virtual notch back after the displays change ([#190](https://github.com/LorcanChinnock/warble/issues/190)) ([b70ee86](https://github.com/LorcanChinnock/warble/commit/b70ee8621ad472f9b41a256e9695bd3a68a6743b))
+* **player:** resume Spotify's last track after it has quit ([#191](https://github.com/LorcanChinnock/warble/issues/191)) ([2e5bfbb](https://github.com/LorcanChinnock/warble/commit/2e5bfbbc5fe3a18062581ca409c6facf30d65c00))
+* **player:** resume the last track when its app has no session ([#187](https://github.com/LorcanChinnock/warble/issues/187)) ([f15988b](https://github.com/LorcanChinnock/warble/commit/f15988b6fec8b5dcb83e103dbc80d6c871f663ea))
+
 ## [0.1.0-beta.6](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.5...v0.1.0-beta.6) (2026-10-23)
 
 
