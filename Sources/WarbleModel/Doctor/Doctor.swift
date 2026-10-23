@@ -12,6 +12,15 @@ public enum Doctor {
         case missing
         /// Warble gave up on it until it's opened again. `testStatus` is how its last `test` exited, `nil` if none ran.
         case stopped(testStatus: Int32?)
+
+        /// What the Doctor says about the backend the supervisor has chosen.
+        public init(_ backend: AdapterSupervisor.Backend) {
+            switch backend {
+            case .adapter, .restarting: self = .working
+            case .script(because: .notBundled): self = .missing
+            case .script(because: .gaveUp(let status)): self = .stopped(testStatus: status)
+            }
+        }
     }
 
     /// Whether Warble may script a player, as macOS answers without asking the user.

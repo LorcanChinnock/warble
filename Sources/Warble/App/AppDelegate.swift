@@ -44,13 +44,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     store.dispatch(.playbackReported(state))
                 }
                 // The states end only when the adapter gives up.
-                store.dispatch(.adapterChanged(.stopped(testStatus: source.lastTestStatus)))
+                store.dispatch(.adapterChanged(Doctor.Adapter(source.backend)))
                 startFallback()
             }
             self.source = source
         } else {
             log.error("The adapter isn't in the app's resources; build with make bundle")
-            store.dispatch(.adapterChanged(.missing))
+            store.dispatch(.adapterChanged(Doctor.Adapter(AdapterSupervisor(bundled: false).backend)))
             startFallback()
         }
         environment.hotkeys.onPress = { [weak store] action in store?.dispatch(.perform(action)) }
