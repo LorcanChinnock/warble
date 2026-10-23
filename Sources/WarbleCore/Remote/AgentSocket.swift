@@ -189,6 +189,7 @@ public enum AgentSocket {
             close(fd)
             throw .unavailable(RemoteSocketPath.nothingAnswering)
         }
+        keepSignalsOff(fd)
         return fd
     }
 
@@ -273,7 +274,9 @@ public enum AgentSocket {
     }
 
     /// Stops writes to `fd` raising `SIGPIPE` when its peer goes away, which would end the process.
+    /// `SO_NOSIGPIPE` can't be set on a socket whose peer has already gone, so the signal is ignored as well.
     static func keepSignalsOff(_ fd: Int32) {
+        signal(SIGPIPE, SIG_IGN)
         var on: Int32 = 1
         setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &on, socklen_t(MemoryLayout<Int32>.size))
     }
