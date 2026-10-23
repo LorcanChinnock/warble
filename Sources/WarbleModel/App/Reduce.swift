@@ -170,8 +170,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         }
     case .toastsInFullScreenChanged(let on):
         state.toastsInFullScreen = on
-    case .lyricsChanged(let on):
-        state.lyrics.turn(on: on)
+    case .lyricsChanged, .lyricsLoaded:
+        effects += state.lyrics.reduce(action, at: now)
     case .swipeToSkipChanged(let on):
         state.swipeToSkip = on
         state.swipe = Swipe()
@@ -199,8 +199,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
             break
         }
         return reduce(&state, action, now: now)
-    case .lyricsLoaded(let lyrics, let pass):
-        state.lyrics.loaded(lyrics, pass: pass)
     case .launched(let firstRun):
         if state.onboarding.launched(firstRun: firstRun, isPlaying: state.playback?.isPlaying == true, at: now) {
             effects.append(.showWelcome)
@@ -231,9 +229,7 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         effects += remember(playback, in: &state)
     }
     // Last, so the line follows whatever this action did: a new track, a seek, a pause, Idle or a tick.
-    if let fetch = state.lyrics.update(for: state.showsPlayback ? state.playback : nil, at: now) {
-        effects.append(fetch)
-    }
+    effects += state.lyrics.follow(state.showsPlayback ? state.playback : nil, at: now)
     return effects
 }
 
