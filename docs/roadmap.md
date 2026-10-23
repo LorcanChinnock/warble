@@ -81,7 +81,6 @@ The live waveform, a sleep timer and listening stats, plus research into replaci
 - [#46](https://github.com/LorcanChinnock/warble/issues/46) spike: replacing the volume and brightness overlay
 - [#47](https://github.com/LorcanChinnock/warble/issues/47) feat(player): sleep timer
 - [#17](https://github.com/LorcanChinnock/warble/issues/17) feat(player): source chips
-- [#143](https://github.com/LorcanChinnock/warble/issues/143) feat(player): change the speed of a podcast
 - [#48](https://github.com/LorcanChinnock/warble/issues/48) feat(stats): weekly listening stats, kept on this Mac
 
 ## [1.0: notch activities for other apps](https://github.com/LorcanChinnock/warble/issues/49)
