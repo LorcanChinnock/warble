@@ -155,13 +155,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.idle.advance(to: now)
     case .idleHoverChanged(let idleHover):
         state.idleHover = idleHover
-    case .trackToastChanged(let shows):
-        state.showsTrackToast = shows
-        if !shows {
-            dismissToast(in: &state, at: now)
-        }
-    case .toastsInFullScreenChanged(let on):
-        state.toastsInFullScreen = on
+    case .trackToastChanged, .toastsInFullScreenChanged:
+        effects += state.toast.reduce(action, shared: state.shared, at: now)
     case .lyricsChanged, .lyricsLoaded:
         effects += state.lyrics.reduce(action, shared: state.shared, at: now)
     case .swipeToSkipChanged(let on):
@@ -203,7 +198,7 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
             show(nil, in: &state, at: now)
         }
         state.idle.advance(to: now)
-        state.toasts.advance(to: now)
+        effects += state.toast.reduce(action, shared: state.shared, at: now)
         for display in state.surfaces.keys {
             state.surfaces[display]?.hover.advance(to: now)
         }
@@ -212,9 +207,7 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     effects += followSleepTimer(&state, at: now)
     effects += settle(&state, from: old, at: now)
     // After Idle has had its say, so a track that's no longer shown has nothing to announce.
-    if let notice, state.showsTrackToast, state.showsPlayback, !isOpen(state) {
-        state.toasts.post(notice, at: now)
-    }
+    state.toast.announce(notice, shared: state.shared, isOpen: isOpen(state), at: now)
     if let playback = state.playback, playback != old.playback {
         effects += remember(playback, in: &state)
     }
@@ -311,11 +304,6 @@ private func dismiss(in state: inout AppState, except: String?, at now: Date) {
     }
 }
 
-private func dismissToast(in state: inout AppState, at now: Date) {
-    guard state.toasts.current != nil else { return }
-    state.toasts.dismiss(at: now)
-}
-
 private func isOpen(_ state: AppState) -> Bool {
     state.surfaces.values.contains { state.notchState($0) == .expanded }
 }
@@ -342,7 +330,7 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
         // The open card shows the track, so a toast has nothing left to say, even once the notch closes again. Nor has one
         // for a track no longer shown, which would come back if the same track reported again before its deadline.
         if isOpen(state) || !state.showsPlayback {
-            dismissToast(in: &state, at: now)
+            state.toast.dismiss(at: now)
         }
         let hovering = state.surfaces.values.contains { state.notchState($0) == .expanded || $0.pointerInside }
         guard hovering != state.hovering else { break }

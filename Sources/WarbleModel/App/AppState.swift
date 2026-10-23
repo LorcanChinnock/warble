@@ -38,10 +38,13 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var outputs: [AudioOutput] = []
     public internal(set) var currentOutput: UInt32?
     /// The new track's title and artist, shown for a moment after a skip when Settings turns it on.
-    public internal(set) var toasts = ToastQueue<TrackToast>()
-    public internal(set) var showsTrackToast: Bool
-    /// Whether the toast also shows over a full-screen app, which Settings turns on.
-    public internal(set) var toastsInFullScreen: Bool
+    public internal(set) var toast: ToastState
+    public var toasts: ToastQueue<TrackToast> { toast.queue }
+    public internal(set) var showsTrackToast: Bool {
+        get { toast.isOn }
+        set { toast.isOn = newValue }
+    }
+    public var toastsInFullScreen: Bool { toast.inFullScreen }
     /// The current lyric line, which a resting notch shows under it when Settings turns lyrics on.
     public internal(set) var lyrics: LyricsState
     /// Whether a sideways swipe over a notch skips, which Settings turns on, and the trackpad gesture under way.
@@ -83,8 +86,7 @@ public struct AppState: Equatable, Sendable {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
         doctor = DoctorState(checks: checks)
         self.idleHover = idleHover
-        self.showsTrackToast = showsTrackToast
-        self.toastsInFullScreen = toastsInFullScreen
+        toast = ToastState(isOn: showsTrackToast, inFullScreen: toastsInFullScreen)
         self.swipeToSkip = swipeToSkip
         self.podcastSkips = podcastSkips
         self.dragArtOut = dragArtOut
@@ -102,7 +104,7 @@ public struct AppState: Equatable, Sendable {
     /// The earliest time something changes if nothing else happens, or `nil` when nothing is due, so `Store` runs one
     /// timer at most, and none while nothing plays.
     public var deadline: Date? {
-        ([hideAt, idle.deadline, toasts.deadline, lyrics.deadline, onboarding.demo.deadline, sleep.deadline] + surfaces.values.map(\.hover.deadline)).compactMap { $0 }.min()
+        ([hideAt, idle.deadline, toast.deadline, lyrics.deadline, onboarding.demo.deadline, sleep.deadline] + surfaces.values.map(\.hover.deadline)).compactMap { $0 }.min()
     }
 
     /// The state the notch over `display` draws.
