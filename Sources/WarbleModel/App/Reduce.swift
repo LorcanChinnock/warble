@@ -80,15 +80,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .outputsRead(let outputs, let current):
         state.outputs = outputs
         state.currentOutput = current
-    case .lastPlayedLoaded(let saved):
-        // A track that played since Warble opened is newer than the one saved.
-        if state.remembered == nil, let saved {
-            state.lastPlayed = saved
-        }
-    case .remembered(let lastPlayed, let pass):
-        guard pass == state.remembers else { break }
-        state.lastPlayed = lastPlayed
-        effects.append(.saveLastPlayed(lastPlayed))
+    case .lastPlayedLoaded, .remembered:
+        effects += state.last.reduce(action, shared: state.shared, at: now)
     case .adapterChanged(let adapter):
         guard adapter != state.doctor.adapter else { break }
         let followed = state.doctor.adapter != .working
@@ -208,9 +201,7 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     effects += settle(&state, from: old, at: now)
     // After Idle has had its say, so a track that's no longer shown has nothing to announce.
     state.toast.announce(notice, shared: state.shared, isOpen: isOpen(state), at: now)
-    if let playback = state.playback, playback != old.playback {
-        effects += remember(playback, in: &state)
-    }
+    effects += state.last.follow(state.shared, at: now)
     // Last, so the line follows whatever this action did: a new track, a seek, a pause, Idle or a tick.
     effects += state.lyrics.follow(state.shared, at: now)
     return effects
@@ -244,15 +235,6 @@ private func scroll(_ delta: Double, precise: Bool, inverted: Bool, volume: Doub
     let to = VolumeScroll.volume(after: delta, from: from, precise: precise, inverted: inverted)
     guard to != from else { return [] }
     return VolumeScroll.crossesTick(from: from, to: to) ? [.setVolume(to), .haptic] : [.setVolume(to)]
-}
-
-/// Keeps `playback` as the last track played, with a small copy of its art, and saves it for the next launch. Only a new
-/// track or new art does any work.
-private func remember(_ playback: PlaybackState, in state: inout AppState) -> [AppEffect] {
-    guard LastPlayed.changes(from: state.remembered, to: playback) else { return [] }
-    state.remembered = playback
-    state.remembers += 1
-    return [.remember(playback, pass: state.remembers)]
 }
 
 /// Gathers the Doctor's facts again. While the adapter works no check needs macOS, so the facts take no work.

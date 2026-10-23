@@ -26,11 +26,8 @@ public struct AppState: Equatable, Sendable {
     /// Whether a Doctor check failed, which draws a resting notch with a "!" even when nothing is playing.
     public var needsAttention: Bool { doctor.needsAttention }
     /// The last track played, which the idle card shows. It outlasts what's playing, and Warble too.
-    public internal(set) var lastPlayed: LastPlayed?
-    /// The state last remembered, so a pause or a seek doesn't remember it again.
-    public internal(set) var remembered: PlaybackState?
-    /// Bumped by every track remembered, so one whose art finishes shrinking after the next has begun is dropped.
-    public internal(set) var remembers = 0
+    public internal(set) var last = LastPlayedState()
+    public var lastPlayed: LastPlayed? { last.lastPlayed }
     /// The output's volume from 0 to 1, read while the player's card is open; `nil` when it can't be changed.
     public internal(set) var volume: Double?
     public internal(set) var isMuted = false
