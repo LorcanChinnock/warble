@@ -43,7 +43,7 @@ public struct LyricsState: Feature {
     }
 
     /// Settings turning lyrics on or off, and the answer to a fetch.
-    mutating func reduce(_ action: AppAction, at now: Date) -> [AppEffect] {
+    mutating func reduce(_ action: AppAction, shared: SharedState, at now: Date) -> [AppEffect] {
         switch action {
         case .lyricsChanged(let on): turn(on: on)
         case .lyricsLoaded(let lyrics, let pass): loaded(lyrics, pass: pass)
@@ -72,7 +72,8 @@ public struct LyricsState: Feature {
     /// Brings the line up to date for `playback`, what the notch shows, at `now`, and returns the fetch to ask for when
     /// it's a track whose lyrics haven't been asked for. Only a track that plays is looked up, so a pause, a seek or new
     /// art never asks again, and nothing is asked for a track that's only been paused.
-    mutating func follow(_ playback: PlaybackState?, at now: Date) -> [AppEffect] {
+    mutating func follow(_ shared: SharedState, at now: Date) -> [AppEffect] {
+        let playback = shared.showsPlayback ? shared.playback : nil
         let wanted = query(for: playback)
         var fetch: AppEffect?
         if let wanted, wanted != query, playback?.isPlaying == true {

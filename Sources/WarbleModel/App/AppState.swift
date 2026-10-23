@@ -49,9 +49,10 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var swipe = Swipe()
     /// Whether a podcast or audiobook skips by seconds rather than by track, which Settings turns on.
     public internal(set) var podcastSkips: Bool
-    /// Whether the player's card has a sleep timer button, which Settings turns on, and the timer running, if any.
-    public internal(set) var showsSleepTimer: Bool
-    public internal(set) var sleepTimer: SleepTimer?
+    /// The sleep timer: whether the player's card has its button, which Settings turns on, and the timer running, if any.
+    public internal(set) var sleep: SleepTimerState
+    public var showsSleepTimer: Bool { sleep.isOn }
+    public var sleepTimer: SleepTimer? { sleep.timer }
     /// Whether the art can be dragged out of the player's card, which Settings turns on.
     public internal(set) var dragArtOut: Bool
     /// Whether every notch is left out of screen sharing, recordings and screenshots, which Settings turns on. The
@@ -87,7 +88,7 @@ public struct AppState: Equatable, Sendable {
         self.swipeToSkip = swipeToSkip
         self.podcastSkips = podcastSkips
         self.dragArtOut = dragArtOut
-        self.showsSleepTimer = showsSleepTimer
+        sleep = SleepTimerState(isOn: showsSleepTimer)
         self.hidesFromCapture = hidesFromCapture
         self.showsVirtualTitle = showsVirtualTitle
         self.answersLinks = answersLinks
@@ -101,7 +102,7 @@ public struct AppState: Equatable, Sendable {
     /// The earliest time something changes if nothing else happens, or `nil` when nothing is due, so `Store` runs one
     /// timer at most, and none while nothing plays.
     public var deadline: Date? {
-        ([hideAt, idle.deadline, toasts.deadline, lyrics.deadline, onboarding.demo.deadline, sleepTimer?.deadline] + surfaces.values.map(\.hover.deadline)).compactMap { $0 }.min()
+        ([hideAt, idle.deadline, toasts.deadline, lyrics.deadline, onboarding.demo.deadline, sleep.deadline] + surfaces.values.map(\.hover.deadline)).compactMap { $0 }.min()
     }
 
     /// The state the notch over `display` draws.
@@ -171,13 +172,12 @@ public struct AppState: Equatable, Sendable {
 
     /// Whether a sleep timer can run now: Settings has it on and something is playing, not about to be hidden.
     public var canSetSleepTimer: Bool {
-        hideAt == nil && keepsSleepTimer
+        sleep.canSet(shared)
     }
 
-    /// Whether a running sleep timer stays: Settings has it on and something is playing. It outlasts the gap a source
-    /// leaves between tracks (`hideAt`), since the next track's report is what ends an End of track timer.
-    var keepsSleepTimer: Bool {
-        showsSleepTimer && showsPlayback && playback?.isPlaying == true
+    /// What the features may read of this state.
+    var shared: SharedState {
+        SharedState(playback: playback, showsPlayback: showsPlayback, hideAt: hideAt)
     }
 
     /// What dragging the art out of the player's card carries, or `nil` when it can't be dragged: Settings has it off,

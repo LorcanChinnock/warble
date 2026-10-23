@@ -42,16 +42,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         // a hide pending, there's no position to skip from, so it sends nothing.
         guard state.showsPlayback, state.hideAt == nil, let playback = state.playback else { break }
         return reduce(&state, .command(.seek(to: playback.position(skipping: seconds, at: now))), now: now)
-    case .setSleepTimer(let choice):
-        // Replaces the one running. Only while something plays, since a timer with nothing playing has nothing to pause,
-        // and End of track needs a track with a length.
-        if let choice {
-            if state.canSetSleepTimer, let playback = state.playback {
-                state.sleepTimer = SleepTimer(choice, playback: playback, at: now) ?? state.sleepTimer
-            }
-        } else {
-            state.sleepTimer = nil
-        }
+    case .setSleepTimer, .sleepTimerSettingChanged:
+        effects += state.sleep.reduce(action, shared: state.shared, at: now)
     case .openApp:
         if let bundleIdentifier = state.playback?.bundleIdentifier ?? state.lastPlayed?.bundleIdentifier {
             effects.append(.openApp(bundleIdentifier: bundleIdentifier))
@@ -171,14 +163,12 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .toastsInFullScreenChanged(let on):
         state.toastsInFullScreen = on
     case .lyricsChanged, .lyricsLoaded:
-        effects += state.lyrics.reduce(action, at: now)
+        effects += state.lyrics.reduce(action, shared: state.shared, at: now)
     case .swipeToSkipChanged(let on):
         state.swipeToSkip = on
         state.swipe = Swipe()
     case .podcastSkipsChanged(let on):
         state.podcastSkips = on
-    case .sleepTimerSettingChanged(let on):
-        state.showsSleepTimer = on
     case .dragArtOutChanged(let on):
         state.dragArtOut = on
     case .hidesFromCaptureChanged(let on):
@@ -229,23 +219,13 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         effects += remember(playback, in: &state)
     }
     // Last, so the line follows whatever this action did: a new track, a seek, a pause, Idle or a tick.
-    effects += state.lyrics.follow(state.showsPlayback ? state.playback : nil, at: now)
+    effects += state.lyrics.follow(state.shared, at: now)
     return effects
 }
 
-/// Keeps the sleep timer in step with what's playing, and pauses at once when it's due. It lasts only while something
-/// plays, so a pause by hand, Idle, a source that stopped reporting or turning the setting off ends it.
+/// Keeps the sleep timer in step with what's playing, and pauses at once when it's due.
 private func followSleepTimer(_ state: inout AppState, at now: Date) -> [AppEffect] {
-    guard var timer = state.sleepTimer else { return [] }
-    guard state.keepsSleepTimer, let playback = state.playback else {
-        state.sleepTimer = nil
-        return []
-    }
-    guard timer.follow(playback, at: now) == .due else {
-        state.sleepTimer = timer
-        return []
-    }
-    state.sleepTimer = nil
+    guard state.sleep.expire(state.shared, at: now) == .due, let playback = state.playback else { return [] }
     // In the gap between tracks the source has reported nothing, so the pause is sent but not shown, which would keep the
     // track on screen after the hide.
     if state.hideAt == nil {
