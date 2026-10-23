@@ -66,51 +66,12 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         effects += state.last.reduce(action, shared: state.shared, at: now)
     case .adapterChanged, .factsGathered, .playersChanged, .automationDenied, .fallbackReported, .notNow:
         effects += state.doctor.reduce(action, shared: state.shared, at: now)
-    case .housingsChanged(let housings):
-        var surfaces: [String: AppState.Surface] = [:]
-        for housing in housings {
-            var surface = state.surfaces[housing.display] ?? AppState.Surface(housing)
-            surface.isVirtual = housing.isVirtual
-            surface.isAlwaysShown = housing.isAlwaysShown
-            surface.isFullScreen = state.fullScreen.contains(housing.display)
-            surfaces[housing.display] = surface
-        }
-        state.surfaces = surfaces
-    case .fullScreenChanged(let displays):
-        // A notch that stops answering starts its hover over in `settle`, so an open card closes.
-        state.fullScreen = displays
-        for display in state.surfaces.keys {
-            state.surfaces[display]?.isFullScreen = displays.contains(display)
-        }
-    case .pointer(let display, let inside):
-        guard let surface = state.surfaces[display], state.answersPointer(surface), inside != surface.pointerInside else { break }
-        state.surfaces[display]?.pointerInside = inside
-        handle(inside ? .pointerEntered : .pointerLeft, on: display, in: &state, at: now)
-    case .hover(let display, let event):
-        if event == .click || event == .keyboard {
-            dismiss(in: &state, except: display, at: now)
-        }
-        if case .dragging(let dragging) = event {
-            state.surfaces[display]?.isDragging = dragging
-        }
-        handle(event, on: display, in: &state, at: now)
-    case .menu(let display, let open):
-        state.surfaces[display]?.showsMenu = open
-        handle(open ? .menuOpened : .menuClosed, on: display, in: &state, at: now)
-    case .showDoctor(let display, let show):
-        // From the resting "!", the click that follows opens the notch on the checks.
-        state.surfaces[display]?.showsDoctor = show
-    case .showLyrics(let display, let show):
-        // Only from an open card, and only while there are lyrics to show; the button is there only then.
-        guard let surface = state.surfaces[display], state.notchState(surface) == .expanded, !show || state.hasLyricsCard else { break }
-        state.surfaces[display]?.showsLyrics = show
-    case .dismiss(let except):
-        dismiss(in: &state, except: except, at: now)
+    case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .showDoctor, .showLyrics, .dismiss, .idleHoverChanged,
+        .hidesFromCaptureChanged, .virtualTitleChanged:
+        effects += state.notches.reduce(action, shared: state.shared, at: now)
     case .stayVisibleChanged(let delay):
         state.idle.delay = delay
         state.idle.advance(to: now)
-    case .idleHoverChanged(let idleHover):
-        state.idleHover = idleHover
     case .trackToastChanged, .toastsInFullScreenChanged:
         effects += state.toast.reduce(action, shared: state.shared, at: now)
     case .lyricsChanged, .lyricsLoaded:
@@ -119,10 +80,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.podcastSkips = on
     case .dragArtOutChanged(let on):
         state.dragArtOut = on
-    case .hidesFromCaptureChanged(let on):
-        state.hidesFromCapture = on
-    case .virtualTitleChanged(let on):
-        state.showsVirtualTitle = on
     case .linksChanged(let on):
         state.answersLinks = on
     case .commandLineChanged(let on):
@@ -145,15 +102,13 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         }
         state.idle.advance(to: now)
         effects += state.toast.reduce(action, shared: state.shared, at: now)
-        for display in state.surfaces.keys {
-            state.surfaces[display]?.hover.advance(to: now)
-        }
+        effects += state.notches.reduce(action, shared: state.shared, at: now)
     }
     // Before Idle is settled, so the pause it guesses is treated like any other pause.
     effects += followSleepTimer(&state, at: now)
     effects += settle(&state, from: old, at: now)
     // After Idle has had its say, so a track that's no longer shown has nothing to announce.
-    state.toast.announce(notice, shared: state.shared, isOpen: isOpen(state), at: now)
+    state.toast.announce(notice, shared: state.shared, isOpen: state.notches.isOpen(state.shared), at: now)
     effects += state.last.follow(state.shared, at: now)
     // Last, so the line follows whatever this action did: a new track, a seek, a pause, Idle or a tick.
     effects += state.lyrics.follow(state.shared, at: now)
@@ -194,37 +149,23 @@ private func show(_ playback: PlaybackState?, in state: inout AppState, at now: 
     state.idle.handle(.playback(playback), at: now)
 }
 
-/// Passes `event` to the notch's `HoverIntent`, unless it takes no hover: a blank notch that doesn't open keeps none, so
-/// playback starting under the pointer doesn't open it.
-private func handle(_ event: HoverEvent, on display: String, in state: inout AppState, at now: Date) {
-    guard let surface = state.surfaces[display], state.answersPointer(surface) else { return }
-    state.surfaces[display]?.hover.handle(event, at: now)
-}
-
-private func dismiss(in state: inout AppState, except: String?, at now: Date) {
-    for (display, surface) in state.surfaces where display != except && state.notchState(surface) == .expanded {
-        state.surfaces[display]?.hover.handle(.dismiss, at: now)
-    }
-}
-
-private func isOpen(_ state: AppState) -> Bool {
-    state.surfaces.values.contains { state.notchState($0) == .expanded }
-}
-
 /// Brings everything that follows from the notches' states up to date, then asks for the effects whose reason changed.
 /// Opening or closing a notch can hold off or allow Idle, which can show or hide a notch in turn, so it goes round until
 /// nothing changes.
 private func settle(_ state: inout AppState, from old: AppState, at now: Date) -> [AppEffect] {
+    let oldShared = old.shared
+    var shared = state.shared
     for _ in 0..<4 {
+        shared = state.shared
         for (display, surface) in state.surfaces {
             guard let before = old.surfaces[display] else { continue }
-            if old.answersPointer(before), !state.answersPointer(surface) {
+            if old.notches.answersPointer(before, oldShared), !state.notches.answersPointer(surface, shared) {
                 // Start over, so a pointer still on the notch when it's drawn again is reported as entering again.
                 state.surfaces[display]?.hover = HoverIntent()
                 state.surfaces[display]?.pointerInside = false
                 state.surfaces[display]?.isDragging = false
             }
-            if old.notchState(before) == .expanded, state.notchState(surface) != .expanded {
+            if old.notches.notchState(before, oldShared) == .expanded, state.notches.notchState(surface, shared) != .expanded {
                 // The checks and the lyrics show until the notch closes; the next open shows the player again.
                 state.surfaces[display]?.showsDoctor = false
                 state.surfaces[display]?.showsLyrics = false
@@ -232,15 +173,17 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
         }
         // The open card shows the track, so a toast has nothing left to say, even once the notch closes again. Nor has one
         // for a track no longer shown, which would come back if the same track reported again before its deadline.
-        if isOpen(state) || !state.showsPlayback {
+        if state.notches.isOpen(shared) || !state.showsPlayback {
             state.toast.dismiss(at: now)
+            shared = state.shared
         }
-        let hovering = state.surfaces.values.contains { state.notchState($0) == .expanded || $0.pointerInside }
+        let hovering = state.notches.isHovered(shared)
         guard hovering != state.hovering else { break }
         state.hovering = hovering
         state.idle.handle(hovering ? .hoverStarted : .hoverEnded, at: now)
     }
-    let open = state.surfaces.values.filter { state.notchState($0) == .expanded }
+    shared = state.shared
+    let open = state.surfaces.values.filter { state.notches.notchState($0, shared) == .expanded }
     var effects: [AppEffect] = []
     // A click anywhere else closes an open notch, and so does Escape with the pointer on it. Both stop at rest, so a
     // resting notch watches nothing and never takes Escape from the app in front. Escape is let go while a menu is
@@ -256,7 +199,7 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
         effects.append(.takeEscape(takesEscape))
     }
     // Only the player's card has a slider and an output menu.
-    let followsVolume = open.contains { state.card($0) == .player }
+    let followsVolume = open.contains { state.notches.card($0, shared) == .player }
     if followsVolume != state.followsVolume {
         state.followsVolume = followsVolume
         effects.append(.followVolume(followsVolume))
@@ -269,7 +212,7 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
     }
     // Opening a notch checks again whatever the Doctor found, in case the user fixed it, such as in System Settings,
     // which tells Warble nothing.
-    if watchesClicks, !isOpen(old), state.doctor.adapter != .working {
+    if watchesClicks, !old.notches.isOpen(oldShared), state.doctor.adapter != .working {
         effects.append(state.doctor.refresh())
     }
     return effects
