@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.1.0-beta.6](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.5...v0.1.0-beta.6) (2026-10-23)
+
+
+### Features
+
+* **accessibility:** VoiceOver, keyboard control and Increase Contrast ([#119](https://github.com/LorcanChinnock/warble/issues/119)) ([632d86d](https://github.com/LorcanChinnock/warble/commit/632d86de8961e46518d2d4c6ff35072e39b8b473))
+* **app:** notch right-click menu and open at login ([#115](https://github.com/LorcanChinnock/warble/issues/115)) ([b2e79a3](https://github.com/LorcanChinnock/warble/commit/b2e79a3926aa76fcc96829b560946ca35074ed19))
+* **cli:** the warble command ([#165](https://github.com/LorcanChinnock/warble/issues/165)) ([2a043dd](https://github.com/LorcanChinnock/warble/commit/2a043dd44e3cb2cc0e90ca3437742d8854cc9cd6))
+* **gestures:** drag the album art out ([#132](https://github.com/LorcanChinnock/warble/issues/132)) ([#142](https://github.com/LorcanChinnock/warble/issues/142)) ([56a25da](https://github.com/LorcanChinnock/warble/commit/56a25da6616d52ee51ce3082bafd9a916b2a0b7c))
+* **gestures:** swipe over the notch to skip ([#36](https://github.com/LorcanChinnock/warble/issues/36)) ([#141](https://github.com/LorcanChinnock/warble/issues/141)) ([3dd3a57](https://github.com/LorcanChinnock/warble/commit/3dd3a57ef67b167410d4d74f85dcb496b0369bc0))
+* **lyrics:** a lyrics card in the player ([#131](https://github.com/LorcanChinnock/warble/issues/131)) ([#140](https://github.com/LorcanChinnock/warble/issues/140)) ([482ad6d](https://github.com/LorcanChinnock/warble/commit/482ad6d4dfedd4d2dcdd29f95baf30ec7cd2fe3d))
+* **lyrics:** LRCLIB client and lyrics cache ([#129](https://github.com/LorcanChinnock/warble/issues/129)) ([#138](https://github.com/LorcanChinnock/warble/issues/138)) ([6877ff9](https://github.com/LorcanChinnock/warble/commit/6877ff9cc506bf78c9ca9dc96d0d830480a41294))
+* **lyrics:** synced lyrics from LRCLIB ([#35](https://github.com/LorcanChinnock/warble/issues/35)) ([#139](https://github.com/LorcanChinnock/warble/issues/139)) ([6b9316f](https://github.com/LorcanChinnock/warble/commit/6b9316ff270997e2319362ceeaa13f80d2295830))
+* **model:** LRC parser and current-line lookup ([#34](https://github.com/LorcanChinnock/warble/issues/34)) ([#137](https://github.com/LorcanChinnock/warble/issues/137)) ([97ec0e6](https://github.com/LorcanChinnock/warble/commit/97ec0e62e53a912080ae49574808f2ca49490704))
+* **notch:** hide Warble from screen sharing and recordings ([#133](https://github.com/LorcanChinnock/warble/issues/133)) ([#150](https://github.com/LorcanChinnock/warble/issues/150)) ([d562eb0](https://github.com/LorcanChinnock/warble/commit/d562eb073d470a7a86e01728912f2c77d9b076d7))
+* **notch:** show the title in the middle of a virtual notch ([#113](https://github.com/LorcanChinnock/warble/issues/113)) ([#151](https://github.com/LorcanChinnock/warble/issues/151)) ([46f87fb](https://github.com/LorcanChinnock/warble/commit/46f87fb55a3b3ac9c32ee4c96dc39effacd75bc8))
+* **notch:** show the track-change toast in full screen ([#38](https://github.com/LorcanChinnock/warble/issues/38)) ([#147](https://github.com/LorcanChinnock/warble/issues/147)) ([2095011](https://github.com/LorcanChinnock/warble/commit/20950118ea72a92c0156ee37552041df4c8886f1))
+* **notch:** track-change toast ([#116](https://github.com/LorcanChinnock/warble/issues/116)) ([785d56c](https://github.com/LorcanChinnock/warble/commit/785d56c509478ec0e08ea5d6ce2eff3d0c52a845))
+* **onboarding:** a first-run demo of the notch ([#130](https://github.com/LorcanChinnock/warble/issues/130)) ([#153](https://github.com/LorcanChinnock/warble/issues/153)) ([e2a7994](https://github.com/LorcanChinnock/warble/commit/e2a7994d3126aec50a1fb3fb7d2f98e37e31d22a))
+* **onboarding:** a welcome window on the first launch ([#25](https://github.com/LorcanChinnock/warble/issues/25)) ([#152](https://github.com/LorcanChinnock/warble/issues/152)) ([28a8f2f](https://github.com/LorcanChinnock/warble/commit/28a8f2f0504c5c1b49cbd08fbcad8e8b1fc51816))
+* **perf:** budgets for opening the notch, play/pause, idle and launch ([#120](https://github.com/LorcanChinnock/warble/issues/120)) ([e9260b7](https://github.com/LorcanChinnock/warble/commit/e9260b716c4ffa8261ee5cc1c4cf46513270a5d2))
+* **player:** a Settings switch for podcast skips, off by default ([#148](https://github.com/LorcanChinnock/warble/issues/148)) ([#149](https://github.com/LorcanChinnock/warble/issues/149)) ([2889196](https://github.com/LorcanChinnock/warble/commit/288919656f4b56e86c3b02ecfdc78b32b524c6b8))
+* **player:** sleep timer ([#163](https://github.com/LorcanChinnock/warble/issues/163)) ([5f79396](https://github.com/LorcanChinnock/warble/commit/5f793961b80f632b53f6d51015cee8c8b34ba21a))
+* **settings:** Settings window with General, Notch and About ([#105](https://github.com/LorcanChinnock/warble/issues/105)) ([310da05](https://github.com/LorcanChinnock/warble/commit/310da0599b885da40659cd2020ac0dbb2678017e))
+* **settings:** Shortcuts page to set, change and clear global shortcuts ([#107](https://github.com/LorcanChinnock/warble/issues/107)) ([a6a53d9](https://github.com/LorcanChinnock/warble/commit/a6a53d92afb3f00d4ded98678733219c8b6ca2e0))
+* **url:** warble:// links ([#164](https://github.com/LorcanChinnock/warble/issues/164)) ([06727ff](https://github.com/LorcanChinnock/warble/commit/06727ff61797ed9bdebbfae2f59cecdd01becc4b))
+
+
+### Bug Fixes
+
+* **cli:** ignore SIGPIPE when a client hangs up before the answer ([#166](https://github.com/LorcanChinnock/warble/issues/166)) ([2638a7b](https://github.com/LorcanChinnock/warble/commit/2638a7beb0b367717bc5c32fbd8e57bd21ca0790))
+* **notch:** hide the notch while an app is full screen ([#145](https://github.com/LorcanChinnock/warble/issues/145)) ([#146](https://github.com/LorcanChinnock/warble/issues/146)) ([f091b37](https://github.com/LorcanChinnock/warble/commit/f091b37ecc1424d0ffd82b3585f7cfaeff61fe13))
+* **notch:** keep a blank notch on displays set to Always ([#112](https://github.com/LorcanChinnock/warble/issues/112)) ([718a1f3](https://github.com/LorcanChinnock/warble/commit/718a1f34609c4eef403441f33ca4e75401769f76))
+* **settings:** say when another app holds a shortcut ([#110](https://github.com/LorcanChinnock/warble/issues/110)) ([56a0cd3](https://github.com/LorcanChinnock/warble/commit/56a0cd3c80df8f41fd03283bd032ac8e0831e58d))
+* **shortcuts:** give each temporary key its own owner ([#136](https://github.com/LorcanChinnock/warble/issues/136)) ([a1ed56f](https://github.com/LorcanChinnock/warble/commit/a1ed56fb4f50362f42bd5fe86f90e42f4008a7ed))
+
 ## [0.1.0-beta.5](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.4...v0.1.0-beta.5) (2026-10-20)
 
 
