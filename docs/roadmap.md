@@ -48,6 +48,8 @@ The first public beta: what's playing in the notch, playback and volume controls
 - [#121](https://github.com/LorcanChinnock/warble/issues/121) refactor(app): one tested store, injected dependencies and feature folders
 - [#130](https://github.com/LorcanChinnock/warble/issues/130) feat(onboarding): first-run notch demo
 - [#135](https://github.com/LorcanChinnock/warble/issues/135) fix(shortcuts): the notch's Escape and a toast's ⌘Z can unregister each other
+- [#188](https://github.com/LorcanChinnock/warble/issues/188) feat(player): resume the last track after its app has quit, on a normal install
+- [#185](https://github.com/LorcanChinnock/warble/issues/185) fix(player): the last-played card's play button does nothing once the app's session has gone
 
 ## [0.2: lyrics, gestures and podcasts](https://github.com/LorcanChinnock/warble/issues/33)
 
