@@ -34,6 +34,8 @@ final class PlatformEffects {
             // Brings the app to the front, opening it if it's quit.
             guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) else { return }
             NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
+        case .openLink(let url):
+            NSWorkspace.shared.open(url)
         case .haptic:
             NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .now)
         case .gatherFacts(let adapter, let pass):

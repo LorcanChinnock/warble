@@ -37,7 +37,7 @@ struct IdleCard: View {
                     .lineLimit(1)
                     .accessibilityElement(children: .combine)
                     Spacer(minLength: 0)
-                    Button { model.player.send(.togglePlayPause) } label: {
+                    Button { model.player.resumeLastPlayed() } label: {
                         Image(systemName: "play.fill")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundStyle(.white)

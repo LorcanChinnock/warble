@@ -31,6 +31,9 @@ public enum AppAction: Equatable, Sendable {
     case perform(WarbleAction)
     /// Bring the app that's playing to the front, or while Idle the one that played last.
     case openApp
+    /// Play the last track again from the idle card: resume the session if the app still has one, otherwise open the
+    /// track, or the app that played it.
+    case resumeLastPlayed
     /// Volume from the slider, a scroll over a notch, or the arrow keys in a notch with the keyboard. A scroll and a key
     /// carry the volume read just before, since the card that follows it may not be open.
     case setVolume(Double)

@@ -130,7 +130,7 @@ final class FakeLastPlayed: LastPlayedInMemory, @unchecked Sendable {
 
 /// What the app remembers of a report, without shrinking its art.
 func remembering(_ state: PlaybackState, appName: String?) -> LastPlayed {
-    LastPlayed(bundleIdentifier: state.bundleIdentifier, appName: appName, title: state.title, artist: state.artist, artwork: state.artwork)
+    LastPlayed(bundleIdentifier: state.bundleIdentifier, appName: appName, title: state.title, artist: state.artist, artwork: state.artwork, link: state.link)
 }
 
 /// Answers each track with the LRC a test gives it, and records what it was asked.

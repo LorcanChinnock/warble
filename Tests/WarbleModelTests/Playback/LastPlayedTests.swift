@@ -29,6 +29,21 @@ private let song = PlaybackState(bundleIdentifier: "com.apple.Music", title: "So
     #expect(LastPlayed.changes(from: song, to: withArt))
 }
 
+@Test func aSpotifyLinkResumesThroughItsURIAndOtherLinksAsTheyAre() {
+    func resume(_ link: String?) -> URL? {
+        LastPlayed(bundleIdentifier: "x", title: "T", link: link.flatMap(URL.init(string:))).resumeURL
+    }
+    #expect(resume("https://open.spotify.com/episode/Ab12") == URL(string: "spotify:episode:Ab12"))
+    #expect(resume("https://example.com/watch") == URL(string: "https://example.com/watch"))
+    #expect(resume(nil) == nil)
+}
+
+@Test func aTrackSavedBeforeLinksWereKeptStillDecodes() throws {
+    let old = Data(#"{"bundleIdentifier":"com.apple.Music","title":"Song"}"#.utf8)
+    let decoded = try JSONDecoder().decode(LastPlayed.self, from: old)
+    #expect(decoded == LastPlayed(bundleIdentifier: "com.apple.Music", title: "Song"))
+}
+
 @Test func theLastTrackRoundTripsThroughJSON() throws {
     let track = LastPlayed(bundleIdentifier: "com.apple.Music", appName: "Music", title: "Song", artist: nil, artwork: Data([1, 2, 3]))
     let decoded = try JSONDecoder().decode(LastPlayed.self, from: JSONEncoder().encode(track))
