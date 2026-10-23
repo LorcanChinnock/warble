@@ -55,7 +55,7 @@ final class AppEnvironment {
         doctor = DoctorModel(updater: updater, dispatch: dispatch)
         volume = SystemVolume()
         let outputs = CoreAudioOutputs()
-        runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, lyrics: lyrics)
+        runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: LastPlayedFile.remembering, lyrics: lyrics)
         platform = PlatformEffects(dispatch: dispatch)
         store.perform = { [weak runner] in runner?.perform($0) }
         runner.dispatch = dispatch
