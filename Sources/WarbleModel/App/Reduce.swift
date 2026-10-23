@@ -82,27 +82,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.currentOutput = current
     case .lastPlayedLoaded, .remembered:
         effects += state.last.reduce(action, shared: state.shared, at: now)
-    case .adapterChanged(let adapter):
-        guard adapter != state.doctor.adapter else { break }
-        let followed = state.doctor.adapter != .working
-        state.doctor.adapter = adapter
-        if (adapter != .working) != followed {
-            effects.append(.followPlayers(adapter != .working))
-        }
-        effects.append(refreshDoctor(&state))
-    case .factsGathered(let facts, let pass):
-        guard pass == state.doctor.refreshes else { break }
-        update(Doctor.checks(facts), in: &state.doctor)
-    case .playersChanged, .automationDenied:
-        effects.append(refreshDoctor(&state))
-    case .fallbackReported:
-        // Only while Automation fails, so a player that plays after the user allowed it clears the "!" without asking
-        // macOS on every change of track.
-        if state.doctor.checks.contains(where: { $0.kind == .automation && $0.outcome == .fail }) {
-            effects.append(refreshDoctor(&state))
-        }
-    case .notNow:
-        state.doctor.dismissed.formUnion(state.doctor.checks.filter { $0.outcome == .fail }.map(\.kind))
+    case .adapterChanged, .factsGathered, .playersChanged, .automationDenied, .fallbackReported, .notNow:
+        effects += state.doctor.reduce(action, shared: state.shared, at: now)
     case .housingsChanged(let housings):
         var surfaces: [String: AppState.Surface] = [:]
         for housing in housings {
@@ -237,19 +218,6 @@ private func scroll(_ delta: Double, precise: Bool, inverted: Bool, volume: Doub
     return VolumeScroll.crossesTick(from: from, to: to) ? [.setVolume(to), .haptic] : [.setVolume(to)]
 }
 
-/// Gathers the Doctor's facts again. While the adapter works no check needs macOS, so the facts take no work.
-private func refreshDoctor(_ state: inout AppState) -> AppEffect {
-    state.doctor.refreshes += 1
-    return .gatherFacts(state.doctor.adapter, pass: state.doctor.refreshes)
-}
-
-private func update(_ checks: [Doctor.Check], in doctor: inout DoctorState) {
-    guard checks != doctor.checks else { return }
-    // A check that passes again can fail again later, and then it needs the "!".
-    doctor.dismissed.subtract(checks.filter { $0.outcome != .fail }.map(\.kind))
-    doctor.checks = checks
-}
-
 extension PlaybackState {
     /// What `command` will make of this state, as far as Warble can tell before the app reports back.
     func guessing(_ command: PlaybackCommand, at date: Date) -> PlaybackState {
@@ -349,7 +317,7 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
     // Opening a notch checks again whatever the Doctor found, in case the user fixed it, such as in System Settings,
     // which tells Warble nothing.
     if watchesClicks, !isOpen(old), state.doctor.adapter != .working {
-        effects.append(refreshDoctor(&state))
+        effects.append(state.doctor.refresh())
     }
     return effects
 }
