@@ -14,6 +14,9 @@ public enum AppEffect: Equatable, Sendable {
     /// Open the notch the pointer is on with the keyboard in it, or close it again.
     case toggleKeyboard
     case openApp(bundleIdentifier: String)
+    /// Open a player that has quit and tell it to play, so it resumes the track it had. Only on a click, which is when
+    /// macOS asks for Automation permission.
+    case launchAndPlay(ScriptedPlayer)
     /// Open a link in whatever app handles it.
     case openLink(URL)
     case setVolume(Double)

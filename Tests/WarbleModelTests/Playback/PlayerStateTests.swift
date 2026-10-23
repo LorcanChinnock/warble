@@ -97,6 +97,13 @@ private struct Run {
     #expect(spotify.effects == [.openLink(URL(string: "spotify:track:abc123")!)])
 }
 
+@Test func resumingSpotifyAfterItQuitLaunchesItAndPlaysWhenThereIsNoLink() {
+    var run = Run(playing: nil)
+    run.send(.lastPlayedLoaded(LastPlayed(bundleIdentifier: "com.spotify.client", title: "Song")))
+    run.send(.resumeLastPlayed)
+    #expect(run.effects == [.launchAndPlay(.spotify)])
+}
+
 // MARK: Volume and outputs
 
 @Test func theVolumeIsFollowedOnlyWhileThePlayersCardIsOpen() {
