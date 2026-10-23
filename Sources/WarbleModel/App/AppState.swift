@@ -45,8 +45,8 @@ public struct AppState: Equatable, Sendable {
     /// The current lyric line, which a resting notch shows under it when Settings turns lyrics on.
     public internal(set) var lyrics: LyricsState
     /// Whether a sideways swipe over a notch skips, which Settings turns on, and the trackpad gesture under way.
-    public internal(set) var swipeToSkip: Bool
-    public internal(set) var swipe = Swipe()
+    public internal(set) var scroll: ScrollState
+    public var swipeToSkip: Bool { scroll.swipeToSkip }
     /// Whether a podcast or audiobook skips by seconds rather than by track, which Settings turns on.
     public internal(set) var podcastSkips: Bool
     /// The sleep timer: whether the player's card has its button, which Settings turns on, and the timer running, if any.
@@ -84,7 +84,7 @@ public struct AppState: Equatable, Sendable {
         doctor = DoctorState(checks: checks)
         self.idleHover = idleHover
         toast = ToastState(isOn: showsTrackToast, inFullScreen: toastsInFullScreen)
-        self.swipeToSkip = swipeToSkip
+        scroll = ScrollState(swipeToSkip: swipeToSkip)
         self.podcastSkips = podcastSkips
         self.dragArtOut = dragArtOut
         sleep = SleepTimerState(isOn: showsSleepTimer)
