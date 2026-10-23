@@ -156,3 +156,16 @@ func aClickOrTheKeyboardEndsTheDemoAtOnce(_ event: HoverEvent) {
     // The notch is already the idle one when the keyboard is asked to open it, so it counts as opening.
     #expect(state.notchState("built-in") == .idle)
 }
+
+@Test func theDemoDrawsItsTrackWhileLeavingWhatTheSourcesSaidAlone() {
+    var state = launched()
+    #expect(state.demoTrackStart == now)
+    #expect(state.drawsPlayback)
+    #expect(state.playback == nil)
+    #expect(state.notchState("built-in") == .resting)
+
+    _ = reduce(&state, .tick, now: now + NotchMotion.demoResting + NotchMotion.demoExpanded)
+    #expect(state.notchState("built-in") == .hint)
+    #expect(state.demoTrackStart == nil)
+    #expect(!state.drawsPlayback)
+}

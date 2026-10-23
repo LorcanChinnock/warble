@@ -20,6 +20,23 @@ public struct Onboarding: Feature {
 
     var deadline: Date? { demo.deadline }
 
+    /// What the demo draws on every notch while it runs, ahead of what's really playing: it never starts with something
+    /// playing and ends when something does. `nil` when it isn't running.
+    var notchState: NotchState? {
+        switch demo.step {
+        case .resting: .resting
+        case .expanded: .expanded
+        case .hint: .hint
+        case nil: nil
+        }
+    }
+
+    /// The card the demo opens, or `nil` when it leaves the card to the notch.
+    var card: NotchCard? { demo.step == .expanded ? .player : nil }
+
+    /// When the preview track started while the demo shows one, which its position runs on from; the app draws the track.
+    var trackStart: Date? { demo.showsTrack ? demo.startedAt : nil }
+
     /// A touch or something playing ends the demo at once, before the action meets the notch it drew over. The welcome
     /// window opens when the demo ends, and so asks for `.showWelcome`.
     mutating func reduce(_ action: AppAction, shared: SharedState, at now: Date) -> [AppEffect] {

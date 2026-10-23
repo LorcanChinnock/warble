@@ -115,7 +115,7 @@ public struct AppState: Equatable, Sendable {
     }
 
     func notchState(_ surface: Surface) -> NotchState {
-        let state = demoState ?? NotchState(
+        let state = onboarding.notchState ?? NotchState(
             surface.hover.state, isPlaying: showsPlayback, needsAttention: needsAttention, idleHover: idleHover,
             isAlwaysShown: surface.isAlwaysShown, showsToast: toasts.current != nil && !showsTitle(surface),
             showsLyrics: lyrics.showsLine
@@ -137,20 +137,15 @@ public struct AppState: Equatable, Sendable {
         showsVirtualTitle && surface.isVirtual && !surface.isFullScreen && showsPlayback && playback?.title.isEmpty == false
     }
 
-    /// What the first-run demo draws on every notch while it runs, ahead of what's really playing: it never starts with
-    /// something playing and ends when something does.
-    var demoState: NotchState? {
-        switch onboarding.demo.step {
-        case .resting: .resting
-        case .expanded: .expanded
-        case .hint: .hint
-        case nil: nil
-        }
-    }
+    /// When the first-run demo's preview track started while it shows one. The notches draw that track in place of
+    /// `playback`, which stays what the sources said.
+    public var demoTrackStart: Date? { onboarding.trackStart }
+
+    /// Whether the notches draw a playing track: a real one, or the demo's.
+    public var drawsPlayback: Bool { showsPlayback || demoTrackStart != nil }
 
     func card(_ surface: Surface) -> NotchCard {
-        if onboarding.demo.step == .expanded { return .player }
-        return NotchCard(
+        onboarding.card ?? NotchCard(
             isPlaying: showsPlayback && playback != nil, needsAttention: needsAttention, showsDoctor: surface.showsDoctor,
             showsLyrics: surface.showsLyrics && hasLyricsCard
         )

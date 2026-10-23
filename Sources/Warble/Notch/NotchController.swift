@@ -138,7 +138,7 @@ final class NotchController {
     /// notch's state.
     /// What's playing, or the demo's track while the first-run demo plays one.
     private static func shown(_ state: AppState) -> PlaybackState? {
-        guard state.onboarding.demo.showsTrack, let start = state.onboarding.demo.startedAt else { return state.playback }
+        guard let start = state.demoTrackStart else { return state.playback }
         return DemoTrack.playback(startedAt: start)
     }
 
