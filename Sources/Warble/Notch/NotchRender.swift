@@ -30,7 +30,7 @@ struct NotchRender: Equatable {
         guard let surface = app.surfaces[display], let state = app.notchState(display), let card = app.card(display) else { return nil }
         self.state = state
         self.card = card
-        isPlaying = app.showsPlayback || app.onboarding.demo.showsTrack
+        isPlaying = app.drawsPlayback
         toast = app.toasts.current?.content
         lyric = app.lyrics.line?.text
         lyrics = app.lyrics.excerpt
