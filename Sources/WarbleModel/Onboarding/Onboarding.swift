@@ -1,7 +1,7 @@
 import Foundation
 
 /// What a first launch shows: the notch demo, then the welcome window, each once, then left alone for good.
-public struct Onboarding: Equatable, Sendable {
+public struct Onboarding: Feature {
     public enum Welcome: Equatable, Sendable {
         /// Not asked for in this launch.
         case notShown
@@ -17,6 +17,36 @@ public struct Onboarding: Equatable, Sendable {
     public internal(set) var demo = NotchDemo()
 
     public init() {}
+
+    var deadline: Date? { demo.deadline }
+
+    /// A touch or something playing ends the demo at once, before the action meets the notch it drew over. The welcome
+    /// window opens when the demo ends, and so asks for `.showWelcome`.
+    mutating func reduce(_ action: AppAction, shared: SharedState, at now: Date) -> [AppEffect] {
+        let opens: Bool
+        switch action {
+        case .launched(let firstRun):
+            opens = launched(firstRun: firstRun, isPlaying: shared.playback?.isPlaying == true, at: now)
+        case .welcomeClosed:
+            welcomeClosed()
+            opens = false
+        case .tick:
+            opens = advance(to: now)
+        default:
+            opens = Self.endsDemo(action) && endDemo()
+        }
+        return opens ? [.showWelcome] : []
+    }
+
+    /// Whether `action` is the user touching a notch or something starting to play.
+    private static func endsDemo(_ action: AppAction) -> Bool {
+        switch action {
+        case .pointer(_, let inside): inside
+        case .hover, .menu, .perform(.openNotch): true
+        case .playbackReported(let playback): playback?.isPlaying == true
+        default: false
+        }
+    }
 
     /// Handles the launch. On a first launch, and only the first time this is called, the demo starts and the welcome
     /// window waits for it, unless something is already playing, which leaves no demo to show. Returns whether the

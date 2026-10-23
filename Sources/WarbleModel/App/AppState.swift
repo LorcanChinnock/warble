@@ -101,7 +101,7 @@ public struct AppState: Equatable, Sendable {
     /// The earliest time something changes if nothing else happens, or `nil` when nothing is due, so `Store` runs one
     /// timer at most, and none while nothing plays.
     public var deadline: Date? {
-        ([hideAt, idle.deadline, toast.deadline, lyrics.deadline, onboarding.demo.deadline, sleep.deadline] + surfaces.values.map(\.hover.deadline)).compactMap { $0 }.min()
+        ([hideAt, idle.deadline, toast.deadline, lyrics.deadline, onboarding.deadline, sleep.deadline] + surfaces.values.map(\.hover.deadline)).compactMap { $0 }.min()
     }
 
     /// The state the notch over `display` draws.
