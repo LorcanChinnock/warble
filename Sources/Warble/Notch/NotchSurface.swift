@@ -48,6 +48,7 @@ final class NotchSurface {
         panel = NotchPanel(model: model, settings: settings)
         panel.onPointer = { inside in dispatch(.pointer(display: display, inside: inside)) }
         panel.onScroll = onScroll
+        panel.onDisplaced = { [weak self] in self?.replace() }
         panel.onMenu = { [weak self] event in self?.showMenu(for: event) }
         model.onClick = { dispatch(.hover(display: display, .click)) }
         model.onMenu = { [weak self] open in self?.menu(open: open) }
@@ -254,6 +255,14 @@ final class NotchSurface {
         }
         panel.track(NotchLayout.hoverArea(state, notch: notch, card: card) ?? .zero)
         log.notice("Notch \(state.rawValue, privacy: .public) at \(NSStringFromRect(frame), privacy: .public) over \(NSStringFromRect(notch), privacy: .public)")
+    }
+
+    /// Puts the panel back where the layout has it if something else moved it. `draw` skips a layout whose frame hasn't
+    /// changed, so without this a panel the window server moved stays where it was left.
+    func replace() {
+        guard let panelFrame, panel.frame != NotchLayout.window(for: panelFrame) else { return }
+        log.notice("Notch panel moved to \(NSStringFromRect(self.panel.frame), privacy: .public), put back over \(NSStringFromRect(self.housing), privacy: .public)")
+        show(in: panelFrame)
     }
 
     private func hide() {

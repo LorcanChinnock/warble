@@ -13,6 +13,8 @@ final class NotchPanel: NSPanel {
     var onMenu: ((NSEvent) -> Void)?
     /// Called with each key no control used while the panel has the keyboard; true when it did something.
     var onKey: ((NSEvent) -> Bool)?
+    /// Called when the window server moves the panel, as it can while it rebuilds the displays.
+    var onDisplaced: (() -> Void)?
     /// Whether the panel may take the keyboard, which it does only while the notch is open from the keyboard.
     var takesKeyboard = false
     private var hoverArea = CGRect.zero
@@ -36,6 +38,12 @@ final class NotchPanel: NSPanel {
         ignoresMouseEvents = false
         // Built once, so a change of state animates instead of replacing the view.
         contentView = NSView(hosting: NotchView(model: model), settings: settings)
+        // The window server fits windows to each half-built arrangement while displays change, and nothing else moves this one.
+        for name in [NSWindow.didMoveNotification, NSWindow.didChangeScreenNotification] {
+            NotificationCenter.default.addObserver(forName: name, object: self, queue: .main) { [weak self] _ in
+                MainActor.assumeIsolated { self?.onDisplaced?() }
+            }
+        }
     }
 
     /// Fills `frame`, the larger of the shapes on screen. A window covers whole points, so over a notch with a half-point
