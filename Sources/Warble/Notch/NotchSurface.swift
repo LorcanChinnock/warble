@@ -58,6 +58,7 @@ final class NotchSurface {
         model.onMenu = { [weak self] open in self?.menu(open: open) }
         model.onShowDoctor = { show in dispatch(.showDoctor(display: display, show)) }
         model.onShowLyrics = { show in dispatch(.showLyrics(display: display, show)) }
+        model.onSetSleepTimer = { choice in dispatch(.setSleepTimer(choice)) }
         model.onDragArt = { [weak self] dragging in self?.dragArt(dragging) }
         panel.onKey = { [weak self] event in self?.onKey(event) ?? false }
     }
@@ -74,6 +75,9 @@ final class NotchSurface {
         model.hasLyrics = app.hasLyricsCard
         model.skipsBySeconds = app.skipsBySeconds
         model.artDrag = app.artDrag
+        model.showsSleepTimer = app.showsSleepTimer
+        model.sleepTimer = app.sleepTimer
+        model.canSetSleepTimer = app.canSetSleepTimer
         model.isVirtual = surface.isVirtual
         model.showsTitle = app.titleInNotch(display)
         model.isAlwaysShown = surface.isAlwaysShown

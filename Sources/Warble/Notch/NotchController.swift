@@ -58,6 +58,9 @@ final class NotchController {
                 if preferences.podcastSkips != state.podcastSkips {
                     self.store.dispatch(.podcastSkipsChanged(preferences.podcastSkips))
                 }
+                if preferences.sleepTimer != state.showsSleepTimer {
+                    self.store.dispatch(.sleepTimerSettingChanged(preferences.sleepTimer))
+                }
                 if preferences.dragArtOut != state.dragArtOut {
                     self.store.dispatch(.dragArtOutChanged(preferences.dragArtOut))
                 }

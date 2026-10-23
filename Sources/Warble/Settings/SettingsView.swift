@@ -181,6 +181,7 @@ private struct NotchSettings: View {
     @Setting(PreferenceKey.swipeToSkip) private var swipeToSkip: Bool
     @Setting(PreferenceKey.dragArtOut) private var dragArtOut: Bool
     @Setting(PreferenceKey.podcastSkips) private var podcastSkips: Bool
+    @Setting(PreferenceKey.sleepTimer) private var sleepTimer: Bool
     @Setting(PreferenceKey.hideFromCapture) private var hideFromCapture: Bool
     @Setting(PreferenceKey.virtualTitle) private var virtualTitle: Bool
 
@@ -281,6 +282,20 @@ private struct NotchSettings: View {
                 .accessibilityHint(Text("Go back 15 seconds or forward 30 in a podcast or audiobook."))
             } footer: {
                 Text("These buttons take the place of previous and next. Songs keep previous and next either way.")
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            Section {
+                Toggle(isOn: $sleepTimer) {
+                    Text("Show a sleep timer in the player")
+                    Text("Pause after 15 minutes, 30 minutes, an hour or at the end of the track.")
+                }
+                .accessibilityLabel(Text("Show a sleep timer in the player"))
+                .accessibilityHint(Text("Pause after 15 minutes, 30 minutes, an hour or at the end of the track."))
+            } footer: {
+                Text("The timer button sits beside the output button. A timer stops if you pause, and it never starts by itself.")
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, 10)

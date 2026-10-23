@@ -21,6 +21,8 @@ public enum PreferenceKey {
     public static let swipeToSkip = "swipeToSkip"
     /// Whether a podcast or audiobook has back 15 and forward 30 seconds in place of previous and next.
     public static let podcastSkips = "podcastSkips"
+    /// Whether the player's card has a sleep timer, which pauses after a set time or at the end of the track.
+    public static let sleepTimer = "sleepTimer"
     /// Whether the art in the player's card can be dragged into another app, as the image and the track's link.
     public static let dragArtOut = "dragArtOut"
     /// Whether the notch is left out of screen sharing, recordings and screenshots, while you still see it.
@@ -48,6 +50,7 @@ public struct Preferences {
             PreferenceKey.lyrics: false,
             PreferenceKey.swipeToSkip: false,
             PreferenceKey.podcastSkips: false,
+            PreferenceKey.sleepTimer: false,
             PreferenceKey.dragArtOut: false,
             PreferenceKey.hideFromCapture: false,
             PreferenceKey.virtualTitle: true,
@@ -133,6 +136,10 @@ public struct Preferences {
 
     public var podcastSkips: Bool {
         store.bool(forKey: PreferenceKey.podcastSkips)
+    }
+
+    public var sleepTimer: Bool {
+        store.bool(forKey: PreferenceKey.sleepTimer)
     }
 
     public var dragArtOut: Bool {
