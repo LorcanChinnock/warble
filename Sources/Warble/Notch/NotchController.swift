@@ -70,6 +70,9 @@ final class NotchController {
                 if preferences.virtualTitle != state.showsVirtualTitle {
                     self.store.dispatch(.virtualTitleChanged(preferences.virtualTitle))
                 }
+                if preferences.answerLinks != state.answersLinks {
+                    self.store.dispatch(.linksChanged(preferences.answerLinks))
+                }
                 if preferences.virtualNotchRules != self.rules {
                     self.layOut()
                 }

@@ -9,6 +9,8 @@ final class PlatformEffects {
     var toggleKeyboard: () -> Void = {}
     /// Opens the welcome window, which `AppEnvironment` sets once it's built.
     var showWelcome: () -> Void = {}
+    /// Opens Settings on the section with this name, which `AppEnvironment` sets once the window exists.
+    var openSettings: (String?) -> Void = { _ in }
     private var clickMonitor: Any?
     private var playerObservers: [NSObjectProtocol] = []
 
@@ -37,6 +39,8 @@ final class PlatformEffects {
             toggleKeyboard()
         case .showWelcome:
             showWelcome()
+        case .openSettings(let section):
+            openSettings(section)
         default:
             break
         }

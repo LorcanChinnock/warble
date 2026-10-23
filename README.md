@@ -45,7 +45,8 @@ Or [download the latest release](https://warble.lorcanchinnock.com/download) and
 - **Help when it can't see.** If something stops Warble seeing what's playing, a small "!" appears beside the notch. Click it to see what's wrong and how to fix it.
 - **For everyone.** Works with VoiceOver and with the keyboard alone, and follows Increase Contrast and Reduce Motion.
 - **Lyrics, if you want them.** Turn them on, and the line being sung shows under the notch, in step with the song. Click the lyrics button in the player to see the lines around it.
-- **Settings, if you want them.** Open at login, a larger text size, how long a paused song stays, a message when the track changes, even over full-screen apps, lyrics, swiping to skip, skipping by seconds in podcasts, a sleep timer, dragging the album art out, hiding from screen sharing and recordings, and your own keyboard shortcuts, one of which opens the notch. Right-click the notch for Settings or to quit, even with the menu bar icon hidden.
+- **For scripts.** Turn on `warble://` links, and `open warble://toggle` in Terminal, a launcher or a script plays or pauses, skips, seeks, sets the volume and opens Settings. They start off.
+- **Settings, if you want them.** Open at login, a larger text size, how long a paused song stays, a message when the track changes, even over full-screen apps, lyrics, swiping to skip, skipping by seconds in podcasts, a sleep timer, dragging the album art out, hiding from screen sharing and recordings, and your own keyboard shortcuts, one of which opens the notch, and `warble://` links for scripts and launchers. Right-click the notch for Settings or to quit, even with the menu bar icon hidden.
 
 ## Privacy
 

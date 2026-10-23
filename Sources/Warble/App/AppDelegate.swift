@@ -112,6 +112,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.fallback = fallback
     }
 
+    /// A `warble://` link, from Terminal's `open`, a launcher or a script. It's one more way in for the same commands as
+    /// the notch's buttons, and `reduce` ignores it while the Developer card has links off.
+    func application(_ application: NSApplication, open urls: [URL]) {
+        let store = environment.store
+        for url in urls {
+            guard let scheme = url.scheme?.lowercased(), RemoteCommand.schemes.contains(scheme) else { continue }
+            guard store.state.answersLinks else {
+                log.notice("Ignored a link: links are off in Settings › Developer")
+                continue
+            }
+            guard let command = RemoteCommand(url: url) else {
+                log.notice("Ignored a link that isn't a route Warble knows")
+                environment.toast.error("That link isn't one Warble knows. The guide lists the ones it does.")
+                continue
+            }
+            store.dispatch(.linkOpened(command))
+        }
+    }
+
     /// Opening Warble again from Finder or Spotlight brings back a menu bar icon that was turned off, so it can always
     /// be reached, and opens Settings.
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {

@@ -185,6 +185,18 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.hidesFromCapture = on
     case .virtualTitleChanged(let on):
         state.showsVirtualTitle = on
+    case .linksChanged(let on):
+        state.answersLinks = on
+    case .linkOpened(let command):
+        // Links are one more way in, so each does what its button does. With links off a link changes nothing.
+        guard state.answersLinks else { break }
+        guard let action = command.action else {
+            if case .settings(let section) = command {
+                effects.append(.openSettings(section: section))
+            }
+            break
+        }
+        return reduce(&state, action, now: now)
     case .lyricsLoaded(let lyrics, let pass):
         state.lyrics.loaded(lyrics, pass: pass)
     case .launched(let firstRun):
