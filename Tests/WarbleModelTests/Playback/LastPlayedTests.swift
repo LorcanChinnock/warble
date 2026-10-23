@@ -49,3 +49,22 @@ private let song = PlaybackState(bundleIdentifier: "com.apple.Music", title: "So
     let decoded = try JSONDecoder().decode(LastPlayed.self, from: JSONEncoder().encode(track))
     #expect(decoded == track)
 }
+
+@Test func aTabIsKeptOnlyWhenItsTitleNamesTheTrack() {
+    func link(_ address: String, tab: String) -> URL? {
+        Browser.link(address: address, tabTitle: tab, trackTitle: "Great Song")
+    }
+    #expect(link("https://example.com/watch?v=1", tab: "great song - YouTube") == URL(string: "https://example.com/watch?v=1"))
+    #expect(link("https://example.com/watch?v=1", tab: "Inbox (3) - Mail") == nil)
+    #expect(link("file:///Users/me/secret.html", tab: "Great Song") == nil)
+    #expect(link("not an address", tab: "Great Song") == nil)
+    #expect(Browser.link(address: "https://example.com", tabTitle: "Anything", trackTitle: "") == nil)
+}
+
+@Test func everyBrowserScriptNamesItsTabByBundleID() {
+    for browser in Browser.allCases {
+        #expect(browser.frontTabScript.contains("application id \"\(browser.bundleIdentifier)\""))
+    }
+    #expect(Browser.safari.frontTabScript.contains("current tab"))
+    #expect(Browser.chrome.frontTabScript.contains("active tab"))
+}

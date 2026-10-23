@@ -414,6 +414,12 @@
     "Relaunch" : {
 
     },
+    "Remember the page a track played on, so the play button can open it again." : {
+
+    },
+    "Reopen browser tracks from the idle card" : {
+
+    },
     "Repeat" : {
 
     },
@@ -604,6 +610,9 @@
 
     },
     "macOS %@" : {
+
+    },
+    "macOS asks once for each browser. Works with Safari, Chrome, Brave, Edge, Arc and Vivaldi. Without it, or in another browser, the button opens the browser." : {
 
     },
     "macOS will ask the first time %@ plays." : {

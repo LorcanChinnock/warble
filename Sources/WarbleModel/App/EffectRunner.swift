@@ -18,6 +18,9 @@ public final class EffectRunner {
     public var dispatch: (AppAction) -> Void = { _ in }
     /// The app that's playing reports through it and takes commands, or `nil` before one starts.
     public var source: (any NowPlayingSource)?
+    /// The address of the page a browser shows for a track that just started there, or `nil` when the setting is off, the
+    /// browser can't say or its front tab isn't the track. Asks the browser, so it runs off the main actor.
+    public var tabLink: @Sendable (_ bundleIdentifier: String, _ title: String) async -> URL? = { _, _ in nil }
     /// The name of the app with a bundle identifier, for the idle card's VoiceOver label.
     public var appName: (String) -> String? = { _ in nil }
     /// Logs a failure, such as a save that didn't work.
@@ -72,8 +75,17 @@ public final class EffectRunner {
             Task { await source.send(command) }
         case .remember(let state, let pass):
             let remember = remember
+            let tabLink = tabLink
             let appName = appName(state.bundleIdentifier)
-            read { await Task.detached(priority: .utility) { remember(state, appName) }.value } answer: {
+            read {
+                await Task.detached(priority: .utility) {
+                    var track = remember(state, appName)
+                    if track.link == nil, Browser(rawValue: track.bundleIdentifier) != nil {
+                        track.link = await tabLink(track.bundleIdentifier, track.title)
+                    }
+                    return track
+                }.value
+            } answer: {
                 .remembered($0, pass: pass)
             }
         case .saveLastPlayed(let track):

@@ -22,6 +22,11 @@ public struct LastPlayedState: Feature {
             }
         case .remembered(let latest, let pass):
             guard pass == remembers else { break }
+            var latest = latest
+            // Art arriving for the track already kept doesn't look at the tab again, so it keeps the address found first.
+            if latest.link == nil, let kept = lastPlayed, kept.isSameTrack(as: latest) {
+                latest.link = kept.link
+            }
             lastPlayed = latest
             return [.saveLastPlayed(latest)]
         default:

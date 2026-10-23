@@ -186,6 +186,7 @@ private struct NotchSettings: View {
     @Setting(PreferenceKey.dragArtOut) private var dragArtOut: Bool
     @Setting(PreferenceKey.podcastSkips) private var podcastSkips: Bool
     @Setting(PreferenceKey.sleepTimer) private var sleepTimer: Bool
+    @Setting(PreferenceKey.resumeBrowserTabs) private var resumeBrowserTabs: Bool
     @Setting(PreferenceKey.hideFromCapture) private var hideFromCapture: Bool
     @Setting(PreferenceKey.virtualTitle) private var virtualTitle: Bool
 
@@ -300,6 +301,20 @@ private struct NotchSettings: View {
                 .accessibilityHint(Text("Pause after 15 minutes, 30 minutes, an hour or at the end of the track."))
             } footer: {
                 Text("The timer button sits beside the output button. A timer stops if you pause, and it never starts by itself.")
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            Section {
+                Toggle(isOn: $resumeBrowserTabs) {
+                    Text("Reopen browser tracks from the idle card")
+                    Text("Remember the page a track played on, so the play button can open it again.")
+                }
+                .accessibilityLabel(Text("Reopen browser tracks from the idle card"))
+                .accessibilityHint(Text("Remember the page a track played on, so the play button can open it again."))
+            } footer: {
+                Text("macOS asks once for each browser. Works with Safari, Chrome, Brave, Edge, Arc and Vivaldi. Without it, or in another browser, the button opens the browser.")
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, 10)
