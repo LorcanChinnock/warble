@@ -34,6 +34,7 @@ The first public beta: what's playing in the notch, playback and volume controls
 - [#29](https://github.com/LorcanChinnock/warble/issues/29) chore: final icon and brand mark
 - [#30](https://github.com/LorcanChinnock/warble/issues/30) docs: demo player for site media
 - [#31](https://github.com/LorcanChinnock/warble/issues/31) docs(site): landing page and 0.1 guide pages
+- [#162](https://github.com/LorcanChinnock/warble/issues/162) docs: record site and README media with the demo player
 - [#32](https://github.com/LorcanChinnock/warble/issues/32) ci(release): ship the first beta
 - [#73](https://github.com/LorcanChinnock/warble/issues/73) feat(app): menu bar icon from the app icon's bars
 - [#75](https://github.com/LorcanChinnock/warble/issues/75) ci: retry the adapter test on a timeout, as the app does

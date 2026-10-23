@@ -1,6 +1,7 @@
 ---
 import Copy from '../components/Copy.astro';
 import ForMacs from '../components/ForMacs.astro';
+import Loop from '../components/Loop.astro';
 import NotchDemo from '../components/NotchDemo.astro';
 import Base from '../layouts/Base.astro';
 import { latestRelease } from '../lib/release';
@@ -21,6 +22,30 @@ const brew = 'brew install lorcanchinnock/tap/warble';
       </div>
       <ForMacs />
       <p class="meta">Free and open source. Beta {release.version}, for macOS 15 or later, on Apple silicon or Intel. <a href="#install">How to install</a></p>
+    </div>
+  </section>
+
+  <section class="clips" aria-labelledby="clips">
+    <div class="wrap">
+      <h2 id="clips" class="visually-hidden">Warble in use</h2>
+      <ul class="grid">
+        <li class="card">
+          <Loop name="rest" label="The notch at rest, with the album art on one side and a few moving bars on the other" />
+          <p>At rest, the album art and a few moving bars.</p>
+        </li>
+        <li class="card">
+          <Loop name="hover" label="Hovering over the notch, which opens to the song, a progress bar and the controls" />
+          <p>Hover over it to see the song.</p>
+        </li>
+        <li class="card">
+          <Loop name="skip" label="Clicking skip in the open notch, which changes to the next song" />
+          <p>Skip a song without leaving what you're doing.</p>
+        </li>
+        <li class="card">
+          <Loop name="idle" label="Pausing a song, the notch going quiet after a few seconds, then hovering to see the last song played" />
+          <p>Pause, and the notch goes quiet. Hover to play the last song again.</p>
+        </li>
+      </ul>
     </div>
   </section>
 
@@ -89,6 +114,11 @@ const brew = 'brew install lorcanchinnock/tap/warble';
 
   section { padding-block: clamp(28px, 4vw, 48px); }
   .wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+
+  .clips .grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
+  .clips .card { padding: 6px 6px 16px; display: grid; gap: 12px; overflow: hidden; }
+  .clips p { margin: 0; padding-inline: 18px; color: var(--secondary); }
+  .clips :global(video) { width: 100%; height: auto; border-radius: calc(var(--radius) - 6px); display: block; }
 
   .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
   .grid .card { padding: 22px 24px; display: grid; gap: 8px; align-content: start; }
