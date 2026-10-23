@@ -32,7 +32,7 @@ Warble shows these buttons for:
 A live radio show has no end to move through, so it keeps previous and next.
 
 > [!NOTE]
-> Warble can't change a podcast's speed yet. Change it in the app that's playing; Warble's bar keeps up with whatever speed you pick.
+> Warble doesn't change a podcast's speed. Change it in the app that's playing; Warble's bar keeps up with whatever speed you pick.
 
 > [!TIP]
 > Falling asleep to an episode? Turn on a sleep timer. See [Set a sleep timer](/docs/set-a-sleep-timer/).
