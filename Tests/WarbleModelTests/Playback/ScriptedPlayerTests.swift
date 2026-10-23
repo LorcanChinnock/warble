@@ -77,6 +77,16 @@ private func state(_ player: ScriptedPlayer, title: String = "Song", playing: Bo
     #expect(!song.isSameTrack(as: nil))
 }
 
+@Test func aSpotifyAdHasNoArtworkAndDoesNotKeepTheSongsArt() throws {
+    // What Spotify reported during an ad: no artist or album, `missing value` for the artwork URL, and a spotify:ad: URI.
+    let ad = [ScriptValue.text("playing"), .text("Where Halloween comes Alive"), .text(""), .text(""), .number(30), .number(0),
+              .text("songs"), .text("one"), .missing, .text("spotify:ad:224463e5f4164de892031cddee56e3d4")]
+    let adState = try #require(PlaybackState(player: .spotify, report: ad, at: reported))
+    let song = try #require(PlaybackState(player: .spotify, report: report(), at: reported))
+    #expect(PlaybackState.artworkURL(in: ad) == nil)
+    #expect(!song.isSameTrack(as: adState))
+}
+
 @Test func eachScriptTellsItsPlayerByBundleIDWithATimeout() {
     for player in ScriptedPlayer.allCases {
         for script in [player.stateScript, player.script(for: .togglePlayPause)] {
