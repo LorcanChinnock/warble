@@ -1,6 +1,6 @@
 ---
 title: Settings
-summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a notch drawn on another display shows the title, whether a new song shows its title, whether lyrics show, whether a swipe skips, whether the album art can be dragged out, set keyboard shortcuts, including one that opens the notch, and turn on warble:// links for scripts.
+summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a notch drawn on another display shows the title, whether a new song shows its title, whether lyrics show, whether a swipe skips, whether the album art can be dragged out, set keyboard shortcuts, including one that opens the notch, and turn on the warble command and warble:// links for scripts.
 group: Reference
 ---
 
@@ -59,6 +59,7 @@ Warble won't use a shortcut that every app needs, such as <kbd>⌘Q</kbd>, or on
 
 For scripts, launchers and other tools. Everything here is off at first.
 
+- **Allow the warble command.** Off at first. Turn it on, and the `warble` command in Terminal can read what's playing and control it, for scripts and status bars. While it's off, Warble opens nothing for it. Below it, **Use warble in Terminal** installs the command if Homebrew didn't. See [Use the warble command](/docs/use-the-warble-command/).
 - **Answer warble:// links.** Off at first. Turn it on, and links like `warble://toggle` play, pause, skip, seek, set the volume and open Settings. While it's off, Warble ignores them. See [Control Warble with links](/docs/control-warble-with-links/).
 
 ## About

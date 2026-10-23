@@ -54,6 +54,9 @@
     "All" : {
 
     },
+    "Allow the warble command" : {
+
+    },
     "Always" : {
 
     },
@@ -62,6 +65,16 @@
     },
     "Another app uses this shortcut. Try another." : {
 
+    },
+    "Another program uses %@. Run %@ instead." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Another program uses %1$@. Run %2$@ instead."
+          }
+        }
+      }
     },
     "Answer warble:// links" : {
 
@@ -101,6 +114,16 @@
     },
     "Could be better" : {
 
+    },
+    "Couldn't change the %@ command: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Couldn't change the %1$@ command: %2$@"
+          }
+        }
+      }
     },
     "Couldn't relaunch Warble" : {
 
@@ -169,6 +192,18 @@
 
     },
     "How Warble looks and where it shows." : {
+
+    },
+    "Install" : {
+
+    },
+    "Installed at %@. It updates with Warble." : {
+
+    },
+    "Installed by Homebrew. It updates with Warble." : {
+
+    },
+    "Installing asks for your password once." : {
 
     },
     "It was installed while Warble was running. Relaunch to use it." : {
@@ -343,6 +378,9 @@
     "Playing" : {
 
     },
+    "Points to a copy of Warble that has moved. Reinstall to fix it." : {
+
+    },
     "Position" : {
 
     },
@@ -370,6 +408,9 @@
     "Record Shortcut" : {
 
     },
+    "Reinstall" : {
+
+    },
     "Relaunch" : {
 
     },
@@ -377,6 +418,9 @@
 
     },
     "Resume" : {
+
+    },
+    "Scripts and status bars can read what's playing and control it from Terminal." : {
 
     },
     "Settings…" : {
@@ -463,6 +507,9 @@
     "The timer button sits beside the output button. A timer stops if you pause, and it never starts by itself." : {
 
     },
+    "The warble command couldn't start: %@" : {
+
+    },
     "Then the notch hides until something plays." : {
 
     },
@@ -481,6 +528,9 @@
     "Try it in Terminal with open warble://toggle. The user guide lists every link. While this is off, Warble ignores them." : {
 
     },
+    "Try it with warble now. Only programs running as you can use it, and only while this is on. While it's off, Warble opens nothing for it." : {
+
+    },
     "Turn off" : {
 
     },
@@ -490,7 +540,13 @@
     "Undo" : {
 
     },
+    "Uninstall" : {
+
+    },
     "Update to %@…" : {
+
+    },
+    "Use %@ in Terminal" : {
 
     },
     "Version %@" : {

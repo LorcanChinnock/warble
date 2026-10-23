@@ -92,6 +92,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        environment.platform.stopListening()
         source?.stop()
         fallback?.stop()
     }

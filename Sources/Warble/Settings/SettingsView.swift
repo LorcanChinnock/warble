@@ -349,9 +349,25 @@ private struct ShortcutsSettings: View {
 /// command line and the rest can join it.
 private struct DeveloperSettings: View {
     @Setting(PreferenceKey.answerLinks) private var answerLinks: Bool
+    @Setting(PreferenceKey.commandLine) private var commandLine: Bool
 
     var body: some View {
         SectionPage(section: .developer) {
+            Section {
+                Toggle(isOn: $commandLine) {
+                    Text("Allow the warble command")
+                    Text("Scripts and status bars can read what's playing and control it from Terminal.")
+                }
+                .accessibilityLabel(Text("Allow the warble command"))
+                .accessibilityHint(Text("Scripts and status bars can read what's playing and control it from Terminal."))
+                CommandLinkRow()
+            } footer: {
+                Text("Try it with warble now. Only programs running as you can use it, and only while this is on. While it's off, Warble opens nothing for it.")
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
             Section {
                 Toggle(isOn: $answerLinks) {
                     Text("Answer warble:// links")

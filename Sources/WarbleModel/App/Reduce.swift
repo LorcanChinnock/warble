@@ -187,6 +187,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.showsVirtualTitle = on
     case .linksChanged(let on):
         state.answersLinks = on
+    case .commandLineChanged(let on):
+        state.listensForCommands = on
     case .linkOpened(let command):
         // Links are one more way in, so each does what its button does. With links off a link changes nothing.
         guard state.answersLinks else { break }
@@ -391,6 +393,12 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
     if followsVolume != state.followsVolume {
         state.followsVolume = followsVolume
         effects.append(.followVolume(followsVolume))
+    }
+    // The command line's socket is open only while Settings has it on, and is asked for once each time that changes. A
+    // Warble that opens with it on asks on its first action.
+    if state.listensForCommands != state.listening {
+        state.listening = state.listensForCommands
+        effects.append(.listenForCommands(state.listening))
     }
     // Opening a notch checks again whatever the Doctor found, in case the user fixed it, such as in System Settings,
     // which tells Warble nothing.

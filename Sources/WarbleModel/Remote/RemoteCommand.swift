@@ -13,6 +13,9 @@ public enum RemoteCommand: Equatable, Sendable {
     case seek(seconds: TimeInterval)
     /// The output volume, from 0 to 100.
     case volume(percent: Int)
+    /// Moves the sound to the output with this name, or the start of it. Only the command line has it, since matching a
+    /// name needs the outputs, which the handler reads (`RemoteHandler`).
+    case output(name: String)
     /// Opens the notch on the pointer's display with the keyboard in it, as the Open notch shortcut does.
     case expand
     /// Opens Settings, on the section named, which is one of `settingsSections`, or on the one that was last open.
@@ -25,7 +28,8 @@ public enum RemoteCommand: Equatable, Sendable {
     /// The names of the Settings sections a link can open, which are `SettingsSection`'s raw values.
     public static let settingsSections: Set<String> = ["general", "notch", "shortcuts", "developer", "about"]
 
-    /// What `reduce` dispatches for the command, or `nil` for one that opens Settings, which is an effect.
+    /// What `reduce` dispatches for the command, or `nil` for one that isn't one action: opening Settings is an effect,
+    /// and an output is picked by name first.
     public var action: AppAction? {
         switch self {
         case .play: .command(.play)
@@ -36,7 +40,7 @@ public enum RemoteCommand: Equatable, Sendable {
         case .seek(let seconds): .command(.seek(to: seconds))
         case .volume(let percent): .setVolume(Double(percent) / 100)
         case .expand: .perform(.openNotch)
-        case .settings: nil
+        case .settings, .output: nil
         }
     }
 

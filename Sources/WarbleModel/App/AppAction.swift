@@ -71,6 +71,8 @@ public enum AppAction: Equatable, Sendable {
     case hidesFromCaptureChanged(Bool)
     case virtualTitleChanged(Bool)
     case linksChanged(Bool)
+    /// The Developer card turned the `warble` command line on or off.
+    case commandLineChanged(Bool)
     /// A `warble://` link was opened. It does what the notch's matching button does while Settings has links on, and
     /// nothing while they're off.
     case linkOpened(RemoteCommand)
