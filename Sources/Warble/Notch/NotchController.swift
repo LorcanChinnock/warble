@@ -110,6 +110,7 @@ final class NotchController {
             let surface = surfaces[housing.display] ?? makeSurface(housing)
             surfaces[housing.display] = surface
             surface.housing = housing.frame
+            surface.replace()
         }
         layingOut = true
         store.dispatch(.housingsChanged(housings))
