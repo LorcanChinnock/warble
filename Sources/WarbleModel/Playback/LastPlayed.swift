@@ -33,6 +33,17 @@ public struct LastPlayed: Codable, Equatable, Sendable {
         return URL(string: "spotify:\(parts[1]):\(parts[2])")
     }
 
+    /// Whether `other` is the same track from the same app, whatever its art or link.
+    func isSameTrack(as other: LastPlayed) -> Bool {
+        bundleIdentifier == other.bundleIdentifier && title == other.title && artist == other.artist
+    }
+
+    /// The browser a tab's `link` is opened in, so it plays where it did rather than in the default browser. Only for a
+    /// browser Warble can read a tab from: any other app's link goes to whatever handles it.
+    public var resumeBrowser: String? {
+        Browser(rawValue: bundleIdentifier)?.bundleIdentifier
+    }
+
     /// Whether `state` is worth remembering in place of `previous`, the state last remembered: a new track, or the art
     /// arriving or changing. A pause, a seek or a change of speed isn't, so those never write to disk.
     public static func changes(from previous: PlaybackState?, to state: PlaybackState) -> Bool {

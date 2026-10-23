@@ -17,8 +17,9 @@ public enum AppEffect: Equatable, Sendable {
     /// Open a player that has quit and tell it to play, so it resumes the track it had. Only on a click, which is when
     /// macOS asks for Automation permission.
     case launchAndPlay(ScriptedPlayer)
-    /// Open a link in whatever app handles it.
-    case openLink(URL)
+    /// Open a link in whatever app handles it, or in the app with `bundleIdentifier` when one is given, such as the browser
+    /// a track played in.
+    case openLink(URL, in: String? = nil)
     case setVolume(Double)
     /// A light tick on a Force Touch trackpad.
     case haptic

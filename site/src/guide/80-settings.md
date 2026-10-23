@@ -34,6 +34,7 @@ Every change takes effect straight away.
 - **Skip by seconds in podcasts.** Off at first. Turn it on, and a podcast or an audiobook has back 15 seconds and forward 30 in place of previous and next. Songs keep previous and next. See [Listen to podcasts](/docs/listen-to-podcasts/).
 - **Show a sleep timer in the player.** Off at first. Turn it on, and the player has a moon button that pauses what's playing after 15 minutes, 30 minutes, an hour or at the end of the track. Turning it off stops a timer that's running. See [Set a sleep timer](/docs/set-a-sleep-timer/).
 - **Drag the album art out of the player.** Off at first. Turn it on, and you can drag the art from the open player into another app: a folder gets the picture as a file, and a message or a note gets the picture. A click on the art still opens the app. See [Use gestures](/docs/use-gestures/#drag-the-album-art-out).
+- **Reopen browser tracks from the idle card.** Off at first. Turn it on, and when a song or video starts in a browser, Warble notes the page in the front tab, so the play button on the idle card can open it again in the same browser. macOS asks once for each browser. See [Pick up where you left off](/docs/pick-up-where-you-left-off/).
 - **Hide from screen sharing and recordings.** Off at first. Turn it on, and Warble stays out of what others see when you share your screen in a call, and out of your screen recordings and screenshots. You still see the notch and can use it as usual.
 
 > [!NOTE]

@@ -49,11 +49,11 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .resumeLastPlayed:
         // Idle with a session still reporting means a paused track, which the app can resume. With no session, a play
         // command would go nowhere, so open the track if it has a link. Spotify reopens on the track it had, so launch it
-        // and play. Anything else just opens its app.
+        // and play. A tab with a saved address opens it in its browser. Anything else just opens its app.
         if state.playback != nil {
             return reduce(&state, .command(.play), now: now)
         } else if let url = state.lastPlayed?.resumeURL {
-            effects.append(.openLink(url))
+            effects.append(.openLink(url, in: state.lastPlayed?.resumeBrowser))
         } else if let player = state.lastPlayed.flatMap({ ScriptedPlayer(rawValue: $0.bundleIdentifier) }), player == .spotify {
             effects.append(.launchAndPlay(player))
         } else if let bundleIdentifier = state.lastPlayed?.bundleIdentifier {

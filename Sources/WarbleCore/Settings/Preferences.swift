@@ -34,6 +34,10 @@ public enum PreferenceKey {
     /// Whether Warble opens the socket the `warble` command talks to, in the Developer card. Off, no socket exists.
     public static let commandLine = "commandLine"
 
+    /// Whether Warble reads the front tab of a browser when a track starts there, so the idle card can reopen it. Off,
+    /// Warble never scripts a browser, and macOS never asks for permission to.
+    public static let resumeBrowserTabs = "resumeBrowserTabs"
+
     /// Whether the welcome window has been seen, or didn't need to be because Warble was in use before it existed.
     public static let hasSeenWelcome = "hasSeenWelcome"
 
@@ -60,6 +64,7 @@ public struct Preferences {
             PreferenceKey.virtualTitle: true,
             PreferenceKey.answerLinks: false,
             PreferenceKey.commandLine: false,
+            PreferenceKey.resumeBrowserTabs: false,
             PreferenceKey.hasSeenWelcome: false,
         ]
         for action in WarbleAction.allCases {
@@ -154,6 +159,10 @@ public struct Preferences {
 
     public var hideFromCapture: Bool {
         store.bool(forKey: PreferenceKey.hideFromCapture)
+    }
+
+    public var resumeBrowserTabs: Bool {
+        store.bool(forKey: PreferenceKey.resumeBrowserTabs)
     }
 
     public var virtualTitle: Bool {

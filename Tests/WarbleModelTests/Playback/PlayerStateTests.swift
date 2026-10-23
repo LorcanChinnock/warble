@@ -97,6 +97,14 @@ private struct Run {
     #expect(spotify.effects == [.openLink(URL(string: "spotify:track:abc123")!)])
 }
 
+@Test func resumingATabOpensItsAddressInTheBrowserItPlayedIn() {
+    var run = Run(playing: nil)
+    let address = URL(string: "https://www.youtube.com/watch?v=abc")!
+    run.send(.lastPlayedLoaded(LastPlayed(bundleIdentifier: "com.google.Chrome", title: "Video", link: address)))
+    run.send(.resumeLastPlayed)
+    #expect(run.effects == [.openLink(address, in: "com.google.Chrome")])
+}
+
 @Test func resumingSpotifyAfterItQuitLaunchesItAndPlaysWhenThereIsNoLink() {
     var run = Run(playing: nil)
     run.send(.lastPlayedLoaded(LastPlayed(bundleIdentifier: "com.spotify.client", title: "Song")))
@@ -218,6 +226,21 @@ private struct Run {
     #expect(run.effects == [.saveLastPlayed(latest)])
 }
 
+@Test func artArrivingKeepsTheAddressFoundWhenTheTabStarted() {
+    let found = URL(string: "https://example.com/watch?v=1")
+    let tab = PlaybackState(bundleIdentifier: "com.google.Chrome", title: "Video", elapsedTimestamp: start, rate: 1)
+    var run = Run(playing: nil)
+    run.send(.playbackReported(tab))
+    run.send(.remembered(LastPlayed(bundleIdentifier: tab.bundleIdentifier, title: "Video", link: found), pass: 1))
+    var withArt = tab
+    withArt.artwork = Data([1])
+    run.send(.playbackReported(withArt))
+    // The tab's title no longer names the track by then, so the second look finds no address.
+    run.send(.remembered(LastPlayed(bundleIdentifier: tab.bundleIdentifier, title: "Video", artwork: Data([1])), pass: 2))
+    #expect(run.state.lastPlayed?.link == found)
+    #expect(run.state.lastPlayed?.artwork == Data([1]))
+}
+
 @Test func theSavedTrackLoadsOnlyIfNothingHasPlayedSince() {
     let saved = LastPlayed(bundleIdentifier: "com.apple.Music", title: "Saved")
     var fresh = Run(playing: nil)
@@ -237,6 +260,23 @@ private struct Run {
     runner.perform(.remember(song, pass: 3))
     await runner.finish()
     #expect(dispatched == [.remembered(LastPlayed(bundleIdentifier: song.bundleIdentifier, appName: "Music", title: "Song", artist: "Artist"), pass: 3)])
+}
+
+@MainActor
+@Test func aTrackThatStartedInABrowserIsRememberedWithItsTabAndNoOtherIs() async {
+    let runner = makeRunner()
+    var dispatched: [AppAction] = []
+    runner.dispatch = { dispatched.append($0) }
+    runner.tabLink = { _, title in URL(string: "https://example.com/\(title)") }
+    let tab = PlaybackState(bundleIdentifier: "com.google.Chrome", title: "Video", elapsedTimestamp: start, rate: 1)
+    runner.perform(.remember(tab, pass: 1))
+    runner.perform(.remember(song, pass: 2))
+    await runner.finish()
+    let links = dispatched.compactMap { action -> URL?? in
+        if case .remembered(let track, _) = action { .some(track.link) } else { nil }
+    }
+    #expect(links.contains { $0 == URL(string: "https://example.com/Video") })
+    #expect(links.filter { $0 == nil }.count == 1)
 }
 
 @MainActor
