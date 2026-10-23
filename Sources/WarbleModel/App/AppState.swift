@@ -15,12 +15,23 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var idle: IdleAfterPause
     /// Whether the pointer is on a notch or a card is open, which holds off Idle.
     public internal(set) var hovering = false
+    /// The notches, one for each camera housing, and the settings they draw by.
+    public internal(set) var notches: Notches
     /// One notch for each camera housing, real or virtual, by `NotchHousing.display`.
-    public internal(set) var surfaces: [String: Surface] = [:]
+    public internal(set) var surfaces: [String: Surface] {
+        get { notches.surfaces }
+        set { notches.surfaces = newValue }
+    }
     /// The displays that show a full-screen app, by `NotchDisplay.id`, whose notches draw nothing.
-    public internal(set) var fullScreen: Set<String> = []
+    public internal(set) var fullScreen: Set<String> {
+        get { notches.fullScreen }
+        set { notches.fullScreen = newValue }
+    }
     /// What a hover on the housing does while Idle.
-    public internal(set) var idleHover: IdleHover
+    public internal(set) var idleHover: IdleHover {
+        get { notches.idleHover }
+        set { notches.idleHover = newValue }
+    }
     /// The Doctor's checks behind the "!".
     public internal(set) var doctor: DoctorState
     /// Whether a Doctor check failed, which draws a resting notch with a "!" even when nothing is playing.
@@ -55,11 +66,16 @@ public struct AppState: Equatable, Sendable {
     public var sleepTimer: SleepTimer? { sleep.timer }
     /// Whether the art can be dragged out of the player's card, which Settings turns on.
     public internal(set) var dragArtOut: Bool
-    /// Whether every notch is left out of screen sharing, recordings and screenshots, which Settings turns on. The
-    /// window server does it, so nothing here watches for a capture and the notch draws the same either way.
-    public internal(set) var hidesFromCapture: Bool
+    /// Whether every notch is left out of screen sharing, recordings and screenshots, which Settings turns on.
+    public internal(set) var hidesFromCapture: Bool {
+        get { notches.hidesFromCapture }
+        set { notches.hidesFromCapture = newValue }
+    }
     /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns off.
-    public internal(set) var showsVirtualTitle: Bool
+    public internal(set) var showsVirtualTitle: Bool {
+        get { notches.showsVirtualTitle }
+        set { notches.showsVirtualTitle = newValue }
+    }
     /// Whether `warble://` links do anything, which the Developer card in Settings turns on.
     public internal(set) var answersLinks: Bool
     /// Whether Warble answers the `warble` command line, which the Developer card turns on. Off, no socket is open.
@@ -82,14 +98,12 @@ public struct AppState: Equatable, Sendable {
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
         doctor = DoctorState(checks: checks)
-        self.idleHover = idleHover
+        notches = Notches(idleHover: idleHover, hidesFromCapture: hidesFromCapture, showsVirtualTitle: showsVirtualTitle)
         toast = ToastState(isOn: showsTrackToast, inFullScreen: toastsInFullScreen)
         scroll = ScrollState(swipeToSkip: swipeToSkip)
         self.podcastSkips = podcastSkips
         self.dragArtOut = dragArtOut
         sleep = SleepTimerState(isOn: showsSleepTimer)
-        self.hidesFromCapture = hidesFromCapture
-        self.showsVirtualTitle = showsVirtualTitle
         self.answersLinks = answersLinks
         self.listensForCommands = listensForCommands
         lyrics = LyricsState(isOn: showsLyrics)
@@ -101,7 +115,7 @@ public struct AppState: Equatable, Sendable {
     /// The earliest time something changes if nothing else happens, or `nil` when nothing is due, so `Store` runs one
     /// timer at most, and none while nothing plays.
     public var deadline: Date? {
-        ([hideAt, idle.deadline, toast.deadline, lyrics.deadline, onboarding.deadline, sleep.deadline] + surfaces.values.map(\.hover.deadline)).compactMap { $0 }.min()
+        [hideAt, idle.deadline, toast.deadline, lyrics.deadline, onboarding.deadline, sleep.deadline, notches.deadline].compactMap { $0 }.min()
     }
 
     /// The state the notch over `display` draws.
@@ -115,26 +129,12 @@ public struct AppState: Equatable, Sendable {
     }
 
     func notchState(_ surface: Surface) -> NotchState {
-        let state = onboarding.notchState ?? NotchState(
-            surface.hover.state, isPlaying: showsPlayback, needsAttention: needsAttention, idleHover: idleHover,
-            isAlwaysShown: surface.isAlwaysShown, showsToast: toasts.current != nil && !showsTitle(surface),
-            showsLyrics: lyrics.showsLine
-        )
-        // A full-screen app has the top of its display to itself, apart from the toast when Settings lets it through.
-        guard surface.isFullScreen else { return state }
-        return state == .toast && toastsInFullScreen ? .toast : .hidden
+        notches.notchState(surface, shared)
     }
 
     /// Whether the notch over `display` draws the title in its middle.
     public func titleInNotch(_ display: String) -> Bool {
-        surfaces[display].map(showsTitle) ?? false
-    }
-
-    /// Only a virtual notch has room, since a real one's middle is the camera. It scrolls the title once for each track,
-    /// which says what a track-change toast would, so the toast leaves it alone. Over a full-screen app the notch is
-    /// hidden, so the toast, if Settings lets it through, stays.
-    func showsTitle(_ surface: Surface) -> Bool {
-        showsVirtualTitle && surface.isVirtual && !surface.isFullScreen && showsPlayback && playback?.title.isEmpty == false
+        surfaces[display].map { notches.showsTitle($0, shared) } ?? false
     }
 
     /// When the first-run demo's preview track started while it shows one. The notches draw that track in place of
@@ -145,10 +145,7 @@ public struct AppState: Equatable, Sendable {
     public var drawsPlayback: Bool { showsPlayback || demoTrackStart != nil }
 
     func card(_ surface: Surface) -> NotchCard {
-        onboarding.card ?? NotchCard(
-            isPlaying: showsPlayback && playback != nil, needsAttention: needsAttention, showsDoctor: surface.showsDoctor,
-            showsLyrics: surface.showsLyrics && hasLyricsCard
-        )
+        notches.card(surface, shared)
     }
 
     /// Whether there's a lyrics card to show, which the player's card offers: the song playing has lyrics, which only
@@ -171,7 +168,11 @@ public struct AppState: Equatable, Sendable {
 
     /// What the features may read of this state.
     var shared: SharedState {
-        SharedState(playback: playback, showsPlayback: showsPlayback, hideAt: hideAt)
+        SharedState(
+            playback: playback, showsPlayback: showsPlayback, hideAt: hideAt, needsAttention: needsAttention,
+            hasToast: toasts.current != nil, toastsInFullScreen: toastsInFullScreen, showsLyricsLine: lyrics.showsLine,
+            hasLyricsCard: hasLyricsCard, demoState: onboarding.notchState, demoCard: onboarding.card
+        )
     }
 
     /// What dragging the art out of the player's card carries, or `nil` when it can't be dragged: Settings has it off,
@@ -181,36 +182,9 @@ public struct AppState: Equatable, Sendable {
         return ArtDrag(playback)
     }
 
-    /// Without anything playing, a "!" or a card to open while Idle, a notch draws nothing, or only a blank notch, and
-    /// takes no hover or click. Nor does one over a full-screen app, so a toast there can't open the card.
     func answersPointer(_ surface: Surface) -> Bool {
-        guard !surface.isFullScreen else { return false }
-        let state = notchState(surface)
-        return state != .hidden && !(state == .idle && idleHover == .nothing)
+        notches.answersPointer(surface, shared)
     }
 
-    /// One display's notch.
-    public struct Surface: Equatable, Sendable {
-        /// Whether the housing is one Warble draws on a display without a notch.
-        public internal(set) var isVirtual: Bool
-        /// Whether a blank notch stays drawn over the housing while nothing is playing.
-        public internal(set) var isAlwaysShown: Bool
-        /// Whether the display shows a full-screen app, which hides its notch.
-        public internal(set) var isFullScreen = false
-        public internal(set) var hover = HoverIntent()
-        public internal(set) var pointerInside = false
-        /// Whether the open card shows the Doctor's checks rather than the player, until the notch closes.
-        public internal(set) var showsDoctor = false
-        /// Whether the open card shows the lyrics rather than the player, until the notch closes.
-        public internal(set) var showsLyrics = false
-        /// Whether a menu from this notch is open, which takes Escape for itself.
-        public internal(set) var showsMenu = false
-        /// Whether the art is being dragged out of this notch's card, which lets go of Escape so the key cancels the drag.
-        public internal(set) var isDragging = false
-
-        init(_ housing: NotchHousing) {
-            isVirtual = housing.isVirtual
-            isAlwaysShown = housing.isAlwaysShown
-        }
-    }
+    public typealias Surface = Notches.Surface
 }
