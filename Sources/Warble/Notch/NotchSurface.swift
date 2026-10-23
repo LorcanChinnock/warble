@@ -15,14 +15,9 @@ final class NotchSurface {
     var housing: CGRect
     /// Whether the housing is one Warble draws on a display without a notch.
     var isVirtual: Bool { model.isVirtual }
-    /// What the store decided: the state, what Expanded holds, whether anything is playing rather than Idle, the toast
-    /// showing and whether the open card shows the Doctor's checks. `render` draws them.
-    private(set) var state = NotchState.hidden
-    private(set) var card = NotchCard.player
-    private var isPlaying = false
-    private var toast: TrackToast?
-    private var lyric: String?
-    private var lyrics: LyricsExcerpt?
+    /// What the store last decided for this notch, which `render` draws.
+    private var last: NotchRender?
+    var state: NotchState { last?.state ?? .hidden }
     /// Builds the menu a right-click opens, when it opens.
     var makeMenu: () -> NSMenu? = { nil }
     /// Called with each key the open notch's controls didn't use while it has the keyboard; true when it did something.
@@ -63,39 +58,29 @@ final class NotchSurface {
         panel.onKey = { [weak self] event in self?.onKey(event) ?? false }
     }
 
-    /// Draws what the store decided for this notch: takes its state, then morphs to it, growing the panel before the morph
+    /// Draws what the store decided for this notch: takes the value, then morphs to it, growing the panel before the morph
     /// and shrinking it after. The one call per change, so nothing is set outside the animation or twice.
     func render(_ app: AppState, animated: Bool) {
-        apply(app)
-        update(animated: animated)
-    }
-
-    /// Takes what the store decided for this notch, which `update` draws.
-    private func apply(_ app: AppState) {
-        guard let surface = app.surfaces[display], let state = app.notchState(display), let card = app.card(display) else { return }
-        self.state = state
-        self.card = card
-        isPlaying = app.showsPlayback || app.onboarding.demo.showsTrack
-        toast = app.toasts.current?.content
-        lyric = app.lyrics.line?.text
-        lyrics = app.lyrics.excerpt
-        model.hasLyrics = app.hasLyricsCard
-        model.skipsBySeconds = app.skipsBySeconds
-        model.artDrag = app.artDrag
-        model.showsSleepTimer = app.showsSleepTimer
-        model.sleepTimer = app.sleepTimer
-        model.canSetSleepTimer = app.canSetSleepTimer
-        model.isVirtual = surface.isVirtual
-        model.showsTitle = app.titleInNotch(display)
-        model.isAlwaysShown = surface.isAlwaysShown
-        model.showsDoctor = surface.showsDoctor
-        // A toast over a full-screen app lets clicks through to the app, since it takes no hover or click.
-        panel.ignoresMouseEvents = surface.isFullScreen
-        // The window server leaves the panel out of every capture, ScreenCaptureKit's included, and still draws it. Set
-        // only on a change, since this runs on every dispatch, hovers included.
-        let sharing: NSWindow.SharingType = app.hidesFromCapture ? .none : .readOnly
-        if panel.sharingType != sharing {
-            panel.sharingType = sharing
+        if let value = NotchRender(app, display: display) {
+            last = value
+            model.isVirtual = value.isVirtual
+            model.showsTitle = value.showsTitle
+            model.isAlwaysShown = value.isAlwaysShown
+            model.showsDoctor = value.showsDoctor
+            model.hasLyrics = value.hasLyrics
+            model.skipsBySeconds = value.skipsBySeconds
+            model.artDrag = value.artDrag
+            model.showsSleepTimer = value.showsSleepTimer
+            model.sleepTimer = value.sleepTimer
+            model.canSetSleepTimer = value.canSetSleepTimer
+            panel.ignoresMouseEvents = value.ignoresMouseEvents
+            // Set only on a change, since this runs on every dispatch, hovers included.
+            if panel.sharingType != value.sharingType {
+                panel.sharingType = value.sharingType
+            }
+        }
+        if let last {
+            draw(last, animated: animated)
         }
     }
 
@@ -191,17 +176,17 @@ final class NotchSurface {
         Perf.untilNextFrame("Expand", on: panel.screen, cause: cause, since: start)
     }
 
-    private func update(animated: Bool) {
-        let state = state
+    private func draw(_ value: NotchRender, animated: Bool) {
+        let state = value.state
         let notch = housing
         if state != .expanded {
             releaseKeyboard()
         }
-        let card = card
-        let isPlaying = isPlaying
-        let toast = state == .toast ? toast : nil
-        let lyric = state == .lyrics ? lyric : nil
-        let lyrics = state == .expanded && card == .lyrics ? lyrics : nil
+        let card = value.card
+        let isPlaying = value.isPlaying
+        let toast = value.shownToast
+        let lyric = value.shownLyric
+        let lyrics = value.shownLyrics
         guard let frame = NotchLayout.frame(state, notch: notch, card: card) else {
             guard shown != nil else { return }
             shown = nil
