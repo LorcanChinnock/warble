@@ -6,10 +6,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     let old = state
     var notice: Notice<TrackToast>?
     var effects: [AppEffect] = []
-    // A touch or something playing ends the first-run demo at once, before the action meets the notch it drew over.
-    if endsDemo(action), state.onboarding.endDemo() {
-        effects.append(.showWelcome)
-    }
+    // First, so a touch or something playing ends the first-run demo before the action meets the notch it drew over.
+    effects += state.onboarding.reduce(action, shared: state.shared, at: now)
     switch action {
     case .playbackReported(let playback):
         if playback == nil, state.playback != nil {
@@ -139,16 +137,9 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
             break
         }
         return reduce(&state, action, now: now)
-    case .launched(let firstRun):
-        if state.onboarding.launched(firstRun: firstRun, isPlaying: state.playback?.isPlaying == true, at: now) {
-            effects.append(.showWelcome)
-        }
-    case .welcomeClosed:
-        state.onboarding.welcomeClosed()
+    case .launched, .welcomeClosed:
+        break
     case .tick:
-        if state.onboarding.advance(to: now) {
-            effects.append(.showWelcome)
-        }
         if let hideAt = state.hideAt, hideAt <= now {
             show(nil, in: &state, at: now)
         }
@@ -178,16 +169,6 @@ private func followSleepTimer(_ state: inout AppState, at now: Date) -> [AppEffe
         show(playback.playing(false, at: now), in: &state, at: now)
     }
     return [.send(.pause)]
-}
-
-/// Whether `action` is the user touching a notch or something starting to play, which ends the first-run demo.
-private func endsDemo(_ action: AppAction) -> Bool {
-    switch action {
-    case .pointer(_, let inside): inside
-    case .hover, .menu, .perform(.openNotch): true
-    case .playbackReported(let playback): playback?.isPlaying == true
-    default: false
-    }
 }
 
 extension PlaybackState {
