@@ -96,7 +96,7 @@ A command that works prints nothing and ends with exit status 0. A mistake print
 | 69 | Warble isn't running, or the command is off in Settings. Also a sound output with no volume to change. |
 | 70, 73, 74 | Something went wrong inside, with the socket or with reading the answer. |
 
-For the same controls from a launcher, see [Control Warble with links](/docs/control-warble-with-links/).
+For the same controls from a launcher, see [Control Warble with links](/docs/control-warble-with-links/). Every command and link is in the [reference](/docs/command-and-link-reference/).
 
 ## Troubleshooting
 
