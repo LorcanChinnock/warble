@@ -15,6 +15,7 @@ Each budget is 2× the baseline measured on the CI runner, which is slower than 
 | New track | `AdapterStream.apply` of the line a new track arrives on, with a 600×600 JPEG cover as its art | 300 µs | 506 µs | 1,012 µs |
 | Pause | `AdapterStream.apply` of a pause or play line, after a track with art | 4.1 µs | 8.1 µs | 16.2 µs |
 | Artwork colours | `ArtworkColours(data:)` of a 600×600 JPEG cover, for the expanded card's glow | 676 µs | 1,404 µs | 2,809 µs |
+| Audio frame | `SpectrumAnalyzer.push` of a frame's worth of samples, for the live waveform | 14 µs | not yet measured | 50 µs |
 | Idle card art | `LastPlayedFile.thumbnail` of a 600×600 JPEG cover to 112 pixels, for the idle card | 624 µs | 1,148 µs | 2,295 µs |
 
 To change a budget, measure again, then update both this table and `Budget` in `PerfTests.swift`.

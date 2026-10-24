@@ -20,6 +20,8 @@ struct NotchRender: Equatable {
     var showsTitle: Bool
     var isAlwaysShown: Bool
     var showsDoctor: Bool
+    /// Whether the audio tap runs, so the bars draw the sound rather than loop.
+    var showsWaveform: Bool
     /// A toast over a full-screen app lets clicks through to the app, since it takes no hover or click.
     var ignoresMouseEvents: Bool
     /// The window server leaves the panel out of every capture, ScreenCaptureKit's included, and still draws it.
@@ -44,6 +46,7 @@ struct NotchRender: Equatable {
         showsTitle = app.titleInNotch(display)
         isAlwaysShown = surface.isAlwaysShown
         showsDoctor = surface.showsDoctor
+        showsWaveform = app.capturesAudio
         ignoresMouseEvents = surface.isFullScreen
         sharingType = app.hidesFromCapture ? .none : .readOnly
     }

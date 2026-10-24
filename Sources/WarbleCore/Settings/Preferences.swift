@@ -29,6 +29,10 @@ public enum PreferenceKey {
     public static let hideFromCapture = "hideFromCapture"
     /// Whether a virtual notch shows the title of what's playing in its middle.
     public static let virtualTitle = "virtualTitle"
+    /// Whether the play-state bars follow the sound, which has macOS ask to record the Mac's audio the first time.
+    public static let waveform = "waveform"
+    /// Whether macOS refused that, so Settings can say why the waveform turned itself off.
+    public static let waveformRefused = "waveformRefused"
     /// Whether `warble://` links do anything, in the Developer card. Off, Warble ignores them.
     public static let answerLinks = "answerLinks"
     /// Whether Warble opens the socket the `warble` command talks to, in the Developer card. Off, no socket exists.
@@ -62,6 +66,8 @@ public struct Preferences {
             PreferenceKey.dragArtOut: false,
             PreferenceKey.hideFromCapture: false,
             PreferenceKey.virtualTitle: true,
+            PreferenceKey.waveform: false,
+            PreferenceKey.waveformRefused: false,
             PreferenceKey.answerLinks: false,
             PreferenceKey.commandLine: false,
             PreferenceKey.resumeBrowserTabs: false,
@@ -139,6 +145,10 @@ public struct Preferences {
 
     public var lyrics: Bool {
         store.bool(forKey: PreferenceKey.lyrics)
+    }
+
+    public var waveform: Bool {
+        store.bool(forKey: PreferenceKey.waveform)
     }
 
     public var swipeToSkip: Bool {

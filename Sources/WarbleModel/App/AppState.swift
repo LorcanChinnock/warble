@@ -80,6 +80,10 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var answersLinks: Bool
     /// Whether Warble answers the `warble` command line, which the Developer card turns on. Off, no socket is open.
     public internal(set) var listensForCommands: Bool
+    /// The live waveform: whether Settings has it on, and whether the audio tap runs.
+    public var showsWaveform: Bool { waveform.isOn }
+    public var capturesAudio: Bool { waveform.captures }
+    var waveform: WaveformState
     /// The first-run demo of the notch and the welcome window after it, which happen once, on a first launch.
     public internal(set) var onboarding = Onboarding()
     /// What the effects last asked for, so each is asked for once per change.
@@ -102,7 +106,7 @@ public struct AppState: Equatable, Sendable {
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
         showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, podcastSkips: Bool = false,
         dragArtOut: Bool = false, showsSleepTimer: Bool = false, hidesFromCapture: Bool = false, showsVirtualTitle: Bool = true,
-        answersLinks: Bool = false, listensForCommands: Bool = false,
+        answersLinks: Bool = false, listensForCommands: Bool = false, showsWaveform: Bool = false,
         checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
@@ -116,6 +120,7 @@ public struct AppState: Equatable, Sendable {
         self.answersLinks = answersLinks
         self.listensForCommands = listensForCommands
         lyrics = LyricsState(isOn: showsLyrics)
+        waveform = WaveformState(isOn: showsWaveform)
     }
 
     /// Whether the notches draw what's playing: something is, and it isn't Idle.
@@ -156,6 +161,13 @@ public struct AppState: Equatable, Sendable {
     /// When the first-run demo's preview track started while it shows one. The notches draw that track in place of
     /// `playback`, which stays what the sources said.
     public var demoTrackStart: Date? { onboarding.trackStart }
+
+    /// Whether a notch is drawing its bars at rest for something that is playing, which is when the live waveform has
+    /// something to show. Not during the demo, whose track makes no sound, nor while a "!" takes the bars' place.
+    public var drawsBars: Bool {
+        guard onboarding.notchState == nil, showsPlayback, hideAt == nil, playback?.isPlaying == true, !needsAttention else { return false }
+        return notches.drawsBars(shared)
+    }
 
     /// Whether the notches draw a playing track: a real one, or the demo's.
     public var drawsPlayback: Bool { showsPlayback || demoTrackStart != nil }

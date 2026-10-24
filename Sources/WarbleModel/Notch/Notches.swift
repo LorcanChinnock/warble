@@ -172,6 +172,11 @@ public struct Notches: Feature {
         return state != .hidden && !(state == .idle && idleHover == .nothing)
     }
 
+    /// Whether any notch draws the play-state bars: it's resting, or has a toast or a lyric line under it.
+    func drawsBars(_ shared: SharedState) -> Bool {
+        surfaces.values.contains { [.resting, .toast, .lyrics].contains(notchState($0, shared)) }
+    }
+
     /// Whether any notch is open.
     func isOpen(_ shared: SharedState) -> Bool {
         surfaces.values.contains { notchState($0, shared) == .expanded }

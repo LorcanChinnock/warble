@@ -70,6 +70,9 @@ final class NotchController {
                 if preferences.virtualTitle != state.showsVirtualTitle {
                     self.store.dispatch(.virtualTitleChanged(preferences.virtualTitle))
                 }
+                if (preferences.waveform && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion) != state.showsWaveform {
+                    self.store.dispatch(.waveformChanged(preferences.waveform && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion))
+                }
                 if preferences.answerLinks != state.answersLinks {
                     self.store.dispatch(.linksChanged(preferences.answerLinks))
                 }
@@ -123,6 +126,7 @@ final class NotchController {
         let store = store
         let surface = NotchSurface(
             display: housing.display, housing: housing.frame, player: player, doctor: doctor, settings: environment.settings,
+            spectrum: environment.spectrum,
             dispatch: { [weak store] in store?.dispatch($0) }
         ) { [weak self] in self?.scroll($0) }
         surface.onKey = { [weak self] event in self?.key(event) ?? false }

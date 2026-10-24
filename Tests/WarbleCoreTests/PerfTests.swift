@@ -53,6 +53,23 @@ import WarbleModel
         }
         try check(time, budget: .microseconds(Budget.thumbnail), "Idle card art")
     }
+
+    /// The live waveform's tap hands over audio all the time it shows, and each frame is a transform of 2048 samples. The
+    /// work is a frame's worth of samples (1,600 at 48 kHz) pushed in buffers of 512.
+    @Test func analysingAFrameOfAudioStaysInBudget() throws {
+        let analyzer = try #require(SpectrumAnalyzer(sampleRate: 48_000))
+        let samples = (0..<512).map { Float(sin(Double($0) * 0.1)) }
+        // Filled once, so every timed run ends in a frame.
+        for _ in 0..<4 { samples.withUnsafeBufferPointer { analyzer.push($0.baseAddress!, count: $0.count) { _ in } } }
+        let time = try fastest {
+            var frames = 0
+            for _ in 0..<4 {
+                samples.withUnsafeBufferPointer { analyzer.push($0.baseAddress!, count: $0.count) { _ in frames += 1 } }
+            }
+            #expect(frames >= 1)
+        }
+        try check(time, budget: .microseconds(Budget.audioFrame), "Audio frame")
+    }
 }
 
 /// Twice the CI runner's baselines in `docs/performance.md`, in microseconds; change both together.
@@ -61,6 +78,7 @@ private enum Budget {
     static let pauseLine = 16.2
     static let artworkColours = 2809.0
     static let thumbnail = 2295.0
+    static let audioFrame = 50.0
 }
 
 /// The fastest run of `body`, after one untimed run that warms caches. It runs at least fifteen times and for at least
