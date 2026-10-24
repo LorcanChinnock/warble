@@ -132,7 +132,7 @@ struct ShortcutRow: View {
     }
 
     var body: some View {
-        LabeledContent {
+        SettingsRow(title: Text(action.title), detail: note.map { Text($0) }) {
             HStack(spacing: 6) {
                 Button {
                     recorder.start(action)
@@ -140,26 +140,22 @@ struct ShortcutRow: View {
                     Text(shortcut)
                         .frame(minWidth: 130)
                 }
+                .buttonStyle(.warble)
                 .accessibilityLabel(Text("\(action.title) shortcut"))
                 .accessibilityValue(Text(isRecording ? shortcut : combo?.displayString ?? String(localized: "None")))
                 Button {
                     recorder.clear(action)
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Native.secondary)
                 }
-                .buttonStyle(.borderless)
+                .buttonStyle(.notch)
                 .help(Text("Clear Shortcut"))
                 .accessibilityLabel(Text("Clear \(action.title) shortcut"))
                 // Kept in place while hidden, so every recorder lines up.
                 .opacity(combo == nil ? 0 : 1)
                 .disabled(combo == nil)
                 .accessibilityHidden(combo == nil)
-            }
-        } label: {
-            Text(action.title)
-            if let note {
-                Text(note)
             }
         }
     }

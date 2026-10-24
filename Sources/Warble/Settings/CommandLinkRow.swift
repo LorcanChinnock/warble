@@ -14,7 +14,7 @@ struct CommandLinkRow: View {
     private var link: String { (CommandLink.folder as NSString).appendingPathComponent(name) }
 
     var body: some View {
-        LabeledContent {
+        SettingsRow(title: Text("Use \(name) in Terminal"), detail: Text(subtitle)) {
             switch status {
             case .missing:
                 button("Install", CommandLink.installScript(name: name, cli: cli))
@@ -25,9 +25,6 @@ struct CommandLinkRow: View {
             case .homebrew, .taken:
                 EmptyView()
             }
-        } label: {
-            Text("Use \(name) in Terminal")
-            Text(subtitle)
         }
         .accessibilityElement(children: .combine)
         .onAppear(perform: refresh)
@@ -47,6 +44,7 @@ struct CommandLinkRow: View {
 
     private func button(_ title: LocalizedStringResource, _ script: String) -> some View {
         Button(String(localized: title)) { run(script) }
+            .buttonStyle(.warble)
             .disabled(working)
     }
 

@@ -13,7 +13,7 @@ Warble works without changing anything, but a few things can be set your way.
 
 The right-click menu also opens the app that's playing, checks for updates and quits Warble. It works even with the menu bar icon hidden. To get the icon back, open Warble again from your Applications folder. The icon comes back, and Settings opens.
 
-Every change takes effect straight away.
+Settings is always dark, like the notch, whatever your Mac's appearance. Every change takes effect straight away.
 
 ## General
 
