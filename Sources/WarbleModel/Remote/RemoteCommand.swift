@@ -1,6 +1,6 @@
 import Foundation
 
-/// A command from outside Warble: a `warble://` link now, and later the command line, the MCP server and Shortcuts.
+/// A command from outside Warble: a `warble://` link now, and later the command line and Shortcuts.
 /// Each is one more way in for the same table, and each does what the matching button in the notch does, so `action`
 /// is the `AppAction` that button dispatches.
 public enum RemoteCommand: Equatable, Sendable {

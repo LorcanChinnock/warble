@@ -68,11 +68,10 @@ Synced lyrics, gestures and podcast controls, each off until you turn it on, plu
 
 ## [0.3: for developers](https://github.com/LorcanChinnock/warble/issues/39)
 
-The `warble` command, `warble://` links, an MCP server for AI assistants, and Shortcuts actions. They share one table of commands, each of which does what the matching button in the notch does.
+The `warble` command, `warble://` links and Shortcuts actions. They share one table of commands, each of which does what the matching button in the notch does.
 
 - [#40](https://github.com/LorcanChinnock/warble/issues/40) feat(cli): the warble command
 - [#41](https://github.com/LorcanChinnock/warble/issues/41) feat(url): warble:// links
-- [#42](https://github.com/LorcanChinnock/warble/issues/42) feat(agents): MCP server and one-click install
 - [#43](https://github.com/LorcanChinnock/warble/issues/43) feat(shortcuts): Shortcuts actions
 
 ## [0.4: extras](https://github.com/LorcanChinnock/warble/issues/44)
@@ -92,4 +91,4 @@ A way for other Mac apps to show activities in the notch, starting with Shot, pl
 - [#50](https://github.com/LorcanChinnock/warble/issues/50) spike: notch activities protocol
 - [#51](https://github.com/LorcanChinnock/warble/issues/51) feat(activities): notch activities API
 - [#52](https://github.com/LorcanChinnock/warble/issues/52) feat(i18n): first translations
-- [#53](https://github.com/LorcanChinnock/warble/issues/53) docs: stable command line, URL scheme and MCP reference
+- [#53](https://github.com/LorcanChinnock/warble/issues/53) docs: stable command line and URL scheme reference
