@@ -77,6 +77,8 @@ cp Resources/Acknowledgements.txt "$app/Contents/Resources/Acknowledgements.txt"
 cp "$adapter_src/bin/mediaremote-adapter.pl" "$app/Contents/Resources/mediaremote-adapter.pl"
 ditto "$adapter_build/MediaRemoteAdapter.framework" "$app/Contents/Resources/MediaRemoteAdapter.framework"
 cp "$adapter_build/MediaRemoteAdapterTestClient" "$app/Contents/Resources/MediaRemoteAdapterTestClient"
+# Shortcuts and Spotlight list the app's actions from this metadata, which SwiftPM doesn't write.
+scripts/app-intents.sh .build/out/Intermediates.noindex/Warble.build/Release/Warble-p.build/Objects-normal/arm64 "$app/Contents/Resources"
 # One .lproj folder per language, where Bundle.main finds the app's strings and the permission prompts' text.
 for catalog in Resources/*.xcstrings; do
     xcrun xcstringstool compile "$catalog" --output-directory "$app/Contents/Resources"

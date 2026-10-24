@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@" : {
+
+    },
     "%@ is already set for %@." : {
       "localizations" : {
         "en" : {
@@ -51,6 +54,9 @@
     "Add ⌘, ⌥ or ⌃, so the shortcut doesn't catch your typing." : {
 
     },
+    "Album" : {
+
+    },
     "All" : {
 
     },
@@ -80,6 +86,12 @@
 
     },
     "Any app that plays, including your browser." : {
+
+    },
+    "App" : {
+
+    },
+    "Artist" : {
 
     },
     "BSD 3-Clause License" : {
@@ -149,6 +161,9 @@
     "Drop it in a message, a note or a folder. It brings the picture, and a link to the song when the app playing gives one. A click on the art still opens the app." : {
 
     },
+    "Duration" : {
+
+    },
     "End" : {
 
     },
@@ -173,10 +188,22 @@
     "From %@" : {
 
     },
+    "From 0 to 100." : {
+
+    },
     "General" : {
 
     },
+    "Get Now Playing" : {
+
+    },
+    "Gets the track that's playing, or the one that was paused." : {
+
+    },
     "Go back 15 seconds or forward 30 in a podcast or audiobook." : {
+
+    },
+    "Goes back to the previous track." : {
 
     },
     "Help and user guide" : {
@@ -242,6 +269,12 @@
     "MIT License" : {
 
     },
+    "Moves the Mac's sound to another output, such as AirPods." : {
+
+    },
+    "Name" : {
+
+    },
     "Needs a trackpad, or a Magic Mouse, where you swipe with one finger. Scrolling up and down over the notch still changes the volume." : {
 
     },
@@ -249,6 +282,9 @@
 
     },
     "Newer than this version of Warble. An update may fix reading what's playing." : {
+
+    },
+    "Next Track" : {
 
     },
     "Next track" : {
@@ -276,6 +312,9 @@
 
     },
     "Nothing playing" : {
+
+    },
+    "Now Playing" : {
 
     },
     "Now playing: %@" : {
@@ -366,6 +405,9 @@
     "Play" : {
 
     },
+    "Play or Pause" : {
+
+    },
     "Play or pause" : {
 
     },
@@ -381,6 +423,9 @@
     "Playing" : {
 
     },
+    "Plays what's paused, or pauses what's playing." : {
+
+    },
     "Points to a copy of Warble that has moved. Reinstall to fix it." : {
 
     },
@@ -391,6 +436,9 @@
 
     },
     "Press the keys to use, or Esc to cancel." : {
+
+    },
+    "Previous Track" : {
 
     },
     "Previous track" : {
@@ -430,6 +478,12 @@
 
     },
     "Scripts and status bars can read what's playing and control it from Terminal." : {
+
+    },
+    "Set Volume" : {
+
+    },
+    "Sets the volume of the Mac's sound output." : {
 
     },
     "Settings…" : {
@@ -477,10 +531,19 @@
     "Skip by seconds in podcasts" : {
 
     },
+    "Skips to the next track." : {
+
+    },
     "Sleep timer" : {
 
     },
+    "Sound Output" : {
+
+    },
     "Standard" : {
+
+    },
+    "Status" : {
 
     },
     "Stay visible after pausing" : {
@@ -493,6 +556,9 @@
 
     },
     "Swipe over the notch to skip" : {
+
+    },
+    "Switch Sound Output" : {
 
     },
     "Text size" : {
@@ -529,6 +595,9 @@
 
     },
     "This kept stopping, so Warble only follows Music and Spotify until you open it again." : {
+
+    },
+    "Title" : {
 
     },
     "To find a song's lyrics, Warble sends its title, artist, album and length to LRCLIB, a free lyrics library. Nothing is sent while this is off." : {
