@@ -70,9 +70,7 @@ final class NotchController {
                 if preferences.virtualTitle != state.showsVirtualTitle {
                     self.store.dispatch(.virtualTitleChanged(preferences.virtualTitle))
                 }
-                if (preferences.waveform && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion) != state.showsWaveform {
-                    self.store.dispatch(.waveformChanged(preferences.waveform && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion))
-                }
+                self.syncWaveform()
                 if preferences.answerLinks != state.answersLinks {
                     self.store.dispatch(.linksChanged(preferences.answerLinks))
                 }
@@ -84,11 +82,23 @@ final class NotchController {
                 }
             }
         })
+        // Reduce Motion isn't a Warble default, so a change in System Settings is seen here, and it turns the waveform off.
+        observers.append(NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.syncWaveform() }
+        })
         // Going full screen, or back, switches Space; only then can a display start or stop showing a full-screen app.
         observers.append(NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.activeSpaceDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.readFullScreen() }
         })
         layOut()
+    }
+
+    /// The waveform runs when its setting is on and Reduce Motion is off, since the bars stand still under it.
+    private func syncWaveform() {
+        let wanted = Preferences().waveform && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+        if wanted != store.state.showsWaveform {
+            store.dispatch(.waveformChanged(wanted))
+        }
     }
 
     private func readFullScreen() {

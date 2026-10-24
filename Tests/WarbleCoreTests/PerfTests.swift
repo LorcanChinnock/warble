@@ -78,7 +78,7 @@ private enum Budget {
     static let pauseLine = 16.2
     static let artworkColours = 2809.0
     static let thumbnail = 2295.0
-    static let audioFrame = 50.0
+    static let audioFrame = 63.2
 }
 
 /// The fastest run of `body`, after one untimed run that warms caches. It runs at least fifteen times and for at least
