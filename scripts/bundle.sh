@@ -16,9 +16,10 @@ fi
 universal="build/universal"
 rm -rf "$universal"
 mkdir -p "$universal"
+# SwiftBuild, the build system Xcode uses, because only it writes the constant values the intents' metadata is made from.
 for arch in arm64 x86_64; do
-    swift build -c release --arch "$arch" ${resolved[@]+"${resolved[@]}"}
-    bin_path="$(swift build -c release --arch "$arch" --show-bin-path)"
+    swift build --build-system swiftbuild -c release --arch "$arch" ${resolved[@]+"${resolved[@]}"}
+    bin_path="$(swift build --build-system swiftbuild -c release --arch "$arch" --show-bin-path)"
     mkdir "$universal/$arch"
     cp "$bin_path/Warble" "$bin_path/WarbleCLI" "$universal/$arch/"
 done
@@ -77,6 +78,8 @@ cp Resources/Acknowledgements.txt "$app/Contents/Resources/Acknowledgements.txt"
 cp "$adapter_src/bin/mediaremote-adapter.pl" "$app/Contents/Resources/mediaremote-adapter.pl"
 ditto "$adapter_build/MediaRemoteAdapter.framework" "$app/Contents/Resources/MediaRemoteAdapter.framework"
 cp "$adapter_build/MediaRemoteAdapterTestClient" "$app/Contents/Resources/MediaRemoteAdapterTestClient"
+# Shortcuts and Spotlight list the app's actions from this metadata, which SwiftPM doesn't write.
+scripts/app-intents.sh "$app/Contents/Resources"
 # One .lproj folder per language, where Bundle.main finds the app's strings and the permission prompts' text.
 for catalog in Resources/*.xcstrings; do
     xcrun xcstringstool compile "$catalog" --output-directory "$app/Contents/Resources"
