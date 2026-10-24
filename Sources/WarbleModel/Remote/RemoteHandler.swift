@@ -26,25 +26,9 @@ public final class RemoteHandler {
         do throws(RemoteCommandError) {
             switch try WarbleCommand.parse(request.arguments) {
             case .now:
-                return .success(now: NowPlayingSnapshot(state(), volume: volume.volume, at: clock.now))
-            case .send(.output(let name)):
-                let choices = AudioOutput.choices(outputs.all)
-                guard let output = choices.matching(name) else {
-                    let available = choices.map(\.name).joined(separator: ", ")
-                    throw .usage("output", choices.isEmpty
-                        ? "no sound outputs are available"
-                        : "no single output matches \"\(name)\"; the outputs are \(available)")
-                }
-                dispatch(.selectOutput(output.id))
-            case .send(.volume(let percent)):
-                guard volume.volume != nil else {
-                    throw .unavailable("the Mac's current sound output has no volume Warble can change")
-                }
-                dispatch(.setVolume(Double(percent) / 100))
+                return .success(now: nowPlaying())
             case .send(let command):
-                if let action = command.action {
-                    dispatch(action)
-                }
+                try run(command)
             case .version, .help:
                 break
             }
@@ -52,5 +36,49 @@ public final class RemoteHandler {
         } catch {
             return .failure(error)
         }
+    }
+
+    /// What's playing, as `now` answers it. Shortcuts' Get now playing reads it too.
+    public func nowPlaying() -> NowPlayingSnapshot {
+        NowPlayingSnapshot(state(), volume: volume.volume, at: clock.now)
+    }
+
+    /// Does what the command's button does, or throws why it can't. Every way in goes through here, so a link, the command
+    /// line and Shortcuts agree on what a command needs.
+    public func run(_ command: RemoteCommand) throws(RemoteCommandError) {
+        switch command {
+        case .output(let name):
+            let choices = AudioOutput.choices(outputs.all)
+            guard let output = choices.matching(name) else {
+                let available = choices.map(\.name).joined(separator: ", ")
+                throw .usage("output", choices.isEmpty
+                    ? "no sound outputs are available"
+                    : "no single output matches \"\(name)\"; the outputs are \(available)")
+            }
+            dispatch(.selectOutput(output.id))
+        case .volume(let percent):
+            guard volume.volume != nil else {
+                throw .unavailable("the Mac's current sound output has no volume Warble can change")
+            }
+            dispatch(.setVolume(Double(percent) / 100))
+        default:
+            if let action = command.action {
+                dispatch(action)
+            }
+        }
+    }
+
+    /// Moves the sound to the output with this Core Audio ID, which Shortcuts picked from the list of outputs. It throws
+    /// when that output has gone since, such as AirPods that were put away.
+    public func selectOutput(id: UInt32) throws(RemoteCommandError) {
+        guard let output = AudioOutput.choices(outputs.all).first(where: { $0.id == id }) else {
+            throw .unavailable("that sound output isn't connected")
+        }
+        dispatch(.selectOutput(output.id))
+    }
+
+    /// The outputs Shortcuts offers, the same ones the notch lists.
+    public func outputChoices() -> [AudioOutput] {
+        AudioOutput.choices(outputs.all)
     }
 }

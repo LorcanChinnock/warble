@@ -149,3 +149,48 @@ private final class Rig {
     #expect(throws: RemoteCommandError.self) { try RemoteResponse.decode(Data("nonsense".utf8)) }
     #expect(throws: RemoteCommandError.self) { try RemoteRequest.decode(Data("[1]".utf8)) }
 }
+
+@MainActor
+@Test func shortcutsRunTheSameCommandsAsTheCommandLine() throws {
+    let rig = Rig(playing: song)
+    for (command, action) in [
+        (RemoteCommand.toggle, AppAction.perform(.playPause)), (.next, .perform(.nextTrack)),
+        (.previous, .perform(.previousTrack)), (.volume(percent: 25), .setVolume(0.25)),
+    ] {
+        let before = rig.dispatched.count
+        try rig.handler.run(command)
+        #expect(rig.dispatched.dropFirst(before) == [action])
+    }
+}
+
+@MainActor
+@Test func shortcutsRefuseAVolumeTheOutputCantTake() {
+    let rig = Rig()
+    rig.volume.volume = nil
+    #expect(throws: RemoteCommandError.unavailable("the Mac's current sound output has no volume Warble can change")) {
+        try rig.handler.run(.volume(percent: 30))
+    }
+    #expect(rig.dispatched.isEmpty)
+}
+
+@MainActor
+@Test func shortcutsSwitchToAnOutputByID() throws {
+    let rig = Rig()
+    #expect(rig.handler.outputChoices().map(\.id) == [1, 2])
+    try rig.handler.selectOutput(id: 2)
+    #expect(rig.dispatched == [.selectOutput(2)])
+}
+
+@MainActor
+@Test func shortcutsRefuseAnOutputThatHasGone() {
+    let rig = Rig()
+    #expect(throws: RemoteCommandError.unavailable("that sound output isn't connected")) { try rig.handler.selectOutput(id: 9) }
+    #expect(rig.dispatched.isEmpty)
+}
+
+@MainActor
+@Test func shortcutsGetNothingPlayingAsStopped() {
+    let rig = Rig()
+    #expect(rig.handler.nowPlaying().status == .stopped)
+    #expect(rig.dispatched.isEmpty)
+}

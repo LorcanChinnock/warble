@@ -1,3 +1,4 @@
+import AppIntents
 import os
 import SwiftUI
 import WarbleCore
@@ -79,6 +80,7 @@ final class AppEnvironment {
         platform.showWelcome = { [weak welcomeWindow] in welcomeWindow?.show() }
         // What the `warble` command asks: it does what the notch's buttons do, on the main actor where the store runs.
         let remote = RemoteHandler(state: { store.state }, dispatch: dispatch, volume: volume, outputs: outputs, clock: SystemClock())
+        AppDependencyManager.shared.add(dependency: remote)
         platform.commandHandler = { request in await MainActor.run { remote.handle(request) } }
         platform.openSettings = { [weak settingsWindow] name in
             settingsWindow?.show(section: name.flatMap(SettingsSection.init(rawValue:)))
