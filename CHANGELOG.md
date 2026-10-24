@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0-beta.8](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.7...v0.1.0-beta.8) (2026-10-24)
+
+
+### Features
+
+* **settings:** give the Settings window the notch's look and feel ([#194](https://github.com/LorcanChinnock/warble/issues/194)) ([#200](https://github.com/LorcanChinnock/warble/issues/200)) ([3606a20](https://github.com/LorcanChinnock/warble/commit/3606a200614f264bbe5129cc42590ab1971d86dd))
+
 ## [0.1.0-beta.7](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.6...v0.1.0-beta.7) (2026-10-23)
 
 
