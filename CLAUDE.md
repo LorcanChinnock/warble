@@ -20,10 +20,10 @@ Design and write for the first person on this list; the later ones opt in to mor
 - **The podcast and audiobook listener.** Skips 15 seconds, changes the speed, sets a sleep timer.
 - **The music fan.** Turns on lyrics and listening stats, switches speakers.
 - **The multi-display user.** Uses the virtual notch on external displays and Macs without a notch, and sets rules per display.
-- **The developer.** Uses the `warble` command, `warble://` links, Shortcuts and the MCP server.
+- **The developer.** Uses the `warble` command, `warble://` links and Shortcuts.
 
 What this means in practice:
-- UI strings, Settings and the user guide speak to everyone. Avoid jargon (MCP, CLI, JSON) outside the developer-facing parts.
+- UI strings, Settings and the user guide speak to everyone. Avoid jargon (CLI, JSON) outside the developer-facing parts.
 - Developer features stay in their own Settings card and guide pages, off by default.
 
 ## Commands
