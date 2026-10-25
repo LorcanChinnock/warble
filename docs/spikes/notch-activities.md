@@ -76,7 +76,7 @@ Warble also sends events, which carry `event` in place of `re`:
 {"v":1,"event":"ended","id":"recording","reason":"dismissed"}
 ```
 
-The `ended` reasons are `dismissed` (the user closed it), `expired` (`lasts` ran out), `blocked` (the user turned that app off in Settings) and `replaced` (a newer `start` took its `id`). An activity the app ends itself, or one that goes with a closed connection, sends nothing. Setting Activities off closes the socket, which every sender sees as a closed connection.
+The `ended` reasons are `dismissed` (the user closed it), `expired` (`lasts` ran out), and `blocked` (the user turned that app off in Settings). An activity the app ends or replaces itself, or one that goes with a closed connection, sends nothing, since the sender already knows. Setting Activities off closes the socket, which every sender sees as a closed connection.
 
 ### Limits
 
@@ -91,12 +91,12 @@ macOS shows no prompt for a Unix socket, so Warble's own switch is the permissio
 Turning it on lets any process of the same user put an activity in the notch. That's no more than it can already do, but the text is the sender's. So Warble doesn't take the sender's word for who it is.
 
 - The sender is the process on the other end of the connection. Warble reads its audit token once, at connect, with `LOCAL_PEERTOKEN`, which names that process and not a process ID that could be reused, and checks its code signature (`SecCodeCopyGuestWithAttributes` on the token). A signed sender is known by its team ID and signing identifier, and its name and icon come from the app that signature belongs to. Another process can't take that identity without the signing key, whatever its `Info.plist` says.
-- A script isn't the process on the other end: its sender is the interpreter, which for `nc -U`, `osascript`, `python3` and `swift` is an Apple-signed tool with no team ID and no app behind it. So Apple's own binaries, unsigned programs and ad hoc signed builds count as scripts. They're allowed, but a script names itself with `from` in `start`, which is shown as "Script: <name>" in the card and in Settings, so nothing appears as a signed app. Such a sender is keyed by its executable's path and `from` together, so blocking one script doesn't block every script on the same interpreter, and two scripts can pick the same `from` only by sharing a block. The label is the guarantee, since the name is the script's own word.
+- A script isn't the process on the other end: its sender is the interpreter, which for `nc -U`, `osascript`, `python3` and `swift` is a program with no app behind it. So a sender counts as a signed app only if its executable is inside an `.app` bundle and signed with a team ID. Anything else is a script, whatever its signature: Apple's tools, a Developer ID signed `python3` or `node` from an installer, unsigned programs and ad hoc builds. They're allowed, but a script names itself with `from` in `start`, which is shown as "Script: <name>" in the card and in Settings, so nothing appears as a signed app. Such a sender is keyed by its executable's path and `from` together, so blocking one script doesn't block every script on the same interpreter, and two scripts can pick the same `from` only by sharing a block. The label is the guarantee, since the name is the script's own word.
 - The wing always draws the sender's real icon: the signed app's, or a generic script mark for a script. A sender's own symbol is only a small badge on it, so no sender can make wings that look like another app's. The card names the sender above the title. A sender can choose a symbol but never the name or icon it appears under.
 - An activity can't do anything on the Mac. A button sends one event back to the app that made it, and nothing else: no links open, no commands run.
 - Settings › Activities lists each app that has shown an activity, with a switch. Apps are on when they first appear, since turning the feature on was the consent, and turning one off ends its activities with `blocked` and refuses its next `start`. Asking per app in the notch was considered and rejected: a prompt that appears over whatever you're doing isn't calm. If people report unwanted senders, revisit it as a one-time "Allow" button on that app's first activity.
 
-The list of apps is stored as a dictionary of sender key to name under a new `PreferenceKey.activityApps`, and the turned-off ones as a set of keys under `PreferenceKey.activityBlocked`. A signed sender's key is its team ID and signing identifier, so one app can't block another by claiming its bundle ID, and the key of any sender with no team ID, which is every script as described above (Apple's tools, unsigned and ad hoc builds), is its executable's path and `from` together.
+The list of apps is stored as a dictionary of sender key to name under a new `PreferenceKey.activityApps`, and the turned-off ones as a set of keys under `PreferenceKey.activityBlocked`. A signed sender's key is its team ID and signing identifier, so one app can't block another by claiming its bundle ID, and the key of any script, as described above, is its executable's path and `from` together.
 
 ## What it shows
 
@@ -179,7 +179,7 @@ The socket's handler, `ActivityHandler` (WarbleModel, `@MainActor`, like `Remote
 | --- | --- | --- |
 | `.listenForActivities(Bool)` | `listensForActivities` changes | `PlatformEffects` opens or closes the socket, like `.listenForCommands`. |
 | `.saveActivityApps([String: String])` | `.activityStarted` adds a sender to `apps` | `PlatformEffects` writes `PreferenceKey.activityApps`, as `.turnOffWaveform` writes `PreferenceKey.waveform`. Settings reads it back. |
-| `.sendActivityEvent(ActivityKey, ActivityEvent)` | A button press, a dismissal, an expiry, a block or a replacement | `EffectRunner`, through the `ActivityChannel` port. |
+| `.sendActivityEvent(ActivityKey, ActivityEvent)` | A button press, a dismissal, an expiry or a block | `EffectRunner`, through the `ActivityChannel` port. |
 
 `ActivityEvent` is `.button(String)` or `.ended(reason)`. `.haptic` is asked on a button press too, the effect that exists already.
 
