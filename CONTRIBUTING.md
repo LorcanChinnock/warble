@@ -100,7 +100,7 @@ Nothing may sit between a hover or a click and the panel: dispatch is synchronou
 
 ## Strings and translations
 
-Warble's interface is in English, and every string it shows goes through `Resources/Localizable.xcstrings`, so it can be translated. Each build extracts the strings from `Sources/Warble` and `Sources/WarbleCore` (see `Package.swift`), and `make strings` adds the new ones to the catalog. `make lint` and CI fail while the catalog is out of date.
+Warble's interface is in English, German, Spanish, French, Italian, Japanese, Korean, Brazilian Portuguese and Simplified Chinese. Every string it shows goes through `Resources/Localizable.xcstrings`, so it can be translated. Each build extracts the strings from `Sources/Warble` and `Sources/WarbleCore` (see `Package.swift`), and `make strings` adds the new ones to the catalog. `make lint` and CI fail while the catalog is out of date.
 
 A string reaches the catalog when it's a literal passed to an API that localizes:
 
@@ -109,7 +109,7 @@ A string reaches the catalog when it's a literal passed to an API that localizes
 
 Interpolate values into one string, such as `"Playing on \(device)"`, rather than joining fragments, so a translator can reorder the words. Leave log messages and text that scripts read in English.
 
-To add a language, open the catalog in Xcode, add the language, translate each string and add its code to `CFBundleLocalizations` in `Resources/Info.plist`. To try a language without changing your Mac's, run `open -a WarbleDev --args -AppleLanguages '(de)'`.
+A new string needs a translation in each language, and `make strings` adds it untranslated, so translate it before you merge. The two permission prompts in `Resources/Info.plist` are translated in `Resources/InfoPlist.xcstrings`. To add a language, open both catalogs in Xcode, add the language, translate each string and add its code to `CFBundleLocalizations` in `Resources/Info.plist`. To try a language without changing your Mac's, run `open -a WarbleDev --args -AppleLanguages '(de)'`.
 
 ## Debugging
 
