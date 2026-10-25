@@ -105,3 +105,26 @@ import Testing
     #expect(!Preferences.isFirstLaunch(saved: [PreferenceKey.hasSeenWelcome: true]))
     #expect(Preferences.isFirstLaunch(saved: [PreferenceKey.hasSeenWelcome: false]))
 }
+
+@Test func activitiesStartOffWithNoAppsListedOrBlocked() throws {
+    let suite = try TestDefaults()
+    defer { suite.remove() }
+    Preferences.registerDefaults(in: suite.store)
+    let preferences = Preferences(store: suite.store)
+    #expect(!preferences.activities)
+    #expect(preferences.activityApps.isEmpty)
+    #expect(preferences.activityBlocked.isEmpty)
+}
+
+@Test func theActivityAppsAndTheBlockedOnesAreReadBack() throws {
+    let suite = try TestDefaults()
+    defer { suite.remove() }
+    Preferences.registerDefaults(in: suite.store)
+    suite.store.set(["TEAM.dev.lorcan.Shot": "Shot", "script|/usr/bin/python3|Timer": "Timer"], forKey: PreferenceKey.activityApps)
+    suite.store.set(["TEAM.dev.lorcan.Shot", "TEAM.dev.lorcan.Shot"], forKey: PreferenceKey.activityBlocked)
+    let preferences = Preferences(store: suite.store)
+    #expect(preferences.activityApps["TEAM.dev.lorcan.Shot"] == "Shot")
+    #expect(preferences.activityBlocked == ["TEAM.dev.lorcan.Shot"])
+    Preferences.resetAll(in: suite.store)
+    #expect(Preferences(store: suite.store).activityBlocked.isEmpty)
+}

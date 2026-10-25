@@ -24,6 +24,14 @@ public struct ActivityOwner: Equatable, Hashable, Sendable {
     /// Whether `identifier` is a script's, for Settings' list of apps, which holds identifiers with names.
     public static func isScript(identifier: String) -> Bool { identifier.hasPrefix(scriptPrefix) }
 
+    /// The app whose icon Settings' list draws for `identifier`, a signed app's team ID and signing identifier, or `nil` for a
+    /// script, which has none.
+    public static func bundleIdentifier(ofIdentifier identifier: String) -> String? {
+        guard !isScript(identifier: identifier), let dot = identifier.firstIndex(of: ".") else { return nil }
+        let bundleIdentifier = identifier[identifier.index(after: dot)...]
+        return bundleIdentifier.isEmpty ? nil : String(bundleIdentifier)
+    }
+
     static let scriptPrefix = "script|"
 }
 

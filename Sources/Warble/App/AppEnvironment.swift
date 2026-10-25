@@ -54,6 +54,7 @@ final class AppEnvironment {
                 answersLinks: preferences.answerLinks, listensForCommands: preferences.commandLine,
                 showsWaveform: preferences.waveform && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion,
                 keepsStats: preferences.stats,
+                showsActivities: preferences.activities, blockedActivityApps: preferences.activityBlocked, activityApps: preferences.activityApps,
                 checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
             ),
             clock: SystemClock(), scheduler: TimerScheduler()
@@ -64,10 +65,15 @@ final class AppEnvironment {
         self.stats = StatsModel(dispatch: dispatch)
         volume = SystemVolume()
         let outputs = CoreAudioOutputs()
-        runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: LastPlayedFile.remembering, lyrics: lyrics, audioTap: ProcessTap(), stats: stats)
+        // Closed until Settings › Activities is on. It's the port events go back to apps through, and `platform` opens it.
+        let activitySocket = Bundle.main.bundleIdentifier.flatMap { RemoteSocketPath.activitiesURL(bundleIdentifier: $0) }.map(ActivitySocket.init(url:))
+        if !preferences.activities { activitySocket?.removeLeftover() }
+        runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: LastPlayedFile.remembering, lyrics: lyrics, audioTap: ProcessTap(), stats: stats, activityChannel: activitySocket)
         let spectrum = spectrum
         runner.spectrum = { spectrum.receive($0) }
         platform = PlatformEffects(dispatch: dispatch)
+        platform.activitySocket = activitySocket
+        platform.activityHandler = ActivityHandler(state: { store.state }, dispatch: dispatch, clock: SystemClock())
         store.perform = { [weak runner] in runner?.perform($0) }
         runner.dispatch = dispatch
         runner.platform = { [weak platform] in platform?.perform($0) }
