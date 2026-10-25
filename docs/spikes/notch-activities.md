@@ -57,6 +57,7 @@ One JSON object per line, UTF-8, newline-terminated, in both directions. A line 
 | `icon` | `{"symbol": "<SF Symbol name>", "tint": "<colour>"}`. Omitted, the wing draws the sender's own app icon. Tints are `white` (default), `red`, `orange`, `yellow`, `green` and `blue`. No images: nothing here reads a file. | Name: lowercase letters, digits and dots, 64 bytes |
 | `clock` | `{"since": t}` counts up from `t`, `{"until": t}` counts down to it, with `t` in seconds since 1970. A clock reaching zero stays at `0:00` until the sender ends the activity. | One of the two |
 | `buttons` | Up to two, each `{"id", "label", "symbol"?}`. | Id 32 bytes, label 16 characters |
+| `from` | For a script only: the name to show, as "Script: <name>". A signed app's name comes from its signature, so `from` is ignored there. | 30 characters, required for a script |
 | `priority` | `normal` or `high`. | Two levels, so senders can't outbid each other |
 | `lasts` | Seconds from this message until Warble ends the activity itself. Counted again from each `update` that sets it. | 1 to 43200, default 3600 |
 
@@ -90,7 +91,7 @@ macOS shows no prompt for a Unix socket, so Warble's own switch is the permissio
 Turning it on lets any process of the same user put an activity in the notch. That's no more than it can already do, but the text is the sender's. So Warble doesn't take the sender's word for who it is.
 
 - The sender is the process on the other end of the connection. Warble reads its audit token once, at connect, with `LOCAL_PEERTOKEN`, which names that process and not a process ID that could be reused, and checks its code signature (`SecCodeCopyGuestWithAttributes` on the token). A signed sender is known by its team ID and signing identifier, and its name and icon come from the app that signature belongs to. Another process can't take that identity without the signing key, whatever its `Info.plist` says.
-- An unsigned or ad hoc signed sender, such as a script or a build from source, is still allowed. Its name is the executable's, and it's labelled "Unsigned" in the card and in Settings, and it's known by its path. That name is the sender's own word, so the label is the guarantee: nothing unsigned appears as a signed app.
+- A script isn't the process on the other end: its sender is the interpreter, which for `nc -U`, `osascript`, `python3` and `swift` is an Apple-signed tool with no team ID and no app behind it. So Apple's own binaries, unsigned programs and ad hoc signed builds count as scripts. They're allowed, but a script names itself with `from` in `start`, which is shown as "Script: <name>" in the card and in Settings, so nothing appears as a signed app. Such a sender is keyed by its executable's path and `from` together, so blocking one script doesn't block every script on the same interpreter, and two scripts can pick the same `from` only by sharing a block. The label is the guarantee, since the name is the script's own word.
 - The wing draws the sender's icon, and the card names the sender above the title. A sender can choose a symbol to draw but never the name it appears under.
 - An activity can't do anything on the Mac. A button sends one event back to the app that made it, and nothing else: no links open, no commands run.
 - Settings › Activities lists each app that has shown an activity, with a switch. Apps are on when they first appear, since turning the feature on was the consent, and turning one off ends its activities with `blocked` and refuses its next `start`. Asking per app in the notch was considered and rejected: a prompt that appears over whatever you're doing isn't calm. If people report unwanted senders, revisit it as a one-time "Allow" button on that app's first activity.
@@ -103,7 +104,7 @@ A resting notch with an activity draws the activity's icon in the left wing and 
 
 The expanded notch has two cases:
 
-- **Music is playing.** The player's card is unchanged, with a row below its controls for each activity: an icon and title, the clock, any buttons and a close button. The player stays one hover away.
+- **Music is playing.** The player's card grows by a row below its controls for each activity: an icon and title, the clock, any buttons and a close button. The player stays one hover away.
 - **Nothing is playing.** A card of its own, the activity rows only, the height of the idle card plus a row for each extra activity.
 
 A button press dispatches `.activityButton`, and `reduce` asks for `.haptic` along with the event, so there's feedback before the sender answers. The sender is expected to `update` or `end` in reply. Warble doesn't guess what a button does. The close button is always there, so no activity traps the user.
@@ -151,7 +152,7 @@ struct ActivityState: Feature {
 }
 ```
 
-`Activity` holds the validated fields above, its `ActivityKey` (the connection's number and the app's `id`), its owner (`ActivityOwner`: identifier and name, read from the connection) and `endsAt`, the start or last update plus `lasts`. `AppState.deadline` gets one more key path, `\.activities.deadline`, so `Store` still arms one timer. With nothing live it's `nil`, and with the setting off `items` is empty. Between start and `endsAt` there's one timer set for a day or an hour away and no wakeups, and `reduce` removes the activity on the `.tick` that timer sends.
+`Activity` holds the validated fields above, its `ActivityKey` (the connection's number and the app's `id`), its owner (`ActivityOwner`: identifier and name, read from the connection) and `endsAt`, the start or last update plus `lasts`. `AppState.deadline` gets one more key path, `\.activities.deadline`, so `Store` still arms one timer. With nothing live it's `nil`, and with the setting off `items` is empty. Between start and `endsAt` there's one timer, an hour away by default and twelve at most, and no wakeups, and `reduce` removes the activity on the `.tick` that timer sends.
 
 `SharedState` gains `hasActivity: Bool`, so `Notches` reads whether one is live without knowing its fields. `AppState.listensForActivities` follows the setting, and `settle` asks for the socket once each time it changes, as it does for the command line.
 
@@ -186,7 +187,7 @@ The socket's handler, `ActivityHandler` (WarbleModel, `@MainActor`, like `Remote
 
 `NotchState` gains `activity`, drawn at the size of `resting`. `NotchLayout.frame` and `hoverArea` give it `resting`'s frame and the housing, so a pointer crossing the wings doesn't open it. `NotchState.init` gains `showsActivity`: it's checked before the `idleHover == .nothing` branch and counts like `isPlaying` and `needsAttention`, so a live activity follows `hover` whatever the Idle setting says. A resting notch that would draw `.resting`, `.toast`, `.lyrics`, `.idle` or `.hidden` draws `.activity` instead, and an opened one draws `.expanded`, so the pointer reaches the card, its buttons and its close button with Idle hover set to Nothing too. `Notches.notchState` passes `shared.hasActivity` to it, and `showsToast` and `showsLyrics` are false while one shows, which is how the toast and the lyric line give way.
 
-`NotchCard` gains `activity`. `NotchCard.init` gains `showsActivity`, and the order is the Doctor if asked for, the lyrics, the player while music plays, the activity, the Doctor on a failed check, then the idle card. `NotchLayout.drop` gives the card the idle card's height for one row and a row more for each extra, and the player's card is unchanged, with its rows drawn inside it.
+`NotchCard` gains `activity`. `NotchCard.init` gains `showsActivity`, and the order is the Doctor if asked for, the lyrics, the player while music plays, the activity, the Doctor on a failed check, then the idle card. `NotchLayout.drop` gives the card the idle card's height for one row and a row more for each extra, and the player's card and the lyrics card grow by a row for each activity and draw those rows below their controls, so the lyrics button stays under the pointer when the player's does.
 
 `drawsBars` doesn't count `.activity`, so the live waveform's audio tap stops while an activity covers the bars, and nothing else about the waveform changes.
 
