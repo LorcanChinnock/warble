@@ -26,7 +26,6 @@ cask "warble" do
   depends_on macos: :sequoia
 
   app "Warble.app"
-  binary "#{appdir}/Warble.app/Contents/MacOS/warble-cli", target: "warble"
 
   uninstall quit: "dev.lorcan.Warble"
 

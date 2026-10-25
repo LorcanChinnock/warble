@@ -66,25 +66,6 @@ public protocol AudioOutputs: AnyObject {
     func stopListening()
 }
 
-/// Listens to the Mac's audio for the live waveform. Starting it is what makes macOS ask to record, so it runs only while the
-/// bars are on screen.
-@MainActor
-public protocol AudioTap: AnyObject {
-    /// Starts listening. `onFrame` gets one magnitude for each of `SpectrumBars`' bands, about 15 times a second, off the
-    /// main actor. `onFailure` is called once, off the main actor, if macOS refuses or the tap can't start.
-    func start(onFrame: @escaping @Sendable ([Float]) -> Void, onFailure: @escaping @Sendable () -> Void)
-    /// Stops listening and lets go of everything it held.
-    func stop()
-}
-
-/// The connections apps show activities over. The socket in WarbleCore is the real one.
-@MainActor
-public protocol ActivityChannel: AnyObject {
-    /// Writes `line` to the connection numbered `client`. A write to one that has closed is dropped: the socket has already
-    /// sent `.activityClientClosed`, which ended what it started.
-    func send(_ line: Data, to client: Int)
-}
-
 /// Where the last track played is kept across launches.
 public protocol LastPlayedStore: Sendable {
     func load() -> LastPlayed?
@@ -118,44 +99,4 @@ open class LastPlayedInMemory: LastPlayedStore, @unchecked Sendable {
     open func save(_ lastPlayed: LastPlayed) throws {
         lock.withLock { _saved.append(lastPlayed) }
     }
-}
-
-/// Where the listening stats are kept: a span for each stretch of a track playing, on this Mac only.
-public protocol StatsStore: Sendable {
-    func append(_ span: ListenedSpan) throws
-    /// The spans that began on or after `date`, and drops the older ones.
-    func load(since date: Date) -> [ListenedSpan]
-    func clear() throws
-}
-
-/// Keeps the stats only while Warble runs, so the preview writes none, and a test can see what was written. Open so a test
-/// can slow a write down.
-open class StatsInMemory: StatsStore, @unchecked Sendable {
-    private let lock = NSLock()
-    private var spans: [ListenedSpan] = []
-
-    public init() {}
-
-    /// Every span written, in the order the writes landed.
-    public var saved: [ListenedSpan] {
-        lock.withLock { spans }
-    }
-
-    open func append(_ span: ListenedSpan) throws {
-        lock.withLock { spans.append(span) }
-    }
-
-    public func load(since date: Date) -> [ListenedSpan] {
-        lock.withLock { spans.filter { $0.start >= date } }
-    }
-
-    public func clear() throws {
-        lock.withLock { spans = [] }
-    }
-}
-
-/// Where a track's synced lyrics come from. Only asked while Settings turns lyrics on.
-public protocol LyricsProvider: Sendable {
-    /// The track's synced lyrics as LRC text, or `nil` when there are none or they can't be had.
-    func lyrics(for query: LyricsQuery) async -> String?
 }

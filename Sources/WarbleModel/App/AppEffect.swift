@@ -30,30 +30,8 @@ public enum AppEffect: Equatable, Sendable {
     case saveLastPlayed(LastPlayed)
     /// Gather the Doctor's facts, then answer `.factsGathered` with `pass`.
     case gatherFacts(Doctor.Adapter, pass: Int)
-    /// Look up the track's synced lyrics and parse them, then answer `.lyricsLoaded` with `pass`.
-    case fetchLyrics(LyricsQuery, pass: Int)
     /// Open the welcome window, which `.welcomeClosed` answers.
     case showWelcome
     /// Watch Music and Spotify open and quit (true), or stop.
     case followPlayers(Bool)
-    /// Open the socket the `warble` command talks to (true), or close it and remove it. Asked once when the setting changes.
-    case listenForCommands(Bool)
-    /// Open the socket other apps show activities over (true), or close it and remove it. Asked once when the setting changes.
-    case listenForActivities(Bool)
-    /// Save the senders that have shown an activity, by identifier with their names, for Settings' list.
-    case saveActivityApps([String: String])
-    /// Tell the app behind an activity what happened to it. Dropped when its connection has closed.
-    case sendActivityEvent(ActivityKey, ActivityEvent)
-    /// Start the audio tap that feeds the live waveform (true), or stop it and let go of it. Asked once each time that changes.
-    case captureAudio(Bool)
-    /// Turn the waveform's setting off, because macOS refused the tap.
-    case turnOffWaveform
-    /// Append a span of listening to the stats, in order with the others.
-    case recordListening(ListenedSpan)
-    /// Read the spans that began since the date, then answer `.statsLoaded`.
-    case loadStats(since: Date)
-    /// Delete every span kept.
-    case clearStats
-    /// Open Settings, on the section with this name if it's one of `RemoteCommand.settingsSections`.
-    case openSettings(section: String?)
 }

@@ -39,13 +39,12 @@ final class NotchSurface {
 
     init(
         display: String, housing: CGRect, player: PlayerModel, doctor: DoctorModel, settings: SettingsStore,
-        spectrum: SpectrumFeed,
         dispatch: @escaping (AppAction) -> Void, onScroll: @escaping (NSEvent) -> Void
     ) {
         self.display = display
         self.housing = housing
         self.dispatch = dispatch
-        model = NotchModel(player: player, doctor: doctor, spectrum: spectrum)
+        model = NotchModel(player: player, doctor: doctor)
         panel = NotchPanel(model: model, settings: settings)
         panel.onPointer = { inside in dispatch(.pointer(display: display, inside: inside)) }
         panel.onScroll = onScroll
@@ -54,10 +53,6 @@ final class NotchSurface {
         model.onClick = { dispatch(.hover(display: display, .click)) }
         model.onMenu = { [weak self] open in self?.menu(open: open) }
         model.onShowDoctor = { show in dispatch(.showDoctor(display: display, show)) }
-        model.onShowLyrics = { show in dispatch(.showLyrics(display: display, show)) }
-        model.onSetSleepTimer = { choice in dispatch(.setSleepTimer(choice)) }
-        model.onActivityButton = { key, button in dispatch(.activityButton(key, button: button)) }
-        model.onActivityDismiss = { key in dispatch(.activityDismissed(key)) }
         model.onDragArt = { [weak self] dragging in self?.dragArt(dragging) }
         panel.onKey = { [weak self] event in self?.onKey(event) ?? false }
     }
@@ -71,13 +66,8 @@ final class NotchSurface {
             model.showsTitle = value.showsTitle
             model.isAlwaysShown = value.isAlwaysShown
             model.showsDoctor = value.showsDoctor
-            model.showsWaveform = value.showsWaveform
-            model.hasLyrics = value.hasLyrics
             model.skipsBySeconds = value.skipsBySeconds
             model.artDrag = value.artDrag
-            model.showsSleepTimer = value.showsSleepTimer
-            model.sleepTimer = value.sleepTimer
-            model.canSetSleepTimer = value.canSetSleepTimer
             panel.ignoresMouseEvents = value.ignoresMouseEvents
             // Set only on a change, since this runs on every dispatch, hovers included.
             if panel.sharingType != value.sharingType {
@@ -190,10 +180,7 @@ final class NotchSurface {
         let card = value.card
         let isPlaying = value.isPlaying
         let toast = value.shownToast
-        let lyric = value.shownLyric
-        let lyrics = value.shownLyrics
-        let activities = value.activities
-        guard let frame = NotchLayout.frame(state, notch: notch, card: card, activityRows: activities.count) else {
+        guard let frame = NotchLayout.frame(state, notch: notch, card: card) else {
             guard shown != nil else { return }
             shown = nil
             morphs += 1
@@ -214,7 +201,6 @@ final class NotchSurface {
             return
         }
         guard shown?.state != state || shown?.frame != frame || model.card != card || model.isPlaying != isPlaying || model.toast != toast
-            || model.lyric != lyric || model.lyrics != lyrics || model.activities != activities
         else { return }
         let previous = shown
         shown = (state, frame)
@@ -243,9 +229,6 @@ final class NotchSurface {
                 model.card = card
                 model.isPlaying = isPlaying
                 model.toast = toast
-                model.lyric = lyric
-                model.lyrics = lyrics
-                model.activities = activities
             } completion: { [weak self] in
                 guard let self, morph == self.morphs, self.panelFrame != frame else { return }
                 self.show(in: frame)
@@ -255,12 +238,9 @@ final class NotchSurface {
             model.card = card
             model.isPlaying = isPlaying
             model.toast = toast
-            model.lyric = lyric
-            model.lyrics = lyrics
-            model.activities = activities
             show(in: frame)
         }
-        panel.track(NotchLayout.hoverArea(state, notch: notch, card: card, activityRows: activities.count) ?? .zero)
+        panel.track(NotchLayout.hoverArea(state, notch: notch, card: card) ?? .zero)
         log.notice("Notch \(state.rawValue, privacy: .public) at \(NSStringFromRect(frame), privacy: .public) over \(NSStringFromRect(notch), privacy: .public)")
     }
 

@@ -13,8 +13,8 @@ private struct Run {
     var effects: [AppEffect] = []
     var now = start
 
-    init(showsVirtualTitle: Bool = true, showsTrackToast: Bool = false, showsLyrics: Bool = false) {
-        state = AppState(showsTrackToast: showsTrackToast, showsLyrics: showsLyrics, showsVirtualTitle: showsVirtualTitle)
+    init(showsVirtualTitle: Bool = true, showsTrackToast: Bool = false) {
+        state = AppState(showsTrackToast: showsTrackToast, showsVirtualTitle: showsVirtualTitle)
         send(.housingsChanged([builtIn, external]))
         effects = []
     }
@@ -80,16 +80,6 @@ private struct Run {
     run.send(.playbackReported(song))
     run.send(.playbackReported(next), after: 1)
     #expect(run.state.notchState("external") == .toast)
-}
-
-@Test func theLyricsShowBelowTheTitleWhereAToastWouldHaveBeen() {
-    var run = Run(showsTrackToast: true, showsLyrics: true)
-    run.send(.playbackReported(song))
-    run.send(.playbackReported(next), after: 1)
-    #expect(run.state.toasts.current != nil)
-    // The real notch's toast takes the strip from the lyrics. The virtual one has none, so nothing takes it.
-    #expect(run.state.notchState("built-in") == .toast)
-    #expect(run.state.notchState("external") != .toast)
 }
 
 @Test func overAFullScreenAppTheToastStaysAndTheTitleGoes() {

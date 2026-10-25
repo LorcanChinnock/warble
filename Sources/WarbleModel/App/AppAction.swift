@@ -17,16 +17,12 @@ public enum AppAction: Equatable, Sendable {
     case menu(display: String, open: Bool)
     /// The open card on `display` swapped to the Doctor's checks (true) or back to the player.
     case showDoctor(display: String, Bool)
-    /// The open card on `display` swapped to the lyrics (true) or back to the player.
-    case showLyrics(display: String, Bool)
     /// A click outside, Escape, or Esc in a notch with the keyboard: every open notch closes, but `except`.
     case dismiss(except: String?)
     /// A command from a notch button or a key in an open notch, which shows what it will do at once.
     case command(PlaybackCommand)
     /// Back or forward through a podcast or audiobook by `by` seconds from where it is, from the player's card.
     case skip(by: TimeInterval)
-    /// The player's card started a sleep timer, or turned the one running off with `nil`.
-    case setSleepTimer(SleepTimer.Choice?)
     /// One of Warble's actions, from a global shortcut, and later the command line, links and Shortcuts.
     case perform(WarbleAction)
     /// Bring the app that's playing to the front, or while Idle the one that played last.
@@ -66,55 +62,15 @@ public enum AppAction: Equatable, Sendable {
     case idleHoverChanged(IdleHover)
     case trackToastChanged(Bool)
     case toastsInFullScreenChanged(Bool)
-    case lyricsChanged(Bool)
     case swipeToSkipChanged(Bool)
     case podcastSkipsChanged(Bool)
     case dragArtOutChanged(Bool)
-    case sleepTimerSettingChanged(Bool)
     case hidesFromCaptureChanged(Bool)
     case virtualTitleChanged(Bool)
-    case linksChanged(Bool)
-    /// The Developer card turned the `warble` command line on or off.
-    case commandLineChanged(Bool)
-    /// A `warble://` link was opened. It does what the notch's matching button does while Settings has links on, and
-    /// nothing while they're off.
-    case linkOpened(RemoteCommand)
-    /// Settings turned the live waveform on or off.
-    case waveformChanged(Bool)
-    /// macOS refused to let Warble hear the Mac's audio, or the tap wouldn't start. The waveform turns itself off.
-    case audioCaptureDenied
-    /// Settings turned the listening stats on or off.
-    case statsChanged(Bool)
-    /// Settings' Stats section is showing, so the last week is read from disk.
-    case refreshStats
-    /// The spans kept for the last month, read after `.refreshStats`.
-    case statsLoaded([ListenedSpan])
-    /// The Clear button in the Stats section: everything kept is deleted.
-    case clearStats
-    /// Warble is quitting, so the track playing is counted up to now.
-    case willQuit
-    /// The lyrics found for the fetch numbered `pass`, or `nil` when there are none.
-    case lyricsLoaded(Lyrics?, pass: Int)
     /// Warble opened, with whether it's the first time. Dispatched once, by `AppDelegate`.
     case launched(firstRun: Bool)
     /// The welcome window closed.
     case welcomeClosed
-    /// Settings turned activities on or off. Off, every activity ends at once and no sender is told, since the socket closes.
-    case activitiesChanged(Bool)
-    /// Settings turned an app's activities off or on again: the apps now off. Each one's live activities end as `blocked`.
-    case activityBlocklistChanged(Set<String>)
-    /// An app started an activity, or started one with a key already in use, which replaces it.
-    case activityStarted(Activity)
-    /// An app changed the fields it named of its activity.
-    case activityUpdated(ActivityKey, ActivityPatch)
-    /// An app ended its activity, so nothing is sent back.
-    case activityEnded(ActivityKey)
-    /// An app's connection closed, which ends everything it started.
-    case activityClientClosed(client: Int)
-    /// A button on an activity's row was pressed. The sender is told, and answers with an update or an end.
-    case activityButton(ActivityKey, button: String)
-    /// The close button on an activity's row: it ends, and the sender is told.
-    case activityDismissed(ActivityKey)
     /// `AppState.deadline` came due.
     case tick
 }

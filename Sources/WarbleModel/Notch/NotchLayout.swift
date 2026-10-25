@@ -15,10 +15,6 @@ public enum NotchState: String, CaseIterable, Sendable {
     case resting
     /// Resting, with the new track's title and artist in a strip that slides out below for a moment after a skip.
     case toast
-    /// Resting size, with another app's activity in the wings: its icon on the left, its clock or badge on the right.
-    case activity
-    /// Resting, with the current lyric line in a strip below, while a song with lyrics plays and Settings turns them on.
-    case lyrics
     /// Idle, with a hint in a strip below, during the first-run demo.
     case hint
     /// Hovered or clicked: the full card with the art and room for the controls.
@@ -34,21 +30,15 @@ public enum NotchState: String, CaseIterable, Sendable {
 
     /// How far `hover` has opened the notch, given whether anything is playing, whether a Doctor check failed, what
     /// the housing does on a hover while Idle, whether it stays drawn then (`NotchHousing.isAlwaysShown`), and whether a
-    /// track-change toast or a lyric line is showing, which only a resting notch with something playing draws. The toast
-    /// takes the strip from the lyrics while it shows. A live activity takes the wings from all of them, and counts like
-    /// something playing, so it follows the hover whatever Idle does.
+    /// track-change toast is showing, which only a resting notch with something playing draws.
     public init(
         _ hover: HoverState, isPlaying: Bool, needsAttention: Bool, idleHover: IdleHover, isAlwaysShown: Bool = false,
-        showsToast: Bool = false, showsLyrics: Bool = false, showsActivity: Bool = false
+        showsToast: Bool = false
     ) {
-        if isPlaying || needsAttention || showsActivity {
+        if isPlaying || needsAttention {
             self.init(hover)
-            if self == .resting, showsActivity {
-                self = .activity
-            } else if self == .resting, isPlaying, showsToast {
+            if self == .resting, isPlaying, showsToast {
                 self = .toast
-            } else if self == .resting, isPlaying, showsLyrics {
-                self = .lyrics
             }
         } else if idleHover == .nothing {
             self = isAlwaysShown ? .idle : .hidden
@@ -74,22 +64,14 @@ public enum NotchCard: Sendable {
     case doctor
     /// While Idle: the last track played and a button to resume it, or a line saying nothing has played yet.
     case idle
-    /// The song's lyrics around the line being sung, from the player's lyrics button.
-    case lyrics
-    /// While nothing plays: a row for each activity another app is showing.
-    case activity
 
-    /// What Expanded holds: the checks when asked for, the lyrics when asked for while a song with lyrics plays, what's
-    /// playing, the activities when nothing plays, the checks again when one failed, and otherwise the idle card.
-    public init(isPlaying: Bool, needsAttention: Bool, showsDoctor: Bool, showsLyrics: Bool = false, showsActivity: Bool = false) {
+    /// What Expanded holds: the checks when asked for, what's playing, the checks again when one failed with nothing
+    /// playing, and otherwise the idle card.
+    public init(isPlaying: Bool, needsAttention: Bool, showsDoctor: Bool) {
         if showsDoctor {
             self = .doctor
-        } else if isPlaying, showsLyrics {
-            self = .lyrics
         } else if isPlaying {
             self = .player
-        } else if showsActivity {
-            self = .activity
         } else {
             self = needsAttention ? .doctor : .idle
         }
@@ -112,15 +94,10 @@ public enum NotchLayout {
     public static let doctorDrop: CGFloat = 240
     /// How far the idle card reaches: the art beside three short lines, with no controls below.
     public static let idleDrop: CGFloat = 76
-    /// How far each row of activities reaches: a line for the app, one for the title and one for the detail, with room
-    /// between rows. The player's card and the lyrics card gain one for each activity, below their controls.
-    public static let activityRowDrop: CGFloat = 56
     /// How far a track-change toast reaches below the camera housing: a line for the title and one for the artist.
     public static let toastDrop: CGFloat = 40
     /// How far the first-run demo's hint reaches below the camera housing: one line.
     public static let hintDrop: CGFloat = 30
-    /// How far the lyrics strip reaches below the camera housing: one line.
-    public static let lyricsDrop: CGFloat = 26
     /// Room either side of the notch once expanded, for the art beside the text. Measured from the notch, so the card
     /// keeps its proportion to each Mac's camera housing.
     public static let expandedWing: CGFloat = 70
@@ -142,26 +119,21 @@ public enum NotchLayout {
     }
 
     /// The panel's frame in `state` over `notch`, the camera housing, or `nil` when nothing is drawn. `card` is what
-    /// Expanded holds, and `activityRows` is how many activities it has a row for.
-    public static func frame(_ state: NotchState, notch: CGRect, card: NotchCard = .player, activityRows: Int = 0) -> CGRect? {
+    /// Expanded holds.
+    public static func frame(_ state: NotchState, notch: CGRect, card: NotchCard = .player) -> CGRect? {
         switch state {
         case .hidden:
             nil
         case .idle:
             notch
-        case .resting, .activity:
+        case .resting:
             CGRect(x: notch.minX - wing(notch: notch), y: notch.minY, width: notch.width + 2 * wing(notch: notch), height: notch.height)
         case .toast:
             CGRect(x: notch.minX - wing(notch: notch), y: notch.minY - toastDrop, width: notch.width + 2 * wing(notch: notch), height: notch.height + toastDrop)
         case .hint:
             CGRect(x: notch.minX - expandedWing, y: notch.minY - hintDrop, width: notch.width + 2 * expandedWing, height: notch.height + hintDrop)
-        case .lyrics:
-            CGRect(x: notch.minX - wing(notch: notch), y: notch.minY - lyricsDrop, width: notch.width + 2 * wing(notch: notch), height: notch.height + lyricsDrop)
         case .expanded:
-            CGRect(
-                x: notch.minX - expandedWing, y: notch.minY - drop(card, activityRows: activityRows), width: notch.width + 2 * expandedWing,
-                height: notch.height + drop(card, activityRows: activityRows)
-            )
+            CGRect(x: notch.minX - expandedWing, y: notch.minY - drop(card), width: notch.width + 2 * expandedWing, height: notch.height + drop(card))
         }
     }
 
@@ -172,25 +144,21 @@ public enum NotchLayout {
         frame.integral
     }
 
-    private static func drop(_ card: NotchCard, activityRows: Int) -> CGFloat {
+    private static func drop(_ card: NotchCard) -> CGFloat {
         switch card {
-        // The lyrics card is the player's size, so its button stays under the pointer to swap back. The rows are below the
-        // controls, so growing by them moves nothing the pointer is on.
-        case .player, .lyrics: expandedDrop + CGFloat(activityRows) * activityRowDrop
+        case .player: expandedDrop
         case .doctor: doctorDrop
         case .idle: idleDrop
-        // The idle card's height holds one row, and each more adds its own.
-        case .activity: idleDrop + CGFloat(max(activityRows, 1) - 1) * activityRowDrop
         }
     }
 
     /// Where the pointer counts as on the notch in `state`, for `HoverIntent`: only the camera housing while Idle,
-    /// resting or showing a toast, lyrics or an activity, so a pointer crossing the wings, the menu bar or a strip on its way
-    /// elsewhere doesn't open it, and the whole panel once it's open.
-    public static func hoverArea(_ state: NotchState, notch: CGRect, card: NotchCard = .player, activityRows: Int = 0) -> CGRect? {
+    /// resting or showing a toast, so a pointer crossing the wings, the menu bar or a strip on its way elsewhere doesn't
+    /// open it, and the whole panel once it's open.
+    public static func hoverArea(_ state: NotchState, notch: CGRect, card: NotchCard = .player) -> CGRect? {
         switch state {
-        case .idle, .resting, .toast, .lyrics, .activity, .hint: notch
-        case .hidden, .expanded: frame(state, notch: notch, card: card, activityRows: activityRows)
+        case .idle, .resting, .toast, .hint: notch
+        case .hidden, .expanded: frame(state, notch: notch, card: card)
         }
     }
 }

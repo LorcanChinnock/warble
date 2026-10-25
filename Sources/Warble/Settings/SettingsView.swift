@@ -4,7 +4,7 @@ import WarbleCore
 
 /// The Settings window's sections, in sidebar order. Players arrives with its feature.
 enum SettingsSection: String, CaseIterable, Identifiable {
-    case general, notch, stats, activities, shortcuts, developer, about
+    case general, notch, shortcuts, about
 
     var id: String { rawValue }
 
@@ -12,10 +12,7 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         switch self {
         case .general: String(localized: "General")
         case .notch: String(localized: "Notch")
-        case .stats: String(localized: "Stats")
-        case .activities: String(localized: "Activities")
         case .shortcuts: String(localized: "Shortcuts")
-        case .developer: String(localized: "Developer")
         case .about: String(localized: "About")
         }
     }
@@ -24,10 +21,7 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         switch self {
         case .general: String(localized: "How Warble looks and where it shows.")
         case .notch: String(localized: "What the notch shows.")
-        case .stats: String(localized: "What you listened to this week.")
-        case .activities: String(localized: "What other apps may show in the notch.")
         case .shortcuts: String(localized: "Control playback from any app. None are set until you add one.")
-        case .developer: String(localized: "For scripts and launchers. Everything here starts off.")
         case .about: String(localized: "Version, updates and help.")
         }
     }
@@ -36,10 +30,7 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         switch self {
         case .general: "gearshape"
         case .notch: "menubar.rectangle"
-        case .stats: "chart.bar"
-        case .activities: "timer"
         case .shortcuts: "command"
-        case .developer: "hammer"
         case .about: "info.circle"
         }
     }
@@ -75,10 +66,7 @@ struct SettingsView: View {
                 switch navigation.section {
                 case .general: GeneralSettings()
                 case .notch: NotchSettings()
-                case .stats: StatsSettings()
-                case .activities: ActivitiesSettings()
                 case .shortcuts: ShortcutsSettings()
-                case .developer: DeveloperSettings()
                 case .about: AboutSettings()
                 }
             }
@@ -233,13 +221,9 @@ private struct NotchSettings: View {
     @Setting(PreferenceKey.idleHover) private var idleHover: IdleHover
     @Setting(PreferenceKey.trackChangeToast) private var trackChangeToast: Bool
     @Setting(PreferenceKey.toastsInFullScreen) private var toastsInFullScreen: Bool
-    @Setting(PreferenceKey.lyrics) private var lyrics: Bool
-    @Setting(PreferenceKey.waveform) private var waveform: Bool
-    @Setting(PreferenceKey.waveformRefused) private var waveformRefused: Bool
     @Setting(PreferenceKey.swipeToSkip) private var swipeToSkip: Bool
     @Setting(PreferenceKey.dragArtOut) private var dragArtOut: Bool
     @Setting(PreferenceKey.podcastSkips) private var podcastSkips: Bool
-    @Setting(PreferenceKey.sleepTimer) private var sleepTimer: Bool
     @Setting(PreferenceKey.resumeBrowserTabs) private var resumeBrowserTabs: Bool
     @Setting(PreferenceKey.hideFromCapture) private var hideFromCapture: Bool
     @Setting(PreferenceKey.virtualTitle) private var virtualTitle: Bool
@@ -275,25 +259,6 @@ private struct NotchSettings: View {
                     isOn: $virtualTitle
                 )
             }
-            SettingsGroup(footer: Text("To find a song's lyrics, Warble sends its title, artist, album and length to LRCLIB, a free lyrics library. Nothing is sent while this is off.")) {
-                SettingsToggleRow(
-                    title: Text("Show lyrics under the notch"),
-                    detail: Text("The line being sung, while a song plays."),
-                    isOn: $lyrics
-                )
-            }
-            SettingsGroup(footer: waveformRefused && !waveform
-                ? Text("macOS didn't let Warble hear your Mac's audio. Allow Warble in System Settings › Privacy & Security › Screen & System Audio Recording, then turn this on again.")
-                : Text("The first time, macOS asks to let Warble hear your Mac's audio. Warble uses it only to move the bars, and keeps nothing. It listens only while the bars show, and with Reduce Motion on the bars stand still.")) {
-                SettingsToggleRow(
-                    title: Text("Move the bars with the sound"),
-                    detail: Text("The bars beside the notch follow the music instead of looping."),
-                    isOn: $waveform
-                )
-                .onChange(of: waveform) { _, on in
-                    if on { waveformRefused = false }
-                }
-            }
             SettingsGroup(footer: Text("Needs a trackpad, or a Magic Mouse, where you swipe with one finger. Scrolling up and down over the notch still changes the volume.")) {
                 SettingsToggleRow(
                     title: Text("Swipe over the notch to skip"),
@@ -315,13 +280,6 @@ private struct NotchSettings: View {
                     isOn: $podcastSkips
                 )
             }
-            SettingsGroup(footer: Text("The timer button sits beside the output button. A timer stops if you pause, and it never starts by itself.")) {
-                SettingsToggleRow(
-                    title: Text("Show a sleep timer in the player"),
-                    detail: Text("Pause after 15 minutes, 30 minutes, an hour or at the end of the track."),
-                    isOn: $sleepTimer
-                )
-            }
             SettingsGroup(footer: Text("macOS asks once for each browser. Works with Safari, Chrome, Brave, Edge, Arc and Vivaldi. Without it, or in another browser, the button opens the browser.")) {
                 SettingsToggleRow(
                     title: Text("Reopen browser tracks from the idle card"),
@@ -340,154 +298,6 @@ private struct NotchSettings: View {
     }
 }
 
-private struct StatsSettings: View {
-    @Setting(PreferenceKey.stats) private var stats: Bool
-    @Environment(StatsModel.self) private var model
-    @State private var confirmsClear = false
-
-    var body: some View {
-        SectionPage(section: .stats) {
-            SettingsGroup(footer: Text("Warble counts the time each track plays, by song and artist, and keeps it in a file on this Mac for 30 days. Nothing is sent anywhere. A track is counted once it pauses, changes or stops. While this is off, nothing is counted or saved.")) {
-                SettingsToggleRow(
-                    title: Text("Count what I listen to"),
-                    detail: Text("Time spent listening, not time paused."),
-                    isOn: $stats
-                )
-            }
-            if let summary = model.summary, !summary.isEmpty {
-                SettingsGroup(title: Text("Last 7 days")) {
-                    SettingsRow(title: Text("Listening time")) {
-                        Text(verbatim: StatsFormat.duration(summary.totalSeconds)).foregroundStyle(Native.secondary)
-                    }
-                }
-                SettingsGroup(title: Text("Top artists")) {
-                    ForEach(summary.topArtists, id: \.name) { artist in
-                        SettingsRow(title: Text(verbatim: artist.name)) {
-                            Text(verbatim: StatsFormat.duration(artist.seconds)).foregroundStyle(Native.secondary)
-                        }
-                    }
-                }
-                SettingsGroup(title: Text("Top tracks")) {
-                    ForEach(summary.topTracks, id: \.self) { track in
-                        SettingsRow(title: Text(verbatim: track.title), detail: track.artist.map { Text(verbatim: $0) }) {
-                            Text(verbatim: StatsFormat.duration(track.seconds)).foregroundStyle(Native.secondary)
-                        }
-                    }
-                }
-            } else {
-                SettingsGroup {
-                    if stats {
-                        SettingsRow(title: Text("Nothing yet. Play something and it shows up here.")) {}
-                    } else {
-                        SettingsRow(title: Text("Turn this on to see your week.")) {}
-                    }
-                }
-            }
-            SettingsGroup(footer: Text("Deletes everything counted so far. Counting carries on if it's on.")) {
-                SettingsRow(title: Text("Clear listening stats")) {
-                    Button("Clear…") { confirmsClear = true }
-                        .buttonStyle(.warble)
-                        .disabled(!(model.summary?.holdsHistory ?? false))
-                }
-            }
-        }
-        .onAppear { model.refresh() }
-        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in model.refresh() }
-        .confirmationDialog("Clear listening stats?", isPresented: $confirmsClear) {
-            Button("Clear", role: .destructive) { model.clear() }
-        } message: {
-            Text("This deletes everything counted so far and can't be undone.")
-        }
-    }
-}
-
-/// Whether other apps may show a timer or a short status in the notch, and which of them. Off, Warble opens nothing for them.
-private struct ActivitiesSettings: View {
-    @Setting(PreferenceKey.activities) private var activities: Bool
-    @Setting(PreferenceKey.activityApps) private var apps: [String: String]
-    @Setting(PreferenceKey.activityBlocked) private var blocked: [String]
-    private static let guide = URL(string: "https://warble.lorcanchinnock.com/docs/show-an-activity-in-the-notch/")!
-
-    var body: some View {
-        SectionPage(section: .activities) {
-            SettingsGroup(footer: Text("Only programs running as you can show one, and only while this is on. While it's off, Warble opens nothing for them.")) {
-                SettingsToggleRow(
-                    title: Text("Show what other apps are doing in the notch"),
-                    detail: Text("Apps you use can show a timer or a short status here, such as a recording in progress. Off, no app can."),
-                    isOn: $activities
-                )
-            }
-            SettingsGroup(
-                title: Text("Apps"),
-                footer: Text("An app is on the first time it shows something. Turning it off ends what it's showing.")
-            ) {
-                if apps.isEmpty {
-                    SettingsRow(title: Text("No app has shown anything yet.")) {}
-                }
-                ForEach(apps.sorted { ($0.value, $0.key) < ($1.value, $1.key) }, id: \.key) { identifier, name in
-                    ActivityAppRow(identifier: identifier, name: name, isOn: isOn(identifier))
-                }
-                SettingsRow(title: Text("Add this to your own app")) {
-                    Link(destination: Self.guide) {
-                        Text("Read the guide")
-                    }
-                }
-            }
-        }
-    }
-
-    /// On unless the app is in the turned-off list.
-    private func isOn(_ identifier: String) -> Binding<Bool> {
-        Binding {
-            !blocked.contains(identifier)
-        } set: { on in
-            blocked.removeAll { $0 == identifier }
-            if !on { blocked.append(identifier) }
-        }
-    }
-}
-
-/// One app that has shown an activity: its icon, its name, and a switch.
-private struct ActivityAppRow: View {
-    let identifier: String
-    let name: String
-    @Binding var isOn: Bool
-    @State private var icon: NSImage?
-
-    private var title: Text {
-        ActivityOwner.isScript(identifier: identifier) ? Text("Script: \(name)") : Text(verbatim: name)
-    }
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Group {
-                if let icon {
-                    Image(nsImage: icon).resizable().scaledToFit()
-                } else {
-                    Image(systemName: ActivityOwner.isScript(identifier: identifier) ? "terminal.fill" : "app.fill")
-                        .foregroundStyle(Native.secondary)
-                }
-            }
-            .frame(width: 24, height: 24)
-            .accessibilityHidden(true)
-            title
-                .foregroundStyle(.white)
-                .accessibilityHidden(true)
-            Spacer(minLength: 0)
-            WarbleToggle(isOn: $isOn, label: title)
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-        .task(id: identifier) {
-            guard let bundleIdentifier = ActivityOwner.bundleIdentifier(ofIdentifier: identifier),
-                  let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier)
-            else { return }
-            icon = NSWorkspace.shared.icon(forFile: url.path)
-        }
-    }
-}
-
 private struct ShortcutsSettings: View {
     @Environment(ShortcutRecorder.self) private var recorder
 
@@ -501,33 +311,6 @@ private struct ShortcutsSettings: View {
         }
         // Switching pages or closing the window stops a recording, so no key stays caught.
         .onDisappear { recorder.reset() }
-    }
-}
-
-/// Ways for scripts and other apps to control Warble, each off until it's turned on. Each is its own group, so the
-/// command line and the rest can join it.
-private struct DeveloperSettings: View {
-    @Setting(PreferenceKey.answerLinks) private var answerLinks: Bool
-    @Setting(PreferenceKey.commandLine) private var commandLine: Bool
-
-    var body: some View {
-        SectionPage(section: .developer) {
-            SettingsGroup(footer: Text("Try it with warble now. Only programs running as you can use it, and only while this is on. While it's off, Warble opens nothing for it.")) {
-                SettingsToggleRow(
-                    title: Text("Allow the warble command"),
-                    detail: Text("Scripts and status bars can read what's playing and control it from Terminal."),
-                    isOn: $commandLine
-                )
-                CommandLinkRow()
-            }
-            SettingsGroup(footer: Text("Try it in Terminal with open warble://toggle. The user guide lists every link. While this is off, Warble ignores them.")) {
-                SettingsToggleRow(
-                    title: Text("Answer warble:// links"),
-                    detail: Text("Links like warble://toggle control playback from a script, a launcher or Terminal."),
-                    isOn: $answerLinks
-                )
-            }
-        }
     }
 }
 

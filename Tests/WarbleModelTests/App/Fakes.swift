@@ -128,120 +128,19 @@ final class FakeLastPlayed: LastPlayedInMemory, @unchecked Sendable {
     }
 }
 
-/// Holds the first write back, so a later one would overtake it without the chain.
-final class FakeStats: StatsInMemory, @unchecked Sendable {
-    override func append(_ span: ListenedSpan) throws {
-        if saved.isEmpty {
-            Thread.sleep(forTimeInterval: 0.05)
-        }
-        try super.append(span)
-    }
-}
-
 /// What the app remembers of a report, without shrinking its art.
 func remembering(_ state: PlaybackState, appName: String?) -> LastPlayed {
     LastPlayed(bundleIdentifier: state.bundleIdentifier, appName: appName, title: state.title, artist: state.artist, artwork: state.artwork, link: state.link)
 }
 
-/// Answers each track with the LRC a test gives it, and records what it was asked.
-final class FakeLyrics: LyricsProvider, @unchecked Sendable {
-    private let lock = NSLock()
-    private var _asked: [LyricsQuery] = []
-    /// LRC text by track title.
-    var lrc: [String: String] = [:]
-
-    var asked: [LyricsQuery] {
-        lock.withLock { _asked }
-    }
-
-    init(_ lrc: [String: String] = [:]) {
-        self.lrc = lrc
-    }
-
-    func lyrics(for query: LyricsQuery) async -> String? {
-        lock.withLock {
-            _asked.append(query)
-            return lrc[query.title]
-        }
-    }
-}
-
-/// The connections apps show activities over: the ones a test opens take lines, and a line for any other is dropped, as the
-/// socket drops a write to a connection that has closed.
-@MainActor
-final class FakeActivityChannel: ActivityChannel {
-    var open: Set<Int>
-    private(set) var delivered: [(line: Data, client: Int)] = []
-    private(set) var dropped = 0
-
-    init(open: Set<Int> = []) {
-        self.open = open
-    }
-
-    func send(_ line: Data, to client: Int) {
-        guard open.contains(client) else {
-            dropped += 1
-            return
-        }
-        delivered.append((line, client))
-    }
-
-    /// The lines delivered to `client`, as text.
-    func lines(to client: Int) -> [String] {
-        delivered.filter { $0.client == client }.map { String(decoding: $0.line, as: UTF8.self) }
-    }
-}
-
 @MainActor
 func makeRunner(
     hotkeys: FakeHotkeys = FakeHotkeys(), volume: FakeVolume = FakeVolume(), outputs: FakeOutputs = FakeOutputs(),
-    lastPlayed: FakeLastPlayed = FakeLastPlayed(), lyrics: FakeLyrics = FakeLyrics(), audioTap: FakeAudioTap? = nil,
-    stats: FakeStats = FakeStats(), activityChannel: FakeActivityChannel? = nil
+    lastPlayed: FakeLastPlayed = FakeLastPlayed()
 ) -> EffectRunner {
     EffectRunner(
-        hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: { remembering($0, appName: $1) },
-        lyrics: lyrics, audioTap: audioTap, stats: stats, activityChannel: activityChannel
+        hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: { remembering($0, appName: $1) }
     )
-}
-
-/// An audio tap that records starts and stops, and sends frames or fails when a test says so.
-@MainActor
-final class FakeAudioTap: AudioTap {
-    private(set) var starts = 0
-    private(set) var stops = 0
-    private(set) var isRunning = false
-    private var onFrame: (@Sendable ([Float]) -> Void)?
-    private var onFailure: (@Sendable () -> Void)?
-    /// Every start's failure callback, including those of starts that were stopped since.
-    private var failures: [@Sendable () -> Void] = []
-
-    func start(onFrame: @escaping @Sendable ([Float]) -> Void, onFailure: @escaping @Sendable () -> Void) {
-        starts += 1
-        isRunning = true
-        self.onFrame = onFrame
-        self.onFailure = onFailure
-        failures.append(onFailure)
-    }
-
-    func stop() {
-        stops += 1
-        isRunning = false
-        onFrame = nil
-        onFailure = nil
-    }
-
-    func emit(_ bands: [Float]) {
-        onFrame?(bands)
-    }
-
-    func fail() {
-        onFailure?()
-    }
-
-    /// Fails the first start, which may have been stopped since.
-    func failEarlier() {
-        failures.first?()
-    }
 }
 
 /// A player that records the commands it's sent.

@@ -53,17 +53,11 @@ public struct AppState: Equatable, Sendable {
         set { toast.isOn = newValue }
     }
     public var toastsInFullScreen: Bool { toast.inFullScreen }
-    /// The current lyric line, which a resting notch shows under it when Settings turns lyrics on.
-    public internal(set) var lyrics: LyricsState
     /// Whether a sideways swipe over a notch skips, which Settings turns on, and the trackpad gesture under way.
     public internal(set) var scroll: ScrollState
     public var swipeToSkip: Bool { scroll.swipeToSkip }
     /// Whether a podcast or audiobook skips by seconds rather than by track, which Settings turns on.
     public internal(set) var podcastSkips: Bool
-    /// The sleep timer: whether the player's card has its button, which Settings turns on, and the timer running, if any.
-    public internal(set) var sleep: SleepTimerState
-    public var showsSleepTimer: Bool { sleep.isOn }
-    public var sleepTimer: SleepTimer? { sleep.timer }
     /// Whether the art can be dragged out of the player's card, which Settings turns on.
     public internal(set) var dragArtOut: Bool
     /// Whether every notch is left out of screen sharing, recordings and screenshots, which Settings turns on.
@@ -76,22 +70,6 @@ public struct AppState: Equatable, Sendable {
         get { notches.showsVirtualTitle }
         set { notches.showsVirtualTitle = newValue }
     }
-    /// Whether `warble://` links do anything, which the Developer card in Settings turns on.
-    public internal(set) var answersLinks: Bool
-    /// Whether Warble answers the `warble` command line, which the Developer card turns on. Off, no socket is open.
-    public internal(set) var listensForCommands: Bool
-    /// The activities other apps show in the notch: whether Settings has them on, which starts off, and the ones live.
-    public internal(set) var activities: ActivityState
-    /// Whether Warble opens the socket apps show activities over, which follows the setting. Off, no socket is open.
-    public var listensForActivities: Bool { activities.isOn }
-    /// The live waveform: whether Settings has it on, and whether the audio tap runs.
-    public var showsWaveform: Bool { waveform.isOn }
-    public var capturesAudio: Bool { waveform.captures }
-    var waveform: WaveformState
-    /// The listening stats: whether Settings has them on, and the last week as Settings last asked for it.
-    public var keepsStats: Bool { stats.isOn }
-    public var weeklySummary: WeeklySummary? { stats.summary }
-    var stats: StatsState
     /// The first-run demo of the notch and the welcome window after it, which happen once, on a first launch.
     public internal(set) var onboarding = Onboarding()
     /// What the effects last asked for, so each is asked for once per change.
@@ -107,16 +85,13 @@ public struct AppState: Equatable, Sendable {
         get { notches.followsVolume }
         set { notches.followsVolume = newValue }
     }
-    public internal(set) var listening = false
-    public internal(set) var listeningForActivities = false
 
     /// `checks` are what the Doctor finds before it has asked macOS anything: what it finds while the adapter works.
     public init(
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
-        showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, podcastSkips: Bool = false,
-        dragArtOut: Bool = false, showsSleepTimer: Bool = false, hidesFromCapture: Bool = false, showsVirtualTitle: Bool = true,
-        answersLinks: Bool = false, listensForCommands: Bool = false, showsWaveform: Bool = false, keepsStats: Bool = false,
-        showsActivities: Bool = false, blockedActivityApps: Set<String> = [], activityApps: [String: String] = [:], checks: [Doctor.Check] = []
+        showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, swipeToSkip: Bool = false, podcastSkips: Bool = false,
+        dragArtOut: Bool = false, hidesFromCapture: Bool = false, showsVirtualTitle: Bool = true,
+        checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
         doctor = DoctorState(checks: checks)
@@ -125,13 +100,6 @@ public struct AppState: Equatable, Sendable {
         scroll = ScrollState(swipeToSkip: swipeToSkip)
         self.podcastSkips = podcastSkips
         self.dragArtOut = dragArtOut
-        sleep = SleepTimerState(isOn: showsSleepTimer)
-        self.answersLinks = answersLinks
-        self.listensForCommands = listensForCommands
-        lyrics = LyricsState(isOn: showsLyrics)
-        waveform = WaveformState(isOn: showsWaveform)
-        stats = StatsState(isOn: keepsStats)
-        activities = ActivityState(isOn: showsActivities, blocked: blockedActivityApps, apps: activityApps)
     }
 
     /// Whether the notches draw what's playing: something is, and it isn't Idle.
@@ -140,8 +108,8 @@ public struct AppState: Equatable, Sendable {
     /// Where each part of the state keeps its deadline: a feature that can come due on its own adds one line here. Key paths
     /// rather than the features themselves, so asking for the deadline copies and boxes nothing.
     private static let deadlines: [any KeyPath<AppState, Date?> & Sendable] = [
-        \.hideAt, \.idle.deadline, \.toast.deadline, \.lyrics.deadline, \.sleep.deadline, \.onboarding.deadline,
-        \.scroll.deadline, \.last.deadline, \.doctor.deadline, \.notches.deadline, \.activities.deadline,
+        \.hideAt, \.idle.deadline, \.toast.deadline, \.onboarding.deadline,
+        \.scroll.deadline, \.last.deadline, \.doctor.deadline, \.notches.deadline,
     ]
 
     /// The earliest time something changes if nothing else happens, or `nil` when nothing is due, so `Store` runs one
@@ -173,24 +141,11 @@ public struct AppState: Equatable, Sendable {
     /// `playback`, which stays what the sources said.
     public var demoTrackStart: Date? { onboarding.trackStart }
 
-    /// Whether a notch is drawing its bars at rest for something that is playing, which is when the live waveform has
-    /// something to show. Not during the demo, whose track makes no sound, nor while a "!" takes the bars' place.
-    public var drawsBars: Bool {
-        guard onboarding.notchState == nil, showsPlayback, hideAt == nil, playback?.isPlaying == true, !needsAttention else { return false }
-        return notches.drawsBars(shared)
-    }
-
     /// Whether the notches draw a playing track: a real one, or the demo's.
     public var drawsPlayback: Bool { showsPlayback || demoTrackStart != nil }
 
     func card(_ surface: Surface) -> NotchCard {
         notches.card(surface, shared)
-    }
-
-    /// Whether there's a lyrics card to show, which the player's card offers: the song playing has lyrics, which only
-    /// happens with lyrics on in Settings.
-    public var hasLyricsCard: Bool {
-        showsPlayback && playback != nil && lyrics.excerpt != nil
     }
 
     /// Whether the player's card skips back and forward by seconds rather than by track: Settings turns it on, and a
@@ -200,18 +155,12 @@ public struct AppState: Equatable, Sendable {
         return SpokenWord.contains(playback)
     }
 
-    /// Whether a sleep timer can run now: Settings has it on and something is playing, not about to be hidden.
-    public var canSetSleepTimer: Bool {
-        sleep.canSet(shared)
-    }
-
     /// What the features may read of this state.
     var shared: SharedState {
         SharedState(
             playback: playback, showsPlayback: showsPlayback, hideAt: hideAt, needsAttention: needsAttention,
-            hasActivity: activities.current != nil, activityRows: activities.items.count,
-            hasToast: toasts.current != nil, toastsInFullScreen: toastsInFullScreen, showsLyricsLine: lyrics.showsLine,
-            hasLyricsCard: hasLyricsCard, demoState: onboarding.notchState, demoCard: onboarding.card
+            hasToast: toasts.current != nil, toastsInFullScreen: toastsInFullScreen,
+            demoState: onboarding.notchState, demoCard: onboarding.card
         )
     }
 

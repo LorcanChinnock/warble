@@ -40,8 +40,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         // a hide pending, there's no position to skip from, so it sends nothing.
         guard state.showsPlayback, state.hideAt == nil, let playback = state.playback else { break }
         return reduce(&state, .command(.seek(to: playback.position(skipping: seconds, at: now))), now: now)
-    case .setSleepTimer, .sleepTimerSettingChanged:
-        effects += state.sleep.reduce(action, shared: state.shared, at: now)
     case .openApp:
         if let bundleIdentifier = state.playback?.bundleIdentifier ?? state.lastPlayed?.bundleIdentifier {
             effects.append(.openApp(bundleIdentifier: bundleIdentifier))
@@ -79,7 +77,7 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         effects += state.last.reduce(action, shared: state.shared, at: now)
     case .adapterChanged, .factsGathered, .playersChanged, .automationDenied, .fallbackReported, .notNow:
         effects += state.doctor.reduce(action, shared: state.shared, at: now)
-    case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .showDoctor, .showLyrics, .dismiss, .idleHoverChanged,
+    case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .showDoctor, .dismiss, .idleHoverChanged,
         .hidesFromCaptureChanged, .virtualTitleChanged:
         effects += state.notches.reduce(action, shared: state.shared, at: now)
     case .stayVisibleChanged(let delay):
@@ -87,33 +85,10 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.idle.advance(to: now)
     case .trackToastChanged, .toastsInFullScreenChanged:
         effects += state.toast.reduce(action, shared: state.shared, at: now)
-    case .lyricsChanged, .lyricsLoaded:
-        effects += state.lyrics.reduce(action, shared: state.shared, at: now)
     case .podcastSkipsChanged(let on):
         state.podcastSkips = on
     case .dragArtOutChanged(let on):
         state.dragArtOut = on
-    case .linksChanged(let on):
-        state.answersLinks = on
-    case .commandLineChanged(let on):
-        state.listensForCommands = on
-    case .waveformChanged, .audioCaptureDenied:
-        effects += state.waveform.reduce(action, shared: state.shared, at: now)
-    case .statsChanged, .refreshStats, .statsLoaded, .clearStats, .willQuit:
-        effects += state.stats.reduce(action, shared: state.shared, at: now)
-    case .linkOpened(let command):
-        // Links are one more way in, so each does what its button does. With links off a link changes nothing.
-        guard state.answersLinks else { break }
-        guard let action = command.action else {
-            if case .settings(let section) = command {
-                effects.append(.openSettings(section: section))
-            }
-            break
-        }
-        return reduce(&state, action, now: now)
-    case .activitiesChanged, .activityBlocklistChanged, .activityStarted, .activityUpdated, .activityEnded, .activityClientClosed,
-        .activityButton, .activityDismissed:
-        effects += state.activities.reduce(action, shared: state.shared, at: now)
     case .launched, .welcomeClosed:
         break
     case .tick:
@@ -123,29 +98,12 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.idle.advance(to: now)
         effects += state.toast.reduce(action, shared: state.shared, at: now)
         effects += state.notches.reduce(action, shared: state.shared, at: now)
-        effects += state.activities.reduce(action, shared: state.shared, at: now)
     }
-    // Before Idle is settled, so the pause it guesses is treated like any other pause.
-    effects += followSleepTimer(&state, at: now)
     effects += settle(&state, from: old, at: now)
     // After Idle has had its say, so a track that's no longer shown has nothing to announce.
     state.toast.announce(notice, shared: state.shared, isOpen: state.notches.isOpen(state.shared), at: now)
     effects += state.last.follow(state.shared, at: now)
-    effects += state.stats.follow(state.shared, at: now)
-    // Last, so the line follows whatever this action did: a new track, a seek, a pause, Idle or a tick.
-    effects += state.lyrics.follow(state.shared, at: now)
     return effects
-}
-
-/// Keeps the sleep timer in step with what's playing, and pauses at once when it's due.
-private func followSleepTimer(_ state: inout AppState, at now: Date) -> [AppEffect] {
-    guard state.sleep.expire(state.shared, at: now) == .due, let playback = state.playback else { return [] }
-    // In the gap between tracks the source has reported nothing, so the pause is sent but not shown, which would keep the
-    // track on screen after the hide.
-    if state.hideAt == nil {
-        show(playback.playing(false, at: now), in: &state, at: now)
-    }
-    return [.send(.pause)]
 }
 
 extension PlaybackState {
@@ -193,19 +151,6 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
     }
     shared = state.shared
     var effects = state.notches.follow(shared, at: now)
-    // The command line's socket is open only while Settings has it on, and is asked for once each time that changes. A
-    // Warble that opens with it on asks on its first action.
-    if state.listensForCommands != state.listening {
-        state.listening = state.listensForCommands
-        effects.append(.listenForCommands(state.listening))
-    }
-    // The activities socket likewise, asked for once each time the setting changes.
-    if state.listensForActivities != state.listeningForActivities {
-        state.listeningForActivities = state.listensForActivities
-        effects.append(.listenForActivities(state.listeningForActivities))
-    }
-    // The audio tap runs only while the waveform can be seen, and is asked for once each time that changes.
-    effects += state.waveform.follow(drawsBars: state.drawsBars)
     // Opening a notch checks again whatever the Doctor found, in case the user fixed it, such as in System Settings,
     // which tells Warble nothing.
     if state.notches.watchesClicks, !old.notches.watchesClicks, state.doctor.adapter != .working {

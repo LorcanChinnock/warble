@@ -6,7 +6,7 @@ Warble is a macOS 15+ app that shows what's playing in the notch and controls it
 
 ## Mantra
 
-By default, Warble is calm: a small, fast notch that shows what's playing and stays out of the way. Lyrics, the live waveform, stats and extra gestures are built in, but they start off.
+By default, Warble is calm: a small, fast notch that shows what's playing and stays out of the way. Extra gestures are built in, but they start off.
 
 - Nothing may slow the hover → expand path or a click on play/pause.
 - When nothing is playing, Warble draws nothing and uses no CPU: no timers, no polling.
@@ -17,14 +17,12 @@ By default, Warble is calm: a small, fast notch that shows what's playing and st
 Design and write for the first person on this list; the later ones opt in to more.
 
 - **The listener.** Wants play/pause, skip and to see what's on. Never opens Settings. Every default is set for them.
-- **The podcast and audiobook listener.** Skips 15 seconds, changes the speed, sets a sleep timer.
-- **The music fan.** Turns on lyrics and listening stats, switches speakers.
+- **The podcast and audiobook listener.** Skips 15 seconds and changes the speed.
+- **The music fan.** Switches speakers.
 - **The multi-display user.** Uses the virtual notch on external displays and Macs without a notch, and sets rules per display.
-- **The developer.** Uses the `warble` command, `warble://` links and Shortcuts.
 
 What this means in practice:
-- UI strings, Settings and the user guide speak to everyone. Avoid jargon (CLI, JSON) outside the developer-facing parts.
-- Developer features stay in their own Settings card and guide pages, off by default.
+- UI strings, Settings and the user guide speak to everyone. Avoid jargon.
 
 ## Commands
 
@@ -60,11 +58,10 @@ Local builds are `WarbleDev.app`. A real installed version is `/Applications/War
 
 ## Architecture
 
-Four targets:
-- `Sources/WarbleModel`: logic that needs only Foundation, so CI builds and tests it on Linux: the app's state, `reduce` and their ports (`App/`), notch geometry, playback state and its interpolation, the hover state machine, source priority, the toast queue, the activities and their handler (`Activities/`), the Doctor's checks, the listening stats' sessions and weekly summary, the lyrics parser, the query lyrics are looked up by and the line showing (`Lyrics`, `LyricsQuery`, `LyricsState`, `Lyrics/`). It may import CoreGraphics only inside `#if canImport(CoreGraphics)`. Linux Foundation has `CGFloat`, `CGPoint`, `CGSize` and `CGRect`, but not `CGPath`, `CGColor` or `CGImage`.
-- `Sources/WarbleCore`: logic that needs Apple frameworks but no window, display or permission, including the real side of most ports: preferences, the now-playing sources, Core Audio volume and outputs (`SystemVolume`, `CoreAudioOutputs`), the last track's file (`LastPlayedFile`), the LRCLIB lyrics client and its cache in Caches (`LRCLIBClient`, `Lyrics/`), the activities socket and who a sender is (`ActivitySocket`, `ActivityPeer`), artwork colours and `TimerScheduler`.
+Three targets:
+- `Sources/WarbleModel`: logic that needs only Foundation, so CI builds and tests it on Linux: the app's state, `reduce` and their ports (`App/`), notch geometry, playback state and its interpolation, the hover state machine, source priority, the toast queue, the Doctor's checks. It may import CoreGraphics only inside `#if canImport(CoreGraphics)`. Linux Foundation has `CGFloat`, `CGPoint`, `CGSize` and `CGRect`, but not `CGPath`, `CGColor` or `CGImage`.
+- `Sources/WarbleCore`: logic that needs Apple frameworks but no window, display or permission, including the real side of most ports: preferences, the now-playing sources, Core Audio volume and outputs (`SystemVolume`, `CoreAudioOutputs`), the last track's file (`LastPlayedFile`), artwork colours and `TimerScheduler`.
 - `Sources/Warble`: AppKit and SwiftUI that need a real session. `WarbleApp` is a `MenuBarExtra` with an `AppDelegate` adaptor; `Updater` wraps Sparkle. It draws the store's state, turns AppKit events into actions and carries out the effects that need AppKit, and decides nothing else.
-- `Sources/WarbleCLI`: the `warble` command, a thin client of the running app's socket. It depends on WarbleModel only and decides nothing: it parses with `WarbleCommand`, sends the arguments and prints the answer.
 
 **If logic can be tested without a window, it goes in WarbleModel with a test, or in WarbleCore if it needs an Apple framework.** Tests are top-level `@Test func` with sentence-style names: `Tests/WarbleModelTests` (run on Linux) and `Tests/WarbleCoreTests` (macOS). The app target has no tests.
 
@@ -85,17 +82,11 @@ Claude Code loads only this file, so read a feature's note before you change tha
 | [Doctor](docs/architecture/doctor.md) | changing the checks, their fixes or the "!" on the notch |
 | [The notch](docs/architecture/notch.md) | changing the panel, its states and cards, hover, displays, toasts, gestures, shortcuts or the keyboard |
 | [Accessibility](docs/architecture/accessibility.md) | adding or changing any control or label |
-| [Lyrics](docs/architecture/lyrics.md) | changing the lyric line, the lyrics card or the LRCLIB client |
 | [Idle](docs/architecture/idle.md) | changing when the notch goes back to Idle |
-| [Sleep timer](docs/architecture/sleep-timer.md) | changing the sleep timer |
 | [Welcome and the demo](docs/architecture/welcome.md) | changing the first launch, the welcome window or the demo |
 | [Idle card](docs/architecture/idle-card.md) | changing what the notch shows while nothing plays, or the last track played |
-| [Developer](docs/architecture/developer.md) | changing the `warble` command, links, the socket or Settings › Developer |
 | [Motion](docs/architecture/motion.md) | changing how the notch moves between states |
 | [Website](docs/architecture/website.md) | changing `site/` or the user guide |
-| [Listening stats](docs/architecture/stats.md) | changing the listening stats, their file or Settings › Stats |
-| [Live waveform](docs/architecture/waveform.md) | changing the waveform, the audio tap or what the play-state bars draw |
-| [Activities](docs/architecture/activities.md) | changing the activities socket, who a sender is, Settings › Activities or the activity guide |
 | [Performance](docs/architecture/performance.md) | changing anything on the hover, expand or play/pause path, or adding a timer |
 
 ## Rules enforced by `make lint`

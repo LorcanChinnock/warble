@@ -15,36 +15,16 @@ public enum PreferenceKey {
     public static let trackChangeToast = "trackChangeToast"
     /// Whether that toast also slides out over a full-screen app, where the resting notch never shows.
     public static let toastsInFullScreen = "toastsInFullScreen"
-    /// Whether a resting notch shows the current lyric line, looked up on LRCLIB. Off, nothing is sent there.
-    public static let lyrics = "lyrics"
     /// Whether a sideways two-finger swipe over the notch skips to the next or previous track.
     public static let swipeToSkip = "swipeToSkip"
     /// Whether a podcast or audiobook has back 15 and forward 30 seconds in place of previous and next.
     public static let podcastSkips = "podcastSkips"
-    /// Whether the player's card has a sleep timer, which pauses after a set time or at the end of the track.
-    public static let sleepTimer = "sleepTimer"
     /// Whether the art in the player's card can be dragged into another app, as the image and the track's link.
     public static let dragArtOut = "dragArtOut"
     /// Whether the notch is left out of screen sharing, recordings and screenshots, while you still see it.
     public static let hideFromCapture = "hideFromCapture"
     /// Whether a virtual notch shows the title of what's playing in its middle.
     public static let virtualTitle = "virtualTitle"
-    /// Whether the play-state bars follow the sound, which has macOS ask to record the Mac's audio the first time.
-    public static let waveform = "waveform"
-    /// Whether macOS refused that, so Settings can say why the waveform turned itself off.
-    public static let waveformRefused = "waveformRefused"
-    /// Whether Warble counts the time each track plays, on this Mac only, for the weekly summary in Settings.
-    public static let stats = "stats"
-    /// Whether `warble://` links do anything, in the Developer card. Off, Warble ignores them.
-    public static let answerLinks = "answerLinks"
-    /// Whether Warble opens the socket the `warble` command talks to, in the Developer card. Off, no socket exists.
-    public static let commandLine = "commandLine"
-    /// Whether other apps may show what they're doing in the notch, in the Activities card. Off, no socket exists for them.
-    public static let activities = "activities"
-    /// Every sender that has shown an activity, by `ActivityOwner.identifier`, with its name, for the Activities card's list.
-    public static let activityApps = "activityApps"
-    /// The identifiers of the senders turned off in the Activities card, as an array.
-    public static let activityBlocked = "activityBlocked"
 
     /// Whether Warble reads the front tab of a browser when a track starts there, so the idle card can reopen it. Off,
     /// Warble never scripts a browser, and macOS never asks for permission to.
@@ -67,21 +47,11 @@ public struct Preferences {
             PreferenceKey.idleHover: IdleHover.lastPlayed.rawValue,
             PreferenceKey.trackChangeToast: false,
             PreferenceKey.toastsInFullScreen: false,
-            PreferenceKey.lyrics: false,
             PreferenceKey.swipeToSkip: false,
             PreferenceKey.podcastSkips: false,
-            PreferenceKey.sleepTimer: false,
             PreferenceKey.dragArtOut: false,
             PreferenceKey.hideFromCapture: false,
             PreferenceKey.virtualTitle: true,
-            PreferenceKey.waveform: false,
-            PreferenceKey.waveformRefused: false,
-            PreferenceKey.stats: false,
-            PreferenceKey.answerLinks: false,
-            PreferenceKey.commandLine: false,
-            PreferenceKey.activities: false,
-            PreferenceKey.activityApps: [String: String](),
-            PreferenceKey.activityBlocked: [String](),
             PreferenceKey.resumeBrowserTabs: false,
             PreferenceKey.hasSeenWelcome: false,
         ]
@@ -155,28 +125,12 @@ public struct Preferences {
         store.bool(forKey: PreferenceKey.toastsInFullScreen)
     }
 
-    public var lyrics: Bool {
-        store.bool(forKey: PreferenceKey.lyrics)
-    }
-
-    public var waveform: Bool {
-        store.bool(forKey: PreferenceKey.waveform)
-    }
-
-    public var stats: Bool {
-        store.bool(forKey: PreferenceKey.stats)
-    }
-
     public var swipeToSkip: Bool {
         store.bool(forKey: PreferenceKey.swipeToSkip)
     }
 
     public var podcastSkips: Bool {
         store.bool(forKey: PreferenceKey.podcastSkips)
-    }
-
-    public var sleepTimer: Bool {
-        store.bool(forKey: PreferenceKey.sleepTimer)
     }
 
     public var dragArtOut: Bool {
@@ -193,27 +147,6 @@ public struct Preferences {
 
     public var virtualTitle: Bool {
         store.bool(forKey: PreferenceKey.virtualTitle)
-    }
-
-    public var answerLinks: Bool {
-        store.bool(forKey: PreferenceKey.answerLinks)
-    }
-
-    public var commandLine: Bool {
-        store.bool(forKey: PreferenceKey.commandLine)
-    }
-
-    public var activities: Bool {
-        store.bool(forKey: PreferenceKey.activities)
-    }
-
-    /// Each sender that has shown an activity, with its name, leaving out anything that isn't a name.
-    public var activityApps: [String: String] {
-        store.dictionary(forKey: PreferenceKey.activityApps) as? [String: String] ?? [:]
-    }
-
-    public var activityBlocked: Set<String> {
-        Set(store.stringArray(forKey: PreferenceKey.activityBlocked) ?? [])
     }
 
     /// `nil` means the user cleared the shortcut.

@@ -49,23 +49,14 @@ final class NotchController {
                 if preferences.toastsInFullScreen != state.toastsInFullScreen {
                     self.store.dispatch(.toastsInFullScreenChanged(preferences.toastsInFullScreen))
                 }
-                if preferences.lyrics != state.lyrics.isOn {
-                    self.store.dispatch(.lyricsChanged(preferences.lyrics))
-                }
                 if preferences.swipeToSkip != state.swipeToSkip {
                     self.store.dispatch(.swipeToSkipChanged(preferences.swipeToSkip))
                 }
                 if preferences.podcastSkips != state.podcastSkips {
                     self.store.dispatch(.podcastSkipsChanged(preferences.podcastSkips))
                 }
-                if preferences.sleepTimer != state.showsSleepTimer {
-                    self.store.dispatch(.sleepTimerSettingChanged(preferences.sleepTimer))
-                }
                 if preferences.dragArtOut != state.dragArtOut {
                     self.store.dispatch(.dragArtOutChanged(preferences.dragArtOut))
-                }
-                if preferences.stats != state.keepsStats {
-                    self.store.dispatch(.statsChanged(preferences.stats))
                 }
                 if preferences.hideFromCapture != state.hidesFromCapture {
                     self.store.dispatch(.hidesFromCaptureChanged(preferences.hideFromCapture))
@@ -73,41 +64,16 @@ final class NotchController {
                 if preferences.virtualTitle != state.showsVirtualTitle {
                     self.store.dispatch(.virtualTitleChanged(preferences.virtualTitle))
                 }
-                self.syncWaveform()
-                if preferences.answerLinks != state.answersLinks {
-                    self.store.dispatch(.linksChanged(preferences.answerLinks))
-                }
-                if preferences.commandLine != state.listensForCommands {
-                    self.store.dispatch(.commandLineChanged(preferences.commandLine))
-                }
-                if preferences.activities != state.activities.isOn {
-                    self.store.dispatch(.activitiesChanged(preferences.activities))
-                }
-                if preferences.activityBlocked != state.activities.blocked {
-                    self.store.dispatch(.activityBlocklistChanged(preferences.activityBlocked))
-                }
                 if preferences.virtualNotchRules != self.rules {
                     self.layOut()
                 }
             }
-        })
-        // Reduce Motion isn't a Warble default, so a change in System Settings is seen here, and it turns the waveform off.
-        observers.append(NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated { self?.syncWaveform() }
         })
         // Going full screen, or back, switches Space; only then can a display start or stop showing a full-screen app.
         observers.append(NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.activeSpaceDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.readFullScreen() }
         })
         layOut()
-    }
-
-    /// The waveform runs when its setting is on and Reduce Motion is off, since the bars stand still under it.
-    private func syncWaveform() {
-        let wanted = Preferences().waveform && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
-        if wanted != store.state.showsWaveform {
-            store.dispatch(.waveformChanged(wanted))
-        }
     }
 
     private func readFullScreen() {
@@ -145,7 +111,6 @@ final class NotchController {
         let store = store
         let surface = NotchSurface(
             display: housing.display, housing: housing.frame, player: player, doctor: doctor, settings: environment.settings,
-            spectrum: environment.spectrum,
             dispatch: { [weak store] in store?.dispatch($0) }
         ) { [weak self] in self?.scroll($0) }
         surface.onKey = { [weak self] event in self?.key(event) ?? false }
@@ -186,7 +151,6 @@ final class NotchController {
             log.notice("Adapter is \(String(describing: new.doctor.adapter), privacy: .public)")
         }
         doctor.apply(new.doctor)
-        environment.stats.apply(new.weeklySummary)
         if isPlayPause(action), old.hideAt == nil, old.playback != nil {
             // Timed from the click or key to the first frame that shows the new state. The click's own window is the
             // notch it was on; a shortcut has none.

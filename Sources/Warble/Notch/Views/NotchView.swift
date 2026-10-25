@@ -25,10 +25,7 @@ struct NotchView: View {
             let playback = model.isPlaying ? model.player.playback : nil
             NotchContent(state: state, card: model.card, playback: playback, artwork: model.player.artwork, colours: model.player.colours, model: model)
                 .frame(width: size.width, height: size.height, alignment: .top)
-                .id(ContentID(
-                    state: state == .toast || state == .lyrics ? .resting : state, card: model.card, isPlaying: playback != nil,
-                    activity: state == .activity ? model.activities.first?.key : nil
-                ))
+                .id(ContentID(state: state == .toast ? .resting : state, card: model.card, isPlaying: playback != nil))
                 .transition(ContentTransition())
         }
         .mask(alignment: .top) {
@@ -50,14 +47,12 @@ struct NotchView: View {
 }
 
 /// Tells one state's content from the next, so a change of card, such as resuming from the idle card, or a track
-/// starting beside the "!", fades too. A toast or a lyric line is Resting's content with a strip below, so the wings
-/// stay put while only the strip comes and goes.
+/// starting beside the "!", fades too. A toast is Resting's content with a strip below, so the wings stay put while
+/// only the strip comes and goes.
 private struct ContentID: Hashable {
     let state: NotchState
     let card: NotchCard
     let isPlaying: Bool
-    /// The activity in the wings, so a different one takes them with a fade.
-    let activity: ActivityKey?
 }
 
 /// How a state's content comes and goes while the shape morphs: in a moment after the shape starts to grow, so the shape
@@ -80,50 +75,23 @@ private struct NotchContent: View {
 
     var body: some View {
         switch (state, card, playback) {
-        case (.activity, _, _):
-            if let activity = model.activities.first {
-                ActivityWings(activity: activity, notch: model.notch)
-            }
         case (.expanded, .player, let playback?):
-            // The rows go below the controls, which keep the card's own height, so nothing moves under the pointer.
-            VStack(spacing: 0) {
-                ExpandedContent(playback: playback, artwork: artwork, model: model)
-                    .frame(height: NotchLayout.expandedDrop)
-                ActivityRows(model: model)
-            }
+            ExpandedContent(playback: playback, artwork: artwork, model: model)
                 .padding(.top, model.notch.height)
                 .background { Glow(colours: colours) }
         case (.expanded, .doctor, _):
             DoctorCard(model: model)
                 .padding(.top, model.notch.height)
-        case (.expanded, .lyrics, _):
-            if let lyrics = model.lyrics {
-                VStack(spacing: 0) {
-                    LyricsCard(lyrics: lyrics, model: model)
-                        .frame(height: NotchLayout.expandedDrop)
-                    ActivityRows(model: model)
-                }
-                .padding(.top, model.notch.height)
-                    .background { Glow(colours: colours) }
-            }
-        case (.expanded, .activity, _):
-            ActivityCard(model: model)
-                .padding(.top, model.notch.height)
         case (.expanded, .idle, _):
             IdleCard(model: model)
                 .padding(.top, model.notch.height)
-        case (.resting, _, let playback?), (.toast, _, let playback?), (.lyrics, _, let playback?):
+        case (.resting, _, let playback?), (.toast, _, let playback?):
             VStack(spacing: 0) {
                 RestingContent(playback: playback, artwork: artwork, notch: model.notch, model: model)
                 if state == .toast, let toast = model.toast {
                     ToastLines(toast: toast)
                         // A skip while it shows swaps the words with a fade.
                         .id(toast)
-                        .transition(ContentTransition())
-                } else if state == .lyrics, let lyric = model.lyric {
-                    LyricsLine(text: lyric)
-                        // Each line fades in as the last fades out.
-                        .id(lyric)
                         .transition(ContentTransition())
                 }
             }

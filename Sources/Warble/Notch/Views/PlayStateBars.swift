@@ -5,7 +5,7 @@ import WarbleCore
 import WarbleModel
 
 /// Four bars that rise and fall while something plays and settle when it pauses. They follow the play state, not the
-/// audio, unless Settings turns on the live waveform, when `spectrum` is set and they follow the sound. Core Animation runs them in the window server, so the app does no work per frame. They rise one after another
+/// audio. Core Animation runs them in the window server, so the app does no work per frame. They rise one after another
 /// as the wings slide out, and drop as the content leaves; once the content is gone, so are their animations. With
 /// Reduce Motion they stand still and show at once.
 struct PlayStateBars: NSViewRepresentable {
@@ -13,21 +13,17 @@ struct PlayStateBars: NSViewRepresentable {
     /// Whether the content around them is in, rather than coming or going.
     let isShown: Bool
     let reduceMotion: Bool
-    /// Where the sound comes from while the live waveform shows, or `nil` for the bars that follow the play state.
-    let spectrum: SpectrumFeed?
 
     func makeNSView(context: Context) -> BarsView {
         BarsView()
     }
 
     func updateNSView(_ view: BarsView, context: Context) {
-        view.feed = spectrum
-        view.show(isPlaying ? (reduceMotion ? .still : (spectrum == nil ? .moving : .live)) : .settled, shown: isShown, animated: !reduceMotion)
+        view.show(isPlaying ? (reduceMotion ? .still : .moving) : .settled, shown: isShown, animated: !reduceMotion)
     }
 
-    final class BarsView: NSView, SpectrumListener {
-        /// `live` follows the sound, a frame at a time, rather than loop.
-        enum Look { case settled, still, moving, live }
+    final class BarsView: NSView {
+        enum Look { case settled, still, moving }
 
         /// Each bar's heights, as fractions of the view's, which it loops through. Different lengths keep the bars from
         /// falling into step.
@@ -40,31 +36,10 @@ struct PlayStateBars: NSViewRepresentable {
         /// A paused bar, a rounded dot.
         private static let settled: CGFloat = 3
         private static let barWidth: CGFloat = 3
-        /// The smallest change of height the live waveform draws, in points.
-        private static let step: CGFloat = 1
         /// The curve each bar rises on, the same as the resting art's (`Native.artIn`).
         private static let rise = CAMediaTimingFunction(controlPoints: 0.2, 0.9, 0.3, 1)
         private let bars = heights.map { _ in CALayer() }
-        private var look = Look.settled {
-            didSet {
-                guard look != oldValue else { return }
-                if look == .live {
-                    feed?.add(self)
-                } else {
-                    feed?.remove(self)
-                    smoothing.reset()
-                }
-            }
-        }
-        /// Where the sound comes from, set before `show`.
-        var feed: SpectrumFeed? {
-            didSet {
-                guard feed !== oldValue else { return }
-                oldValue?.remove(self)
-                if look == .live { feed?.add(self) }
-            }
-        }
-        private var smoothing = SpectrumBars()
+        private var look = Look.settled
         private var shown = false
         /// Whether the bars have been drawn yet. They're drawn hidden first, so they rise once they're shown.
         private var drawn = false
@@ -84,28 +59,6 @@ struct PlayStateBars: NSViewRepresentable {
         }
 
         required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-
-        /// One frame of the sound: each bar's height follows its band. Skipped while the bars are still rising into place,
-        /// which would be cut short.
-        func spectrum(_ bands: [Float]) {
-            guard look == .live, shown, bounds.height > Self.settled else { return }
-            if let riseBegan {
-                guard riseBegan + NotchMotion.barsRisen(count: bars.count) <= CACurrentMediaTime() else { return }
-                self.riseBegan = nil
-                for bar in bars { bar.removeAnimation(forKey: "rise") }
-            }
-            let levels = smoothing.update(bands)
-            // Each change redraws the notch in the window server, so a bar moves only by a visible step.
-            let moves = zip(bars, levels).compactMap { bar, level -> (CALayer, CGFloat)? in
-                let height = ((Self.settled + CGFloat(level) * (bounds.height - Self.settled)) / Self.step).rounded() * Self.step
-                return height == bar.bounds.height ? nil : (bar, height)
-            }
-            guard !moves.isEmpty else { return }
-            CATransaction.begin()
-            CATransaction.setDisableActions(true)
-            for (bar, height) in moves { bar.bounds.size.height = height }
-            CATransaction.commit()
-        }
 
         override func layout() {
             super.layout()
@@ -159,7 +112,7 @@ struct PlayStateBars: NSViewRepresentable {
         private func height(of index: Int) -> CGFloat {
             guard shown else { return 0 }
             return switch look {
-            case .settled, .moving, .live: Self.settled
+            case .settled, .moving: Self.settled
             case .still: Self.heights[index][0] * bounds.height
             }
         }

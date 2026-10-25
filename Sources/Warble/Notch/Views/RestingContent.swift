@@ -19,8 +19,8 @@ struct RestingContent: View {
     var body: some View {
         let wing = NotchLayout.wing(notch: notch)
         let art = wing - 2 * NotchLayout.inset(notch: notch)
-        // Content on its way out still reads the model, so the bars drop as the notch leaves Resting. A toast or a lyric line keeps them.
-        let isIn = appeared && (model.state == .resting || model.state == .toast || model.state == .lyrics)
+        // Content on its way out still reads the model, so the bars drop as the notch leaves Resting. A toast keeps them.
+        let isIn = appeared && (model.state == .resting || model.state == .toast)
         HStack(spacing: 0) {
             Group {
                 if let playback {
@@ -45,7 +45,7 @@ struct RestingContent: View {
                 if model.doctor.needsAttention {
                     AttentionButton(model: model, size: art)
                 } else if let playback {
-                    PlayStateBars(isPlaying: playback.isPlaying, isShown: isIn, reduceMotion: reduceMotion, spectrum: model.showsWaveform ? model.spectrum : nil)
+                    PlayStateBars(isPlaying: playback.isPlaying, isShown: isIn, reduceMotion: reduceMotion)
                         .frame(width: min(18, art), height: art * 0.6)
                         .accessibilityHidden(true)
                 }

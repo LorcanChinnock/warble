@@ -10,18 +10,6 @@ public final class EffectRunner {
     private let lastPlayed: any LastPlayedStore
     /// Makes what's kept of a report, with its art shrunk for the idle card. Slow, so it runs off the main actor.
     private let remember: @Sendable (PlaybackState, String?) -> LastPlayed
-    /// Where lyrics come from, or `nil` when there's nowhere to ask, so every fetch finds none.
-    private let lyrics: (any LyricsProvider)?
-    private let stats: any StatsStore
-    /// The tap behind the live waveform, or `nil` where there isn't one.
-    private let audioTap: (any AudioTap)?
-    /// The connections apps show activities over, or `nil` where there is no socket.
-    private let activityChannel: (any ActivityChannel)?
-    /// Where each frame of the waveform's bands goes, off the main actor. Frames never pass through `reduce`, since 30 a
-    /// second would put work on the hover path for something only the bars draw.
-    public var spectrum: @Sendable ([Float]) -> Void = { _ in }
-    /// Which start of the tap a failure belongs to, so one that comes after a stop is ignored.
-    private var tapRun = 0
     /// Carries out the effects that need AppKit. The app sets it, since it owns what they change.
     public var platform: (AppEffect) -> Void = { _ in }
     /// Where an answer goes back in as an action. The store sets it once both exist.
@@ -40,30 +28,18 @@ public final class EffectRunner {
     private var followsVolume = false
     /// The write in flight, which the next one waits for, so the file always ends up holding the latest track.
     private var saving: Task<Void, Never>?
-    /// The lyrics fetch in flight, which the next waits for, and the pass of the latest asked for. A fetch whose turn
-    /// comes after a newer one was asked for is dropped unsent, so skipping through ten tracks asks for the one in
-    /// flight and the latest, never the eight between, and the latest is always asked.
-    private var fetching: Task<Void, Never>?
-    private var latestFetch: Int?
-    /// The stats' latest write, read or clear, which the next waits for, so they land in the order they were asked for.
-    private var keeping: Task<Void, Never>?
     /// The reads under way, each gone once it answers.
     private var reading: [UUID: Task<Void, Never>] = [:]
 
     public init(
         hotkeys: any HotkeyRegistrar, volume: any VolumeControl, outputs: any AudioOutputs, lastPlayed: any LastPlayedStore,
-        remember: @escaping @Sendable (PlaybackState, String?) -> LastPlayed, lyrics: (any LyricsProvider)?,
-        audioTap: (any AudioTap)? = nil, stats: any StatsStore = StatsInMemory(), activityChannel: (any ActivityChannel)? = nil
+        remember: @escaping @Sendable (PlaybackState, String?) -> LastPlayed
     ) {
         self.hotkeys = hotkeys
         self.volume = volume
         self.outputs = outputs
         self.lastPlayed = lastPlayed
         self.remember = remember
-        self.lyrics = lyrics
-        self.audioTap = audioTap
-        self.stats = stats
-        self.activityChannel = activityChannel
     }
 
     public func perform(_ effect: AppEffect) {
@@ -116,45 +92,7 @@ public final class EffectRunner {
                     logError("Couldn't save the last track played: \(error.localizedDescription)")
                 }
             }
-        case .fetchLyrics(let query, let pass):
-            latestFetch = pass
-            let previous = fetching
-            let provider = lyrics
-            fetching = Task { [weak self] in
-                await previous?.value
-                guard let self, pass == self.latestFetch else { return }
-                // Parsed off the main actor too, since a song's lyrics can run to hundreds of lines.
-                let found = await Task.detached(priority: .utility) {
-                    await provider?.lyrics(for: query).flatMap(Lyrics.init(lrc:))
-                }.value
-                self.dispatch(.lyricsLoaded(found, pass: pass))
-            }
-        case .captureAudio(let capture):
-            captureAudio(capture)
-        case .sendActivityEvent(let key, let event):
-            activityChannel?.send(event.line(id: key.id), to: key.client)
-        case .recordListening(let span):
-            keep { stats, logError in
-                do {
-                    try stats.append(span)
-                } catch {
-                    logError("Couldn't save listening stats: \(error.localizedDescription)")
-                }
-            }
-        case .loadStats(let since):
-            keep { [weak self] stats, _ in
-                let spans = stats.load(since: since)
-                await self?.statsLoaded(spans)
-            }
-        case .clearStats:
-            keep { stats, logError in
-                do {
-                    try stats.clear()
-                } catch {
-                    logError("Couldn't clear listening stats: \(error.localizedDescription)")
-                }
-            }
-        case .watchClicksOutside, .turnOffWaveform, .openApp, .launchAndPlay, .openLink, .haptic, .gatherFacts, .followPlayers, .toggleKeyboard, .showWelcome, .openSettings, .listenForCommands, .listenForActivities, .saveActivityApps:
+        case .watchClicksOutside, .openApp, .launchAndPlay, .openLink, .haptic, .gatherFacts, .followPlayers, .toggleKeyboard, .showWelcome:
             platform(effect)
         }
     }
@@ -175,41 +113,12 @@ public final class EffectRunner {
         }
     }
 
-    private func statsLoaded(_ spans: [ListenedSpan]) {
-        dispatch(.statsLoaded(spans))
-    }
-
-    /// Runs `work` off the main actor once the stats work before it is done.
-    private func keep(_ work: @escaping @Sendable (any StatsStore, @Sendable (String) -> Void) async -> Void) {
-        let stats = stats
-        let previous = keeping
-        let logError = logError
-        keeping = Task.detached(priority: .utility) {
-            await previous?.value
-            await work(stats, logError)
-        }
-    }
-
-    /// Blocks until the stats work under way is done, for when Warble is quitting and nothing runs after. It gives up after
-    /// `timeout` seconds.
-    public func flushStats(timeout: TimeInterval = 1) {
-        guard let keeping else { return }
-        let done = DispatchSemaphore(value: 0)
-        Task.detached {
-            await keeping.value
-            done.signal()
-        }
-        _ = done.wait(timeout: .now() + timeout)
-    }
-
     /// Waits for the reads and writes under way, for a test.
     func finish() async {
         while let read = reading.values.first {
             await read.value
         }
         await saving?.value
-        await fetching?.value
-        await keeping?.value
     }
 
     /// Reads the volume and the outputs, and follows changes from the volume keys and elsewhere, only while the slider
@@ -226,23 +135,6 @@ public final class EffectRunner {
             volume.stopListening()
             outputs.stopListening()
         }
-    }
-
-    private func captureAudio(_ capture: Bool) {
-        tapRun += 1
-        guard let audioTap else { return }
-        guard capture else {
-            audioTap.stop()
-            return
-        }
-        let run = tapRun
-        let spectrum = spectrum
-        audioTap.start(onFrame: { spectrum($0) }, onFailure: { [weak self] in
-            Task { @MainActor in
-                guard let self, self.tapRun == run else { return }
-                self.dispatch(.audioCaptureDenied)
-            }
-        })
     }
 
     private func readVolume() {

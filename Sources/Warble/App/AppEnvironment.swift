@@ -1,4 +1,3 @@
-import AppIntents
 import os
 import SwiftUI
 import WarbleCore
@@ -26,15 +25,9 @@ final class AppEnvironment {
     let welcomeWindow: WelcomeWindow
     let toast: Toast
     let recorder: ShortcutRecorder
-    /// The last week of listening, as Settings draws it.
-    let stats: StatsModel
-    /// Where the live waveform's frames go from the audio tap to the bars.
-    let spectrum = SpectrumFeed()
 
-    /// `lastPlayed` is where the last track played is kept, which the preview keeps only in memory. `lyrics` is where
-    /// lyrics come from, which the preview makes up rather than asking LRCLIB. `stats` is where the listening stats are kept,
-    /// which the preview keeps only in memory.
-    init(lastPlayed: any LastPlayedStore, lyrics: (any LyricsProvider)?, stats: any StatsStore) {
+    /// `lastPlayed` is where the last track played is kept, which the preview keeps only in memory..
+    init(lastPlayed: any LastPlayedStore) {
         // Before anything reads a setting, so every read falls back to the registered default.
         Preferences.registerDefaults()
         settings = SettingsStore()
@@ -47,14 +40,8 @@ final class AppEnvironment {
             state: AppState(
                 stayVisibleAfterPausing: preferences.stayVisibleAfterPausing, idleHover: preferences.idleHover,
                 showsTrackToast: preferences.trackChangeToast, toastsInFullScreen: preferences.toastsInFullScreen,
-                showsLyrics: preferences.lyrics,
                 swipeToSkip: preferences.swipeToSkip, podcastSkips: preferences.podcastSkips, dragArtOut: preferences.dragArtOut,
-                showsSleepTimer: preferences.sleepTimer,
                 hidesFromCapture: preferences.hideFromCapture, showsVirtualTitle: preferences.virtualTitle,
-                answersLinks: preferences.answerLinks, listensForCommands: preferences.commandLine,
-                showsWaveform: preferences.waveform && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion,
-                keepsStats: preferences.stats,
-                showsActivities: preferences.activities, blockedActivityApps: preferences.activityBlocked, activityApps: preferences.activityApps,
                 checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
             ),
             clock: SystemClock(), scheduler: TimerScheduler()
@@ -62,18 +49,10 @@ final class AppEnvironment {
         let store = store
         let dispatch: (AppAction) -> Void = { [weak store] in store?.dispatch($0) }
         doctor = DoctorModel(updater: updater, dispatch: dispatch)
-        self.stats = StatsModel(dispatch: dispatch)
         volume = SystemVolume()
         let outputs = CoreAudioOutputs()
-        // Closed until Settings › Activities is on. It's the port events go back to apps through, and `platform` opens it.
-        let activitySocket = Bundle.main.bundleIdentifier.flatMap { RemoteSocketPath.activitiesURL(bundleIdentifier: $0) }.map(ActivitySocket.init(url:))
-        if !preferences.activities { activitySocket?.removeLeftover() }
-        runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: LastPlayedFile.remembering, lyrics: lyrics, audioTap: ProcessTap(), stats: stats, activityChannel: activitySocket)
-        let spectrum = spectrum
-        runner.spectrum = { spectrum.receive($0) }
+        runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: LastPlayedFile.remembering)
         platform = PlatformEffects(dispatch: dispatch)
-        platform.activitySocket = activitySocket
-        platform.activityHandler = ActivityHandler(state: { store.state }, dispatch: dispatch, clock: SystemClock())
         store.perform = { [weak runner] in runner?.perform($0) }
         runner.dispatch = dispatch
         runner.platform = { [weak platform] in platform?.perform($0) }
@@ -94,15 +73,7 @@ final class AppEnvironment {
         let settingsWindow = settingsWindow
         let welcomeWindow = welcomeWindow
         platform.showWelcome = { [weak welcomeWindow] in welcomeWindow?.show() }
-        // What the `warble` command asks: it does what the notch's buttons do, on the main actor where the store runs.
-        let remote = RemoteHandler(state: { store.state }, dispatch: dispatch, volume: volume, outputs: outputs, clock: SystemClock())
-        AppDependencyManager.shared.add(dependency: remote)
-        platform.commandHandler = { request in await MainActor.run { remote.handle(request) } }
-        platform.openSettings = { [weak settingsWindow] name in
-            settingsWindow?.show(section: name.flatMap(SettingsSection.init(rawValue:)))
-        }
         let toast = toast
-        platform.showError = { [weak toast] message in toast?.error(message) }
         hotkeys.onUnavailable = { failed in
             // Settings › Shortcuts says so under the shortcut, so the toast is for when it isn't showing.
             guard !settingsWindow.isShowing(.shortcuts) else { return }
@@ -123,6 +94,5 @@ extension View {
             .environment(environment.hotkeys)
             .environment(environment.navigation)
             .environment(environment.recorder)
-            .environment(environment.stats)
     }
 }

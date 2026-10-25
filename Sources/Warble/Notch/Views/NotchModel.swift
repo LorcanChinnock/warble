@@ -16,16 +16,8 @@ final class NotchModel {
     let doctor: DoctorModel
     /// Whether the open card shows the Doctor's checks rather than the player.
     var showsDoctor = false
-    /// Whether the audio tap runs, so the play-state bars follow the sound. Set with `state`, like `card`.
-    var showsWaveform = false
-    /// Whether the song playing has lyrics, so the player's card offers them.
-    var hasLyrics = false
     /// Whether a podcast or audiobook is playing, so the player's card skips by seconds rather than by track.
     var skipsBySeconds = false
-    /// Whether the player's card has a sleep timer button, the timer running, and whether one can be started now.
-    var showsSleepTimer = false
-    var sleepTimer: SleepTimer?
-    var canSetSleepTimer = false
     /// What dragging the art out of the player's card carries, or `nil` when Settings has it off or there's nothing.
     var artDrag: ArtDrag?
     /// What Expanded holds. `NotchSurface` sets it with `state`, inside the same animation, so a change of card morphs.
@@ -44,38 +36,21 @@ final class NotchModel {
     var isAlwaysShown = false
     /// The track-change toast, while `state` is `toast`. Set with `state`, like `card`.
     var toast: TrackToast?
-    /// The lyric line, while `state` is `lyrics`. Set with `state`, like `card`.
-    var lyric: String?
-    /// The activities other apps show, ranked, while `state` is `activity` or the card has their rows. Set with `state`, like `card`.
-    var activities: [Activity] = []
-    /// The lines around the one being sung, while the card is `lyrics`. Set with `state`, like `card`.
-    var lyrics: LyricsExcerpt?
-    /// Where the bars get the sound from while `showsWaveform`.
-    @ObservationIgnored let spectrum: SpectrumFeed
     @ObservationIgnored var onClick: () -> Void = {}
     /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
     @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }
     /// Called to swap the open card between the player and the checks.
     @ObservationIgnored var onShowDoctor: (Bool) -> Void = { _ in }
-    /// Called to swap the open card between the player and the lyrics.
-    @ObservationIgnored var onShowLyrics: (Bool) -> Void = { _ in }
-    /// Called with a choice to start a sleep timer, or `nil` to turn the one running off.
-    @ObservationIgnored var onSetSleepTimer: (SleepTimer.Choice?) -> Void = { _ in }
-    /// Called with the activity and the button of a sender's button that was pressed.
-    @ObservationIgnored var onActivityButton: (ActivityKey, String) -> Void = { _, _ in }
-    /// Called with the activity whose close button was pressed.
-    @ObservationIgnored var onActivityDismiss: (ActivityKey) -> Void = { _ in }
     /// Called with true when the art begins to be dragged out of the card, and false when the drag ends.
     @ObservationIgnored var onDragArt: (Bool) -> Void = { _ in }
 
-    init(player: PlayerModel, doctor: DoctorModel, spectrum: SpectrumFeed) {
+    init(player: PlayerModel, doctor: DoctorModel) {
         self.player = player
-        self.spectrum = spectrum
         self.doctor = doctor
     }
 
     /// Hidden and Idle draw at the housing's size, black on black, so the wings slide out from behind it and back in.
     func size(_ state: NotchState) -> CGSize {
-        NotchLayout.frame(state, notch: notch, card: card, activityRows: activities.count)?.size ?? notch.size
+        NotchLayout.frame(state, notch: notch, card: card)?.size ?? notch.size
     }
 }

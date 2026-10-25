@@ -1,6 +1,6 @@
 # Security
 
-Warble reads what's playing on your Mac and can control playback in other apps. It runs a small helper Apple ships (`/usr/bin/perl`) to read now-playing information, updates itself, and takes `warble://` URLs. If you find a way to misuse any of that, please tell me privately first.
+Warble reads what's playing on your Mac and can control playback in other apps. It runs a small helper Apple ships (`/usr/bin/perl`) to read now-playing information and updates itself. If you find a way to misuse any of that, please tell me privately first.
 
 ## Reporting a vulnerability
 
@@ -17,7 +17,7 @@ Only the latest release gets security fixes. Warble updates itself, and `brew up
 ## What counts
 
 - What's playing, or control of another app, reaching something you didn't ask for.
-- A `warble://` URL, the bundled now-playing helper or a file Warble opens doing more than it should.
+- The bundled now-playing helper or a file Warble opens doing more than it should.
 - The update path installing something that wasn't signed by the project.
 - A file or setting being overwritten or deleted without you asking.
 

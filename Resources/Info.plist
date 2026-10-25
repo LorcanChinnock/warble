@@ -43,9 +43,6 @@
 	<true/>
 	<key>NSHighResolutionCapable</key>
 	<true/>
-	<!-- Asked the first time the live waveform starts, which it does only when Settings turns it on. -->
-	<key>NSAudioCaptureUsageDescription</key>
-	<string>Warble listens to the sound your Mac plays only to move the bars in the notch with it. It doesn't record or keep anything.</string>
 	<!-- Asked the first time Warble scripts Music or Spotify, which it does only when it can't read what's playing otherwise, or a browser, which it does only when Settings turns on reopening browser tracks. -->
 	<key>NSAppleEventsUsageDescription</key>
 	<string>Warble shows what Music and Spotify are playing and lets you control them from the notch. If you turn it on, it also notes the page a browser is playing so it can reopen it.</string>
@@ -54,16 +51,5 @@
 	<!-- Sparkle's generate_keys --account warble: CONTRIBUTING.md › Release secrets. -->
 	<key>SUPublicEDKey</key>
 	<string>c1GBjC8bB3xx0Em++xPuUuOFRQZP0LfCsLgoiir/sP0=</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>dev.lorcan.Warble</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>warble</string>
-			</array>
-		</dict>
-	</array>
 </dict>
 </plist>

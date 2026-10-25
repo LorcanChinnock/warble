@@ -6,7 +6,7 @@ var dependencies: [Package.Dependency] = []
 var targets: [Target] = [
     .target(name: "WarbleModel"),
     // The tests read their recorded fixtures from the source tree.
-    .testTarget(name: "WarbleModelTests", dependencies: ["WarbleModel"], exclude: ["Lyrics/Fixtures", "Playback/Fixtures"]),
+    .testTarget(name: "WarbleModelTests", dependencies: ["WarbleModel"], exclude: ["Playback/Fixtures"]),
 ]
 
 #if os(macOS)
@@ -29,9 +29,6 @@ targets += [
         // bundle.sh copies Sparkle.framework into Contents/Frameworks.
         linkerSettings: [.unsafeFlags(["-Xlinker", "-rpath", "-Xlinker", "@executable_path/../Frameworks"])]
     ),
-    // The `warble` command. bundle.sh copies it into the app as warble-cli: a "warble" there would collide with the app's own
-    // Warble executable on a case-insensitive volume. It talks to the running app over a socket, so it needs only WarbleModel.
-    .executableTarget(name: "WarbleCLI", dependencies: ["WarbleModel"]),
     .testTarget(name: "WarbleCoreTests", dependencies: ["WarbleCore"]),
 ]
 #endif
