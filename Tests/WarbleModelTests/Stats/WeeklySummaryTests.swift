@@ -48,6 +48,14 @@ private func span(_ title: String, _ artist: String?, _ seconds: TimeInterval, d
     #expect(summary.topTracks.map(\.title) == ["Episode"])
 }
 
+@Test func olderHistoryStillCountsAsHistoryToClear() {
+    let summary = WeeklySummary([span("Old", "A", 100, daysAgo: 20)], at: now)
+    #expect(summary.isEmpty)
+    #expect(summary.holdsHistory)
+    #expect(!WeeklySummary([], at: now).holdsHistory)
+    #expect(!WeeklySummary.empty.holdsHistory)
+}
+
 @Test func noSpansMakeAnEmptySummary() {
     #expect(WeeklySummary([], at: now).isEmpty)
     #expect(WeeklySummary.empty.isEmpty)

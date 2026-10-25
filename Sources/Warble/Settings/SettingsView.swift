@@ -383,7 +383,7 @@ private struct StatsSettings: View {
                 SettingsRow(title: Text("Clear listening stats")) {
                     Button("Clear…") { confirmsClear = true }
                         .buttonStyle(.warble)
-                        .disabled(model.summary?.isEmpty ?? true)
+                        .disabled(!(model.summary?.holdsHistory ?? false))
                 }
             }
         }

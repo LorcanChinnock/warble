@@ -25,12 +25,15 @@ public struct WeeklySummary: Equatable, Sendable {
     public var topTracks: [Track]
 
     public var isEmpty: Bool { totalSeconds == 0 }
+    /// Whether any span was kept at all, even one older than the week, so Clear stays available while there's history to delete.
+    public var holdsHistory: Bool
 
-    public static let empty = WeeklySummary(totalSeconds: 0, topArtists: [], topTracks: [])
+    public static let empty = WeeklySummary(totalSeconds: 0, topArtists: [], topTracks: [], holdsHistory: false)
 
     /// The summary of the spans that began in the seven days up to `now`. Equal times are ordered by name, so the same
     /// spans always give the same lists.
     public init(_ spans: [ListenedSpan], at now: Date) {
+        holdsHistory = !spans.isEmpty
         let since = now.addingTimeInterval(-Self.window)
         let recent = spans.filter { $0.start >= since && $0.start <= now }
         totalSeconds = recent.reduce(0) { $0 + $1.seconds }
@@ -53,7 +56,8 @@ public struct WeeklySummary: Equatable, Sendable {
             .prefix(Self.listed).map { $0 }
     }
 
-    private init(totalSeconds: TimeInterval, topArtists: [Artist], topTracks: [Track]) {
+    private init(totalSeconds: TimeInterval, topArtists: [Artist], topTracks: [Track], holdsHistory: Bool) {
+        self.holdsHistory = holdsHistory
         self.totalSeconds = totalSeconds
         self.topArtists = topArtists
         self.topTracks = topTracks
