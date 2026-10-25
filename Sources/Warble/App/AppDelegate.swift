@@ -17,6 +17,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // `open build/WarbleDev.app --args -notchPreviewState resting` and hover or click it to open it; the argument
         // lasts only for that launch. `idle` shows the idle card with a preview track as the last played, and adding
         // `-notchPreviewLastPlayed NO` shows it with nothing played yet. Neither reads nor saves the real last track.
+        // `activity` is `resting` with a made-up activity from another app over the music; `-notchPreviewActivities 3` shows three.
         let store = environment.store
         let runner = environment.runner
         let arguments = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
@@ -27,7 +28,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             if (arguments["notchPreviewLastPlayed"] as? String).map({ NSString(string: $0).boolValue }) ?? true {
                 store.dispatch(.lastPlayedLoaded(LastPlayed(bundleIdentifier: "com.apple.Music", appName: "Music", title: "Preview track with a title long enough to scroll", artist: "Preview artist")))
             }
-        } else if preview == .resting {
+        } else if Self.isPreviewingPlayback {
             let source = PreviewSource { [weak store] in store?.state.playback }
             runner.source = source
             Task {
@@ -53,6 +54,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             store.dispatch(.adapterChanged(Doctor.Adapter(AdapterSupervisor(bundled: false).backend)))
             startFallback()
         }
+        if preview == .activity {
+            PreviewActivities.start(arguments["notchPreviewActivities"].flatMap { Int("\($0)") } ?? 1, in: store)
+        }
         environment.hotkeys.onPress = { [weak store] action in store?.dispatch(.perform(action)) }
         environment.hotkeys.start()
         self.notch = notch
@@ -74,10 +78,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         return (arguments["notchPreviewState"] as? String).flatMap(NotchState.init(rawValue:))
     }
 
+    /// Whether the launch arguments ask for a preview with a track that plays without a player.
+    private static var isPreviewingPlayback: Bool { preview == .resting || preview == .activity }
+
     /// Where the last track played is kept across launches, or only in memory for the preview, which neither reads nor
     /// saves the real one.
     private static func lastPlayedStore() -> any LastPlayedStore {
-        guard preview != .resting, preview != .idle, let file = Bundle.main.bundleIdentifier.flatMap(LastPlayedFile.standard) else {
+        guard !isPreviewingPlayback, preview != .idle, let file = Bundle.main.bundleIdentifier.flatMap(LastPlayedFile.standard) else {
             return LastPlayedInMemory()
         }
         return file
@@ -85,7 +92,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// Where the listening stats are kept across launches, or only in memory for the preview, which writes none.
     private static func statsStore() -> any StatsStore {
-        guard preview != .resting, preview != .idle, let file = Bundle.main.bundleIdentifier.flatMap(StatsFile.standard) else {
+        guard !isPreviewingPlayback, preview != .idle, let file = Bundle.main.bundleIdentifier.flatMap(StatsFile.standard) else {
             return StatsInMemory()
         }
         return file
@@ -93,7 +100,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// LRCLIB, with its cache in Caches, or for the preview a few made-up lines, so the preview sends nothing.
     private static func lyricsProvider() -> (any LyricsProvider)? {
-        guard preview != .resting else { return PreviewLyrics() }
+        guard !isPreviewingPlayback else { return PreviewLyrics() }
         guard let bundleIdentifier = Bundle.main.bundleIdentifier else { return nil }
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0"
         return LRCLIBClient.standard(bundleIdentifier: bundleIdentifier, version: version)

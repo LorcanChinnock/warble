@@ -46,6 +46,8 @@ final class NotchModel {
     var toast: TrackToast?
     /// The lyric line, while `state` is `lyrics`. Set with `state`, like `card`.
     var lyric: String?
+    /// The activities other apps show, ranked, while `state` is `activity` or the card has their rows. Set with `state`, like `card`.
+    var activities: [Activity] = []
     /// The lines around the one being sung, while the card is `lyrics`. Set with `state`, like `card`.
     var lyrics: LyricsExcerpt?
     /// Where the bars get the sound from while `showsWaveform`.
@@ -59,6 +61,10 @@ final class NotchModel {
     @ObservationIgnored var onShowLyrics: (Bool) -> Void = { _ in }
     /// Called with a choice to start a sleep timer, or `nil` to turn the one running off.
     @ObservationIgnored var onSetSleepTimer: (SleepTimer.Choice?) -> Void = { _ in }
+    /// Called with the activity and the button of a sender's button that was pressed.
+    @ObservationIgnored var onActivityButton: (ActivityKey, String) -> Void = { _, _ in }
+    /// Called with the activity whose close button was pressed.
+    @ObservationIgnored var onActivityDismiss: (ActivityKey) -> Void = { _ in }
     /// Called with true when the art begins to be dragged out of the card, and false when the drag ends.
     @ObservationIgnored var onDragArt: (Bool) -> Void = { _ in }
 
@@ -70,6 +76,6 @@ final class NotchModel {
 
     /// Hidden and Idle draw at the housing's size, black on black, so the wings slide out from behind it and back in.
     func size(_ state: NotchState) -> CGSize {
-        NotchLayout.frame(state, notch: notch, card: card)?.size ?? notch.size
+        NotchLayout.frame(state, notch: notch, card: card, activityRows: activities.count)?.size ?? notch.size
     }
 }
