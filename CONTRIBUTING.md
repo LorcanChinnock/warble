@@ -30,8 +30,6 @@ Only `make dist` builds `Warble.app` with the update feed. Every other build is 
 | `make test` | Run the `WarbleModel` and `WarbleCore` unit tests |
 | `make test-linux` | Run the `WarbleModel` tests on Linux in Docker, as CI does |
 | `make perf` | Time the paths with a performance budget ([docs/performance.md](docs/performance.md)) |
-| `make perf-app` | Measure the installed WarbleDev against its latency and memory budgets: launch, opening the notch and play/pause. It moves the pointer for about a minute |
-| `make perf-app-full` | The same, plus CPU, wakeups and the waveform's CPU. It moves the pointer for about six and a half minutes |
 | `make lint` | Check for code patterns that have caused bugs (`scripts/lint.sh`) and, on a Mac, that the string catalog is up to date |
 | `make strings` | Add new strings to `Resources/Localizable.xcstrings` and drop unused ones |
 | `make app` | Build and install without launching (`INSTALL_DIR=~/Applications make app` to install elsewhere) |
@@ -125,7 +123,7 @@ Warble logs to the unified log under its bundle identifier. File paths are redac
 - Keep each pull request focused on one change, and match the style of the surrounding code.
 - Every pull request links an issue: put `Closes #N` in its description, or `Part of #N` when it doesn't finish the issue.
 - Run `make lint` and `make test`, then run the app and try your change. CI runs the same checks on macOS, and the `WarbleModel` tests on Linux too, but running them first saves a round trip.
-- If your change could slow the notch opening, play/pause, a track change, or wake Warble while nothing is playing, run `make perf` and `make perf-app` (`make perf-app-full` if it could add CPU or wakeups), and label the pull request `performance` so CI runs the budgets too. [docs/performance.md](docs/performance.md) has the budgets and what each one measures.
+- If your change could slow the notch opening, play/pause, a track change, or wake Warble while nothing is playing, run `make perf`, and label the pull request `performance` so CI runs the budgets too. [docs/performance.md](docs/performance.md) has the budgets and what each one measures.
 - Use a [Conventional Commits](https://www.conventionalcommits.org) title for the pull request, such as `fix(notch): …` or `feat(player): …`. Pull requests are squash-merged, so the title becomes the commit on `main`, and release notes are generated from it.
 
 Everyone taking part in the project follows the [Code of Conduct](CODE_OF_CONDUCT.md).
@@ -137,7 +135,7 @@ By contributing, you agree that your contributions are licensed under the projec
 Releases are automated with [release-please](https://github.com/googleapis/release-please). Don't create tags or edit the version by hand.
 
 1. When `main` gets a `feat:` or `fix:` commit, release-please opens or updates a release pull request. It bumps the version in `Resources/Info.plist` and `.release-please-manifest.json`, and adds the changes to `CHANGELOG.md`. While Warble is in beta, each release only bumps the beta number, for example `0.1.0-beta.1` to `0.1.0-beta.2`, whether it has features or only fixes. Changes under `site/` never trigger one. Other types such as `docs`, `chore`, `ci`, `refactor`, and `build` appear in the history but don't trigger a release.
-2. The release pull request's CI is the release gate. It runs again on every push to the pull request, and the pull request can't merge until it passes. The gate runs the performance budgets too ([docs/performance.md](docs/performance.md)). They can't measure the app itself, so run `make perf-app-full` on a Mac with a notch before merging it.
+2. The release pull request's CI is the release gate. It runs again on every push to the pull request, and the pull request can't merge until it passes. The gate runs the performance budgets too ([docs/performance.md](docs/performance.md)).
    - A repository admin merges the release pull request by hand. The repository has auto-merge turned off.
    - If the gate fails, fix it in a normal pull request first. release-please only updates the release pull request for changes that appear in the changelog, so after a `test:`, `ci:` or `docs:` fix, run `gh pr update-branch <number>` on the release pull request to run the gate again.
 3. The merge tags the release (`v0.1.0-beta.1`, say) and creates a draft GitHub release. The release workflow runs the tests again on the tagged commit, since a commit merged after the gate passed may have changed it. It then builds `Warble-<tag>.zip`, signs it for Sparkle, attaches it with `appcast.xml`, the update feed, and only then publishes the release, so the latest release always has a feed. Installed copies read the feed from the latest release. Last, the workflow rebuilds the website and updates the Homebrew cask.

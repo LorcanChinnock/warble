@@ -20,54 +20,6 @@ Each budget is 2× the baseline measured on the CI runner, which is slower than 
 
 To change a budget, measure again, then update both this table and `Budget` in `PerfTests.swift`.
 
-## Locally: `make perf-app` and `make perf-app-full`
-
-`scripts/perf.sh` measures an installed WarbleDev (`/Applications/WarbleDev.app` by default, or a path you pass). CI can't run it, because it needs the pointer and the notch. Run it before each release, after `make app`.
-
-`make perf-app` checks the latencies and the memory footprint and takes about a minute. `make perf-app-full` (`PERF_FULL=1`) adds the CPU and wakeup rows, which each need a minute of watching, and takes about six and a half minutes, so run it before a release. Either way it moves the pointer and clicks, so keep your hands off the mouse while it runs. It needs Accessibility permission for the terminal, macOS's permission to record system audio for WarbleDev (for the waveform step), and nothing playing when it starts: it asks the adapter and stops if anything is. It quits WarbleDev and the installed Warble, since both draw in the notch, and reopens Warble at the end if it was running. The pointer goes back where it was.
-
-The app emits `OSSignposter` signposts under its bundle identifier, in category `perf`, which the script reads with `log show --signpost`. Instruments shows them too.
-
-- **Ready** marks when the notch is set up and the shortcuts are registered at launch. Its message gives the time since the process started.
-- **Expand** runs from the input that opens a notch to the first frame of the morph, the next frame of its display after the change is committed. Its end message gives the cause and the milliseconds since the input: `hover ms=35.5` counts from when the hover delay ended, so a timer that fires late counts too, and `click ms=44.4` from the click's event. The 0.25 s morph that follows is the design, not the work, so the budget stops at the first frame.
-- **Play/pause** runs the same way from a click on play/pause, a key in the open notch or a shortcut to the first frame that shows the new state.
-
-The first frame waits for the display's next refresh, so these include up to a frame of waiting as well as the work: 17 ms on the reference Mac's 60 Hz display.
-
-The script (steps 2, 5 and 6, apart from the memory footprint, run only in the full version):
-
-1. Launches the app three times and takes the median **launch → ready** time.
-2. Waits 40 seconds, then measures **idle CPU** and **wakeups** for a minute with nothing playing, counting the adapter's Perl processes as Warble's.
-3. Launches the preview track (`-notchPreviewState resting`), which plays without a player, so runs repeat. It hovers over the notch ten times and clicks it ten times, moving off it after each, and reports the median **hover → expanded** and **click → expanded** times.
-4. Opens the notch and clicks Pause and Play ten times, and reports the median **click → play/pause shown** time.
-5. Moves off the notch, waits 10 seconds, then measures **CPU** and **wakeups** at rest for a minute, and then the **memory footprint**. The adapter doesn't run in the preview, so this is the notch's own cost.
-6. Relaunches the preview with the waveform on (`-waveform YES`), mutes the Mac and plays a tone in a loop, which the tap still hears, waits 15 seconds and measures **CPU with the waveform** for a minute. If macOS refuses the tap, it says so and the metric reads NOT MEASURED. It puts the mute setting back at the end.
-
-It exits non-zero if a metric is over budget or couldn't be measured.
-
-| Metric | Reference Mac | Budget |
-|---|---|---|
-| Launch → ready | 145 ms | 205 ms |
-| Idle CPU, nothing playing | 0.0% | at most 0.1% |
-| Wakeups, nothing playing | 0 in the median 10 s | 0 in the median 10 s |
-| CPU playing, notch at rest | 0.0% | at most 0.5% |
-| Wakeups playing, notch at rest | 0 in the median 10 s | 0 in the median 10 s |
-| Memory playing, after use | 22 MB | 33 MB |
-| CPU with the waveform, notch at rest | 0.2 to 0.4% | at most 0.5% |
-| End of hover delay → expanded | 35.5 ms | 55 ms |
-| Click → expanded | 44.4 ms | 70 ms |
-| Click → play/pause shown | 10.4 ms | 20 ms |
-
-The timing budgets are about 1.5× the baseline, the median of five runs, and the memory budget 1.5× the two runs that measured it after use. The CPU and wakeup budgets are absolute, since the promise is none at all. They're all set in `scripts/perf.sh`, so change both together.
-
-**Wakeups** count each time a thread of Warble's starts running again, from its context switches. A timer wakes the app without using measurable CPU, so this is what catches one: with a 10-second timer added, idle CPU read 0.02%, but every 10 seconds had a wakeup, and the script failed.
-
-The script counts wakeups in 10-second slices and takes the median slice. macOS wakes every app when you switch apps or type, and in an app's first minute, and keep-awake apps such as Caffeine fake input every minute or two. In testing that put 3 to 15 wakeups into one or two slices of a minute, and none into the rest. The median leaves those slices out, while a timer of 10 seconds or less shows in every slice, so the budget is none in the median slice.
-
-`top`'s own idle wakeup column stays at 0 even for a process that wakes twice a second, so the script doesn't use it.
-
-**CPU at rest** is the app's own. The play-state bars run in Core Animation, so their cost lands in WindowServer, not Warble: about 1.7% of a core at 8 fps, as measured in `PlayStateBars`.
-
 ## Reference Mac
 
-MacBook Air (Mac16,13), Apple M4, 16 GB, macOS 27.0.1, built-in 60 Hz display only. The `make perf` baselines come from debug builds, as `swift test` makes them. The `make perf-app` baselines come from the build `make app` installs.
+MacBook Air (Mac16,13), Apple M4, 16 GB, macOS 27.0.1, built-in 60 Hz display only. The `make perf` baselines come from debug builds, as `swift test` makes them.
