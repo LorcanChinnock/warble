@@ -9,7 +9,7 @@ final class SpectrumAnalyzer: @unchecked Sendable {
     /// Samples in each transform. 2048 at 48 kHz puts a bin every 23 Hz, enough for the bass band to hold a few.
     static let size = 2048
     /// Frames a second.
-    static let framesPerSecond = 30.0
+    static let framesPerSecond = 15.0
 
     private let sampleRate: Double
     private let hop: Int

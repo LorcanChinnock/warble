@@ -70,7 +70,7 @@ public protocol AudioOutputs: AnyObject {
 /// bars are on screen.
 @MainActor
 public protocol AudioTap: AnyObject {
-    /// Starts listening. `onFrame` gets one magnitude for each of `SpectrumBars`' bands, about 30 times a second, off the
+    /// Starts listening. `onFrame` gets one magnitude for each of `SpectrumBars`' bands, about 15 times a second, off the
     /// main actor. `onFailure` is called once, off the main actor, if macOS refuses or the tap can't start.
     func start(onFrame: @escaping @Sendable ([Float]) -> Void, onFailure: @escaping @Sendable () -> Void)
     /// Stops listening and lets go of everything it held.

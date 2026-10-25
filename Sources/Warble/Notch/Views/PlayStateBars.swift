@@ -40,6 +40,8 @@ struct PlayStateBars: NSViewRepresentable {
         /// A paused bar, a rounded dot.
         private static let settled: CGFloat = 3
         private static let barWidth: CGFloat = 3
+        /// The smallest change of height the live waveform draws, in points.
+        private static let step: CGFloat = 0.5
         /// The curve each bar rises on, the same as the resting art's (`Native.artIn`).
         private static let rise = CAMediaTimingFunction(controlPoints: 0.2, 0.9, 0.3, 1)
         private let bars = heights.map { _ in CALayer() }
@@ -93,11 +95,15 @@ struct PlayStateBars: NSViewRepresentable {
                 for bar in bars { bar.removeAnimation(forKey: "rise") }
             }
             let levels = smoothing.update(bands)
+            // Each change redraws the notch in the window server, so a bar moves only by a visible step.
+            let moves = zip(bars, levels).compactMap { bar, level -> (CALayer, CGFloat)? in
+                let height = ((Self.settled + CGFloat(level) * (bounds.height - Self.settled)) / Self.step).rounded() * Self.step
+                return height == bar.bounds.height ? nil : (bar, height)
+            }
+            guard !moves.isEmpty else { return }
             CATransaction.begin()
             CATransaction.setDisableActions(true)
-            for (index, bar) in bars.enumerated() {
-                bar.bounds.size.height = Self.settled + CGFloat(levels[index]) * (bounds.height - Self.settled)
-            }
+            for (bar, height) in moves { bar.bounds.size.height = height }
             CATransaction.commit()
         }
 

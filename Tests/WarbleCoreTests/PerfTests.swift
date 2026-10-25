@@ -55,7 +55,7 @@ import WarbleModel
     }
 
     /// The live waveform's tap hands over audio all the time it shows, and each frame is a transform of 2048 samples. The
-    /// work is a frame's worth of samples (1,600 at 48 kHz) pushed in buffers of 512.
+    /// work is a frame's worth of samples (3,200 at 48 kHz) pushed in buffers of 512.
     @Test func analysingAFrameOfAudioStaysInBudget() throws {
         let analyzer = try #require(SpectrumAnalyzer(sampleRate: 48_000))
         let samples = (0..<512).map { Float(sin(Double($0) * 0.1)) }
@@ -63,7 +63,7 @@ import WarbleModel
         for _ in 0..<4 { samples.withUnsafeBufferPointer { analyzer.push($0.baseAddress!, count: $0.count) { _ in } } }
         let time = try fastest {
             var frames = 0
-            for _ in 0..<4 {
+            for _ in 0..<7 {
                 samples.withUnsafeBufferPointer { analyzer.push($0.baseAddress!, count: $0.count) { _ in frames += 1 } }
             }
             #expect(frames >= 1)
