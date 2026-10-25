@@ -36,19 +36,30 @@ func send(_ message: [String: Any]) {
 
 var buffer = Data()
 
-/// The next line Warble sent, waiting at most `seconds` for it, or `nil` if none came or the connection closed.
-func nextLine(waiting seconds: Double) -> [String: Any]? {
+enum Next {
+    case line([String: Any])
+    case timedOut
+    case closed
+}
+
+/// The next line Warble sent, waiting at most `seconds`, or with no limit when that's `nil`.
+func nextLine(waiting seconds: Double?) -> Next {
     while true {
         if let newline = buffer.firstIndex(of: UInt8(ascii: "\n")) {
             let line = buffer[buffer.startIndex ..< newline]
             buffer.removeSubrange(buffer.startIndex ... newline)
-            return try? JSONSerialization.jsonObject(with: line) as? [String: Any]
+            if let object = try? JSONSerialization.jsonObject(with: line) as? [String: Any] { return .line(object) }
+            continue
         }
         var poller = pollfd(fd: fd, events: Int16(POLLIN), revents: 0)
-        guard poll(&poller, 1, Int32(max(seconds, 0) * 1000)) > 0 else { return nil }
+        // Rounded up, so a wait never ends a moment before its deadline.
+        let milliseconds = seconds.map { Int32(max($0, 0) * 1000 + 1) } ?? -1
+        let ready = poll(&poller, 1, milliseconds)
+        if ready == 0 { return .timedOut }
+        if ready < 0 { if errno == EINTR { continue } else { return .closed } }
         var chunk = [UInt8](repeating: 0, count: 4096)
         let count = read(fd, &chunk, chunk.count)
-        guard count > 0 else { return nil }
+        guard count > 0 else { return .closed }
         buffer.append(contentsOf: chunk[..<count])
     }
 }
@@ -66,15 +77,17 @@ send([
 
 var deadline: Date? = Date().addingTimeInterval(remaining)
 loop: while true {
-    let wait = deadline.map { $0.timeIntervalSinceNow } ?? 3600
-    guard let line = nextLine(waiting: wait) else {
-        if let deadline, deadline.timeIntervalSinceNow <= 0 {
-            // The countdown reached zero: the sender ends the activity, since Warble leaves a finished clock at 0:00.
-            send(["op": "end", "id": "countdown"])
-            print("Done.")
-        } else {
-            print("Warble closed the connection.")
-        }
+    let line: [String: Any]
+    switch nextLine(waiting: deadline.map { $0.timeIntervalSinceNow }) {
+    case .line(let received):
+        line = received
+    case .timedOut:
+        // The countdown reached zero: the sender ends the activity, since Warble leaves a finished clock at 0:00.
+        send(["op": "end", "id": "countdown"])
+        print("Done.")
+        break loop
+    case .closed:
+        print("Warble closed the connection.")
         break loop
     }
     print(line)
