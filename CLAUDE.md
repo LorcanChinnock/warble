@@ -51,7 +51,7 @@ swift test --filter <testName>    # one test, e.g. --filter notchSitsBetweenTheM
 Local builds are `WarbleDev.app`. A real installed version is `/Applications/Warble.app`, usually from Homebrew. Never install over, rename or delete `Warble.app`, or Homebrew loses track of it.
 
 1. **Quit the installed release first:** `pkill -x Warble`. Both apps draw in the notch, so with both running their panels stack. `-x` matches the executable name exactly, so `pkill -x Warble` never kills WarbleDev, and `pkill -x WarbleDev` never kills the release.
-2. **Run the dev build:** `make run` builds, installs `/Applications/WarbleDev.app` and launches it. Confirm the running binary with `pgrep -lf WarbleDev`. The ux-qa skill runs `build/WarbleDev.app` from `make bundle` without installing it.
+2. **Run the dev build:** `make run` builds, installs `/Applications/WarbleDev.app` and launches it. Confirm the running binary with `pgrep -lf WarbleDev`.
 3. **When finished, quit and uninstall the dev build,** then reopen the release if it was running:
    ```bash
    pkill -x WarbleDev
@@ -121,5 +121,4 @@ The repository is public, so GitHub's runners are free, but the free plan runs o
 - Every PR links an issue or sub-issue: put `Closes #N` (or `Part of #N` when it doesn't finish the issue) in the PR body. Create the issue before starting any work, as a sub-issue of its release's umbrella issue.
 - Any substantial change or new feature keeps docs in line in the same PR: the user guide in `site/src/guide/`, `README.md`, the landing page `site/src/pages/index.astro`, and `docs/roadmap.md` if it changes the plan. `CHANGELOG.md` is generated, so don't edit it.
 - Only `make dist` builds `Warble.app` with the Sparkle feed. Every other build is `WarbleDev.app` (bundle ID `dev.lorcan.Warble.dev`, executable `WarbleDev`, scheme `warble-dev://`, no feed), so dev builds never self-update or replace the installed release. `scripts/bundle.sh` does the renaming.
-- To QA UI changes by driving the real app, use the `.agents/skills/ux-qa` skill.
 - For recordings that need a real player, `docs/demo/` is a made-up one with invented tracks and generated art (`docs/demo/README.md`). It's a separate package, outside every Make target and CI.
