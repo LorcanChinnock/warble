@@ -84,6 +84,7 @@ private func start(_ id: String, title: String = "Recording") -> String {
 @Test func anUpdateForAnActivityThatsGoneIsAnsweredWithAnError() {
     let reply = Rig().send(#"{"v":1,"op":"update","id":"a","detail":"Paused"}"#)
     #expect(reply.error == #"there's no activity with the id "a"; it may have ended or been closed"#)
+    #expect(reply.re == "update")
 }
 
 @MainActor
@@ -96,7 +97,9 @@ private func start(_ id: String, title: String = "Recording") -> String {
     let rig = Rig()
     #expect(rig.send(start("a")).ok)
     #expect(rig.send(start("b")).ok)
-    #expect(rig.send(start("c")).error == "a connection can have 2 activities at once")
+    let third = rig.send(start("c"))
+    #expect(third.error == "a connection can have 2 activities at once")
+    #expect(third.re == "start")
     // Starting one with an id in use is a replacement, not a third.
     #expect(rig.send(start("b", title: "Again")).ok)
     #expect(rig.items.map(\.title) == ["Recording", "Again"])

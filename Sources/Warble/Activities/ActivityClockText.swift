@@ -9,7 +9,7 @@ struct ActivityClockText: View {
     var body: some View {
         switch clock {
         case .since(let date):
-            Text(timerInterval: date...Date.distantFuture, countsDown: false, showsHours: false)
+            Text(timerInterval: min(date, .distantFuture)...Date.distantFuture, countsDown: false, showsHours: false)
         case .until(let date):
             // The range must not run backwards, so a clock already at zero is an empty one.
             let now = Date.now

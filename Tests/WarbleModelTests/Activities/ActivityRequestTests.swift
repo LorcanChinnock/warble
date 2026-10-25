@@ -158,7 +158,10 @@ private let minimal = #"{"v":1,"op":"start","id":"recording","title":"Recording"
     #expect(refusal(start + #"{"since":1}}"#) == nil)
     #expect(refusal(start + #"{}}"#) == "clock needs since or until, and only one of them")
     #expect(refusal(start + #"{"since":1,"until":2}}"#) == "clock needs since or until, and only one of them")
-    #expect(refusal(start + #"{"since":"now"}}"#) == "clock since must be a number of seconds since 1970")
+    #expect(refusal(start + #"{"since":"now"}}"#) == "clock since must be a number of seconds since 1970, up to the year 2100")
+    // A date SwiftUI's timer can't draw would run its range backwards, so it's refused here.
+    #expect(refusal(start + #"{"since":1e11}}"#) != nil)
+    #expect(refusal(start + #"{"until":-5}}"#) != nil)
 }
 
 @Test func anActivityHasTwoButtonsAtMost() {

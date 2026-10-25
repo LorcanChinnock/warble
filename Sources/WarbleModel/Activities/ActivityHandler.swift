@@ -71,7 +71,11 @@ public final class ActivityHandler {
         }
         do throws(ActivityError) {
             let request = try ActivityRequest.decode(line, isScript: sender.isScript)
-            try run(request, from: sender, at: now)
+            do throws(ActivityError) {
+                try run(request, from: sender, at: now)
+            } catch {
+                throw ActivityError(error.message, operation: request.name)
+            }
             return .success(request.name)
         } catch {
             return .failure(error)

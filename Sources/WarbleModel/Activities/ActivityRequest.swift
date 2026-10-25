@@ -207,7 +207,10 @@ private struct Fields {
         let fields = try object("clock", value, keys: ["since", "until"])
         func seconds(_ name: String) throws(ActivityError) -> Date? {
             guard let value = fields[name] else { return nil }
-            guard case .number(let seconds) = value, seconds.isFinite else { throw ActivityError("clock \(name) must be a number of seconds since 1970") }
+            // Up to the year 2100, so a date can't be one SwiftUI's timer can't draw.
+            guard case .number(let seconds) = value, (0...4_102_444_800).contains(seconds) else {
+                throw ActivityError("clock \(name) must be a number of seconds since 1970, up to the year 2100")
+            }
             return Date(timeIntervalSince1970: seconds)
         }
         switch (try seconds("since"), try seconds("until")) {
