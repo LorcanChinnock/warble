@@ -23,7 +23,7 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         switch self {
         case .general: String(localized: "How Warble looks and where it shows.")
         case .notch: String(localized: "What the notch shows.")
-        case .stats: String(localized: "What you listened to this week. Starts off.")
+        case .stats: String(localized: "What you listened to this week.")
         case .shortcuts: String(localized: "Control playback from any app. None are set until you add one.")
         case .developer: String(localized: "For scripts and launchers. Everything here starts off.")
         case .about: String(localized: "Version, updates and help.")
@@ -98,7 +98,7 @@ private struct SidebarRow: View {
             HStack(spacing: 8) {
                 // A fixed width, so every name starts at the same place whatever its symbol's width.
                 Image(systemName: section.symbol)
-                    .frame(width: 22)
+                    .frame(width: 22, height: 16)
                     .accessibilityHidden(true)
                 Text(section.title)
             }
