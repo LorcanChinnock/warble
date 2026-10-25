@@ -41,7 +41,7 @@ struct PlayStateBars: NSViewRepresentable {
         private static let settled: CGFloat = 3
         private static let barWidth: CGFloat = 3
         /// The smallest change of height the live waveform draws, in points.
-        private static let step: CGFloat = 0.5
+        private static let step: CGFloat = 1
         /// The curve each bar rises on, the same as the resting art's (`Native.artIn`).
         private static let rise = CAMediaTimingFunction(controlPoints: 0.2, 0.9, 0.3, 1)
         private let bars = heights.map { _ in CALayer() }
