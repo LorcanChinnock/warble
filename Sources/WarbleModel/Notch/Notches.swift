@@ -142,10 +142,9 @@ public struct Notches: Feature {
         let state = shared.demoState ?? NotchState(
             surface.hover.state, isPlaying: shared.showsPlayback, needsAttention: shared.needsAttention, idleHover: idleHover,
             isAlwaysShown: surface.isAlwaysShown, showsToast: shared.hasToast && !showsTitle(surface, shared),
-            showsLyrics: shared.showsLyricsLine, showsActivity: shared.hasActivity
+            showsLyrics: shared.showsLyricsLine
         )
-        // A full-screen app has the top of its display to itself, apart from the toast when Settings lets it through. An
-        // activity never draws there, so a recording's timer is never over what's being recorded.
+        // A full-screen app has the top of its display to itself, apart from the toast when Settings lets it through.
         guard surface.isFullScreen else { return state }
         return state == .toast && shared.toastsInFullScreen ? .toast : .hidden
     }
@@ -154,8 +153,7 @@ public struct Notches: Feature {
     func card(_ surface: Surface, _ shared: SharedState) -> NotchCard {
         shared.demoCard ?? NotchCard(
             isPlaying: shared.showsPlayback && shared.playback != nil, needsAttention: shared.needsAttention,
-            showsDoctor: surface.showsDoctor, showsLyrics: surface.showsLyrics && shared.hasLyricsCard,
-            showsActivity: shared.hasActivity
+            showsDoctor: surface.showsDoctor, showsLyrics: surface.showsLyrics && shared.hasLyricsCard
         )
     }
 

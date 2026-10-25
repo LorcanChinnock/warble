@@ -77,14 +77,6 @@ public protocol AudioTap: AnyObject {
     func stop()
 }
 
-/// The connections apps show activities over. The socket in WarbleCore is the real one.
-@MainActor
-public protocol ActivityChannel: AnyObject {
-    /// Writes `line` to the connection numbered `client`. A write to one that has closed is dropped: the socket has already
-    /// sent `.activityClientClosed`, which ended what it started.
-    func send(_ line: Data, to client: Int)
-}
-
 /// Where the last track played is kept across launches.
 public protocol LastPlayedStore: Sendable {
     func load() -> LastPlayed?

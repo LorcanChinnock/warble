@@ -80,10 +80,6 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var answersLinks: Bool
     /// Whether Warble answers the `warble` command line, which the Developer card turns on. Off, no socket is open.
     public internal(set) var listensForCommands: Bool
-    /// The activities other apps show in the notch: whether Settings has them on, which starts off, and the ones live.
-    public internal(set) var activities: ActivityState
-    /// Whether Warble opens the socket apps show activities over, which follows the setting. Off, no socket is open.
-    public var listensForActivities: Bool { activities.isOn }
     /// The live waveform: whether Settings has it on, and whether the audio tap runs.
     public var showsWaveform: Bool { waveform.isOn }
     public var capturesAudio: Bool { waveform.captures }
@@ -108,7 +104,6 @@ public struct AppState: Equatable, Sendable {
         set { notches.followsVolume = newValue }
     }
     public internal(set) var listening = false
-    public internal(set) var listeningForActivities = false
 
     /// `checks` are what the Doctor finds before it has asked macOS anything: what it finds while the adapter works.
     public init(
@@ -116,7 +111,7 @@ public struct AppState: Equatable, Sendable {
         showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, podcastSkips: Bool = false,
         dragArtOut: Bool = false, showsSleepTimer: Bool = false, hidesFromCapture: Bool = false, showsVirtualTitle: Bool = true,
         answersLinks: Bool = false, listensForCommands: Bool = false, showsWaveform: Bool = false, keepsStats: Bool = false,
-        showsActivities: Bool = false, blockedActivityApps: Set<String> = [], activityApps: [String: String] = [:], checks: [Doctor.Check] = []
+        checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
         doctor = DoctorState(checks: checks)
@@ -131,7 +126,6 @@ public struct AppState: Equatable, Sendable {
         lyrics = LyricsState(isOn: showsLyrics)
         waveform = WaveformState(isOn: showsWaveform)
         stats = StatsState(isOn: keepsStats)
-        activities = ActivityState(isOn: showsActivities, blocked: blockedActivityApps, apps: activityApps)
     }
 
     /// Whether the notches draw what's playing: something is, and it isn't Idle.
@@ -141,7 +135,7 @@ public struct AppState: Equatable, Sendable {
     /// rather than the features themselves, so asking for the deadline copies and boxes nothing.
     private static let deadlines: [any KeyPath<AppState, Date?> & Sendable] = [
         \.hideAt, \.idle.deadline, \.toast.deadline, \.lyrics.deadline, \.sleep.deadline, \.onboarding.deadline,
-        \.scroll.deadline, \.last.deadline, \.doctor.deadline, \.notches.deadline, \.activities.deadline,
+        \.scroll.deadline, \.last.deadline, \.doctor.deadline, \.notches.deadline,
     ]
 
     /// The earliest time something changes if nothing else happens, or `nil` when nothing is due, so `Store` runs one
@@ -209,7 +203,6 @@ public struct AppState: Equatable, Sendable {
     var shared: SharedState {
         SharedState(
             playback: playback, showsPlayback: showsPlayback, hideAt: hideAt, needsAttention: needsAttention,
-            hasActivity: activities.current != nil, activityRows: activities.items.count,
             hasToast: toasts.current != nil, toastsInFullScreen: toastsInFullScreen, showsLyricsLine: lyrics.showsLine,
             hasLyricsCard: hasLyricsCard, demoState: onboarding.notchState, demoCard: onboarding.card
         )

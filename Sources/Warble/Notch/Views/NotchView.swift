@@ -25,10 +25,7 @@ struct NotchView: View {
             let playback = model.isPlaying ? model.player.playback : nil
             NotchContent(state: state, card: model.card, playback: playback, artwork: model.player.artwork, colours: model.player.colours, model: model)
                 .frame(width: size.width, height: size.height, alignment: .top)
-                .id(ContentID(
-                    state: state == .toast || state == .lyrics ? .resting : state, card: model.card, isPlaying: playback != nil,
-                    activity: state == .activity ? model.activities.first?.key : nil
-                ))
+                .id(ContentID(state: state == .toast || state == .lyrics ? .resting : state, card: model.card, isPlaying: playback != nil))
                 .transition(ContentTransition())
         }
         .mask(alignment: .top) {
@@ -56,8 +53,6 @@ private struct ContentID: Hashable {
     let state: NotchState
     let card: NotchCard
     let isPlaying: Bool
-    /// The activity in the wings, so a different one takes them with a fade.
-    let activity: ActivityKey?
 }
 
 /// How a state's content comes and goes while the shape morphs: in a moment after the shape starts to grow, so the shape
@@ -80,17 +75,8 @@ private struct NotchContent: View {
 
     var body: some View {
         switch (state, card, playback) {
-        case (.activity, _, _):
-            if let activity = model.activities.first {
-                ActivityWings(activity: activity, notch: model.notch)
-            }
         case (.expanded, .player, let playback?):
-            // The rows go below the controls, which keep the card's own height, so nothing moves under the pointer.
-            VStack(spacing: 0) {
-                ExpandedContent(playback: playback, artwork: artwork, model: model)
-                    .frame(height: NotchLayout.expandedDrop)
-                ActivityRows(model: model)
-            }
+            ExpandedContent(playback: playback, artwork: artwork, model: model)
                 .padding(.top, model.notch.height)
                 .background { Glow(colours: colours) }
         case (.expanded, .doctor, _):
@@ -98,17 +84,10 @@ private struct NotchContent: View {
                 .padding(.top, model.notch.height)
         case (.expanded, .lyrics, _):
             if let lyrics = model.lyrics {
-                VStack(spacing: 0) {
-                    LyricsCard(lyrics: lyrics, model: model)
-                        .frame(height: NotchLayout.expandedDrop)
-                    ActivityRows(model: model)
-                }
-                .padding(.top, model.notch.height)
+                LyricsCard(lyrics: lyrics, model: model)
+                    .padding(.top, model.notch.height)
                     .background { Glow(colours: colours) }
             }
-        case (.expanded, .activity, _):
-            ActivityCard(model: model)
-                .padding(.top, model.notch.height)
         case (.expanded, .idle, _):
             IdleCard(model: model)
                 .padding(.top, model.notch.height)

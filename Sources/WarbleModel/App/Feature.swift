@@ -30,11 +30,6 @@ struct SharedState: Equatable, Sendable {
     // What the notches draw besides what's playing.
     /// Whether a Doctor check failed, which draws a "!".
     var needsAttention = false
-    /// Whether an activity another app started is live, which takes the resting notch's wings and, with nothing playing,
-    /// the card behind them.
-    var hasActivity = false
-    /// How many activities are live, which the open card has a row for each of.
-    var activityRows = 0
     /// Whether a track-change toast is waiting to show, and whether Settings lets it through over a full-screen app.
     var hasToast = false
     var toastsInFullScreen = false

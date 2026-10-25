@@ -4,7 +4,7 @@ import WarbleCore
 
 /// The Settings window's sections, in sidebar order. Players arrives with its feature.
 enum SettingsSection: String, CaseIterable, Identifiable {
-    case general, notch, stats, activities, shortcuts, developer, about
+    case general, notch, stats, shortcuts, developer, about
 
     var id: String { rawValue }
 
@@ -13,7 +13,6 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         case .general: String(localized: "General")
         case .notch: String(localized: "Notch")
         case .stats: String(localized: "Stats")
-        case .activities: String(localized: "Activities")
         case .shortcuts: String(localized: "Shortcuts")
         case .developer: String(localized: "Developer")
         case .about: String(localized: "About")
@@ -25,7 +24,6 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         case .general: String(localized: "How Warble looks and where it shows.")
         case .notch: String(localized: "What the notch shows.")
         case .stats: String(localized: "What you listened to this week.")
-        case .activities: String(localized: "What other apps may show in the notch.")
         case .shortcuts: String(localized: "Control playback from any app. None are set until you add one.")
         case .developer: String(localized: "For scripts and launchers. Everything here starts off.")
         case .about: String(localized: "Version, updates and help.")
@@ -37,7 +35,6 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         case .general: "gearshape"
         case .notch: "menubar.rectangle"
         case .stats: "chart.bar"
-        case .activities: "timer"
         case .shortcuts: "command"
         case .developer: "hammer"
         case .about: "info.circle"
@@ -76,7 +73,6 @@ struct SettingsView: View {
                 case .general: GeneralSettings()
                 case .notch: NotchSettings()
                 case .stats: StatsSettings()
-                case .activities: ActivitiesSettings()
                 case .shortcuts: ShortcutsSettings()
                 case .developer: DeveloperSettings()
                 case .about: AboutSettings()
@@ -397,93 +393,6 @@ private struct StatsSettings: View {
             Button("Clear", role: .destructive) { model.clear() }
         } message: {
             Text("This deletes everything counted so far and can't be undone.")
-        }
-    }
-}
-
-/// Whether other apps may show a timer or a short status in the notch, and which of them. Off, Warble opens nothing for them.
-private struct ActivitiesSettings: View {
-    @Setting(PreferenceKey.activities) private var activities: Bool
-    @Setting(PreferenceKey.activityApps) private var apps: [String: String]
-    @Setting(PreferenceKey.activityBlocked) private var blocked: [String]
-    private static let guide = URL(string: "https://warble.lorcanchinnock.com/docs/show-an-activity-in-the-notch/")!
-
-    var body: some View {
-        SectionPage(section: .activities) {
-            SettingsGroup(footer: Text("Only programs running as you can show one, and only while this is on. While it's off, Warble opens nothing for them.")) {
-                SettingsToggleRow(
-                    title: Text("Show what other apps are doing in the notch"),
-                    detail: Text("Apps you use can show a timer or a short status here, such as a recording in progress. Off, no app can."),
-                    isOn: $activities
-                )
-            }
-            SettingsGroup(
-                title: Text("Apps"),
-                footer: Text("An app is on the first time it shows something. Turning it off ends what it's showing.")
-            ) {
-                if apps.isEmpty {
-                    SettingsRow(title: Text("No app has shown anything yet.")) {}
-                }
-                ForEach(apps.sorted { ($0.value, $0.key) < ($1.value, $1.key) }, id: \.key) { identifier, name in
-                    ActivityAppRow(identifier: identifier, name: name, isOn: isOn(identifier))
-                }
-                SettingsRow(title: Text("Add this to your own app")) {
-                    Link(destination: Self.guide) {
-                        Text("Read the guide")
-                    }
-                }
-            }
-        }
-    }
-
-    /// On unless the app is in the turned-off list.
-    private func isOn(_ identifier: String) -> Binding<Bool> {
-        Binding {
-            !blocked.contains(identifier)
-        } set: { on in
-            blocked.removeAll { $0 == identifier }
-            if !on { blocked.append(identifier) }
-        }
-    }
-}
-
-/// One app that has shown an activity: its icon, its name, and a switch.
-private struct ActivityAppRow: View {
-    let identifier: String
-    let name: String
-    @Binding var isOn: Bool
-    @State private var icon: NSImage?
-
-    private var title: Text {
-        ActivityOwner.isScript(identifier: identifier) ? Text("Script: \(name)") : Text(verbatim: name)
-    }
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Group {
-                if let icon {
-                    Image(nsImage: icon).resizable().scaledToFit()
-                } else {
-                    Image(systemName: ActivityOwner.isScript(identifier: identifier) ? "terminal.fill" : "app.fill")
-                        .foregroundStyle(Native.secondary)
-                }
-            }
-            .frame(width: 24, height: 24)
-            .accessibilityHidden(true)
-            title
-                .foregroundStyle(.white)
-                .accessibilityHidden(true)
-            Spacer(minLength: 0)
-            WarbleToggle(isOn: $isOn, label: title)
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-        .task(id: identifier) {
-            guard let bundleIdentifier = ActivityOwner.bundleIdentifier(ofIdentifier: identifier),
-                  let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier)
-            else { return }
-            icon = NSWorkspace.shared.icon(forFile: url.path)
         }
     }
 }

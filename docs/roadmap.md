@@ -84,12 +84,8 @@ The live waveform, a sleep timer and listening stats, plus research into replaci
 - [#17](https://github.com/LorcanChinnock/warble/issues/17) feat(player): source chips
 - [#48](https://github.com/LorcanChinnock/warble/issues/48) feat(stats): weekly listening stats, kept on this Mac
 
-## [1.0: notch activities for other apps](https://github.com/LorcanChinnock/warble/issues/49)
+## [1.0: translations](https://github.com/LorcanChinnock/warble/issues/49)
 
-A way for other Mac apps to show activities in the notch, starting with Shot, plus translations and stable developer interfaces.
+The first translations of the app.
 
-- [#50](https://github.com/LorcanChinnock/warble/issues/50) spike: notch activities protocol ([design](spikes/notch-activities.md))
-- [#51](https://github.com/LorcanChinnock/warble/issues/51) feat(activities): the activities model and notch drawing
-- [#226](https://github.com/LorcanChinnock/warble/issues/226) feat(activities): the activities socket, Settings and guide
 - [#52](https://github.com/LorcanChinnock/warble/issues/52) feat(i18n): first translations
-- [#53](https://github.com/LorcanChinnock/warble/issues/53) docs: stable command line and URL scheme reference

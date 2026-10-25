@@ -99,22 +99,6 @@ public enum AppAction: Equatable, Sendable {
     case launched(firstRun: Bool)
     /// The welcome window closed.
     case welcomeClosed
-    /// Settings turned activities on or off. Off, every activity ends at once and no sender is told, since the socket closes.
-    case activitiesChanged(Bool)
-    /// Settings turned an app's activities off or on again: the apps now off. Each one's live activities end as `blocked`.
-    case activityBlocklistChanged(Set<String>)
-    /// An app started an activity, or started one with a key already in use, which replaces it.
-    case activityStarted(Activity)
-    /// An app changed the fields it named of its activity.
-    case activityUpdated(ActivityKey, ActivityPatch)
-    /// An app ended its activity, so nothing is sent back.
-    case activityEnded(ActivityKey)
-    /// An app's connection closed, which ends everything it started.
-    case activityClientClosed(client: Int)
-    /// A button on an activity's row was pressed. The sender is told, and answers with an update or an end.
-    case activityButton(ActivityKey, button: String)
-    /// The close button on an activity's row: it ends, and the sender is told.
-    case activityDismissed(ActivityKey)
     /// `AppState.deadline` came due.
     case tick
 }

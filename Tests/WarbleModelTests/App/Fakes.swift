@@ -166,41 +166,15 @@ final class FakeLyrics: LyricsProvider, @unchecked Sendable {
     }
 }
 
-/// The connections apps show activities over: the ones a test opens take lines, and a line for any other is dropped, as the
-/// socket drops a write to a connection that has closed.
-@MainActor
-final class FakeActivityChannel: ActivityChannel {
-    var open: Set<Int>
-    private(set) var delivered: [(line: Data, client: Int)] = []
-    private(set) var dropped = 0
-
-    init(open: Set<Int> = []) {
-        self.open = open
-    }
-
-    func send(_ line: Data, to client: Int) {
-        guard open.contains(client) else {
-            dropped += 1
-            return
-        }
-        delivered.append((line, client))
-    }
-
-    /// The lines delivered to `client`, as text.
-    func lines(to client: Int) -> [String] {
-        delivered.filter { $0.client == client }.map { String(decoding: $0.line, as: UTF8.self) }
-    }
-}
-
 @MainActor
 func makeRunner(
     hotkeys: FakeHotkeys = FakeHotkeys(), volume: FakeVolume = FakeVolume(), outputs: FakeOutputs = FakeOutputs(),
     lastPlayed: FakeLastPlayed = FakeLastPlayed(), lyrics: FakeLyrics = FakeLyrics(), audioTap: FakeAudioTap? = nil,
-    stats: FakeStats = FakeStats(), activityChannel: FakeActivityChannel? = nil
+    stats: FakeStats = FakeStats()
 ) -> EffectRunner {
     EffectRunner(
         hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: { remembering($0, appName: $1) },
-        lyrics: lyrics, audioTap: audioTap, stats: stats, activityChannel: activityChannel
+        lyrics: lyrics, audioTap: audioTap, stats: stats
     )
 }
 

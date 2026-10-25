@@ -15,8 +15,6 @@ public final class EffectRunner {
     private let stats: any StatsStore
     /// The tap behind the live waveform, or `nil` where there isn't one.
     private let audioTap: (any AudioTap)?
-    /// The connections apps show activities over, or `nil` where there is no socket.
-    private let activityChannel: (any ActivityChannel)?
     /// Where each frame of the waveform's bands goes, off the main actor. Frames never pass through `reduce`, since 30 a
     /// second would put work on the hover path for something only the bars draw.
     public var spectrum: @Sendable ([Float]) -> Void = { _ in }
@@ -53,7 +51,7 @@ public final class EffectRunner {
     public init(
         hotkeys: any HotkeyRegistrar, volume: any VolumeControl, outputs: any AudioOutputs, lastPlayed: any LastPlayedStore,
         remember: @escaping @Sendable (PlaybackState, String?) -> LastPlayed, lyrics: (any LyricsProvider)?,
-        audioTap: (any AudioTap)? = nil, stats: any StatsStore = StatsInMemory(), activityChannel: (any ActivityChannel)? = nil
+        audioTap: (any AudioTap)? = nil, stats: any StatsStore = StatsInMemory()
     ) {
         self.hotkeys = hotkeys
         self.volume = volume
@@ -63,7 +61,6 @@ public final class EffectRunner {
         self.lyrics = lyrics
         self.audioTap = audioTap
         self.stats = stats
-        self.activityChannel = activityChannel
     }
 
     public func perform(_ effect: AppEffect) {
@@ -131,8 +128,6 @@ public final class EffectRunner {
             }
         case .captureAudio(let capture):
             captureAudio(capture)
-        case .sendActivityEvent(let key, let event):
-            activityChannel?.send(event.line(id: key.id), to: key.client)
         case .recordListening(let span):
             keep { stats, logError in
                 do {
@@ -154,7 +149,7 @@ public final class EffectRunner {
                     logError("Couldn't clear listening stats: \(error.localizedDescription)")
                 }
             }
-        case .watchClicksOutside, .turnOffWaveform, .openApp, .launchAndPlay, .openLink, .haptic, .gatherFacts, .followPlayers, .toggleKeyboard, .showWelcome, .openSettings, .listenForCommands, .listenForActivities, .saveActivityApps:
+        case .watchClicksOutside, .turnOffWaveform, .openApp, .launchAndPlay, .openLink, .haptic, .gatherFacts, .followPlayers, .toggleKeyboard, .showWelcome, .openSettings, .listenForCommands:
             platform(effect)
         }
     }

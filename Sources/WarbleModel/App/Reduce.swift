@@ -111,9 +111,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
             break
         }
         return reduce(&state, action, now: now)
-    case .activitiesChanged, .activityBlocklistChanged, .activityStarted, .activityUpdated, .activityEnded, .activityClientClosed,
-        .activityButton, .activityDismissed:
-        effects += state.activities.reduce(action, shared: state.shared, at: now)
     case .launched, .welcomeClosed:
         break
     case .tick:
@@ -123,7 +120,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.idle.advance(to: now)
         effects += state.toast.reduce(action, shared: state.shared, at: now)
         effects += state.notches.reduce(action, shared: state.shared, at: now)
-        effects += state.activities.reduce(action, shared: state.shared, at: now)
     }
     // Before Idle is settled, so the pause it guesses is treated like any other pause.
     effects += followSleepTimer(&state, at: now)
@@ -198,11 +194,6 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
     if state.listensForCommands != state.listening {
         state.listening = state.listensForCommands
         effects.append(.listenForCommands(state.listening))
-    }
-    // The activities socket likewise, asked for once each time the setting changes.
-    if state.listensForActivities != state.listeningForActivities {
-        state.listeningForActivities = state.listensForActivities
-        effects.append(.listenForActivities(state.listeningForActivities))
     }
     // The audio tap runs only while the waveform can be seen, and is asked for once each time that changes.
     effects += state.waveform.follow(drawsBars: state.drawsBars)

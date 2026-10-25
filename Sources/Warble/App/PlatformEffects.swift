@@ -18,10 +18,6 @@ final class PlatformEffects {
     var commandHandler: @Sendable (RemoteRequest) async -> RemoteResponse = { _ in .failure(.unavailable("Warble isn't ready")) }
     /// Tells the user something went wrong that the effect can't fix, as a toast, which `AppEnvironment` sets.
     var showError: (String) -> Void = { _ in }
-    /// The socket other apps show activities over, and the handler that answers their lines, which `AppEnvironment` sets.
-    /// `nil` where Warble has no folder to make the socket in.
-    var activitySocket: ActivitySocket?
-    var activityHandler: ActivityHandler?
     private var commandServer: AgentSocket.Server?
     private var clickMonitor: Any?
     private var playerObservers: [NSObjectProtocol] = []
@@ -69,10 +65,6 @@ final class PlatformEffects {
             openSettings(section)
         case .listenForCommands(let listen):
             listenForCommands(listen)
-        case .listenForActivities(let listen):
-            listenForActivities(listen)
-        case .saveActivityApps(let apps):
-            UserDefaults.standard.set(apps, forKey: PreferenceKey.activityApps)
         case .turnOffWaveform:
             // macOS said no, so the setting says so too, until it's turned on again.
             UserDefaults.standard.set(false, forKey: PreferenceKey.waveform)
@@ -86,9 +78,7 @@ final class PlatformEffects {
     /// Opens the socket the `warble` command talks to, or closes it, so while the setting is off no socket exists.
     private func listenForCommands(_ listen: Bool) {
         guard listen else {
-            // Only the command line's socket: the activities socket follows its own setting.
-            commandServer?.stop()
-            commandServer = nil
+            stopListening()
             return
         }
         guard commandServer == nil else { return }
@@ -107,30 +97,10 @@ final class PlatformEffects {
         }
     }
 
-    /// Opens the socket other apps show activities over, or closes it, so while the setting is off no socket exists.
-    private func listenForActivities(_ listen: Bool) {
-        guard listen else {
-            activitySocket?.stop()
-            return
-        }
-        guard let socket = activitySocket, let handler = activityHandler, !socket.isListening else {
-            if activitySocket == nil { log.error("No place for the activities socket") }
-            return
-        }
-        do {
-            try socket.start(handler: handler)
-            log.notice("Showing activities from other apps, listening at \(socket.url.path, privacy: .private)")
-        } catch {
-            log.error("The activities socket didn't open: \(error.message, privacy: .public)")
-            showError(String(localized: "Other apps can't show activities: \(error.message)"))
-        }
-    }
-
-    /// Closes the sockets and removes them, as the settings turning off and quitting do.
+    /// Closes the socket and removes it, as the setting turning off and quitting do.
     func stopListening() {
         commandServer?.stop()
         commandServer = nil
-        activitySocket?.stop()
     }
 
     /// Clicks in other apps close the open notches; a click on the panel itself is the panel's own.

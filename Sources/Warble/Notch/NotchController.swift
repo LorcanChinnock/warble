@@ -80,12 +80,6 @@ final class NotchController {
                 if preferences.commandLine != state.listensForCommands {
                     self.store.dispatch(.commandLineChanged(preferences.commandLine))
                 }
-                if preferences.activities != state.activities.isOn {
-                    self.store.dispatch(.activitiesChanged(preferences.activities))
-                }
-                if preferences.activityBlocked != state.activities.blocked {
-                    self.store.dispatch(.activityBlocklistChanged(preferences.activityBlocked))
-                }
                 if preferences.virtualNotchRules != self.rules {
                     self.layOut()
                 }

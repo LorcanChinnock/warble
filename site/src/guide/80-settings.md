@@ -1,6 +1,6 @@
 ---
 title: Settings
-summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a notch drawn on another display shows the title, whether a new song shows its title, whether the bars follow the sound, whether lyrics show, whether Warble counts what you listen to, whether other apps may show what they are doing in the notch, whether a swipe skips, whether the album art can be dragged out, set keyboard shortcuts, including one that opens the notch, and turn on the warble command and warble:// links for scripts.
+summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a notch drawn on another display shows the title, whether a new song shows its title, whether the bars follow the sound, whether lyrics show, whether Warble counts what you listen to, whether a swipe skips, whether the album art can be dragged out, set keyboard shortcuts, including one that opens the notch, and turn on the warble command and warble:// links for scripts.
 group: Reference
 ---
 
@@ -44,12 +44,6 @@ Settings is always dark, like the notch, whatever your Mac's appearance. Every c
 ## Stats
 
 - **Count what I listen to.** Off at first. Turn it on, and Warble counts the time each song plays, by song and by artist, and shows the last 7 days here: your total listening time, your top 5 artists and your top 5 songs. Paused time isn't counted. Everything is kept in a file on your Mac for 30 days, and nothing is sent anywhere. **Clear…** deletes it. See [See what you listened to](/docs/see-what-you-listened-to/).
-
-## Activities
-
-- **Show what other apps are doing in the notch.** Off at first. Turn it on, and an app you use can show a timer or a short status in the notch, such as a recording in progress, and the open notch gets a row for it with any buttons the app offers. Only programs running as you can, and while it's off Warble opens nothing for them.
-- **Apps.** Each app that has shown something is listed with its icon and a switch. It's on the first time it appears. Turn it off to end what it's showing and refuse its next one. A script shows as "Script: <name>".
-- **Add this to your own app.** Opens the guide for developers: [Show an activity in the notch](/docs/show-an-activity-in-the-notch/).
 
 ## Shortcuts
 
