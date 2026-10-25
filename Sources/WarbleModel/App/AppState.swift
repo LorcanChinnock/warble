@@ -84,6 +84,10 @@ public struct AppState: Equatable, Sendable {
     public var showsWaveform: Bool { waveform.isOn }
     public var capturesAudio: Bool { waveform.captures }
     var waveform: WaveformState
+    /// The listening stats: whether Settings has them on, and the last week as Settings last asked for it.
+    public var keepsStats: Bool { stats.isOn }
+    public var weeklySummary: WeeklySummary? { stats.summary }
+    var stats: StatsState
     /// The first-run demo of the notch and the welcome window after it, which happen once, on a first launch.
     public internal(set) var onboarding = Onboarding()
     /// What the effects last asked for, so each is asked for once per change.
@@ -106,7 +110,7 @@ public struct AppState: Equatable, Sendable {
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
         showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, podcastSkips: Bool = false,
         dragArtOut: Bool = false, showsSleepTimer: Bool = false, hidesFromCapture: Bool = false, showsVirtualTitle: Bool = true,
-        answersLinks: Bool = false, listensForCommands: Bool = false, showsWaveform: Bool = false,
+        answersLinks: Bool = false, listensForCommands: Bool = false, showsWaveform: Bool = false, keepsStats: Bool = false,
         checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
@@ -121,6 +125,7 @@ public struct AppState: Equatable, Sendable {
         self.listensForCommands = listensForCommands
         lyrics = LyricsState(isOn: showsLyrics)
         waveform = WaveformState(isOn: showsWaveform)
+        stats = StatsState(isOn: keepsStats)
     }
 
     /// Whether the notches draw what's playing: something is, and it isn't Idle.

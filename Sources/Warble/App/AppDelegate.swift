@@ -7,7 +7,7 @@ private let log = Logger.warble("app")
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Built with the delegate, before the menu bar scene reads it.
-    let environment = AppEnvironment(lastPlayed: AppDelegate.lastPlayedStore(), lyrics: AppDelegate.lyricsProvider())
+    let environment = AppEnvironment(lastPlayed: AppDelegate.lastPlayedStore(), lyrics: AppDelegate.lyricsProvider(), stats: AppDelegate.statsStore())
     private var notch: NotchController?
     private var source: AdapterSource?
     private var fallback: ScriptSource?
@@ -83,6 +83,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         return file
     }
 
+    /// Where the listening stats are kept across launches, or only in memory for the preview, which writes none.
+    private static func statsStore() -> any StatsStore {
+        guard preview != .resting, preview != .idle, let file = Bundle.main.bundleIdentifier.flatMap(StatsFile.standard) else {
+            return StatsInMemory()
+        }
+        return file
+    }
+
     /// LRCLIB, with its cache in Caches, or for the preview a few made-up lines, so the preview sends nothing.
     private static func lyricsProvider() -> (any LyricsProvider)? {
         guard preview != .resting else { return PreviewLyrics() }
@@ -92,6 +100,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        // Counts the track playing, and waits for the write, since nothing runs after this.
+        environment.store.dispatch(.willQuit)
+        environment.runner.flushStats()
         environment.platform.stopListening()
         source?.stop()
         fallback?.stop()

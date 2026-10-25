@@ -83,6 +83,16 @@ public enum AppAction: Equatable, Sendable {
     case waveformChanged(Bool)
     /// macOS refused to let Warble hear the Mac's audio, or the tap wouldn't start. The waveform turns itself off.
     case audioCaptureDenied
+    /// Settings turned the listening stats on or off.
+    case statsChanged(Bool)
+    /// Settings' Stats section is showing, so the last week is read from disk.
+    case refreshStats
+    /// The spans kept for the last month, read after `.refreshStats`.
+    case statsLoaded([ListenedSpan])
+    /// The Clear button in the Stats section: everything kept is deleted.
+    case clearStats
+    /// Warble is quitting, so the track playing is counted up to now.
+    case willQuit
     /// The lyrics found for the fetch numbered `pass`, or `nil` when there are none.
     case lyricsLoaded(Lyrics?, pass: Int)
     /// Warble opened, with whether it's the first time. Dispatched once, by `AppDelegate`.

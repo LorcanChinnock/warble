@@ -37,7 +37,7 @@ private let commands: [(command: RemoteCommand, arguments: [String]?, link: Stri
 }
 
 @Test func theSettingsSectionsKeepTheirNames() {
-    #expect(RemoteCommand.settingsSections == ["general", "notch", "shortcuts", "developer", "about"])
+    #expect(RemoteCommand.settingsSections == ["general", "notch", "stats", "shortcuts", "developer", "about"])
 }
 
 @Test func theSchemesKeepTheirNames() {

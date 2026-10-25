@@ -128,6 +128,16 @@ final class FakeLastPlayed: LastPlayedInMemory, @unchecked Sendable {
     }
 }
 
+/// Holds the first write back, so a later one would overtake it without the chain.
+final class FakeStats: StatsInMemory, @unchecked Sendable {
+    override func append(_ span: ListenedSpan) throws {
+        if saved.isEmpty {
+            Thread.sleep(forTimeInterval: 0.05)
+        }
+        try super.append(span)
+    }
+}
+
 /// What the app remembers of a report, without shrinking its art.
 func remembering(_ state: PlaybackState, appName: String?) -> LastPlayed {
     LastPlayed(bundleIdentifier: state.bundleIdentifier, appName: appName, title: state.title, artist: state.artist, artwork: state.artwork, link: state.link)
@@ -159,11 +169,12 @@ final class FakeLyrics: LyricsProvider, @unchecked Sendable {
 @MainActor
 func makeRunner(
     hotkeys: FakeHotkeys = FakeHotkeys(), volume: FakeVolume = FakeVolume(), outputs: FakeOutputs = FakeOutputs(),
-    lastPlayed: FakeLastPlayed = FakeLastPlayed(), lyrics: FakeLyrics = FakeLyrics(), audioTap: FakeAudioTap? = nil
+    lastPlayed: FakeLastPlayed = FakeLastPlayed(), lyrics: FakeLyrics = FakeLyrics(), audioTap: FakeAudioTap? = nil,
+    stats: FakeStats = FakeStats()
 ) -> EffectRunner {
     EffectRunner(
         hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: { remembering($0, appName: $1) },
-        lyrics: lyrics, audioTap: audioTap
+        lyrics: lyrics, audioTap: audioTap, stats: stats
     )
 }
 

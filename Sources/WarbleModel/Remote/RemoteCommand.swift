@@ -26,7 +26,7 @@ public enum RemoteCommand: Equatable, Sendable {
     public static let schemes: Set<String> = ["warble", "warble-dev"]
 
     /// The names of the Settings sections a link can open, which are `SettingsSection`'s raw values.
-    public static let settingsSections: Set<String> = ["general", "notch", "shortcuts", "developer", "about"]
+    public static let settingsSections: Set<String> = ["general", "notch", "stats", "shortcuts", "developer", "about"]
 
     /// What `reduce` dispatches for the command, or `nil` for one that isn't one action: opening Settings is an effect,
     /// and an output is picked by name first.

@@ -115,10 +115,22 @@
     "Check for updates automatically" : {
 
     },
+    "Clear" : {
+
+    },
     "Clear %@ shortcut" : {
 
     },
     "Clear Shortcut" : {
+
+    },
+    "Clear listening stats" : {
+
+    },
+    "Clear listening stats?" : {
+
+    },
+    "Clear…" : {
 
     },
     "Control playback from any app. None are set until you add one." : {
@@ -138,6 +150,12 @@
       }
     },
     "Couldn't relaunch Warble" : {
+
+    },
+    "Count what I listen to" : {
+
+    },
+    "Deletes everything counted so far. Counting carries on if it's on." : {
 
     },
     "Developer" : {
@@ -242,6 +260,9 @@
     "Larger" : {
 
     },
+    "Last 7 days" : {
+
+    },
     "Last Played" : {
 
     },
@@ -254,7 +275,13 @@
     "Later" : {
 
     },
+    "Less than a minute" : {
+
+    },
     "Links like warble://toggle control playback from a script, a launcher or Terminal." : {
+
+    },
+    "Listening time" : {
 
     },
     "Login Items" : {
@@ -315,6 +342,9 @@
 
     },
     "Nothing playing" : {
+
+    },
+    "Nothing yet. Play something and it shows up here." : {
 
     },
     "Now Playing" : {
@@ -546,6 +576,9 @@
     "Standard" : {
 
     },
+    "Stats" : {
+
+    },
     "Status" : {
 
     },
@@ -603,13 +636,25 @@
     "This covers sharing your screen in a call, screen recordings and screenshots." : {
 
     },
+    "This deletes everything counted so far and can't be undone." : {
+
+    },
     "This kept stopping, so Warble only follows Music and Spotify until you open it again." : {
+
+    },
+    "Time spent listening, not time paused." : {
 
     },
     "Title" : {
 
     },
     "To find a song's lyrics, Warble sends its title, artist, album and length to LRCLIB, a free lyrics library. Nothing is sent while this is off." : {
+
+    },
+    "Top artists" : {
+
+    },
+    "Top tracks" : {
 
     },
     "Try it in Terminal with open warble://toggle. The user guide lists every link. While this is off, Warble ignores them." : {
@@ -619,6 +664,9 @@
 
     },
     "Turn off" : {
+
+    },
+    "Turn this on to see your week." : {
 
     },
     "Turned off in System Settings. Turn Warble on in Login Items to open it at login again." : {
@@ -654,6 +702,9 @@
     "Warble can't see everything" : {
 
     },
+    "Warble counts the time each track plays, by song and artist, and keeps it in a file on this Mac for 30 days. Nothing is sent anywhere. A track is counted once it pauses, changes or stops. While this is off, nothing is counted or saved." : {
+
+    },
     "Warble isn't allowed to control %@. Turn it on under Warble in Privacy & Security › Automation." : {
 
     },
@@ -667,6 +718,9 @@
 
     },
     "What the notch shows." : {
+
+    },
+    "What you listened to this week. Starts off." : {
 
     },
     "What's playing" : {

@@ -112,6 +112,40 @@ open class LastPlayedInMemory: LastPlayedStore, @unchecked Sendable {
     }
 }
 
+/// Where the listening stats are kept: a span for each stretch of a track playing, on this Mac only.
+public protocol StatsStore: Sendable {
+    func append(_ span: ListenedSpan) throws
+    /// The spans that began on or after `date`, and drops the older ones.
+    func load(since date: Date) -> [ListenedSpan]
+    func clear() throws
+}
+
+/// Keeps the stats only while Warble runs, so the preview writes none, and a test can see what was written. Open so a test
+/// can slow a write down.
+open class StatsInMemory: StatsStore, @unchecked Sendable {
+    private let lock = NSLock()
+    private var spans: [ListenedSpan] = []
+
+    public init() {}
+
+    /// Every span written, in the order the writes landed.
+    public var saved: [ListenedSpan] {
+        lock.withLock { spans }
+    }
+
+    open func append(_ span: ListenedSpan) throws {
+        lock.withLock { spans.append(span) }
+    }
+
+    public func load(since date: Date) -> [ListenedSpan] {
+        lock.withLock { spans.filter { $0.start >= date } }
+    }
+
+    public func clear() throws {
+        lock.withLock { spans = [] }
+    }
+}
+
 /// Where a track's synced lyrics come from. Only asked while Settings turns lyrics on.
 public protocol LyricsProvider: Sendable {
     /// The track's synced lyrics as LRC text, or `nil` when there are none or they can't be had.
