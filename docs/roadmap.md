@@ -88,7 +88,7 @@ The live waveform, a sleep timer and listening stats, plus research into replaci
 
 A way for other Mac apps to show activities in the notch, starting with Shot, plus translations and stable developer interfaces.
 
-- [#50](https://github.com/LorcanChinnock/warble/issues/50) spike: notch activities protocol
-- [#51](https://github.com/LorcanChinnock/warble/issues/51) feat(activities): notch activities API
+- [#50](https://github.com/LorcanChinnock/warble/issues/50) spike: notch activities protocol ([design](spikes/notch-activities.md))
+- [#51](https://github.com/LorcanChinnock/warble/issues/51) feat(activities): notch activities API, in two pull requests: the model and drawing, then the socket, Settings and guide
 - [#52](https://github.com/LorcanChinnock/warble/issues/52) feat(i18n): first translations
 - [#53](https://github.com/LorcanChinnock/warble/issues/53) docs: stable command line and URL scheme reference
