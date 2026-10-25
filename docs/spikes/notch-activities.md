@@ -66,7 +66,7 @@ A symbol name Warble can't draw falls back to the app's icon. The view checks th
 
 ### From Warble
 
-Each request gets one reply line, in order: `{"v":1,"re":"start","ok":true}` or `{"v":1,"re":"start","ok":false,"error":"…"}`. Errors are sentences, with no codes: `"title is 74 characters; the most is 60"`, `"an app can have 2 activities at once"`.
+Each request gets one reply line, in order: `{"v":1,"re":"start","ok":true}` or `{"v":1,"re":"start","ok":false,"error":"…"}`. Errors are sentences, with no codes: `"title is 74 characters; the most is 60"`, `"a connection can have 2 activities at once"`.
 
 Warble also sends events, which carry `event` in place of `re`:
 
@@ -89,12 +89,13 @@ macOS shows no prompt for a Unix socket, so Warble's own switch is the permissio
 
 Turning it on lets any process of the same user put an activity in the notch. That's no more than it can already do, but the text is the sender's. So Warble doesn't take the sender's word for who it is.
 
-- The sender is the process on the other end of the connection. Warble reads its process ID once, at connect, with `LOCAL_PEERPID`, and takes the app's name and icon from the system (`NSRunningApplication`, or the executable's name for a script). A process ID can't be forged by another process.
-- The wing draws that app's icon, and the card names the app above the title. A sender can choose a symbol to draw but never the name it appears under.
+- The sender is the process on the other end of the connection. Warble reads its audit token once, at connect, with `LOCAL_PEERTOKEN`, which names that process and not a process ID that could be reused, and checks its code signature (`SecCodeCopyGuestWithAttributes` on the token). A signed sender is known by its team ID and signing identifier, and its name and icon come from the app that signature belongs to. Another process can't take that identity without the signing key, whatever its `Info.plist` says.
+- An unsigned or ad hoc signed sender, such as a script or a build from source, is still allowed. Its name is the executable's, and it's labelled "Unsigned" in the card and in Settings, and it's known by its path. That name is the sender's own word, so the label is the guarantee: nothing unsigned appears as a signed app.
+- The wing draws the sender's icon, and the card names the sender above the title. A sender can choose a symbol to draw but never the name it appears under.
 - An activity can't do anything on the Mac. A button sends one event back to the app that made it, and nothing else: no links open, no commands run.
 - Settings › Activities lists each app that has shown an activity, with a switch. Apps are on when they first appear, since turning the feature on was the consent, and turning one off ends its activities with `blocked` and refuses its next `start`. Asking per app in the notch was considered and rejected: a prompt that appears over whatever you're doing isn't calm. If people report unwanted senders, revisit it as a one-time "Allow" button on that app's first activity.
 
-The list of apps is stored as a dictionary of identifier to name under a new `PreferenceKey.activityApps`, and the turned-off ones as a set of identifiers under `PreferenceKey.activityBlocked`. A script has no bundle identifier, so its executable's path stands in.
+The list of apps is stored as a dictionary of sender key to name under a new `PreferenceKey.activityApps`, and the turned-off ones as a set of keys under `PreferenceKey.activityBlocked`. A signed sender's key is its team ID and signing identifier, so one app can't block another by claiming its bundle ID, and an unsigned sender's key is its path.
 
 ## What it shows
 
@@ -105,7 +106,7 @@ The expanded notch has two cases:
 - **Music is playing.** The player's card is unchanged, with a row below its controls for each activity: an icon and title, the clock, any buttons and a close button. The player stays one hover away.
 - **Nothing is playing.** A card of its own, the activity rows only, the height of the idle card plus a row for each extra activity.
 
-A button press dispatches `.haptic` as well as the press, so there's feedback before the sender answers. The sender is expected to `update` or `end` in reply. Warble doesn't guess what a button does. The close button is always there, so no activity traps the user.
+A button press dispatches `.activityButton`, and `reduce` asks for `.haptic` along with the event, so there's feedback before the sender answers. The sender is expected to `update` or `end` in reply. Warble doesn't guess what a button does. The close button is always there, so no activity traps the user.
 
 VoiceOver reads the wing as "App name: title, clock" with the clock as its value, each button by its label, and the close button as "Close". The cards scale with Larger Text as the Doctor card does. With Reduce Motion the wings change at once and only the content fades, the same rule as the other states.
 
@@ -181,7 +182,7 @@ The socket's handler, `ActivityHandler` (WarbleModel, `@MainActor`, like `Remote
 
 ### Drawing
 
-`NotchState` gains `activity`, drawn at the size of `resting`. `NotchLayout.frame` and `hoverArea` give it `resting`'s frame and the housing, so a pointer crossing the wings doesn't open it. `NotchState.init` gains `showsActivity`: a resting notch that would draw `.resting`, `.toast`, `.lyrics`, `.idle` or `.hidden` draws `.activity` instead, and the hover states are unchanged, so the pointer opens it as it does now. `Notches.notchState` passes `shared.hasActivity` to it, and `showsToast` and `showsLyrics` are false while one shows, which is how the toast and the lyric line give way.
+`NotchState` gains `activity`, drawn at the size of `resting`. `NotchLayout.frame` and `hoverArea` give it `resting`'s frame and the housing, so a pointer crossing the wings doesn't open it. `NotchState.init` gains `showsActivity`: it's checked before the `idleHover == .nothing` branch and counts like `isPlaying` and `needsAttention`, so a live activity follows `hover` whatever the Idle setting says. A resting notch that would draw `.resting`, `.toast`, `.lyrics`, `.idle` or `.hidden` draws `.activity` instead, and an opened one draws `.expanded`, so the pointer reaches the card, its buttons and its close button with Idle hover set to Nothing too. `Notches.notchState` passes `shared.hasActivity` to it, and `showsToast` and `showsLyrics` are false while one shows, which is how the toast and the lyric line give way.
 
 `NotchCard` gains `activity`. `NotchCard.init` gains `showsActivity`, and the order is the Doctor if asked for, the lyrics, the player while music plays, the activity, the Doctor on a failed check, then the idle card. `NotchLayout.drop` gives the card the idle card's height for one row and a row more for each extra, and the player's card is unchanged, with its rows drawn inside it.
 
