@@ -30,7 +30,7 @@ A Swift package is a wrapper, not a transport. Don't build one now. The client i
 
 [`agent.sock`](../architecture/developer.md) answers one request and closes. An activity needs the connection to stay, for its lifetime and for the button press coming back. The command line's socket also follows a different switch (Settings › Developer, for people who script Warble). Someone who wants Shot's timer in the notch shouldn't have to turn on a developer feature, and turning on the command line shouldn't let every app on the Mac put things in the notch.
 
-So `activities.sock` is a sibling, in the same folder (0700), at mode 0600, with the same-user check on each peer. `AgentSocket` already has that code. #51 pulls the shared parts (`address(of:)`, `readLine`, `peerUser`, the timeouts) out into a small `UnixSocket` helper in the same pull request that adds the server, and `AgentSocket` calls it too. `RemoteSocketPath` stays in WarbleModel, where the command line reads it, and gains the `activities.sock` path beside `agent.sock`. No behaviour of the command line changes, and its tests keep passing.
+So `activities.sock` is a sibling, in the same folder (0700), at mode 0600, with the same-user check on each peer. `AgentSocket` already has that code. #51 pulls the shared parts (`address(of:)`, `peerUser` and the socket setup) out into a small `UnixSocket` helper in the same pull request that adds the server, and `AgentSocket` calls it too. `activities.sock` doesn't share `readLine`. That reads one line and drops what follows it in the chunk, and times out after five seconds, which suits a request and not a connection that stays quiet for hours. The activity server keeps a buffer for each connection that holds the bytes after a newline, so two lines in one read are both answered in order, and it has no idle timeout, only a bound on how long a half-received line may take. `RemoteSocketPath` stays in WarbleModel, where the command line reads it, and gains the `activities.sock` path beside `agent.sock`. No behaviour of the command line changes, and its tests keep passing.
 
 The sandbox is a limit. A sandboxed app can't connect to a socket in another app's Application Support folder, so v1 serves unsandboxed apps and scripts. Shot isn't sandboxed. If a sandboxed sender turns up, the answer is an App Group folder for the socket, which needs a team ID Warble's signing doesn't have today, so it's not planned.
 
@@ -54,16 +54,16 @@ One JSON object per line, UTF-8, newline-terminated, in both directions. A line 
 | `title` | What the card says and VoiceOver reads. | 60 characters |
 | `detail` | An optional second line on the card. | 100 characters |
 | `badge` | Short text for the right wing when there's no clock. | 8 characters |
-| `icon` | `{"symbol": "<SF Symbol name>", "tint": "<colour>"}`. Omitted, the wing draws the sender's own app icon. Tints are `white` (default), `red`, `orange`, `yellow`, `green` and `blue`. No images: nothing here reads a file. | Name: lowercase letters, digits and dots, 64 bytes |
+| `icon` | `{"symbol": "<SF Symbol name>", "tint": "<colour>"}`, drawn as a badge on the sender's own icon. Omitted, no badge. Tints are `white` (default), `red`, `orange`, `yellow`, `green` and `blue`. No images: nothing here reads a file. | Name: lowercase letters, digits and dots, 64 bytes |
 | `clock` | `{"since": t}` counts up from `t`, `{"until": t}` counts down to it, with `t` in seconds since 1970. A clock reaching zero stays at `0:00` until the sender ends the activity. | One of the two |
 | `buttons` | Up to two, each `{"id", "label", "symbol"?}`. | Id 32 bytes, label 16 characters |
 | `from` | For a script only: the name to show, as "Script: <name>". A signed app's name comes from its signature, so `from` is ignored there. | 30 characters, required for a script |
 | `priority` | `normal` or `high`. | Two levels, so senders can't outbid each other |
 | `lasts` | Seconds from this message until Warble ends the activity itself. Counted again from each `update` that sets it. | 1 to 43200, default 3600 |
 
-`update` changes only the fields it names, and a field set to `null` is cleared. `start` with an `id` already in use replaces that activity.
+`update` changes only the fields it names, is checked against the same limits as a `start`, and clears a field set to `null`, but only `detail`, `badge`, `clock`, `icon` and `buttons`. `lasts: null` puts it back to the default, so no activity is ever without an end. `title`, `from` and `priority` can't be cleared, and an `update` that tries is refused. `start` with an `id` already in use replaces that activity.
 
-A symbol name Warble can't draw falls back to the app's icon. The view checks that, since the model can't. A string over its limit is refused, not cut, so a developer sees the mistake instead of a half sentence in the notch.
+A symbol name Warble can't draw is left off, with the sender's icon alone. The view checks that, since the model can't. A string over its limit is refused, not cut, so a developer sees the mistake instead of a half sentence in the notch.
 
 ### From Warble
 
@@ -92,15 +92,15 @@ Turning it on lets any process of the same user put an activity in the notch. Th
 
 - The sender is the process on the other end of the connection. Warble reads its audit token once, at connect, with `LOCAL_PEERTOKEN`, which names that process and not a process ID that could be reused, and checks its code signature (`SecCodeCopyGuestWithAttributes` on the token). A signed sender is known by its team ID and signing identifier, and its name and icon come from the app that signature belongs to. Another process can't take that identity without the signing key, whatever its `Info.plist` says.
 - A script isn't the process on the other end: its sender is the interpreter, which for `nc -U`, `osascript`, `python3` and `swift` is an Apple-signed tool with no team ID and no app behind it. So Apple's own binaries, unsigned programs and ad hoc signed builds count as scripts. They're allowed, but a script names itself with `from` in `start`, which is shown as "Script: <name>" in the card and in Settings, so nothing appears as a signed app. Such a sender is keyed by its executable's path and `from` together, so blocking one script doesn't block every script on the same interpreter, and two scripts can pick the same `from` only by sharing a block. The label is the guarantee, since the name is the script's own word.
-- The wing draws the sender's icon, and the card names the sender above the title. A sender can choose a symbol to draw but never the name it appears under.
+- The wing always draws the sender's real icon: the signed app's, or a generic script mark for a script. A sender's own symbol is only a small badge on it, so no sender can make wings that look like another app's. The card names the sender above the title. A sender can choose a symbol but never the name or icon it appears under.
 - An activity can't do anything on the Mac. A button sends one event back to the app that made it, and nothing else: no links open, no commands run.
 - Settings › Activities lists each app that has shown an activity, with a switch. Apps are on when they first appear, since turning the feature on was the consent, and turning one off ends its activities with `blocked` and refuses its next `start`. Asking per app in the notch was considered and rejected: a prompt that appears over whatever you're doing isn't calm. If people report unwanted senders, revisit it as a one-time "Allow" button on that app's first activity.
 
-The list of apps is stored as a dictionary of sender key to name under a new `PreferenceKey.activityApps`, and the turned-off ones as a set of keys under `PreferenceKey.activityBlocked`. A signed sender's key is its team ID and signing identifier, so one app can't block another by claiming its bundle ID, and an unsigned sender's key is its path.
+The list of apps is stored as a dictionary of sender key to name under a new `PreferenceKey.activityApps`, and the turned-off ones as a set of keys under `PreferenceKey.activityBlocked`. A signed sender's key is its team ID and signing identifier, so one app can't block another by claiming its bundle ID, and the key of any sender with no team ID, which is every script as described above (Apple's tools, unsigned and ad hoc builds), is its executable's path and `from` together.
 
 ## What it shows
 
-A resting notch with an activity draws the activity's icon in the left wing and its clock, or its `badge`, in the right. The clock is SwiftUI's `Text(timerInterval:countsDown:)`, which the system ticks, so Warble starts no timer to draw it. It does mean one redraw a second while a clock shows, so [#51 adds a row to `make perf-app-full`](#performance) for it.
+A resting notch with an activity draws the sender's icon in the left wing, with the activity's own symbol as a badge on it, and its clock, or its `badge`, in the right. The clock is SwiftUI's `Text(timerInterval:countsDown:)`, which the system ticks, so Warble starts no timer to draw it. It does mean one redraw a second while a clock shows, so [#51 adds a row to `make perf-app-full`](#performance) for it.
 
 The expanded notch has two cases:
 
@@ -162,7 +162,7 @@ struct ActivityState: Feature {
 | --- | --- | --- |
 | `.activitiesChanged(Bool)` | Settings | Sets `isOn`. Off, it drops every activity, with no events: the socket closes. |
 | `.activityBlocklistChanged(Set<String>)` | Settings | Replaces `blocked`, ends each blocked app's activities with `blocked`. |
-| `.activityStarted(Activity)` | The socket | Adds the activity, or replaces one with its key. Ignored while `isOn` is off, for a blocked owner or past the limits. |
+| `.activityStarted(Activity)` | The socket | Adds the activity, or replaces one with its key, and adds a sender it hasn't seen to `apps`. Ignored while `isOn` is off, for a blocked owner or past the limits. |
 | `.activityUpdated(ActivityKey, ActivityPatch)` | The socket | Changes the named fields and restarts `lasts` if it's set. |
 | `.activityEnded(ActivityKey)` | The socket | Removes it, sending nothing back. |
 | `.activityClientClosed(client: Int)` | The socket | Removes everything the connection started. |
@@ -177,6 +177,7 @@ The socket's handler, `ActivityHandler` (WarbleModel, `@MainActor`, like `Remote
 | Effect | Asked when | Carried out by |
 | --- | --- | --- |
 | `.listenForActivities(Bool)` | `listensForActivities` changes | `PlatformEffects` opens or closes the socket, like `.listenForCommands`. |
+| `.saveActivityApps([String: String])` | `.activityStarted` adds a sender to `apps` | `PlatformEffects` writes `PreferenceKey.activityApps`, as `.saveLastPlayed` saves the last track. Settings reads it back. |
 | `.sendActivityEvent(ActivityKey, ActivityEvent)` | A button press, a dismissal, an expiry, a block or a replacement | `EffectRunner`, through the `ActivityChannel` port. |
 
 `ActivityEvent` is `.button(String)` or `.ended(reason)`. `.haptic` is asked on a button press too, the effect that exists already.
