@@ -20,12 +20,12 @@ struct SleepTimerButton: View {
                 if let timer {
                     if timer.choice == .endOfTrack {
                         Text("End")
-                            .font(.system(size: 11))
+                            .font(.scaled(11))
                             .foregroundStyle(.white)
                     } else {
                         TimelineView(.animation(minimumInterval: 1)) { context in
                             Text(verbatim: PlaybackState.positionLabel(timer.deadline.timeIntervalSince(context.date).rounded(.up)))
-                                .font(.system(size: 11).monospacedDigit())
+                                .font(.scaled(11, monospacedDigits: true))
                                 .foregroundStyle(.white)
                         }
                     }

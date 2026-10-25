@@ -23,7 +23,7 @@ struct IdleCard: View {
                         Group {
                             if let appName = lastPlayed.appName { Text("Last played · \(appName)") } else { Text("Last played") }
                         }
-                        .font(.system(size: 11))
+                        .font(.scaled(11))
                         .foregroundStyle(Native.secondary)
                         Text(lastPlayed.title)
                             .font(.system(size: 15, weight: .semibold))
@@ -50,10 +50,10 @@ struct IdleCard: View {
             } else {
                 VStack(spacing: 3) {
                     Text("Nothing playing")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.scaled(15, weight: .semibold))
                         .foregroundStyle(.white)
                     Text("Play something and it shows here")
-                        .font(.system(size: 12))
+                        .font(.scaled(12))
                         .foregroundStyle(Native.secondary)
                 }
                 .frame(maxWidth: .infinity)

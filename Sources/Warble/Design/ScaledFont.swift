@@ -13,13 +13,15 @@ struct ScaledFont {
     let size: CGFloat
     var weight: Font.Weight?
     var design: Font.Design?
+    var monospacedDigits = false
 
-    static func scaled(_ size: CGFloat, weight: Font.Weight? = nil, design: Font.Design? = nil) -> ScaledFont {
-        ScaledFont(size: size, weight: weight, design: design)
+    static func scaled(_ size: CGFloat, weight: Font.Weight? = nil, design: Font.Design? = nil, monospacedDigits: Bool = false) -> ScaledFont {
+        ScaledFont(size: size, weight: weight, design: design, monospacedDigits: monospacedDigits)
     }
 
     func resolved(_ textSize: TextSize) -> Font {
-        .system(size: textSize.points(size), weight: weight, design: design)
+        let font = Font.system(size: textSize.points(size), weight: weight, design: design)
+        return monospacedDigits ? font.monospacedDigit() : font
     }
 
     /// For AppKit drawing, which can't read the environment.
