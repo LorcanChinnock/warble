@@ -4,7 +4,7 @@ import Foundation
 import os
 import QuartzCore
 
-/// Signposts around the paths with budgets in `docs/performance.md`. Instruments shows them. They cost almost nothing
+/// Signposts around launch, expand and play/pause. Instruments shows them. They cost almost nothing
 /// when nobody reads them, and nothing at all while nobody touches the notch, so they never wake Warble while nothing
 /// is playing.
 @MainActor
