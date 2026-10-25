@@ -29,10 +29,6 @@ public enum PreferenceKey {
     public static let hideFromCapture = "hideFromCapture"
     /// Whether a virtual notch shows the title of what's playing in its middle.
     public static let virtualTitle = "virtualTitle"
-    /// Whether the play-state bars follow the sound, which has macOS ask to record the Mac's audio the first time.
-    public static let waveform = "waveform"
-    /// Whether macOS refused that, so Settings can say why the waveform turned itself off.
-    public static let waveformRefused = "waveformRefused"
 
     /// Whether Warble reads the front tab of a browser when a track starts there, so the idle card can reopen it. Off,
     /// Warble never scripts a browser, and macOS never asks for permission to.
@@ -62,8 +58,6 @@ public struct Preferences {
             PreferenceKey.dragArtOut: false,
             PreferenceKey.hideFromCapture: false,
             PreferenceKey.virtualTitle: true,
-            PreferenceKey.waveform: false,
-            PreferenceKey.waveformRefused: false,
             PreferenceKey.resumeBrowserTabs: false,
             PreferenceKey.hasSeenWelcome: false,
         ]
@@ -139,10 +133,6 @@ public struct Preferences {
 
     public var lyrics: Bool {
         store.bool(forKey: PreferenceKey.lyrics)
-    }
-
-    public var waveform: Bool {
-        store.bool(forKey: PreferenceKey.waveform)
     }
 
     public var swipeToSkip: Bool {

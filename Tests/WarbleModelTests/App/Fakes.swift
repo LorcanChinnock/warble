@@ -159,52 +159,12 @@ final class FakeLyrics: LyricsProvider, @unchecked Sendable {
 @MainActor
 func makeRunner(
     hotkeys: FakeHotkeys = FakeHotkeys(), volume: FakeVolume = FakeVolume(), outputs: FakeOutputs = FakeOutputs(),
-    lastPlayed: FakeLastPlayed = FakeLastPlayed(), lyrics: FakeLyrics = FakeLyrics(), audioTap: FakeAudioTap? = nil
+    lastPlayed: FakeLastPlayed = FakeLastPlayed(), lyrics: FakeLyrics = FakeLyrics()
 ) -> EffectRunner {
     EffectRunner(
         hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: { remembering($0, appName: $1) },
-        lyrics: lyrics, audioTap: audioTap
+        lyrics: lyrics
     )
-}
-
-/// An audio tap that records starts and stops, and sends frames or fails when a test says so.
-@MainActor
-final class FakeAudioTap: AudioTap {
-    private(set) var starts = 0
-    private(set) var stops = 0
-    private(set) var isRunning = false
-    private var onFrame: (@Sendable ([Float]) -> Void)?
-    private var onFailure: (@Sendable () -> Void)?
-    /// Every start's failure callback, including those of starts that were stopped since.
-    private var failures: [@Sendable () -> Void] = []
-
-    func start(onFrame: @escaping @Sendable ([Float]) -> Void, onFailure: @escaping @Sendable () -> Void) {
-        starts += 1
-        isRunning = true
-        self.onFrame = onFrame
-        self.onFailure = onFailure
-        failures.append(onFailure)
-    }
-
-    func stop() {
-        stops += 1
-        isRunning = false
-        onFrame = nil
-        onFailure = nil
-    }
-
-    func emit(_ bands: [Float]) {
-        onFrame?(bands)
-    }
-
-    func fail() {
-        onFailure?()
-    }
-
-    /// Fails the first start, which may have been stopped since.
-    func failEarlier() {
-        failures.first?()
-    }
 }
 
 /// A player that records the commands it's sent.

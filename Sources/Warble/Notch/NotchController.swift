@@ -70,29 +70,16 @@ final class NotchController {
                 if preferences.virtualTitle != state.showsVirtualTitle {
                     self.store.dispatch(.virtualTitleChanged(preferences.virtualTitle))
                 }
-                self.syncWaveform()
                 if preferences.virtualNotchRules != self.rules {
                     self.layOut()
                 }
             }
-        })
-        // Reduce Motion isn't a Warble default, so a change in System Settings is seen here, and it turns the waveform off.
-        observers.append(NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated { self?.syncWaveform() }
         })
         // Going full screen, or back, switches Space; only then can a display start or stop showing a full-screen app.
         observers.append(NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.activeSpaceDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.readFullScreen() }
         })
         layOut()
-    }
-
-    /// The waveform runs when its setting is on and Reduce Motion is off, since the bars stand still under it.
-    private func syncWaveform() {
-        let wanted = Preferences().waveform && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
-        if wanted != store.state.showsWaveform {
-            store.dispatch(.waveformChanged(wanted))
-        }
     }
 
     private func readFullScreen() {
@@ -130,7 +117,6 @@ final class NotchController {
         let store = store
         let surface = NotchSurface(
             display: housing.display, housing: housing.frame, player: player, doctor: doctor, settings: environment.settings,
-            spectrum: environment.spectrum,
             dispatch: { [weak store] in store?.dispatch($0) }
         ) { [weak self] in self?.scroll($0) }
         surface.onKey = { [weak self] event in self?.key(event) ?? false }

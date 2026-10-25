@@ -6,7 +6,7 @@ Warble is a macOS 15+ app that shows what's playing in the notch and controls it
 
 ## Mantra
 
-By default, Warble is calm: a small, fast notch that shows what's playing and stays out of the way. Lyrics, the live waveform and extra gestures are built in, but they start off.
+By default, Warble is calm: a small, fast notch that shows what's playing and stays out of the way. Lyrics and extra gestures are built in, but they start off.
 
 - Nothing may slow the hover → expand path or a click on play/pause.
 - When nothing is playing, Warble draws nothing and uses no CPU: no timers, no polling.
@@ -89,7 +89,6 @@ Claude Code loads only this file, so read a feature's note before you change tha
 | [Idle card](docs/architecture/idle-card.md) | changing what the notch shows while nothing plays, or the last track played |
 | [Motion](docs/architecture/motion.md) | changing how the notch moves between states |
 | [Website](docs/architecture/website.md) | changing `site/` or the user guide |
-| [Live waveform](docs/architecture/waveform.md) | changing the waveform, the audio tap or what the play-state bars draw |
 | [Performance](docs/architecture/performance.md) | changing anything on the hover, expand or play/pause path, or adding a timer |
 
 ## Rules enforced by `make lint`

@@ -73,10 +73,6 @@ public enum AppAction: Equatable, Sendable {
     case sleepTimerSettingChanged(Bool)
     case hidesFromCaptureChanged(Bool)
     case virtualTitleChanged(Bool)
-    /// Settings turned the live waveform on or off.
-    case waveformChanged(Bool)
-    /// macOS refused to let Warble hear the Mac's audio, or the tap wouldn't start. The waveform turns itself off.
-    case audioCaptureDenied
     /// The lyrics found for the fetch numbered `pass`, or `nil` when there are none.
     case lyricsLoaded(Lyrics?, pass: Int)
     /// Warble opened, with whether it's the first time. Dispatched once, by `AppDelegate`.

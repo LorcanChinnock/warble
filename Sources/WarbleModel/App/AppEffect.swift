@@ -36,8 +36,4 @@ public enum AppEffect: Equatable, Sendable {
     case showWelcome
     /// Watch Music and Spotify open and quit (true), or stop.
     case followPlayers(Bool)
-    /// Start the audio tap that feeds the live waveform (true), or stop it and let go of it. Asked once each time that changes.
-    case captureAudio(Bool)
-    /// Turn the waveform's setting off, because macOS refused the tap.
-    case turnOffWaveform
 }

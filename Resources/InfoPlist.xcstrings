@@ -60,66 +60,6 @@
           }
         }
       }
-    },
-    "NSAudioCaptureUsageDescription" : {
-      "comment" : "Asked the first time the live waveform starts, which it does only when Settings turns it on.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Warble hört den Ton, den dein Mac wiedergibt, nur, um die Balken in der Notch damit zu bewegen. Es nimmt nichts auf und speichert nichts."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Warble listens to the sound your Mac plays only to move the bars in the notch with it. It doesn't record or keep anything."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Warble escucha el sonido que reproduce tu Mac solo para mover las barras del notch con él. No graba ni guarda nada."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Warble écoute le son que votre Mac produit uniquement pour animer les barres du notch avec lui. Il n’enregistre ni ne garde rien."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Warble ascolta l'audio riprodotto dal Mac solo per muovere con esso le barre nel notch. Non registra né conserva nulla."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "WarbleはMacが再生する音を、ノッチのバーを音に合わせて動かすためだけに聞き取ります。録音も保存もしません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Warble은 노치의 막대를 소리에 맞춰 움직이기 위해서만 Mac에서 재생되는 소리를 듣습니다. 아무것도 녹음하거나 저장하지 않습니다."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O Warble ouve o som que o Mac reproduz apenas para mover as barras do notch com ele. Ele não grava nem guarda nada."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Warble 仅会收听你的 Mac 播放的声音，用来让刘海中的音柱随之跳动。它不会录制或保留任何内容。"
-          }
-        }
-      }
     }
   },
   "version" : "1.0"

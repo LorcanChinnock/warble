@@ -66,17 +66,6 @@ public protocol AudioOutputs: AnyObject {
     func stopListening()
 }
 
-/// Listens to the Mac's audio for the live waveform. Starting it is what makes macOS ask to record, so it runs only while the
-/// bars are on screen.
-@MainActor
-public protocol AudioTap: AnyObject {
-    /// Starts listening. `onFrame` gets one magnitude for each of `SpectrumBars`' bands, about 15 times a second, off the
-    /// main actor. `onFailure` is called once, off the main actor, if macOS refuses or the tap can't start.
-    func start(onFrame: @escaping @Sendable ([Float]) -> Void, onFailure: @escaping @Sendable () -> Void)
-    /// Stops listening and lets go of everything it held.
-    func stop()
-}
-
 /// Where the last track played is kept across launches.
 public protocol LastPlayedStore: Sendable {
     func load() -> LastPlayed?

@@ -16,8 +16,6 @@ final class NotchModel {
     let doctor: DoctorModel
     /// Whether the open card shows the Doctor's checks rather than the player.
     var showsDoctor = false
-    /// Whether the audio tap runs, so the play-state bars follow the sound. Set with `state`, like `card`.
-    var showsWaveform = false
     /// Whether the song playing has lyrics, so the player's card offers them.
     var hasLyrics = false
     /// Whether a podcast or audiobook is playing, so the player's card skips by seconds rather than by track.
@@ -48,8 +46,6 @@ final class NotchModel {
     var lyric: String?
     /// The lines around the one being sung, while the card is `lyrics`. Set with `state`, like `card`.
     var lyrics: LyricsExcerpt?
-    /// Where the bars get the sound from while `showsWaveform`.
-    @ObservationIgnored let spectrum: SpectrumFeed
     @ObservationIgnored var onClick: () -> Void = {}
     /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
     @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }
@@ -62,9 +58,8 @@ final class NotchModel {
     /// Called with true when the art begins to be dragged out of the card, and false when the drag ends.
     @ObservationIgnored var onDragArt: (Bool) -> Void = { _ in }
 
-    init(player: PlayerModel, doctor: DoctorModel, spectrum: SpectrumFeed) {
+    init(player: PlayerModel, doctor: DoctorModel) {
         self.player = player
-        self.spectrum = spectrum
         self.doctor = doctor
     }
 

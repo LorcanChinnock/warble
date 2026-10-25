@@ -39,13 +39,12 @@ final class NotchSurface {
 
     init(
         display: String, housing: CGRect, player: PlayerModel, doctor: DoctorModel, settings: SettingsStore,
-        spectrum: SpectrumFeed,
         dispatch: @escaping (AppAction) -> Void, onScroll: @escaping (NSEvent) -> Void
     ) {
         self.display = display
         self.housing = housing
         self.dispatch = dispatch
-        model = NotchModel(player: player, doctor: doctor, spectrum: spectrum)
+        model = NotchModel(player: player, doctor: doctor)
         panel = NotchPanel(model: model, settings: settings)
         panel.onPointer = { inside in dispatch(.pointer(display: display, inside: inside)) }
         panel.onScroll = onScroll
@@ -69,7 +68,6 @@ final class NotchSurface {
             model.showsTitle = value.showsTitle
             model.isAlwaysShown = value.isAlwaysShown
             model.showsDoctor = value.showsDoctor
-            model.showsWaveform = value.showsWaveform
             model.hasLyrics = value.hasLyrics
             model.skipsBySeconds = value.skipsBySeconds
             model.artDrag = value.artDrag

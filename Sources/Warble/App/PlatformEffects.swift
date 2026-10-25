@@ -54,11 +54,6 @@ final class PlatformEffects {
             toggleKeyboard()
         case .showWelcome:
             showWelcome()
-        case .turnOffWaveform:
-            // macOS said no, so the setting says so too, until it's turned on again.
-            UserDefaults.standard.set(false, forKey: PreferenceKey.waveform)
-            UserDefaults.standard.set(true, forKey: PreferenceKey.waveformRefused)
-            log.notice("The waveform turned itself off: macOS wouldn't let Warble hear the Mac's audio")
         default:
             break
         }

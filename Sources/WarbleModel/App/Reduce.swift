@@ -93,8 +93,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.podcastSkips = on
     case .dragArtOutChanged(let on):
         state.dragArtOut = on
-    case .waveformChanged, .audioCaptureDenied:
-        effects += state.waveform.reduce(action, shared: state.shared, at: now)
     case .launched, .welcomeClosed:
         break
     case .tick:
@@ -172,8 +170,6 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
     }
     shared = state.shared
     var effects = state.notches.follow(shared, at: now)
-    // The audio tap runs only while the waveform can be seen, and is asked for once each time that changes.
-    effects += state.waveform.follow(drawsBars: state.drawsBars)
     // Opening a notch checks again whatever the Doctor found, in case the user fixed it, such as in System Settings,
     // which tells Warble nothing.
     if state.notches.watchesClicks, !old.notches.watchesClicks, state.doctor.adapter != .working {

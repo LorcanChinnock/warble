@@ -12,13 +12,6 @@ public final class EffectRunner {
     private let remember: @Sendable (PlaybackState, String?) -> LastPlayed
     /// Where lyrics come from, or `nil` when there's nowhere to ask, so every fetch finds none.
     private let lyrics: (any LyricsProvider)?
-    /// The tap behind the live waveform, or `nil` where there isn't one.
-    private let audioTap: (any AudioTap)?
-    /// Where each frame of the waveform's bands goes, off the main actor. Frames never pass through `reduce`, since 30 a
-    /// second would put work on the hover path for something only the bars draw.
-    public var spectrum: @Sendable ([Float]) -> Void = { _ in }
-    /// Which start of the tap a failure belongs to, so one that comes after a stop is ignored.
-    private var tapRun = 0
     /// Carries out the effects that need AppKit. The app sets it, since it owns what they change.
     public var platform: (AppEffect) -> Void = { _ in }
     /// Where an answer goes back in as an action. The store sets it once both exist.
@@ -47,8 +40,7 @@ public final class EffectRunner {
 
     public init(
         hotkeys: any HotkeyRegistrar, volume: any VolumeControl, outputs: any AudioOutputs, lastPlayed: any LastPlayedStore,
-        remember: @escaping @Sendable (PlaybackState, String?) -> LastPlayed, lyrics: (any LyricsProvider)?,
-        audioTap: (any AudioTap)? = nil
+        remember: @escaping @Sendable (PlaybackState, String?) -> LastPlayed, lyrics: (any LyricsProvider)?
     ) {
         self.hotkeys = hotkeys
         self.volume = volume
@@ -56,7 +48,6 @@ public final class EffectRunner {
         self.lastPlayed = lastPlayed
         self.remember = remember
         self.lyrics = lyrics
-        self.audioTap = audioTap
     }
 
     public func perform(_ effect: AppEffect) {
@@ -122,9 +113,7 @@ public final class EffectRunner {
                 }.value
                 self.dispatch(.lyricsLoaded(found, pass: pass))
             }
-        case .captureAudio(let capture):
-            captureAudio(capture)
-        case .watchClicksOutside, .turnOffWaveform, .openApp, .launchAndPlay, .openLink, .haptic, .gatherFacts, .followPlayers, .toggleKeyboard, .showWelcome:
+        case .watchClicksOutside, .openApp, .launchAndPlay, .openLink, .haptic, .gatherFacts, .followPlayers, .toggleKeyboard, .showWelcome:
             platform(effect)
         }
     }
@@ -168,23 +157,6 @@ public final class EffectRunner {
             volume.stopListening()
             outputs.stopListening()
         }
-    }
-
-    private func captureAudio(_ capture: Bool) {
-        tapRun += 1
-        guard let audioTap else { return }
-        guard capture else {
-            audioTap.stop()
-            return
-        }
-        let run = tapRun
-        let spectrum = spectrum
-        audioTap.start(onFrame: { spectrum($0) }, onFailure: { [weak self] in
-            Task { @MainActor in
-                guard let self, self.tapRun == run else { return }
-                self.dispatch(.audioCaptureDenied)
-            }
-        })
     }
 
     private func readVolume() {
