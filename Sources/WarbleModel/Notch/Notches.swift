@@ -2,7 +2,7 @@ import Foundation
 
 /// The notches, one for each camera housing: what the pointer has done to each, which card each shows, and the display
 /// settings that decide how they draw. What they draw also depends on the other features (what's playing, a toast, the
-/// lyrics, the Doctor, the first-run demo), which they read through `SharedState`.
+/// Doctor, the first-run demo), which they read through `SharedState`.
 public struct Notches: Feature {
     /// One notch for each camera housing, real or virtual, by `NotchHousing.display`.
     public internal(set) var surfaces: [String: Surface] = [:]
@@ -68,10 +68,6 @@ public struct Notches: Feature {
         case .showDoctor(let display, let show):
             // From the resting "!", the click that follows opens the notch on the checks.
             surfaces[display]?.showsDoctor = show
-        case .showLyrics(let display, let show):
-            // Only from an open card, and only while there are lyrics to show; the button is there only then.
-            guard let surface = surfaces[display], notchState(surface, shared) == .expanded, !show || shared.hasLyricsCard else { break }
-            surfaces[display]?.showsLyrics = show
         case .dismiss(let except):
             dismiss(except: except, shared, at: now)
         case .idleHoverChanged(let idleHover):
@@ -102,9 +98,8 @@ public struct Notches: Feature {
                 surfaces[display]?.isDragging = false
             }
             if old.notchState(before, oldShared) == .expanded, notchState(surface, shared) != .expanded {
-                // The checks and the lyrics show until the notch closes; the next open shows the player again.
+                // The checks show until the notch closes; the next open shows the player again.
                 surfaces[display]?.showsDoctor = false
-                surfaces[display]?.showsLyrics = false
             }
         }
     }
@@ -141,8 +136,7 @@ public struct Notches: Feature {
     func notchState(_ surface: Surface, _ shared: SharedState) -> NotchState {
         let state = shared.demoState ?? NotchState(
             surface.hover.state, isPlaying: shared.showsPlayback, needsAttention: shared.needsAttention, idleHover: idleHover,
-            isAlwaysShown: surface.isAlwaysShown, showsToast: shared.hasToast && !showsTitle(surface, shared),
-            showsLyrics: shared.showsLyricsLine
+            isAlwaysShown: surface.isAlwaysShown, showsToast: shared.hasToast && !showsTitle(surface, shared)
         )
         // A full-screen app has the top of its display to itself, apart from the toast when Settings lets it through.
         guard surface.isFullScreen else { return state }
@@ -153,7 +147,7 @@ public struct Notches: Feature {
     func card(_ surface: Surface, _ shared: SharedState) -> NotchCard {
         shared.demoCard ?? NotchCard(
             isPlaying: shared.showsPlayback && shared.playback != nil, needsAttention: shared.needsAttention,
-            showsDoctor: surface.showsDoctor, showsLyrics: surface.showsLyrics && shared.hasLyricsCard
+            showsDoctor: surface.showsDoctor
         )
     }
 
@@ -209,8 +203,6 @@ public struct Notches: Feature {
         public internal(set) var pointerInside = false
         /// Whether the open card shows the Doctor's checks rather than the player, until the notch closes.
         public internal(set) var showsDoctor = false
-        /// Whether the open card shows the lyrics rather than the player, until the notch closes.
-        public internal(set) var showsLyrics = false
         /// Whether a menu from this notch is open, which takes Escape for itself.
         public internal(set) var showsMenu = false
         /// Whether the art is being dragged out of this notch's card, which lets go of Escape so the key cancels the drag.

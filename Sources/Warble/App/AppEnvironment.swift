@@ -26,9 +26,8 @@ final class AppEnvironment {
     let toast: Toast
     let recorder: ShortcutRecorder
 
-    /// `lastPlayed` is where the last track played is kept, which the preview keeps only in memory. `lyrics` is where
-    /// lyrics come from, which the preview makes up rather than asking LRCLIB..
-    init(lastPlayed: any LastPlayedStore, lyrics: (any LyricsProvider)?) {
+    /// `lastPlayed` is where the last track played is kept, which the preview keeps only in memory..
+    init(lastPlayed: any LastPlayedStore) {
         // Before anything reads a setting, so every read falls back to the registered default.
         Preferences.registerDefaults()
         settings = SettingsStore()
@@ -41,7 +40,6 @@ final class AppEnvironment {
             state: AppState(
                 stayVisibleAfterPausing: preferences.stayVisibleAfterPausing, idleHover: preferences.idleHover,
                 showsTrackToast: preferences.trackChangeToast, toastsInFullScreen: preferences.toastsInFullScreen,
-                showsLyrics: preferences.lyrics,
                 swipeToSkip: preferences.swipeToSkip, podcastSkips: preferences.podcastSkips, dragArtOut: preferences.dragArtOut,
                 hidesFromCapture: preferences.hideFromCapture, showsVirtualTitle: preferences.virtualTitle,
                 checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
@@ -53,7 +51,7 @@ final class AppEnvironment {
         doctor = DoctorModel(updater: updater, dispatch: dispatch)
         volume = SystemVolume()
         let outputs = CoreAudioOutputs()
-        runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: LastPlayedFile.remembering, lyrics: lyrics)
+        runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: LastPlayedFile.remembering)
         platform = PlatformEffects(dispatch: dispatch)
         store.perform = { [weak runner] in runner?.perform($0) }
         runner.dispatch = dispatch

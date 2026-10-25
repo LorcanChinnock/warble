@@ -77,7 +77,7 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         effects += state.last.reduce(action, shared: state.shared, at: now)
     case .adapterChanged, .factsGathered, .playersChanged, .automationDenied, .fallbackReported, .notNow:
         effects += state.doctor.reduce(action, shared: state.shared, at: now)
-    case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .showDoctor, .showLyrics, .dismiss, .idleHoverChanged,
+    case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .showDoctor, .dismiss, .idleHoverChanged,
         .hidesFromCaptureChanged, .virtualTitleChanged:
         effects += state.notches.reduce(action, shared: state.shared, at: now)
     case .stayVisibleChanged(let delay):
@@ -85,8 +85,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.idle.advance(to: now)
     case .trackToastChanged, .toastsInFullScreenChanged:
         effects += state.toast.reduce(action, shared: state.shared, at: now)
-    case .lyricsChanged, .lyricsLoaded:
-        effects += state.lyrics.reduce(action, shared: state.shared, at: now)
     case .podcastSkipsChanged(let on):
         state.podcastSkips = on
     case .dragArtOutChanged(let on):
@@ -105,8 +103,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     // After Idle has had its say, so a track that's no longer shown has nothing to announce.
     state.toast.announce(notice, shared: state.shared, isOpen: state.notches.isOpen(state.shared), at: now)
     effects += state.last.follow(state.shared, at: now)
-    // Last, so the line follows whatever this action did: a new track, a seek, a pause, Idle or a tick.
-    effects += state.lyrics.follow(state.shared, at: now)
     return effects
 }
 

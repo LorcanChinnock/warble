@@ -221,7 +221,6 @@ private struct NotchSettings: View {
     @Setting(PreferenceKey.idleHover) private var idleHover: IdleHover
     @Setting(PreferenceKey.trackChangeToast) private var trackChangeToast: Bool
     @Setting(PreferenceKey.toastsInFullScreen) private var toastsInFullScreen: Bool
-    @Setting(PreferenceKey.lyrics) private var lyrics: Bool
     @Setting(PreferenceKey.swipeToSkip) private var swipeToSkip: Bool
     @Setting(PreferenceKey.dragArtOut) private var dragArtOut: Bool
     @Setting(PreferenceKey.podcastSkips) private var podcastSkips: Bool
@@ -258,13 +257,6 @@ private struct NotchSettings: View {
                     title: Text("Show the title in a virtual notch"),
                     detail: Text("On a display without a notch, the song's title shows in the middle."),
                     isOn: $virtualTitle
-                )
-            }
-            SettingsGroup(footer: Text("To find a song's lyrics, Warble sends its title, artist, album and length to LRCLIB, a free lyrics library. Nothing is sent while this is off.")) {
-                SettingsToggleRow(
-                    title: Text("Show lyrics under the notch"),
-                    detail: Text("The line being sung, while a song plays."),
-                    isOn: $lyrics
                 )
             }
             SettingsGroup(footer: Text("Needs a trackpad, or a Magic Mouse, where you swipe with one finger. Scrolling up and down over the notch still changes the volume.")) {

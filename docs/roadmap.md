@@ -51,15 +51,11 @@ The first public beta: what's playing in the notch, playback and volume controls
 - [#188](https://github.com/LorcanChinnock/warble/issues/188) feat(player): resume the last track after its app has quit, on a normal install
 - [#185](https://github.com/LorcanChinnock/warble/issues/185) fix(player): the last-played card's play button does nothing once the app's session has gone
 
-## [0.2: lyrics, gestures and podcasts](https://github.com/LorcanChinnock/warble/issues/33)
+## [0.2: gestures and podcasts](https://github.com/LorcanChinnock/warble/issues/33)
 
-Synced lyrics, gestures and podcast controls, each off until you turn it on, plus the title in the middle of a virtual notch.
+Gestures and podcast controls, each off until you turn it on, plus the title in the middle of a virtual notch.
 
-- [#34](https://github.com/LorcanChinnock/warble/issues/34) feat(model): LRC parser and current-line lookup
-- [#129](https://github.com/LorcanChinnock/warble/issues/129) feat(lyrics): LRCLIB client and lyrics cache
-- [#35](https://github.com/LorcanChinnock/warble/issues/35) feat(lyrics): synced lyrics from LRCLIB
 - [#36](https://github.com/LorcanChinnock/warble/issues/36) feat(gestures): swipe over the notch to skip
-- [#131](https://github.com/LorcanChinnock/warble/issues/131) feat(lyrics): a lyrics card in the player
 - [#132](https://github.com/LorcanChinnock/warble/issues/132) feat(gestures): drag the album art out
 - [#37](https://github.com/LorcanChinnock/warble/issues/37) feat(player): skip 15 seconds and change speed for podcasts
 - [#38](https://github.com/LorcanChinnock/warble/issues/38) feat(notch): show the track-change toast in full screen
@@ -68,7 +64,7 @@ Synced lyrics, gestures and podcast controls, each off until you turn it on, plu
 
 ## [0.4: extras](https://github.com/LorcanChinnock/warble/issues/44)
 
-A sleep timer, plus research into replacing the volume overlay.
+Source chips, plus research into replacing the volume overlay.
 
 - [#46](https://github.com/LorcanChinnock/warble/issues/46) spike: replacing the volume and brightness overlay ([findings](spikes/volume-brightness-overlay.md))
 - [#17](https://github.com/LorcanChinnock/warble/issues/17) feat(player): source chips

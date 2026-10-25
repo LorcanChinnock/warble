@@ -30,8 +30,6 @@ public enum AppEffect: Equatable, Sendable {
     case saveLastPlayed(LastPlayed)
     /// Gather the Doctor's facts, then answer `.factsGathered` with `pass`.
     case gatherFacts(Doctor.Adapter, pass: Int)
-    /// Look up the track's synced lyrics and parse them, then answer `.lyricsLoaded` with `pass`.
-    case fetchLyrics(LyricsQuery, pass: Int)
     /// Open the welcome window, which `.welcomeClosed` answers.
     case showWelcome
     /// Watch Music and Spotify open and quit (true), or stop.

@@ -33,10 +33,6 @@ struct SharedState: Equatable, Sendable {
     /// Whether a track-change toast is waiting to show, and whether Settings lets it through over a full-screen app.
     var hasToast = false
     var toastsInFullScreen = false
-    /// Whether there's a lyric line to show under a resting notch.
-    var showsLyricsLine = false
-    /// Whether there's a lyrics card to show: the song playing has lyrics.
-    var hasLyricsCard = false
     /// What the first-run demo draws on every notch, or `nil` when it isn't running.
     var demoState: NotchState?
     var demoCard: NotchCard?

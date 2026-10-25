@@ -8,9 +8,6 @@ struct NotchRender: Equatable {
     var card: NotchCard
     var isPlaying: Bool
     var toast: TrackToast?
-    var lyric: String?
-    var lyrics: LyricsExcerpt?
-    var hasLyrics: Bool
     var skipsBySeconds: Bool
     var artDrag: ArtDrag?
     var isVirtual: Bool
@@ -29,9 +26,6 @@ struct NotchRender: Equatable {
         self.card = card
         isPlaying = app.drawsPlayback
         toast = app.toasts.current?.content
-        lyric = app.lyrics.line?.text
-        lyrics = app.lyrics.excerpt
-        hasLyrics = app.hasLyricsCard
         skipsBySeconds = app.skipsBySeconds
         artDrag = app.artDrag
         isVirtual = surface.isVirtual
@@ -42,8 +36,6 @@ struct NotchRender: Equatable {
         sharingType = app.hidesFromCapture ? .none : .readOnly
     }
 
-    /// The toast, lyric line and excerpt only while their state or card is the one showing them.
+    /// The toast only while its state is the one showing it.
     var shownToast: TrackToast? { state == .toast ? toast : nil }
-    var shownLyric: String? { state == .lyrics ? lyric : nil }
-    var shownLyrics: LyricsExcerpt? { state == .expanded && card == .lyrics ? lyrics : nil }
 }

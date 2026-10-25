@@ -53,7 +53,6 @@ final class NotchSurface {
         model.onClick = { dispatch(.hover(display: display, .click)) }
         model.onMenu = { [weak self] open in self?.menu(open: open) }
         model.onShowDoctor = { show in dispatch(.showDoctor(display: display, show)) }
-        model.onShowLyrics = { show in dispatch(.showLyrics(display: display, show)) }
         model.onDragArt = { [weak self] dragging in self?.dragArt(dragging) }
         panel.onKey = { [weak self] event in self?.onKey(event) ?? false }
     }
@@ -67,7 +66,6 @@ final class NotchSurface {
             model.showsTitle = value.showsTitle
             model.isAlwaysShown = value.isAlwaysShown
             model.showsDoctor = value.showsDoctor
-            model.hasLyrics = value.hasLyrics
             model.skipsBySeconds = value.skipsBySeconds
             model.artDrag = value.artDrag
             panel.ignoresMouseEvents = value.ignoresMouseEvents
@@ -182,8 +180,6 @@ final class NotchSurface {
         let card = value.card
         let isPlaying = value.isPlaying
         let toast = value.shownToast
-        let lyric = value.shownLyric
-        let lyrics = value.shownLyrics
         guard let frame = NotchLayout.frame(state, notch: notch, card: card) else {
             guard shown != nil else { return }
             shown = nil
@@ -205,7 +201,6 @@ final class NotchSurface {
             return
         }
         guard shown?.state != state || shown?.frame != frame || model.card != card || model.isPlaying != isPlaying || model.toast != toast
-            || model.lyric != lyric || model.lyrics != lyrics
         else { return }
         let previous = shown
         shown = (state, frame)
@@ -234,8 +229,6 @@ final class NotchSurface {
                 model.card = card
                 model.isPlaying = isPlaying
                 model.toast = toast
-                model.lyric = lyric
-                model.lyrics = lyrics
             } completion: { [weak self] in
                 guard let self, morph == self.morphs, self.panelFrame != frame else { return }
                 self.show(in: frame)
@@ -245,8 +238,6 @@ final class NotchSurface {
             model.card = card
             model.isPlaying = isPlaying
             model.toast = toast
-            model.lyric = lyric
-            model.lyrics = lyrics
             show(in: frame)
         }
         panel.track(NotchLayout.hoverArea(state, notch: notch, card: card) ?? .zero)

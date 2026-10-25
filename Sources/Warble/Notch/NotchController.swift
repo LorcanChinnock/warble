@@ -49,9 +49,6 @@ final class NotchController {
                 if preferences.toastsInFullScreen != state.toastsInFullScreen {
                     self.store.dispatch(.toastsInFullScreenChanged(preferences.toastsInFullScreen))
                 }
-                if preferences.lyrics != state.lyrics.isOn {
-                    self.store.dispatch(.lyricsChanged(preferences.lyrics))
-                }
                 if preferences.swipeToSkip != state.swipeToSkip {
                     self.store.dispatch(.swipeToSkipChanged(preferences.swipeToSkip))
                 }

@@ -53,8 +53,6 @@ public struct AppState: Equatable, Sendable {
         set { toast.isOn = newValue }
     }
     public var toastsInFullScreen: Bool { toast.inFullScreen }
-    /// The current lyric line, which a resting notch shows under it when Settings turns lyrics on.
-    public internal(set) var lyrics: LyricsState
     /// Whether a sideways swipe over a notch skips, which Settings turns on, and the trackpad gesture under way.
     public internal(set) var scroll: ScrollState
     public var swipeToSkip: Bool { scroll.swipeToSkip }
@@ -91,7 +89,7 @@ public struct AppState: Equatable, Sendable {
     /// `checks` are what the Doctor finds before it has asked macOS anything: what it finds while the adapter works.
     public init(
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
-        showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, podcastSkips: Bool = false,
+        showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, swipeToSkip: Bool = false, podcastSkips: Bool = false,
         dragArtOut: Bool = false, hidesFromCapture: Bool = false, showsVirtualTitle: Bool = true,
         checks: [Doctor.Check] = []
     ) {
@@ -102,7 +100,6 @@ public struct AppState: Equatable, Sendable {
         scroll = ScrollState(swipeToSkip: swipeToSkip)
         self.podcastSkips = podcastSkips
         self.dragArtOut = dragArtOut
-        lyrics = LyricsState(isOn: showsLyrics)
     }
 
     /// Whether the notches draw what's playing: something is, and it isn't Idle.
@@ -111,7 +108,7 @@ public struct AppState: Equatable, Sendable {
     /// Where each part of the state keeps its deadline: a feature that can come due on its own adds one line here. Key paths
     /// rather than the features themselves, so asking for the deadline copies and boxes nothing.
     private static let deadlines: [any KeyPath<AppState, Date?> & Sendable] = [
-        \.hideAt, \.idle.deadline, \.toast.deadline, \.lyrics.deadline, \.onboarding.deadline,
+        \.hideAt, \.idle.deadline, \.toast.deadline, \.onboarding.deadline,
         \.scroll.deadline, \.last.deadline, \.doctor.deadline, \.notches.deadline,
     ]
 
@@ -151,12 +148,6 @@ public struct AppState: Equatable, Sendable {
         notches.card(surface, shared)
     }
 
-    /// Whether there's a lyrics card to show, which the player's card offers: the song playing has lyrics, which only
-    /// happens with lyrics on in Settings.
-    public var hasLyricsCard: Bool {
-        showsPlayback && playback != nil && lyrics.excerpt != nil
-    }
-
     /// Whether the player's card skips back and forward by seconds rather than by track: Settings turns it on, and a
     /// podcast or audiobook is playing, with a length to move through.
     public var skipsBySeconds: Bool {
@@ -168,8 +159,8 @@ public struct AppState: Equatable, Sendable {
     var shared: SharedState {
         SharedState(
             playback: playback, showsPlayback: showsPlayback, hideAt: hideAt, needsAttention: needsAttention,
-            hasToast: toasts.current != nil, toastsInFullScreen: toastsInFullScreen, showsLyricsLine: lyrics.showsLine,
-            hasLyricsCard: hasLyricsCard, demoState: onboarding.notchState, demoCard: onboarding.card
+            hasToast: toasts.current != nil, toastsInFullScreen: toastsInFullScreen,
+            demoState: onboarding.notchState, demoCard: onboarding.card
         )
     }
 

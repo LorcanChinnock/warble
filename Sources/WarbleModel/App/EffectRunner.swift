@@ -10,8 +10,6 @@ public final class EffectRunner {
     private let lastPlayed: any LastPlayedStore
     /// Makes what's kept of a report, with its art shrunk for the idle card. Slow, so it runs off the main actor.
     private let remember: @Sendable (PlaybackState, String?) -> LastPlayed
-    /// Where lyrics come from, or `nil` when there's nowhere to ask, so every fetch finds none.
-    private let lyrics: (any LyricsProvider)?
     /// Carries out the effects that need AppKit. The app sets it, since it owns what they change.
     public var platform: (AppEffect) -> Void = { _ in }
     /// Where an answer goes back in as an action. The store sets it once both exist.
@@ -30,24 +28,18 @@ public final class EffectRunner {
     private var followsVolume = false
     /// The write in flight, which the next one waits for, so the file always ends up holding the latest track.
     private var saving: Task<Void, Never>?
-    /// The lyrics fetch in flight, which the next waits for, and the pass of the latest asked for. A fetch whose turn
-    /// comes after a newer one was asked for is dropped unsent, so skipping through ten tracks asks for the one in
-    /// flight and the latest, never the eight between, and the latest is always asked.
-    private var fetching: Task<Void, Never>?
-    private var latestFetch: Int?
     /// The reads under way, each gone once it answers.
     private var reading: [UUID: Task<Void, Never>] = [:]
 
     public init(
         hotkeys: any HotkeyRegistrar, volume: any VolumeControl, outputs: any AudioOutputs, lastPlayed: any LastPlayedStore,
-        remember: @escaping @Sendable (PlaybackState, String?) -> LastPlayed, lyrics: (any LyricsProvider)?
+        remember: @escaping @Sendable (PlaybackState, String?) -> LastPlayed
     ) {
         self.hotkeys = hotkeys
         self.volume = volume
         self.outputs = outputs
         self.lastPlayed = lastPlayed
         self.remember = remember
-        self.lyrics = lyrics
     }
 
     public func perform(_ effect: AppEffect) {
@@ -100,19 +92,6 @@ public final class EffectRunner {
                     logError("Couldn't save the last track played: \(error.localizedDescription)")
                 }
             }
-        case .fetchLyrics(let query, let pass):
-            latestFetch = pass
-            let previous = fetching
-            let provider = lyrics
-            fetching = Task { [weak self] in
-                await previous?.value
-                guard let self, pass == self.latestFetch else { return }
-                // Parsed off the main actor too, since a song's lyrics can run to hundreds of lines.
-                let found = await Task.detached(priority: .utility) {
-                    await provider?.lyrics(for: query).flatMap(Lyrics.init(lrc:))
-                }.value
-                self.dispatch(.lyricsLoaded(found, pass: pass))
-            }
         case .watchClicksOutside, .openApp, .launchAndPlay, .openLink, .haptic, .gatherFacts, .followPlayers, .toggleKeyboard, .showWelcome:
             platform(effect)
         }
@@ -140,7 +119,6 @@ public final class EffectRunner {
             await read.value
         }
         await saving?.value
-        await fetching?.value
     }
 
     /// Reads the volume and the outputs, and follows changes from the volume keys and elsewhere, only while the slider

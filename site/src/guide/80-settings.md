@@ -1,6 +1,6 @@
 ---
 title: Settings
-summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a notch drawn on another display shows the title, whether a new song shows its title, whether lyrics show, whether a swipe skips, whether the album art can be dragged out, set keyboard shortcuts, including one that opens the notch.
+summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a notch drawn on another display shows the title, whether a new song shows its title, whether a swipe skips, whether the album art can be dragged out, set keyboard shortcuts, including one that opens the notch.
 group: Reference
 ---
 
@@ -19,7 +19,7 @@ Settings is always dark, like the notch, whatever your Mac's appearance. Every c
 
 - **Open at login.** Off at first. Turn it on, and Warble opens each time you log in, so it's there after a restart. It's the same switch as Warble's entry in System Settings › General › Login Items. If you turn Warble off there, turn it back on there.
 - **Show icon in the menu bar.** Turn it off to keep the menu bar tidy. Right-click the notch for the same menu, or open Warble from Applications to get the icon back.
-- **Text size.** Makes the notch's own words larger, such as the times and the hints: **Standard**, **Large** or **Larger**. Song titles, artists and lyrics stay the size they are.
+- **Text size.** Makes the notch's own words larger, such as the times and the hints: **Standard**, **Large** or **Larger**. Song titles and artists stay the size they are.
 - **Displays.** For each display without a notch, choose whether Warble draws one there. See [External displays](/docs/external-displays/).
 - **Stay visible after pausing.** How long a paused song stays in the notch before Warble hides behind the camera again, from 5 seconds to 5 minutes.
 
@@ -29,7 +29,6 @@ Settings is always dark, like the notch, whatever your Mac's appearance. Every c
 - **Show the title in a virtual notch.** On at first. On a display where Warble draws a notch of its own, the title of what's playing shows in the middle. A long title fades out and scrolls once when the song changes. See [External displays](/docs/external-displays/).
 - **Show a message when the track changes.** Off at first. Turn it on, and when a new song starts, its title and artist slide out of the notch for two seconds, so you can see what's on without pointing at it. Skip a few songs in a row and you see only the last one. Point at the notch or click the message to open the full player.
   - **Show it over full-screen apps too.** Off at first, and only there while the message above is on. Turn it on, and the message also slides out over an app in full screen, such as a film or a game, then goes. The notch itself still stays out of a full-screen app.
-- **Show lyrics under the notch.** Off at first. Turn it on, and the line being sung shows under the notch while a song plays. To find the lyrics, Warble sends the song's title, artist, album and length to LRCLIB, a free lyrics library. The player then has a lyrics button that shows the lines around it. See [Show lyrics](/docs/show-lyrics/).
 - **Swipe over the notch to skip.** Off at first. Turn it on, and swiping left over the notch with two fingers skips to the next song, and swiping right goes back. It needs a trackpad, or a Magic Mouse. Scrolling up and down still changes the volume. See [Use gestures](/docs/use-gestures/).
 - **Skip by seconds in podcasts.** Off at first. Turn it on, and a podcast or an audiobook has back 15 seconds and forward 30 in place of previous and next. Songs keep previous and next. See [Listen to podcasts](/docs/listen-to-podcasts/).
 - **Drag the album art out of the player.** Off at first. Turn it on, and you can drag the art from the open player into another app: a folder gets the picture as a file, and a message or a note gets the picture. A click on the art still opens the app. See [Use gestures](/docs/use-gestures/#drag-the-album-art-out).
@@ -57,4 +56,4 @@ Warble won't use a shortcut that every app needs, such as <kbd>⌘Q</kbd>, or on
 
 ## About
 
-About shows which version of Warble you have, with **Check for Updates…** and a switch to check for updates automatically. Warble only goes online to check for updates, and to look up lyrics if you turn them on.
+About shows which version of Warble you have, with **Check for Updates…** and a switch to check for updates automatically. Warble only goes online to check for updates.

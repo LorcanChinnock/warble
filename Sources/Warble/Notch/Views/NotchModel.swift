@@ -16,8 +16,6 @@ final class NotchModel {
     let doctor: DoctorModel
     /// Whether the open card shows the Doctor's checks rather than the player.
     var showsDoctor = false
-    /// Whether the song playing has lyrics, so the player's card offers them.
-    var hasLyrics = false
     /// Whether a podcast or audiobook is playing, so the player's card skips by seconds rather than by track.
     var skipsBySeconds = false
     /// What dragging the art out of the player's card carries, or `nil` when Settings has it off or there's nothing.
@@ -38,17 +36,11 @@ final class NotchModel {
     var isAlwaysShown = false
     /// The track-change toast, while `state` is `toast`. Set with `state`, like `card`.
     var toast: TrackToast?
-    /// The lyric line, while `state` is `lyrics`. Set with `state`, like `card`.
-    var lyric: String?
-    /// The lines around the one being sung, while the card is `lyrics`. Set with `state`, like `card`.
-    var lyrics: LyricsExcerpt?
     @ObservationIgnored var onClick: () -> Void = {}
     /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
     @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }
     /// Called to swap the open card between the player and the checks.
     @ObservationIgnored var onShowDoctor: (Bool) -> Void = { _ in }
-    /// Called to swap the open card between the player and the lyrics.
-    @ObservationIgnored var onShowLyrics: (Bool) -> Void = { _ in }
     /// Called with true when the art begins to be dragged out of the card, and false when the drag ends.
     @ObservationIgnored var onDragArt: (Bool) -> Void = { _ in }
 
