@@ -41,8 +41,8 @@ Examples are [BetterHUD](https://github.com/connorpodea/BetterHUD), [Notchy](htt
 Following CONTRIBUTING.md › Adding a feature:
 
 - **State.** Add `VolumeNotice` (or fold it into `ToastState`) with a setting that starts off. `Notice.Kind` gains `volumeChanged`, and `Notice<Content>` is generic, so the content needs a type that holds a level and a mute flag, or `ToastQueue` becomes a queue of an enum of both kinds of content.
-- **Actions.** `.volumeChanged` is dispatched when the listener fires, as `.followVolume` already does for the expanded card. `reduce` posts the notice only when the setting is on, something plays and no notch is open, the same rule as the track toast.
-- **Effects.** `.followVolume` becomes "while Expanded shows the card, or the notice is on". The runner starts and stops the listener from that one reason, so with the setting off or nothing playing nothing listens.
+- **Actions.** None new are needed. The listener already ends in `.volumeRead(_:isMuted:)`, which `EffectRunner.readVolume()` dispatches, so `reduce` can post the notice from there. It posts only when the setting is on, something plays and no notch is open, the same rule as the track toast.
+- **Effects.** `.followVolume`, the effect that starts and stops the listener, would run "while Expanded shows the card, or the notice is on". The runner starts and stops the listener from that one reason, so with the setting off or nothing playing nothing listens.
 - **Ports.** `VolumeControl` already has what's needed, so no new port. A fake exists. Brightness would need a `BrightnessControl` port with a fake, and a real one over `DisplayServices` in WarbleCore. We don't recommend building it.
 - **Deadline.** The notice's end is `ToastQueue.deadline`, which is already part of `AppState.deadline`. No timer of its own.
 - **Nothing playing.** The notice is posted only while something plays (`shared.showsPlayback`), as the track toast is. With nothing playing there's no listener, no notice and no deadline.
