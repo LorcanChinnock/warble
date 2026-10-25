@@ -104,18 +104,18 @@ A resting notch with an activity draws the sender's icon in the left wing, with 
 
 The expanded notch has two cases:
 
-- **Music is playing.** The player's card grows by a row below its controls for each activity: an icon and title, the clock, any buttons and a close button. The player stays one hover away.
+- **Music is playing.** The player's card and the lyrics card grow by a row below their controls for each activity: an icon and title, the clock, any buttons and a close button. The player stays one hover away.
 - **Nothing is playing.** A card of its own, the activity rows only, the height of the idle card plus a row for each extra activity.
 
 A button press dispatches `.activityButton`, and `reduce` asks for `.haptic` along with the event, so there's feedback before the sender answers. The sender is expected to `update` or `end` in reply. Warble doesn't guess what a button does. The close button is always there, so no activity traps the user.
 
-VoiceOver reads the wing as "App name: title, clock" with the clock as its value, each button by its label, and the close button as "Close". The cards scale with Larger Text as the Doctor card does. With Reduce Motion the wings change at once and only the content fades, the same rule as the other states.
+VoiceOver reads the wing as "App name: title, clock" with the clock as its value, each button by its label, and the close button as "Close". The cards' text follows Settings › General › Text size, as the Doctor card's does, and their height stays fixed. With Reduce Motion the wings change at once and only the content fades, the same rule as the other states.
 
 The two things an activity leaves alone: it never takes the key or the keyboard, and it never moves the pointer's state. A notch under the pointer stays where it is when an activity starts.
 
 ## Priority against music
 
-One rule: an activity takes the resting wings and, with nothing playing, the card behind them. Everything else stays as it is.
+One rule: an activity takes the resting wings and, with nothing playing, the card behind them. Open cards keep their content and gain the activity rows, and everything else stays as it is.
 
 | When an activity is live and… | The notch |
 | --- | --- |
@@ -123,7 +123,8 @@ One rule: an activity takes the resting wings and, with nothing playing, the car
 | music plays, the pointer opens it | The player, with the activity row. |
 | nothing plays | Draws the activity in the wings, where it would draw nothing, or an idle housing, or the Doctor's "!". |
 | a track-change toast or lyric line is due | Doesn't draw it. The toast's own deadline still runs out, so it's skipped, not held. |
-| the Doctor's card or the lyrics card is open | That card, as now. |
+| the Doctor's card is open | That card, as now. |
+| the lyrics card is open | That card, with the activity rows below it. |
 | a display shows a full-screen app | Hidden, as music is. Not even `toastsInFullScreen` lets it through, so a recording timer never draws over what you're recording. |
 | the screen is shared, with "hide from capture" on | Left out of the recording, as the rest of the notch is. |
 
@@ -177,7 +178,7 @@ The socket's handler, `ActivityHandler` (WarbleModel, `@MainActor`, like `Remote
 | Effect | Asked when | Carried out by |
 | --- | --- | --- |
 | `.listenForActivities(Bool)` | `listensForActivities` changes | `PlatformEffects` opens or closes the socket, like `.listenForCommands`. |
-| `.saveActivityApps([String: String])` | `.activityStarted` adds a sender to `apps` | `PlatformEffects` writes `PreferenceKey.activityApps`, as `.saveLastPlayed` saves the last track. Settings reads it back. |
+| `.saveActivityApps([String: String])` | `.activityStarted` adds a sender to `apps` | `PlatformEffects` writes `PreferenceKey.activityApps`, as `.turnOffWaveform` writes `PreferenceKey.waveform`. Settings reads it back. |
 | `.sendActivityEvent(ActivityKey, ActivityEvent)` | A button press, a dismissal, an expiry, a block or a replacement | `EffectRunner`, through the `ActivityChannel` port. |
 
 `ActivityEvent` is `.button(String)` or `.ended(reason)`. `.haptic` is asked on a button press too, the effect that exists already.
