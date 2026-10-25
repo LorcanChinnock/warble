@@ -214,7 +214,7 @@ The page is `site/src/guide/` › "Show an activity in the notch", with the prot
 - **Hover to expand and play/pause:** unchanged. The activity paths only add a case to the state selectors, and dispatch stays synchronous.
 - **The setting off:** nothing, no socket and no key path with a value.
 - **On, with nothing live:** one listening socket, no timer.
-- **With a clock showing:** one redraw a second from the system. check it by hand while building: CPU and wakeups in Activity Monitor with a clock showing, expecting about one wakeup a second and no more.
+- **With a clock showing:** one redraw a second from the system. Check it by hand while building: with a clock showing, compare the process's CPU and its context switches over a fixed interval (see [performance](../architecture/performance.md)), expecting about one wakeup a second and no more.
 
 ## Pull requests
 
