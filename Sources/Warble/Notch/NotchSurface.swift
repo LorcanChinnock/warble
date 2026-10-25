@@ -56,6 +56,8 @@ final class NotchSurface {
         model.onShowDoctor = { show in dispatch(.showDoctor(display: display, show)) }
         model.onShowLyrics = { show in dispatch(.showLyrics(display: display, show)) }
         model.onSetSleepTimer = { choice in dispatch(.setSleepTimer(choice)) }
+        model.onActivityButton = { key, button in dispatch(.activityButton(key, button: button)) }
+        model.onActivityDismiss = { key in dispatch(.activityDismissed(key)) }
         model.onDragArt = { [weak self] dragging in self?.dragArt(dragging) }
         panel.onKey = { [weak self] event in self?.onKey(event) ?? false }
     }
@@ -190,7 +192,8 @@ final class NotchSurface {
         let toast = value.shownToast
         let lyric = value.shownLyric
         let lyrics = value.shownLyrics
-        guard let frame = NotchLayout.frame(state, notch: notch, card: card) else {
+        let activities = value.activities
+        guard let frame = NotchLayout.frame(state, notch: notch, card: card, activityRows: activities.count) else {
             guard shown != nil else { return }
             shown = nil
             morphs += 1
@@ -211,7 +214,7 @@ final class NotchSurface {
             return
         }
         guard shown?.state != state || shown?.frame != frame || model.card != card || model.isPlaying != isPlaying || model.toast != toast
-            || model.lyric != lyric || model.lyrics != lyrics
+            || model.lyric != lyric || model.lyrics != lyrics || model.activities != activities
         else { return }
         let previous = shown
         shown = (state, frame)
@@ -242,6 +245,7 @@ final class NotchSurface {
                 model.toast = toast
                 model.lyric = lyric
                 model.lyrics = lyrics
+                model.activities = activities
             } completion: { [weak self] in
                 guard let self, morph == self.morphs, self.panelFrame != frame else { return }
                 self.show(in: frame)
@@ -253,9 +257,10 @@ final class NotchSurface {
             model.toast = toast
             model.lyric = lyric
             model.lyrics = lyrics
+            model.activities = activities
             show(in: frame)
         }
-        panel.track(NotchLayout.hoverArea(state, notch: notch, card: card) ?? .zero)
+        panel.track(NotchLayout.hoverArea(state, notch: notch, card: card, activityRows: activities.count) ?? .zero)
         log.notice("Notch \(state.rawValue, privacy: .public) at \(NSStringFromRect(frame), privacy: .public) over \(NSStringFromRect(notch), privacy: .public)")
     }
 

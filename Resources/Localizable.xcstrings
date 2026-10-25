@@ -1943,6 +1943,9 @@
         }
       }
     },
+    "Close" : {
+
+    },
     "Control playback from any app. None are set until you add one." : {
       "localizations" : {
         "de" : {
@@ -8246,6 +8249,9 @@
           }
         }
       }
+    },
+    "Script: %@" : {
+
     },
     "Scripts and status bars can read what's playing and control it from Terminal." : {
       "localizations" : {

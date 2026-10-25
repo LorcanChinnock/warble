@@ -10,6 +10,8 @@ struct NotchRender: Equatable {
     var toast: TrackToast?
     var lyric: String?
     var lyrics: LyricsExcerpt?
+    /// The activities, ranked, which the wings and the cards' rows draw.
+    var activities: [Activity]
     var hasLyrics: Bool
     var skipsBySeconds: Bool
     var artDrag: ArtDrag?
@@ -36,6 +38,7 @@ struct NotchRender: Equatable {
         toast = app.toasts.current?.content
         lyric = app.lyrics.line?.text
         lyrics = app.lyrics.excerpt
+        activities = app.activities.ranked
         hasLyrics = app.hasLyricsCard
         skipsBySeconds = app.skipsBySeconds
         artDrag = app.artDrag
