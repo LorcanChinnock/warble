@@ -1,0 +1,126 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSAppleEventsUsageDescription" : {
+      "comment" : "Asked the first time Warble scripts Music, Spotify or a browser.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble zeigt, was Music und Spotify abspielen, und lässt dich beides über die Notch steuern. Wenn du es einschaltest, merkt es sich auch die Seite, die ein Browser abspielt, um sie erneut zu öffnen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble shows what Music and Spotify are playing and lets you control them from the notch. If you turn it on, it also notes the page a browser is playing so it can reopen it."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble muestra lo que reproducen Música y Spotify y te deja controlarlos desde el notch. Si lo activas, también anota la página que reproduce un navegador para poder reabrirla."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble affiche ce que Music et Spotify lisent et vous laisse les contrôler depuis le notch. Si vous l’activez, il note aussi la page lue par un navigateur pour pouvoir la rouvrir."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble mostra cosa stanno riproducendo Music e Spotify e ti permette di controllarli dal notch. Se lo attivi, annota anche la pagina che il browser sta riproducendo per poterla riaprire."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warbleは、MusicとSpotifyで再生中の曲を表示し、ノッチから操作できるようにします。オンにすると、ブラウザが再生中のページも記録して、開き直せるようにします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble은 Music과 Spotify에서 재생 중인 곡을 표시하고 노치에서 제어할 수 있게 해 줍니다. 이 기능을 켜면 브라우저에서 재생 중인 페이지도 기록하여 다시 열 수 있습니다."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Warble mostra o que o Music e o Spotify estão tocando e permite controlá-los pelo notch. Se você ativar, ele também anota a página que um navegador está reproduzindo para poder reabri-la."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble 会显示“音乐”和 Spotify 正在播放的内容，并让你从刘海控制它们。若你开启此功能，它还会记下浏览器正在播放的页面，以便再次打开。"
+          }
+        }
+      }
+    },
+    "NSAudioCaptureUsageDescription" : {
+      "comment" : "Asked the first time the live waveform starts, which it does only when Settings turns it on.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble hört den Ton, den dein Mac wiedergibt, nur, um die Balken in der Notch damit zu bewegen. Es nimmt nichts auf und speichert nichts."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble listens to the sound your Mac plays only to move the bars in the notch with it. It doesn't record or keep anything."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble escucha el sonido que reproduce tu Mac solo para mover las barras del notch con él. No graba ni guarda nada."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble écoute le son que votre Mac produit uniquement pour animer les barres du notch avec lui. Il n’enregistre ni ne garde rien."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble ascolta l'audio riprodotto dal Mac solo per muovere con esso le barre nel notch. Non registra né conserva nulla."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WarbleはMacが再生する音を、ノッチのバーを音に合わせて動かすためだけに聞き取ります。録音も保存もしません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble은 노치의 막대를 소리에 맞춰 움직이기 위해서만 Mac에서 재생되는 소리를 듣습니다. 아무것도 녹음하거나 저장하지 않습니다."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Warble ouve o som que o Mac reproduz apenas para mover as barras do notch com ele. Ele não grava nem guarda nada."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble 仅会收听你的 Mac 播放的声音，用来让刘海中的音柱随之跳动。它不会录制或保留任何内容。"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
