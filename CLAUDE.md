@@ -32,7 +32,8 @@ What this means in practice:
 make test                         # WarbleModel and WarbleCore unit tests (Swift Testing)
 make test-linux                   # WarbleModel tests in Docker on Linux, as CI runs them
 make perf                         # PerfTests alone: the timed paths with budgets in docs/performance.md
-make perf-app                     # scripts/perf.sh: the installed WarbleDev against its budgets; moves the pointer for ~5 min
+make perf-app                     # scripts/perf.sh: the installed WarbleDev's latencies against their budgets; moves the pointer for ~1 min
+make perf-app-full                # the same plus CPU, wakeups and the waveform; ~6.5 min, run before a release
 make lint                         # scripts/lint.sh: bans patterns that caused bugs (see below); on macOS also scripts/strings.sh --check
 make strings                      # sync Resources/Localizable.xcstrings with the strings the build extracted
 make build                        # swift build

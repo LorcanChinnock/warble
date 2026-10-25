@@ -20,11 +20,11 @@ Each budget is 2× the baseline measured on the CI runner, which is slower than 
 
 To change a budget, measure again, then update both this table and `Budget` in `PerfTests.swift`.
 
-## Locally: `make perf-app`
+## Locally: `make perf-app` and `make perf-app-full`
 
 `scripts/perf.sh` measures an installed WarbleDev (`/Applications/WarbleDev.app` by default, or a path you pass). CI can't run it, because it needs the pointer and the notch. Run it before each release, after `make app`.
 
-It moves the pointer and clicks for about six and a half minutes, so keep your hands off the mouse while it runs. It needs Accessibility permission for the terminal, macOS's permission to record system audio for WarbleDev (for the waveform step), and nothing playing when it starts: it asks the adapter and stops if anything is. It quits WarbleDev and the installed Warble, since both draw in the notch, and reopens Warble at the end if it was running. The pointer goes back where it was.
+`make perf-app` checks the latencies and the memory footprint and takes about a minute. `make perf-app-full` (`PERF_FULL=1`) adds the CPU and wakeup rows, which each need a minute of watching, and takes about six and a half minutes, so run it before a release. Either way it moves the pointer and clicks, so keep your hands off the mouse while it runs. It needs Accessibility permission for the terminal, macOS's permission to record system audio for WarbleDev (for the waveform step), and nothing playing when it starts: it asks the adapter and stops if anything is. It quits WarbleDev and the installed Warble, since both draw in the notch, and reopens Warble at the end if it was running. The pointer goes back where it was.
 
 The app emits `OSSignposter` signposts under its bundle identifier, in category `perf`, which the script reads with `log show --signpost`. Instruments shows them too.
 
@@ -34,7 +34,7 @@ The app emits `OSSignposter` signposts under its bundle identifier, in category 
 
 The first frame waits for the display's next refresh, so these include up to a frame of waiting as well as the work: 17 ms on the reference Mac's 60 Hz display.
 
-The script:
+The script (steps 2, 5 and 6, apart from the memory footprint, run only in the full version):
 
 1. Launches the app three times and takes the median **launch → ready** time.
 2. Waits 40 seconds, then measures **idle CPU** and **wakeups** for a minute with nothing playing, counting the adapter's Perl processes as Warble's.

@@ -1,11 +1,14 @@
 #!/bin/bash
 # Measures the app's fast and idle paths on this Mac and checks them against the budgets in docs/performance.md.
-# Drives an installed WarbleDev with the pointer, so it takes over the mouse for about six and a half minutes, and needs:
+# Drives an installed WarbleDev with the pointer, so it takes over the mouse for about a minute (PERF_FULL=1: six and a half minutes), and needs:
 #   - Accessibility permission for this terminal (moving the pointer, clicking the notch, finding Play/Pause),
 #   - nothing playing when it starts, for the idle measurements,
 #   - for the waveform measurement, macOS's permission to record system audio for WarbleDev (Screen & System Audio Recording).
 # It quits any running WarbleDev, and the installed Warble too, since both draw in the notch, and reopens Warble at the end
 # if it was running. The pointer goes back where it was.
+# By default it checks the latencies, which take a minute: launch, hover, click, play/pause and memory. PERF_FULL=1 (make
+# perf-app-full) adds the idle, playing and waveform CPU and wakeups, which each need a minute of watching, for six and a
+# half minutes in all. Run the full one before a release.
 # Usage: scripts/perf.sh [path/to/WarbleDev.app]   (default /Applications/WarbleDev.app, which make app installs)
 set -euo pipefail
 
@@ -17,6 +20,12 @@ cd "$(dirname "$0")/.."
 bundle_id=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$app/Contents/Info.plist")
 executable=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$app/Contents/Info.plist")
 resources="$app/Contents/Resources"
+full="${PERF_FULL:-0}"
+if [ "$full" = 1 ]; then
+  pause=1 gap=1.2 launch_gap=2
+else
+  pause=0.6 gap=0.6 launch_gap=0.5
+fi
 
 # Budgets, about 1.5x the baselines in docs/performance.md. The idle and at-rest ones are absolute instead: no CPU, and
 # no wakeups in the median 10 seconds, so any timer of 10 seconds or less fails. Empty means not
@@ -184,7 +193,7 @@ for _ in 1 2 3; do
     sleep 0.4
   done
   [ "$ready" = 1 ] || { echo "WarbleDev didn't report Ready within 20 s of launching" >&2; exit 1; }
-  sleep 2
+  sleep "$launch_gap"
 done
 launch_ms=$(signposts Ready | python3 -c '
 import json, re, sys
@@ -202,11 +211,14 @@ read -r housing_x housing_y <<<"$("$input" housing)"
 away_x=$housing_x
 away_y=$((housing_y + 400))
 "$input" move "$away_x" "$away_y"
-sleep 40
-measure_cpu 60
-idle_cpu=$cpu
-idle_wakeups=$wakeups_median
-idle_slices=$wakeup_slices
+idle_cpu="" idle_wakeups="" idle_slices="" playing_cpu="" playing_wakeups="" playing_slices="" waveform_cpu=""
+if [ "$full" = 1 ]; then
+  sleep 40
+  measure_cpu 60
+  idle_cpu=$cpu
+  idle_wakeups=$wakeups_median
+  idle_slices=$wakeup_slices
+fi
 
 # Playing: the preview track, which plays without a player, so the runs repeat. The adapter doesn't run, so CPU and
 # wakeups at rest, measured after the notch has opened and closed, are the notch's own cost: the art, the title and the
@@ -218,17 +230,17 @@ sleep 5
 # Hover → expanded: from the end of the hover delay to the first frame of the morph, ten times.
 for _ in $(seq 10); do
   "$input" move "$housing_x" "$housing_y"
-  sleep 1
+  sleep "$pause"
   "$input" move "$away_x" "$away_y"
-  sleep 1.2
+  sleep "$gap"
 done
 
 # Click → expanded: from the click to the first frame of the morph, ten times. Moving off the notch closes it again.
 for _ in $(seq 10); do
   "$input" click "$housing_x" "$housing_y"
-  sleep 1
+  sleep "$pause"
   "$input" move "$away_x" "$away_y"
-  sleep 1.2
+  sleep "$gap"
 done
 
 # Play/pause: from a click on the button to the first frame that shows the new state, ten times, so it ends playing.
@@ -237,38 +249,50 @@ sleep 1
 read -r button_x button_y <<<"$("$input" find "$bundle_id" Pause)"
 for _ in $(seq 10); do
   "$input" click "$button_x" "$button_y"
-  sleep 0.6
+  sleep 0.4
 done
 "$input" move "$away_x" "$away_y"
-sleep 10
-measure_cpu 60
-playing_cpu=$cpu
-playing_wakeups=$wakeups_median
-playing_slices=$wakeup_slices
+if [ "$full" = 1 ]; then
+  sleep 10
+  measure_cpu 60
+  playing_cpu=$cpu
+  playing_wakeups=$wakeups_median
+  playing_slices=$wakeup_slices
+fi
 memory=$(memory_mb)
 
 # Waveform: the same preview track with "Move the bars with the sound" on, and a tone playing in a loop, muted, which the
 # tap still hears. The bars then follow the sound, 15 frames a second, and that is the cost this measures. If macOS
 # refuses the tap, the app turns the setting off and says so in waveformRefused. The launch argument stands in for the
 # setting without saving it.
-quit "$executable"
-defaults delete "$bundle_id" waveformRefused 2>/dev/null || true
-open -g -a "$app" --args -notchPreviewState resting -waveform YES
-osascript -e 'set volume output muted true'
-(while true; do afplay "$tone"; done) &
-tone_player=$!
-sleep 15
-waveform_cpu=""
-if [ "$(defaults read "$bundle_id" waveformRefused 2>/dev/null || echo 0)" = 1 ]; then
-  echo "macOS refused WarbleDev the system audio recording permission, so the waveform wasn't measured." >&2
-else
-  measure_cpu 60
-  waveform_cpu=$cpu
+if [ "$full" = 1 ]; then
+  quit "$executable"
+  defaults delete "$bundle_id" waveformRefused 2>/dev/null || true
+  open -g -a "$app" --args -notchPreviewState resting -waveform YES
+  osascript -e 'set volume output muted true'
+  (while true; do afplay "$tone"; done) &
+  tone_player=$!
+  sleep 15
+  if [ "$(defaults read "$bundle_id" waveformRefused 2>/dev/null || echo 0)" = 1 ]; then
+    echo "macOS refused WarbleDev the system audio recording permission, so the waveform wasn't measured." >&2
+  else
+    measure_cpu 60
+    waveform_cpu=$cpu
+  fi
 fi
 
-hover_ms=$(times Expand hover | median)
-click_ms=$(times Expand click | median)
-play_pause_ms=$(times Play/pause click | median)
+# Reading the log is slow, so the three queries run side by side. A bare wait would also wait for the tone player.
+times Expand hover | median >"$work/hover" &
+queries=$!
+times Expand click | median >"$work/click" &
+queries="$queries $!"
+times Play/pause click | median >"$work/play_pause" &
+queries="$queries $!"
+# shellcheck disable=SC2086 # One pid per word.
+wait $queries
+hover_ms=$(cat "$work/hover")
+click_ms=$(cat "$work/click")
+play_pause_ms=$(cat "$work/play_pause")
 
 failed=0
 row() { # name value unit budget
@@ -283,15 +307,18 @@ row() { # name value unit budget
 }
 echo
 row "Launch → ready" "$launch_ms" ms "$budget_launch_ms"
-row "Idle CPU, nothing playing" "$idle_cpu" % "$budget_idle_cpu"
-row "Wakeups, nothing playing" "$idle_wakeups" "per 10 s" "$budget_idle_wakeups"
-row "CPU playing, at rest" "$playing_cpu" % "$budget_playing_cpu"
-row "Wakeups playing, at rest" "$playing_wakeups" "per 10 s" "$budget_playing_wakeups"
-row "CPU with the waveform" "$waveform_cpu" % "$budget_waveform_cpu"
+if [ "$full" = 1 ]; then
+  row "Idle CPU, nothing playing" "$idle_cpu" % "$budget_idle_cpu"
+  row "Wakeups, nothing playing" "$idle_wakeups" "per 10 s" "$budget_idle_wakeups"
+  row "CPU playing, at rest" "$playing_cpu" % "$budget_playing_cpu"
+  row "Wakeups playing, at rest" "$playing_wakeups" "per 10 s" "$budget_playing_wakeups"
+  row "CPU with the waveform" "$waveform_cpu" % "$budget_waveform_cpu"
+fi
 row "Memory playing, after use" "$memory" MB "$budget_memory_mb"
 row "Hover delay end → expanded" "$hover_ms" ms "$budget_hover_ms"
 row "Click → expanded" "$click_ms" ms "$budget_click_ms"
 row "Click → play/pause shown" "$play_pause_ms" ms "$budget_play_pause_ms"
-echo "Wakeups in each 10 s, nothing playing:$idle_slices. Playing at rest:$playing_slices."
+[ "$full" = 1 ] && echo "Wakeups in each 10 s, nothing playing:$idle_slices. Playing at rest:$playing_slices."
+[ "$full" = 1 ] || echo "Latencies only. PERF_FULL=1 (make perf-app-full) adds CPU and wakeups."
 echo
 exit $failed
