@@ -299,3 +299,19 @@ private func ending(_ key: ActivityKey, _ reason: ActivityEvent.Reason) -> AppEf
     _ = reduce(&state, .activityStarted(activity("b", priority: .high)), now: start)
     #expect(state.activities.current?.key.id == "b")
 }
+
+@Test func aSignedAppsIconComesFromItsSigningIdentifier() {
+    #expect(ActivityOwner.bundleIdentifier(ofIdentifier: "ABCDE12345.dev.lorcan.Shot") == "dev.lorcan.Shot")
+    #expect(ActivityOwner.bundleIdentifier(ofIdentifier: "script|/usr/bin/python3|a.b") == nil)
+    #expect(ActivityOwner.bundleIdentifier(ofIdentifier: "nodots") == nil)
+    #expect(ActivityOwner.bundleIdentifier(ofIdentifier: "ABCDE12345.") == nil)
+}
+
+@Test func theAppsAndBlockedSendersFromTheLastRunAreKept() {
+    var state = AppState(showsActivities: true, blockedActivityApps: ["TEAM.blocked"], activityApps: ["TEAM.blocked": "Blocked"])
+    #expect(state.activities.blocked == ["TEAM.blocked"])
+    #expect(state.activities.apps["TEAM.blocked"] == "Blocked")
+    let owner = ActivityOwner(identifier: "TEAM.blocked", name: "Blocked", bundleIdentifier: "blocked")
+    _ = reduce(&state, .activityStarted(activity(owner: owner)), now: start)
+    #expect(state.activities.items.isEmpty)
+}

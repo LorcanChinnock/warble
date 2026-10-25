@@ -39,6 +39,12 @@ public enum PreferenceKey {
     public static let answerLinks = "answerLinks"
     /// Whether Warble opens the socket the `warble` command talks to, in the Developer card. Off, no socket exists.
     public static let commandLine = "commandLine"
+    /// Whether other apps may show what they're doing in the notch, in the Activities card. Off, no socket exists for them.
+    public static let activities = "activities"
+    /// Every sender that has shown an activity, by `ActivityOwner.identifier`, with its name, for the Activities card's list.
+    public static let activityApps = "activityApps"
+    /// The identifiers of the senders turned off in the Activities card, as an array.
+    public static let activityBlocked = "activityBlocked"
 
     /// Whether Warble reads the front tab of a browser when a track starts there, so the idle card can reopen it. Off,
     /// Warble never scripts a browser, and macOS never asks for permission to.
@@ -73,6 +79,9 @@ public struct Preferences {
             PreferenceKey.stats: false,
             PreferenceKey.answerLinks: false,
             PreferenceKey.commandLine: false,
+            PreferenceKey.activities: false,
+            PreferenceKey.activityApps: [String: String](),
+            PreferenceKey.activityBlocked: [String](),
             PreferenceKey.resumeBrowserTabs: false,
             PreferenceKey.hasSeenWelcome: false,
         ]
@@ -192,6 +201,19 @@ public struct Preferences {
 
     public var commandLine: Bool {
         store.bool(forKey: PreferenceKey.commandLine)
+    }
+
+    public var activities: Bool {
+        store.bool(forKey: PreferenceKey.activities)
+    }
+
+    /// Each sender that has shown an activity, with its name, leaving out anything that isn't a name.
+    public var activityApps: [String: String] {
+        store.dictionary(forKey: PreferenceKey.activityApps) as? [String: String] ?? [:]
+    }
+
+    public var activityBlocked: Set<String> {
+        Set(store.stringArray(forKey: PreferenceKey.activityBlocked) ?? [])
     }
 
     /// `nil` means the user cleared the shortcut.

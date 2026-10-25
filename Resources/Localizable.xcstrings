@@ -637,6 +637,12 @@
         }
       }
     },
+    "Activities" : {
+
+    },
+    "Add this to your own app" : {
+
+    },
     "Add ⌘, ⌥ or ⌃, so the shortcut doesn't catch your typing." : {
       "localizations" : {
         "de" : {
@@ -896,6 +902,9 @@
           }
         }
       }
+    },
+    "An app is on the first time it shows something. Turning it off ends what it's showing." : {
+
     },
     "Animations follow Reduce Motion in System Settings › Accessibility › Display." : {
       "localizations" : {
@@ -1214,6 +1223,12 @@
           }
         }
       }
+    },
+    "Apps" : {
+
+    },
+    "Apps you use can show a timer or a short status here, such as a recording in progress. Off, no app can." : {
+
     },
     "Artist" : {
       "localizations" : {
@@ -5072,6 +5087,9 @@
         }
       }
     },
+    "No app has shown anything yet." : {
+
+    },
     "None" : {
       "localizations" : {
         "de" : {
@@ -6066,6 +6084,9 @@
         }
       }
     },
+    "Only programs running as you can show one, and only while this is on. While it's off, Warble opens nothing for them." : {
+
+    },
     "Only the message shows. The notch stays out of the way." : {
       "localizations" : {
         "de" : {
@@ -6637,6 +6658,9 @@
           }
         }
       }
+    },
+    "Other apps can't show activities: %@" : {
+
     },
     "Output" : {
       "localizations" : {
@@ -9032,6 +9056,9 @@
           }
         }
       }
+    },
+    "Show what other apps are doing in the notch" : {
+
     },
     "Show what's wrong" : {
       "localizations" : {
@@ -11840,6 +11867,9 @@
           }
         }
       }
+    },
+    "What other apps may show in the notch." : {
+
     },
     "What the notch shows." : {
       "localizations" : {

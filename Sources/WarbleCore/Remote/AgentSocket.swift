@@ -36,41 +36,7 @@ public enum AgentSocket {
         /// Makes the folder and the socket and starts listening. A socket left by a run that died is replaced, but one
         /// another process still answers on is left alone, as `.unavailable`.
         public func start() throws(RemoteCommandError) {
-            var address = try AgentSocket.address(of: url)
-            let folder = url.deletingLastPathComponent()
-            do {
-                try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-                // Set every time, so a folder made looser by hand is closed again.
-                try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: folder.path)
-            } catch {
-                throw .cantCreate("couldn't make \(folder.path): \(error.localizedDescription)")
-            }
-            var info = stat()
-            if lstat(url.path, &info) == 0 {
-                guard info.st_mode & S_IFMT == S_IFSOCK else {
-                    throw .cantCreate("\(url.path) is in the way and isn't a socket")
-                }
-                guard !AgentSocket.isListening(at: url) else {
-                    throw .unavailable("another copy of Warble is already answering the command line at \(url.path)")
-                }
-                unlink(url.path)
-            }
-            let fd = socket(AF_UNIX, SOCK_STREAM, 0)
-            guard fd >= 0 else {
-                throw .io("couldn't make a socket: \(AgentSocket.reason())")
-            }
-            _ = fcntl(fd, F_SETFD, FD_CLOEXEC)
-            // A socket made with the process's umask could be open to others for a moment, so the file is made private
-            // by the folder (0700) and then closed down to 0600.
-            let bound = withUnsafePointer(to: &address) {
-                $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { bind(fd, $0, socklen_t(MemoryLayout<sockaddr_un>.size)) }
-            }
-            guard bound == 0, chmod(url.path, 0o600) == 0, listen(fd, 16) == 0, fcntl(fd, F_SETFL, O_NONBLOCK) == 0 else {
-                let reason = AgentSocket.reason()
-                close(fd)
-                unlink(url.path)
-                throw .cantCreate("couldn't listen at \(url.path): \(reason)")
-            }
+            let fd = try UnixSocket.listen(at: url, purpose: "the command line")
             let source = DispatchSource.makeReadSource(fileDescriptor: fd, queue: queue)
             source.setEventHandler { [weak self] in
                 self?.acceptAll(on: fd)
@@ -107,8 +73,8 @@ public enum AgentSocket {
                 // Accepted sockets inherit the listener's O_NONBLOCK, but this one is read with a timeout instead.
                 _ = fcntl(client, F_SETFL, 0)
                 _ = fcntl(client, F_SETFD, FD_CLOEXEC)
-                AgentSocket.keepSignalsOff(client)
-                guard AgentSocket.peerUser(of: client) == user else {
+                UnixSocket.keepSignalsOff(client)
+                guard UnixSocket.peerUser(of: client) == user else {
                     close(client)
                     continue
                 }
@@ -122,8 +88,8 @@ public enum AgentSocket {
 
         /// Reads one request from `client`, answers it, and closes it. Blocks only for the read.
         private static func serve(_ client: Int32, handler: @escaping Handler) {
-            AgentSocket.setTimeout(client, SO_RCVTIMEO, AgentSocket.requestTimeout)
-            AgentSocket.setTimeout(client, SO_SNDTIMEO, AgentSocket.requestTimeout)
+            UnixSocket.setTimeout(client, SO_RCVTIMEO, AgentSocket.requestTimeout)
+            UnixSocket.setTimeout(client, SO_SNDTIMEO, AgentSocket.requestTimeout)
             let request: RemoteRequest
             switch AgentSocket.readLine(client, limit: AgentSocket.maximumRequest, deadline: .now + AgentSocket.requestTimeout) {
             case .line(let data):
@@ -167,65 +133,16 @@ public enum AgentSocket {
 
     /// Whether something answers at `url`.
     public static func isListening(at url: URL) -> Bool {
-        guard let fd = try? connect(to: url) else {
-            return false
-        }
-        close(fd)
-        return true
+        UnixSocket.isListening(at: url)
     }
 
-    private static func connect(to url: URL) throws(RemoteCommandError) -> Int32 {
-        var address = try address(of: url)
-        let fd = socket(AF_UNIX, SOCK_STREAM, 0)
-        guard fd >= 0 else {
-            throw .io("couldn't make a socket: \(reason())")
-        }
-        let connected = withUnsafePointer(to: &address) {
-            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
-                Darwin.connect(fd, $0, socklen_t(MemoryLayout<sockaddr_un>.size))
-            }
-        }
-        guard connected == 0 else {
-            close(fd)
-            throw .unavailable(RemoteSocketPath.nothingAnswering)
-        }
-        keepSignalsOff(fd)
-        return fd
-    }
-
-    /// The `sockaddr_un` for `url`, whose path must fit in `sun_path`, ending zero included.
     static func address(of url: URL) throws(RemoteCommandError) -> sockaddr_un {
-        var address = sockaddr_un()
-        address.sun_family = sa_family_t(AF_UNIX)
-        address.sun_len = UInt8(MemoryLayout<sockaddr_un>.size)
-        let path = Array(url.path.utf8)
-        let capacity = MemoryLayout.size(ofValue: address.sun_path)
-        guard path.count < capacity else {
-            throw .cantCreate("the socket's path, \(url.path), is \(path.count) bytes; a socket's path can be at most \(capacity - 1)")
-        }
-        withUnsafeMutableBytes(of: &address.sun_path) { $0.copyBytes(from: path) }
-        return address
+        try UnixSocket.address(of: url)
     }
 
     private static func reply(_ response: RemoteResponse, to client: Int32) {
-        _ = write(response.line, to: client)
+        _ = UnixSocket.write(response.line, to: client)
         close(client)
-    }
-
-    /// Writes all of `data`. False if the other end went away or stopped reading.
-    private static func write(_ data: Data, to fd: Int32) -> Bool {
-        data.withUnsafeBytes { buffer in
-            var offset = 0
-            while offset < buffer.count {
-                let written = Darwin.write(fd, buffer.baseAddress! + offset, buffer.count - offset)
-                if written < 0 {
-                    if errno == EINTR { continue }
-                    return false
-                }
-                offset += written
-            }
-            return true
-        }
     }
 
     enum ReadResult {
@@ -242,7 +159,7 @@ public enum AgentSocket {
             guard remaining > .zero else {
                 return .timedOut
             }
-            setTimeout(fd, SO_RCVTIMEO, remaining)
+            UnixSocket.setTimeout(fd, SO_RCVTIMEO, remaining)
             let count = chunk.withUnsafeMutableBytes { read(fd, $0.baseAddress, $0.count) }
             if count < 0 {
                 if errno == EINTR { continue }
@@ -262,29 +179,11 @@ public enum AgentSocket {
         }
     }
 
-    /// Sets a send or receive timeout of at least a millisecond, since zero would mean none.
     static func setTimeout(_ fd: Int32, _ option: Int32, _ duration: Duration) {
-        let (seconds, attoseconds) = max(duration, .milliseconds(1)).components
-        var value = timeval(tv_sec: Int(seconds), tv_usec: suseconds_t(attoseconds / 1_000_000_000_000))
-        setsockopt(fd, SOL_SOCKET, option, &value, socklen_t(MemoryLayout<timeval>.size))
+        UnixSocket.setTimeout(fd, option, duration)
     }
 
-    private static func reason() -> String {
-        String(cString: strerror(errno))
-    }
-
-    /// Stops writes to `fd` raising `SIGPIPE` when its peer goes away, which would end the process.
-    /// `SO_NOSIGPIPE` can't be set on a socket whose peer has already gone, so the signal is ignored as well.
     static func keepSignalsOff(_ fd: Int32) {
-        signal(SIGPIPE, SIG_IGN)
-        var on: Int32 = 1
-        setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &on, socklen_t(MemoryLayout<Int32>.size))
-    }
-
-    /// The user at the other end of the connected socket `fd`, which the server checks is this one. `nil` when it can't tell.
-    static func peerUser(of fd: Int32) -> uid_t? {
-        var uid = uid_t()
-        var gid = gid_t()
-        return getpeereid(fd, &uid, &gid) == 0 ? uid : nil
+        UnixSocket.keepSignalsOff(fd)
     }
 }

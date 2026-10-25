@@ -116,7 +116,7 @@ public struct AppState: Equatable, Sendable {
         showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, podcastSkips: Bool = false,
         dragArtOut: Bool = false, showsSleepTimer: Bool = false, hidesFromCapture: Bool = false, showsVirtualTitle: Bool = true,
         answersLinks: Bool = false, listensForCommands: Bool = false, showsWaveform: Bool = false, keepsStats: Bool = false,
-        showsActivities: Bool = false, checks: [Doctor.Check] = []
+        showsActivities: Bool = false, blockedActivityApps: Set<String> = [], activityApps: [String: String] = [:], checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
         doctor = DoctorState(checks: checks)
@@ -131,7 +131,7 @@ public struct AppState: Equatable, Sendable {
         lyrics = LyricsState(isOn: showsLyrics)
         waveform = WaveformState(isOn: showsWaveform)
         stats = StatsState(isOn: keepsStats)
-        activities = ActivityState(isOn: showsActivities)
+        activities = ActivityState(isOn: showsActivities, blocked: blockedActivityApps, apps: activityApps)
     }
 
     /// Whether the notches draw what's playing: something is, and it isn't Idle.
