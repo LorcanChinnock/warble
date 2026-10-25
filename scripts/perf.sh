@@ -1,8 +1,9 @@
 #!/bin/bash
 # Measures the app's fast and idle paths on this Mac and checks them against the budgets in docs/performance.md.
-# Drives an installed WarbleDev with the pointer, so it takes over the mouse for about five minutes, and needs:
+# Drives an installed WarbleDev with the pointer, so it takes over the mouse for about six and a half minutes, and needs:
 #   - Accessibility permission for this terminal (moving the pointer, clicking the notch, finding Play/Pause),
-#   - nothing playing when it starts, for the idle measurements.
+#   - nothing playing when it starts, for the idle measurements,
+#   - for the waveform measurement, macOS's permission to record system audio for WarbleDev (Screen & System Audio Recording).
 # It quits any running WarbleDev, and the installed Warble too, since both draw in the notch, and reopens Warble at the end
 # if it was running. The pointer goes back where it was.
 # Usage: scripts/perf.sh [path/to/WarbleDev.app]   (default /Applications/WarbleDev.app, which make app installs)
@@ -25,6 +26,7 @@ budget_idle_cpu="0.1"
 budget_idle_wakeups="0"
 budget_playing_cpu="0.5"
 budget_playing_wakeups="0"
+budget_waveform_cpu="0.5"
 budget_memory_mb="33"
 budget_hover_ms="55"
 budget_click_ms="70"
@@ -33,6 +35,23 @@ budget_play_pause_ms="20"
 work=$(mktemp -d "${TMPDIR:-/tmp}/warble-perf.XXXXXX")
 started=$(date "+%Y-%m-%d %H:%M:%S")
 input="$work/perf-input"
+tone="$work/tone.wav"
+python3 - "$tone" <<'PY'
+# Eight seconds of tones that move across all four bands, so every bar has something to follow.
+import math, struct, sys, wave
+rate = 44100
+with wave.open(sys.argv[1], "wb") as out:
+    out.setnchannels(2)
+    out.setsampwidth(2)
+    out.setframerate(rate)
+    frames = bytearray()
+    for n in range(rate * 8):
+        t = n / rate
+        sample = sum(0.15 * math.sin(2 * math.pi * f * t) * (0.6 + 0.4 * math.sin(2 * math.pi * (i + 1) * 0.5 * t))
+                     for i, f in enumerate((110, 440, 1760, 5000)))
+        frames += struct.pack("<hh", *([int(sample * 32767)] * 2))
+    out.writeframes(bytes(frames))
+PY
 swiftc -O -o "$input" scripts/perf-input.swift 2>/dev/null || { echo "Couldn't compile scripts/perf-input.swift" >&2; exit 1; }
 
 # Nothing may be playing, or the idle measurements would measure playback. The adapter prints null when nothing is.
@@ -127,12 +146,20 @@ print(round(float(match.group(1)) * scale[match.group(2)]) if match else "")'
 
 # Put back whatever the script changed, however it ends.
 pointer_before=$("$input" pointer)
+volume_before=$(osascript -e 'output muted of (get volume settings)')
+tone_player=""
 release_was_running=0
 pgrep -x Warble >/dev/null && release_was_running=1
 # shellcheck disable=SC2329 # Called by the EXIT trap.
 clean_up() {
   # shellcheck disable=SC2086 # Two words, x and y.
   "$input" move $pointer_before || true
+  if [ -n "$tone_player" ]; then
+    kill "$tone_player" 2>/dev/null || true
+    pkill -x afplay || true
+    wait "$tone_player" 2>/dev/null || true
+  fi
+  osascript -e "set volume output muted $volume_before" || true
   quit "$executable"
   if [ "$release_was_running" = 1 ]; then
     open -g -a Warble || true
@@ -220,6 +247,25 @@ playing_wakeups=$wakeups_median
 playing_slices=$wakeup_slices
 memory=$(memory_mb)
 
+# Waveform: the same preview track with "Move the bars with the sound" on, and a tone playing in a loop, muted, which the
+# tap still hears. The bars then follow the sound, 15 frames a second, and that is the cost this measures. If macOS
+# refuses the tap, the app turns the setting off and says so in waveformRefused. The launch argument stands in for the
+# setting without saving it.
+quit "$executable"
+defaults delete "$bundle_id" waveformRefused 2>/dev/null || true
+open -g -a "$app" --args -notchPreviewState resting -waveform YES
+osascript -e 'set volume output muted true'
+(while true; do afplay "$tone"; done) &
+tone_player=$!
+sleep 15
+waveform_cpu=""
+if [ "$(defaults read "$bundle_id" waveformRefused 2>/dev/null || echo 0)" = 1 ]; then
+  echo "macOS refused WarbleDev the system audio recording permission, so the waveform wasn't measured." >&2
+else
+  measure_cpu 60
+  waveform_cpu=$cpu
+fi
+
 hover_ms=$(times Expand hover | median)
 click_ms=$(times Expand click | median)
 play_pause_ms=$(times Play/pause click | median)
@@ -241,6 +287,7 @@ row "Idle CPU, nothing playing" "$idle_cpu" % "$budget_idle_cpu"
 row "Wakeups, nothing playing" "$idle_wakeups" "per 10 s" "$budget_idle_wakeups"
 row "CPU playing, at rest" "$playing_cpu" % "$budget_playing_cpu"
 row "Wakeups playing, at rest" "$playing_wakeups" "per 10 s" "$budget_playing_wakeups"
+row "CPU with the waveform" "$waveform_cpu" % "$budget_waveform_cpu"
 row "Memory playing, after use" "$memory" MB "$budget_memory_mb"
 row "Hover delay end → expanded" "$hover_ms" ms "$budget_hover_ms"
 row "Click → expanded" "$click_ms" ms "$budget_click_ms"

@@ -24,7 +24,7 @@ To change a budget, measure again, then update both this table and `Budget` in `
 
 `scripts/perf.sh` measures an installed WarbleDev (`/Applications/WarbleDev.app` by default, or a path you pass). CI can't run it, because it needs the pointer and the notch. Run it before each release, after `make app`.
 
-It moves the pointer and clicks for about five minutes, so keep your hands off the mouse while it runs. It needs Accessibility permission for the terminal, and nothing playing when it starts: it asks the adapter and stops if anything is. It quits WarbleDev and the installed Warble, since both draw in the notch, and reopens Warble at the end if it was running. The pointer goes back where it was.
+It moves the pointer and clicks for about six and a half minutes, so keep your hands off the mouse while it runs. It needs Accessibility permission for the terminal, macOS's permission to record system audio for WarbleDev (for the waveform step), and nothing playing when it starts: it asks the adapter and stops if anything is. It quits WarbleDev and the installed Warble, since both draw in the notch, and reopens Warble at the end if it was running. The pointer goes back where it was.
 
 The app emits `OSSignposter` signposts under its bundle identifier, in category `perf`, which the script reads with `log show --signpost`. Instruments shows them too.
 
@@ -41,6 +41,7 @@ The script:
 3. Launches the preview track (`-notchPreviewState resting`), which plays without a player, so runs repeat. It hovers over the notch ten times and clicks it ten times, moving off it after each, and reports the median **hover → expanded** and **click → expanded** times.
 4. Opens the notch and clicks Pause and Play ten times, and reports the median **click → play/pause shown** time.
 5. Moves off the notch, waits 10 seconds, then measures **CPU** and **wakeups** at rest for a minute, and then the **memory footprint**. The adapter doesn't run in the preview, so this is the notch's own cost.
+6. Relaunches the preview with the waveform on (`-waveform YES`), mutes the Mac and plays a tone in a loop, which the tap still hears, waits 15 seconds and measures **CPU with the waveform** for a minute. If macOS refuses the tap, it says so and the metric reads NOT MEASURED. It puts the mute setting back at the end.
 
 It exits non-zero if a metric is over budget or couldn't be measured.
 
@@ -52,6 +53,7 @@ It exits non-zero if a metric is over budget or couldn't be measured.
 | CPU playing, notch at rest | 0.0% | at most 0.5% |
 | Wakeups playing, notch at rest | 0 in the median 10 s | 0 in the median 10 s |
 | Memory playing, after use | 22 MB | 33 MB |
+| CPU with the waveform, notch at rest | 0.2 to 0.4% | at most 0.5% |
 | End of hover delay → expanded | 35.5 ms | 55 ms |
 | Click → expanded | 44.4 ms | 70 ms |
 | Click → play/pause shown | 10.4 ms | 20 ms |

@@ -30,7 +30,7 @@ Only `make dist` builds `Warble.app` with the update feed. Every other build is 
 | `make test` | Run the `WarbleModel` and `WarbleCore` unit tests |
 | `make test-linux` | Run the `WarbleModel` tests on Linux in Docker, as CI does |
 | `make perf` | Time the paths with a performance budget ([docs/performance.md](docs/performance.md)) |
-| `make perf-app` | Measure the installed WarbleDev against its budgets: launch, opening the notch, play/pause, CPU, wakeups and memory. It moves the pointer for about five minutes |
+| `make perf-app` | Measure the installed WarbleDev against its budgets: launch, opening the notch, play/pause, CPU, wakeups, memory and the waveform's CPU. It moves the pointer for about six and a half minutes |
 | `make lint` | Check for code patterns that have caused bugs (`scripts/lint.sh`) and, on a Mac, that the string catalog is up to date |
 | `make strings` | Add new strings to `Resources/Localizable.xcstrings` and drop unused ones |
 | `make app` | Build and install without launching (`INSTALL_DIR=~/Applications make app` to install elsewhere) |
