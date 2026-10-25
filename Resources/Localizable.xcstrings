@@ -11887,54 +11887,54 @@
         }
       }
     },
-    "What you listened to this week. Starts off." : {
+    "What you listened to this week." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Was du diese Woche gehört hast. Zunächst ausgeschaltet."
+            "value" : "Was du diese Woche gehört hast."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lo que escuchaste esta semana. Empieza desactivado."
+            "value" : "Lo que escuchaste esta semana."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ce que vous avez écouté cette semaine. Désactivé au départ."
+            "value" : "Ce que vous avez écouté cette semaine."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cosa hai ascoltato questa settimana. Parte disattivato."
+            "value" : "Cosa hai ascoltato questa settimana."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "今週聴いたもの。最初はオフです。"
+            "value" : "今週聴いたもの。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이번 주에 들은 음악입니다. 꺼진 상태로 시작합니다."
+            "value" : "이번 주에 들은 음악입니다."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O que você ouviu esta semana. Começa desativado."
+            "value" : "O que você ouviu esta semana."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你这周听了什么。默认关闭。"
+            "value" : "你这周听了什么。"
           }
         }
       }
