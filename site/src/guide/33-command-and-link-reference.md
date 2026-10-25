@@ -26,7 +26,7 @@ For setup and examples, see [Use the warble command](/docs/use-the-warble-comman
 | Opens Settings on a section | none | `warble://settings?section=<section>` | none |
 
 - `<seconds>` on the command line is seconds, such as `90`, or `1:30`. In a link it's a number of seconds.
-- `<section>` is `general`, `notch`, `shortcuts`, `developer` or `about`.
+- `<section>` is `general`, `notch`, `stats`, `shortcuts`, `developer` or `about`.
 - The command line and links are each off until you turn them on in **Settings › Developer**. Shortcuts actions always work.
 - A build you made yourself, WarbleDev, answers `warble-dev://` instead of `warble://`.
 

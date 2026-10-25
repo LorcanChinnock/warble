@@ -42,6 +42,12 @@ public enum AppEffect: Equatable, Sendable {
     case captureAudio(Bool)
     /// Turn the waveform's setting off, because macOS refused the tap.
     case turnOffWaveform
+    /// Append a span of listening to the stats, in order with the others.
+    case recordListening(ListenedSpan)
+    /// Read the spans that began since the date, then answer `.statsLoaded`.
+    case loadStats(since: Date)
+    /// Delete every span kept.
+    case clearStats
     /// Open Settings, on the section with this name if it's one of `RemoteCommand.settingsSections`.
     case openSettings(section: String?)
 }

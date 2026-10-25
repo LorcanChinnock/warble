@@ -41,7 +41,7 @@ The song pauses. Run it again and it plays.
 | `warble://volume?percent=40` | Sets the volume to 40%, from 0 to 100. |
 | `warble://expand` | Opens the notch on the display the pointer is on, with the keyboard in it. Run it again to close it. See [Accessibility](/docs/accessibility/). |
 | `warble://settings` | Opens Settings. |
-| `warble://settings?section=shortcuts` | Opens Settings on a section: `general`, `notch`, `shortcuts`, `developer` or `about`. |
+| `warble://settings?section=shortcuts` | Opens Settings on a section: `general`, `notch`, `stats`, `shortcuts`, `developer` or `about`. |
 
 Each link does exactly what its button does. `next` and `previous` skip by track, as the buttons and the keyboard shortcuts do, and `toggle` shows the change at once, before the app catches up.
 

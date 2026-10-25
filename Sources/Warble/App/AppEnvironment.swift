@@ -26,12 +26,15 @@ final class AppEnvironment {
     let welcomeWindow: WelcomeWindow
     let toast: Toast
     let recorder: ShortcutRecorder
+    /// The last week of listening, as Settings draws it.
+    let stats: StatsModel
     /// Where the live waveform's frames go from the audio tap to the bars.
     let spectrum = SpectrumFeed()
 
     /// `lastPlayed` is where the last track played is kept, which the preview keeps only in memory. `lyrics` is where
-    /// lyrics come from, which the preview makes up rather than asking LRCLIB.
-    init(lastPlayed: any LastPlayedStore, lyrics: (any LyricsProvider)?) {
+    /// lyrics come from, which the preview makes up rather than asking LRCLIB. `stats` is where the listening stats are kept,
+    /// which the preview keeps only in memory.
+    init(lastPlayed: any LastPlayedStore, lyrics: (any LyricsProvider)?, stats: any StatsStore) {
         // Before anything reads a setting, so every read falls back to the registered default.
         Preferences.registerDefaults()
         settings = SettingsStore()
@@ -50,6 +53,7 @@ final class AppEnvironment {
                 hidesFromCapture: preferences.hideFromCapture, showsVirtualTitle: preferences.virtualTitle,
                 answersLinks: preferences.answerLinks, listensForCommands: preferences.commandLine,
                 showsWaveform: preferences.waveform && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion,
+                keepsStats: preferences.stats,
                 checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
             ),
             clock: SystemClock(), scheduler: TimerScheduler()
@@ -57,9 +61,10 @@ final class AppEnvironment {
         let store = store
         let dispatch: (AppAction) -> Void = { [weak store] in store?.dispatch($0) }
         doctor = DoctorModel(updater: updater, dispatch: dispatch)
+        self.stats = StatsModel(dispatch: dispatch)
         volume = SystemVolume()
         let outputs = CoreAudioOutputs()
-        runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: LastPlayedFile.remembering, lyrics: lyrics, audioTap: ProcessTap())
+        runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: LastPlayedFile.remembering, lyrics: lyrics, audioTap: ProcessTap(), stats: stats)
         let spectrum = spectrum
         runner.spectrum = { spectrum.receive($0) }
         platform = PlatformEffects(dispatch: dispatch)
@@ -112,5 +117,6 @@ extension View {
             .environment(environment.hotkeys)
             .environment(environment.navigation)
             .environment(environment.recorder)
+            .environment(environment.stats)
     }
 }

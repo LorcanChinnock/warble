@@ -33,6 +33,8 @@ public enum PreferenceKey {
     public static let waveform = "waveform"
     /// Whether macOS refused that, so Settings can say why the waveform turned itself off.
     public static let waveformRefused = "waveformRefused"
+    /// Whether Warble counts the time each track plays, on this Mac only, for the weekly summary in Settings.
+    public static let stats = "stats"
     /// Whether `warble://` links do anything, in the Developer card. Off, Warble ignores them.
     public static let answerLinks = "answerLinks"
     /// Whether Warble opens the socket the `warble` command talks to, in the Developer card. Off, no socket exists.
@@ -68,6 +70,7 @@ public struct Preferences {
             PreferenceKey.virtualTitle: true,
             PreferenceKey.waveform: false,
             PreferenceKey.waveformRefused: false,
+            PreferenceKey.stats: false,
             PreferenceKey.answerLinks: false,
             PreferenceKey.commandLine: false,
             PreferenceKey.resumeBrowserTabs: false,
@@ -149,6 +152,10 @@ public struct Preferences {
 
     public var waveform: Bool {
         store.bool(forKey: PreferenceKey.waveform)
+    }
+
+    public var stats: Bool {
+        store.bool(forKey: PreferenceKey.stats)
     }
 
     public var swipeToSkip: Bool {

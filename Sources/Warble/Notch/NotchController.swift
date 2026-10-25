@@ -64,6 +64,9 @@ final class NotchController {
                 if preferences.dragArtOut != state.dragArtOut {
                     self.store.dispatch(.dragArtOutChanged(preferences.dragArtOut))
                 }
+                if preferences.stats != state.keepsStats {
+                    self.store.dispatch(.statsChanged(preferences.stats))
+                }
                 if preferences.hideFromCapture != state.hidesFromCapture {
                     self.store.dispatch(.hidesFromCaptureChanged(preferences.hideFromCapture))
                 }
@@ -177,6 +180,7 @@ final class NotchController {
             log.notice("Adapter is \(String(describing: new.doctor.adapter), privacy: .public)")
         }
         doctor.apply(new.doctor)
+        environment.stats.apply(new.weeklySummary)
         if isPlayPause(action), old.hideAt == nil, old.playback != nil {
             // Timed from the click or key to the first frame that shows the new state. The click's own window is the
             // notch it was on; a shortcut has none.
