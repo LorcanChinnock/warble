@@ -41,6 +41,39 @@ struct SettingsGroup<Content: View>: View {
     }
 }
 
+/// A group whose rows stay folded away until its title is clicked, closed each time the window opens.
+struct SettingsDisclosure<Content: View>: View {
+    let title: Text
+    @ViewBuilder let content: Content
+    @State private var isOpen = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Button {
+                withAnimation(reduceMotion ? Native.fade : Native.morph) { isOpen.toggle() }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "chevron.right")
+                        .font(.caption2.weight(.semibold))
+                        .rotationEffect(.degrees(isOpen ? 90 : 0))
+                        .accessibilityHidden(true)
+                    title.font(.footnote.weight(.semibold))
+                }
+                .foregroundStyle(Native.secondary)
+                .padding(.horizontal, 14)
+                .frame(minHeight: 28, alignment: .leading)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.notch)
+            .accessibilityValue(isOpen ? Text("Shown") : Text("Hidden"))
+            if isOpen {
+                SettingsGroup { content }
+            }
+        }
+    }
+}
+
 /// A row in a group: a title with an optional second line, and a control on the right. A row whose control speaks for it
 /// (`speaksForControl`) hides its text from VoiceOver, because the control carries the title as its label and the second
 /// line as its hint.
