@@ -86,7 +86,9 @@ final class PlatformEffects {
     /// Opens the socket the `warble` command talks to, or closes it, so while the setting is off no socket exists.
     private func listenForCommands(_ listen: Bool) {
         guard listen else {
-            stopListening()
+            // Only the command line's socket: the activities socket follows its own setting.
+            commandServer?.stop()
+            commandServer = nil
             return
         }
         guard commandServer == nil else { return }
