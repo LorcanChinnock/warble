@@ -6,7 +6,7 @@ Warble is a macOS 15+ app that shows what's playing in the notch and controls it
 
 ## Mantra
 
-By default, Warble is calm: a small, fast notch that shows what's playing and stays out of the way. Lyrics, the live waveform, stats and extra gestures are built in, but they start off.
+By default, Warble is calm: a small, fast notch that shows what's playing and stays out of the way. Lyrics, the live waveform and extra gestures are built in, but they start off.
 
 - Nothing may slow the hover → expand path or a click on play/pause.
 - When nothing is playing, Warble draws nothing and uses no CPU: no timers, no polling.
@@ -18,7 +18,7 @@ Design and write for the first person on this list; the later ones opt in to mor
 
 - **The listener.** Wants play/pause, skip and to see what's on. Never opens Settings. Every default is set for them.
 - **The podcast and audiobook listener.** Skips 15 seconds, changes the speed, sets a sleep timer.
-- **The music fan.** Turns on lyrics and listening stats, switches speakers.
+- **The music fan.** Turns on lyrics, switches speakers.
 - **The multi-display user.** Uses the virtual notch on external displays and Macs without a notch, and sets rules per display.
 
 What this means in practice:
@@ -59,7 +59,7 @@ Local builds are `WarbleDev.app`. A real installed version is `/Applications/War
 ## Architecture
 
 Three targets:
-- `Sources/WarbleModel`: logic that needs only Foundation, so CI builds and tests it on Linux: the app's state, `reduce` and their ports (`App/`), notch geometry, playback state and its interpolation, the hover state machine, source priority, the toast queue, the Doctor's checks, the listening stats' sessions and weekly summary, the lyrics parser, the query lyrics are looked up by and the line showing (`Lyrics`, `LyricsQuery`, `LyricsState`, `Lyrics/`). It may import CoreGraphics only inside `#if canImport(CoreGraphics)`. Linux Foundation has `CGFloat`, `CGPoint`, `CGSize` and `CGRect`, but not `CGPath`, `CGColor` or `CGImage`.
+- `Sources/WarbleModel`: logic that needs only Foundation, so CI builds and tests it on Linux: the app's state, `reduce` and their ports (`App/`), notch geometry, playback state and its interpolation, the hover state machine, source priority, the toast queue, the Doctor's checks, the lyrics parser, the query lyrics are looked up by and the line showing (`Lyrics`, `LyricsQuery`, `LyricsState`, `Lyrics/`). It may import CoreGraphics only inside `#if canImport(CoreGraphics)`. Linux Foundation has `CGFloat`, `CGPoint`, `CGSize` and `CGRect`, but not `CGPath`, `CGColor` or `CGImage`.
 - `Sources/WarbleCore`: logic that needs Apple frameworks but no window, display or permission, including the real side of most ports: preferences, the now-playing sources, Core Audio volume and outputs (`SystemVolume`, `CoreAudioOutputs`), the last track's file (`LastPlayedFile`), the LRCLIB lyrics client and its cache in Caches (`LRCLIBClient`, `Lyrics/`), artwork colours and `TimerScheduler`.
 - `Sources/Warble`: AppKit and SwiftUI that need a real session. `WarbleApp` is a `MenuBarExtra` with an `AppDelegate` adaptor; `Updater` wraps Sparkle. It draws the store's state, turns AppKit events into actions and carries out the effects that need AppKit, and decides nothing else.
 
@@ -89,7 +89,6 @@ Claude Code loads only this file, so read a feature's note before you change tha
 | [Idle card](docs/architecture/idle-card.md) | changing what the notch shows while nothing plays, or the last track played |
 | [Motion](docs/architecture/motion.md) | changing how the notch moves between states |
 | [Website](docs/architecture/website.md) | changing `site/` or the user guide |
-| [Listening stats](docs/architecture/stats.md) | changing the listening stats, their file or Settings › Stats |
 | [Live waveform](docs/architecture/waveform.md) | changing the waveform, the audio tap or what the play-state bars draw |
 | [Performance](docs/architecture/performance.md) | changing anything on the hover, expand or play/pause path, or adding a timer |
 

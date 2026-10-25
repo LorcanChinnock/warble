@@ -12,7 +12,6 @@ public final class EffectRunner {
     private let remember: @Sendable (PlaybackState, String?) -> LastPlayed
     /// Where lyrics come from, or `nil` when there's nowhere to ask, so every fetch finds none.
     private let lyrics: (any LyricsProvider)?
-    private let stats: any StatsStore
     /// The tap behind the live waveform, or `nil` where there isn't one.
     private let audioTap: (any AudioTap)?
     /// Where each frame of the waveform's bands goes, off the main actor. Frames never pass through `reduce`, since 30 a
@@ -43,15 +42,13 @@ public final class EffectRunner {
     /// flight and the latest, never the eight between, and the latest is always asked.
     private var fetching: Task<Void, Never>?
     private var latestFetch: Int?
-    /// The stats' latest write, read or clear, which the next waits for, so they land in the order they were asked for.
-    private var keeping: Task<Void, Never>?
     /// The reads under way, each gone once it answers.
     private var reading: [UUID: Task<Void, Never>] = [:]
 
     public init(
         hotkeys: any HotkeyRegistrar, volume: any VolumeControl, outputs: any AudioOutputs, lastPlayed: any LastPlayedStore,
         remember: @escaping @Sendable (PlaybackState, String?) -> LastPlayed, lyrics: (any LyricsProvider)?,
-        audioTap: (any AudioTap)? = nil, stats: any StatsStore = StatsInMemory()
+        audioTap: (any AudioTap)? = nil
     ) {
         self.hotkeys = hotkeys
         self.volume = volume
@@ -60,7 +57,6 @@ public final class EffectRunner {
         self.remember = remember
         self.lyrics = lyrics
         self.audioTap = audioTap
-        self.stats = stats
     }
 
     public func perform(_ effect: AppEffect) {
@@ -128,27 +124,6 @@ public final class EffectRunner {
             }
         case .captureAudio(let capture):
             captureAudio(capture)
-        case .recordListening(let span):
-            keep { stats, logError in
-                do {
-                    try stats.append(span)
-                } catch {
-                    logError("Couldn't save listening stats: \(error.localizedDescription)")
-                }
-            }
-        case .loadStats(let since):
-            keep { [weak self] stats, _ in
-                let spans = stats.load(since: since)
-                await self?.statsLoaded(spans)
-            }
-        case .clearStats:
-            keep { stats, logError in
-                do {
-                    try stats.clear()
-                } catch {
-                    logError("Couldn't clear listening stats: \(error.localizedDescription)")
-                }
-            }
         case .watchClicksOutside, .turnOffWaveform, .openApp, .launchAndPlay, .openLink, .haptic, .gatherFacts, .followPlayers, .toggleKeyboard, .showWelcome:
             platform(effect)
         }
@@ -170,33 +145,6 @@ public final class EffectRunner {
         }
     }
 
-    private func statsLoaded(_ spans: [ListenedSpan]) {
-        dispatch(.statsLoaded(spans))
-    }
-
-    /// Runs `work` off the main actor once the stats work before it is done.
-    private func keep(_ work: @escaping @Sendable (any StatsStore, @Sendable (String) -> Void) async -> Void) {
-        let stats = stats
-        let previous = keeping
-        let logError = logError
-        keeping = Task.detached(priority: .utility) {
-            await previous?.value
-            await work(stats, logError)
-        }
-    }
-
-    /// Blocks until the stats work under way is done, for when Warble is quitting and nothing runs after. It gives up after
-    /// `timeout` seconds.
-    public func flushStats(timeout: TimeInterval = 1) {
-        guard let keeping else { return }
-        let done = DispatchSemaphore(value: 0)
-        Task.detached {
-            await keeping.value
-            done.signal()
-        }
-        _ = done.wait(timeout: .now() + timeout)
-    }
-
     /// Waits for the reads and writes under way, for a test.
     func finish() async {
         while let read = reading.values.first {
@@ -204,7 +152,6 @@ public final class EffectRunner {
         }
         await saving?.value
         await fetching?.value
-        await keeping?.value
     }
 
     /// Reads the volume and the outputs, and follows changes from the volume keys and elsewhere, only while the slider

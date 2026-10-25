@@ -4,7 +4,7 @@ import WarbleCore
 
 /// The Settings window's sections, in sidebar order. Players arrives with its feature.
 enum SettingsSection: String, CaseIterable, Identifiable {
-    case general, notch, stats, shortcuts, about
+    case general, notch, shortcuts, about
 
     var id: String { rawValue }
 
@@ -12,7 +12,6 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         switch self {
         case .general: String(localized: "General")
         case .notch: String(localized: "Notch")
-        case .stats: String(localized: "Stats")
         case .shortcuts: String(localized: "Shortcuts")
         case .about: String(localized: "About")
         }
@@ -22,7 +21,6 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         switch self {
         case .general: String(localized: "How Warble looks and where it shows.")
         case .notch: String(localized: "What the notch shows.")
-        case .stats: String(localized: "What you listened to this week.")
         case .shortcuts: String(localized: "Control playback from any app. None are set until you add one.")
         case .about: String(localized: "Version, updates and help.")
         }
@@ -32,7 +30,6 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         switch self {
         case .general: "gearshape"
         case .notch: "menubar.rectangle"
-        case .stats: "chart.bar"
         case .shortcuts: "command"
         case .about: "info.circle"
         }
@@ -69,7 +66,6 @@ struct SettingsView: View {
                 switch navigation.section {
                 case .general: GeneralSettings()
                 case .notch: NotchSettings()
-                case .stats: StatsSettings()
                 case .shortcuts: ShortcutsSettings()
                 case .about: AboutSettings()
                 }
@@ -328,67 +324,6 @@ private struct NotchSettings: View {
                     isOn: $hideFromCapture
                 )
             }
-        }
-    }
-}
-
-private struct StatsSettings: View {
-    @Setting(PreferenceKey.stats) private var stats: Bool
-    @Environment(StatsModel.self) private var model
-    @State private var confirmsClear = false
-
-    var body: some View {
-        SectionPage(section: .stats) {
-            SettingsGroup(footer: Text("Warble counts the time each track plays, by song and artist, and keeps it in a file on this Mac for 30 days. Nothing is sent anywhere. A track is counted once it pauses, changes or stops. While this is off, nothing is counted or saved.")) {
-                SettingsToggleRow(
-                    title: Text("Count what I listen to"),
-                    detail: Text("Time spent listening, not time paused."),
-                    isOn: $stats
-                )
-            }
-            if let summary = model.summary, !summary.isEmpty {
-                SettingsGroup(title: Text("Last 7 days")) {
-                    SettingsRow(title: Text("Listening time")) {
-                        Text(verbatim: StatsFormat.duration(summary.totalSeconds)).foregroundStyle(Native.secondary)
-                    }
-                }
-                SettingsGroup(title: Text("Top artists")) {
-                    ForEach(summary.topArtists, id: \.name) { artist in
-                        SettingsRow(title: Text(verbatim: artist.name)) {
-                            Text(verbatim: StatsFormat.duration(artist.seconds)).foregroundStyle(Native.secondary)
-                        }
-                    }
-                }
-                SettingsGroup(title: Text("Top tracks")) {
-                    ForEach(summary.topTracks, id: \.self) { track in
-                        SettingsRow(title: Text(verbatim: track.title), detail: track.artist.map { Text(verbatim: $0) }) {
-                            Text(verbatim: StatsFormat.duration(track.seconds)).foregroundStyle(Native.secondary)
-                        }
-                    }
-                }
-            } else {
-                SettingsGroup {
-                    if stats {
-                        SettingsRow(title: Text("Nothing yet. Play something and it shows up here.")) {}
-                    } else {
-                        SettingsRow(title: Text("Turn this on to see your week.")) {}
-                    }
-                }
-            }
-            SettingsGroup(footer: Text("Deletes everything counted so far. Counting carries on if it's on.")) {
-                SettingsRow(title: Text("Clear listening stats")) {
-                    Button("Clear…") { confirmsClear = true }
-                        .buttonStyle(.warble)
-                        .disabled(!(model.summary?.holdsHistory ?? false))
-                }
-            }
-        }
-        .onAppear { model.refresh() }
-        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in model.refresh() }
-        .confirmationDialog("Clear listening stats?", isPresented: $confirmsClear) {
-            Button("Clear", role: .destructive) { model.clear() }
-        } message: {
-            Text("This deletes everything counted so far and can't be undone.")
         }
     }
 }

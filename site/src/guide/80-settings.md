@@ -1,6 +1,6 @@
 ---
 title: Settings
-summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a notch drawn on another display shows the title, whether a new song shows its title, whether the bars follow the sound, whether lyrics show, whether Warble counts what you listen to, whether a swipe skips, whether the album art can be dragged out, set keyboard shortcuts, including one that opens the notch.
+summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a notch drawn on another display shows the title, whether a new song shows its title, whether the bars follow the sound, whether lyrics show, whether a swipe skips, whether the album art can be dragged out, set keyboard shortcuts, including one that opens the notch.
 group: Reference
 ---
 
@@ -40,10 +40,6 @@ Settings is always dark, like the notch, whatever your Mac's appearance. Every c
 
 > [!NOTE]
 > Warble's animations follow **Reduce motion** in System Settings › Accessibility › Display.
-
-## Stats
-
-- **Count what I listen to.** Off at first. Turn it on, and Warble counts the time each song plays, by song and by artist, and shows the last 7 days here: your total listening time, your top 5 artists and your top 5 songs. Paused time isn't counted. Everything is kept in a file on your Mac for 30 days, and nothing is sent anywhere. **Clear…** deletes it. See [See what you listened to](/docs/see-what-you-listened-to/).
 
 ## Shortcuts
 

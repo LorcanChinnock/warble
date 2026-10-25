@@ -33,8 +33,6 @@ public enum PreferenceKey {
     public static let waveform = "waveform"
     /// Whether macOS refused that, so Settings can say why the waveform turned itself off.
     public static let waveformRefused = "waveformRefused"
-    /// Whether Warble counts the time each track plays, on this Mac only, for the weekly summary in Settings.
-    public static let stats = "stats"
 
     /// Whether Warble reads the front tab of a browser when a track starts there, so the idle card can reopen it. Off,
     /// Warble never scripts a browser, and macOS never asks for permission to.
@@ -66,7 +64,6 @@ public struct Preferences {
             PreferenceKey.virtualTitle: true,
             PreferenceKey.waveform: false,
             PreferenceKey.waveformRefused: false,
-            PreferenceKey.stats: false,
             PreferenceKey.resumeBrowserTabs: false,
             PreferenceKey.hasSeenWelcome: false,
         ]
@@ -146,10 +143,6 @@ public struct Preferences {
 
     public var waveform: Bool {
         store.bool(forKey: PreferenceKey.waveform)
-    }
-
-    public var stats: Bool {
-        store.bool(forKey: PreferenceKey.stats)
     }
 
     public var swipeToSkip: Bool {

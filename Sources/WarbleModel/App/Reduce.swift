@@ -95,8 +95,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.dragArtOut = on
     case .waveformChanged, .audioCaptureDenied:
         effects += state.waveform.reduce(action, shared: state.shared, at: now)
-    case .statsChanged, .refreshStats, .statsLoaded, .clearStats, .willQuit:
-        effects += state.stats.reduce(action, shared: state.shared, at: now)
     case .launched, .welcomeClosed:
         break
     case .tick:
@@ -113,7 +111,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     // After Idle has had its say, so a track that's no longer shown has nothing to announce.
     state.toast.announce(notice, shared: state.shared, isOpen: state.notches.isOpen(state.shared), at: now)
     effects += state.last.follow(state.shared, at: now)
-    effects += state.stats.follow(state.shared, at: now)
     // Last, so the line follows whatever this action did: a new track, a seek, a pause, Idle or a tick.
     effects += state.lyrics.follow(state.shared, at: now)
     return effects
