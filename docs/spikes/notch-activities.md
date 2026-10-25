@@ -100,7 +100,7 @@ The list of apps is stored as a dictionary of sender key to name under a new `Pr
 
 ## What it shows
 
-A resting notch with an activity draws the sender's icon in the left wing, with the activity's own symbol as a badge on it, and its clock, or its `badge`, in the right. The clock is SwiftUI's `Text(timerInterval:countsDown:)`, which the system ticks, so Warble starts no timer to draw it. It does mean one redraw a second while a clock shows, so [#51 adds a row to `make perf-app-full`](#performance) for it.
+A resting notch with an activity draws the sender's icon in the left wing, with the activity's own symbol as a badge on it, and its clock, or its `badge`, in the right. The clock is SwiftUI's `Text(timerInterval:countsDown:)`, which the system ticks, so Warble starts no timer to draw it. It does mean one redraw a second while a clock shows, so it's the one cost to check by hand ([Performance](#performance)).
 
 The expanded notch has two cases:
 
@@ -214,7 +214,7 @@ The page is `site/src/guide/` › "Show an activity in the notch", with the prot
 - **Hover to expand and play/pause:** unchanged. The activity paths only add a case to the state selectors, and dispatch stays synchronous.
 - **The setting off:** nothing, no socket and no key path with a value.
 - **On, with nothing live:** one listening socket, no timer.
-- **With a clock showing:** one redraw a second from the system. #51 adds an "activity with a clock" step to `scripts/perf.sh`'s full run, in the way the waveform has one, and sets its CPU budget from the first quiet-Mac measurement, no higher than the waveform's 0.5%. The wakeups there aren't budgeted at zero, as with the waveform.
+- **With a clock showing:** one redraw a second from the system. Check it by hand while building: with a clock showing, compare the process's CPU and its context switches over a fixed interval (see [performance](../architecture/performance.md)), expecting about one wakeup a second and no more.
 
 ## Pull requests
 

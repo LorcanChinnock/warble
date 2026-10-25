@@ -4,9 +4,9 @@ import Foundation
 import os
 import QuartzCore
 
-/// Signposts around the paths with budgets in `docs/performance.md`. `scripts/perf.sh` reads them from the log, and
-/// Instruments shows them; they cost almost nothing when nobody reads them, and nothing at all while nobody touches the
-/// notch, so they never wake Warble while nothing is playing.
+/// Signposts around launch, expand and play/pause. Instruments shows them. They cost almost nothing
+/// when nobody reads them, and nothing at all while nobody touches the notch, so they never wake Warble while nothing
+/// is playing.
 @MainActor
 enum Perf {
     static let signposter = OSSignposter(logger: .warble("perf"))
