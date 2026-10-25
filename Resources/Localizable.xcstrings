@@ -10858,7 +10858,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pruébalo con warble now."
+            "value" : "Pruébalo con warble now. Solo pueden usarlo programas que se ejecuten como tú, y solo mientras esté activado. Si está desactivado, Warble no abre nada por él."
           }
         },
         "fr" : {
@@ -10882,7 +10882,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "warble now로 사용해 보세요."
+            "value" : "warble now로 사용해 보세요. 내 계정으로 실행되는 프로그램만 사용할 수 있으며, 이 기능이 켜져 있는 동안에만 가능합니다. 꺼져 있으면 Warble은 이를 위해 아무것도 열지 않습니다."
           }
         },
         "pt-BR" : {
@@ -10894,7 +10894,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "用 warble now 试试。"
+            "value" : "用 warble now 试试。只有以你的身份运行的程序才能使用，且仅在开启时可用。关闭时，Warble 不会为它开放任何入口。"
           }
         }
       }
