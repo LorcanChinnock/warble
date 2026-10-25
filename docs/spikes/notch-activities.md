@@ -8,7 +8,7 @@ An activity is a short live thing another Mac app shows in the notch, the way Wa
 
 Another app asks over a second Unix socket, `activities.sock`, next to the command line's. The app keeps one connection open for as long as its activity lives, sends JSON lines to start it, change it and end it, and gets button presses back on the same connection. Closing the connection ends the activity, so a crashed app never leaves a timer behind. The socket exists only while Settings › Activities is on, which starts off.
 
-An activity takes the resting notch's wings from music while it lives, and never anything else. Hovering or clicking still opens the player, so play/pause is never behind an activity. It lasts until its sender ends it, the connection closes, the user dismisses it or its `lasts` runs out, one hour by default and twelve at most.
+An activity takes the resting notch's wings from music and from the Doctor's "!" while it lives, and never anything else. Hovering or clicking still opens the player, so play/pause is never behind an activity. It lasts until its sender ends it, the connection closes, the user dismisses it or its `lasts` runs out, one hour by default and twelve at most.
 
 It's built as two pull requests: the model and the drawing first, then the socket with its Settings card and guide.
 
@@ -30,7 +30,7 @@ A Swift package is a wrapper, not a transport. Don't build one now. The client i
 
 [`agent.sock`](../architecture/developer.md) answers one request and closes. An activity needs the connection to stay, for its lifetime and for the button press coming back. The command line's socket also follows a different switch (Settings › Developer, for people who script Warble). Someone who wants Shot's timer in the notch shouldn't have to turn on a developer feature, and turning on the command line shouldn't let every app on the Mac put things in the notch.
 
-So `activities.sock` is a sibling, in the same folder (0700), at mode 0600, with the same-user check on each peer. `AgentSocket` already has that code. #51 pulls the shared parts (`address(of:)`, `readLine`, `peerUser`, the timeouts, `RemoteSocketPath`) out into a small `UnixSocket` helper in the same pull request that adds the server, and `AgentSocket` calls it too. No behaviour of the command line changes, and its tests keep passing.
+So `activities.sock` is a sibling, in the same folder (0700), at mode 0600, with the same-user check on each peer. `AgentSocket` already has that code. #51 pulls the shared parts (`address(of:)`, `readLine`, `peerUser`, the timeouts) out into a small `UnixSocket` helper in the same pull request that adds the server, and `AgentSocket` calls it too. `RemoteSocketPath` stays in WarbleModel, where the command line reads it, and gains the `activities.sock` path beside `agent.sock`. No behaviour of the command line changes, and its tests keep passing.
 
 The sandbox is a limit. A sandboxed app can't connect to a socket in another app's Application Support folder, so v1 serves unsandboxed apps and scripts. Shot isn't sandboxed. If a sandboxed sender turns up, the answer is an App Group folder for the socket, which needs a team ID Warble's signing doesn't have today, so it's not planned.
 
@@ -114,7 +114,7 @@ The two things an activity leaves alone: it never takes the key or the keyboard,
 
 ## Priority against music
 
-One rule: an activity takes the resting wings, and everything else stays as it is.
+One rule: an activity takes the resting wings and, with nothing playing, the card behind them. Everything else stays as it is.
 
 | When an activity is live and… | The notch |
 | --- | --- |
@@ -125,6 +125,8 @@ One rule: an activity takes the resting wings, and everything else stays as it i
 | the Doctor's card or the lyrics card is open | That card, as now. |
 | a display shows a full-screen app | Hidden, as music is. Not even `toastsInFullScreen` lets it through, so a recording timer never draws over what you're recording. |
 | the screen is shared, with "hide from capture" on | Left out of the recording, as the rest of the notch is. |
+
+A failed Doctor check gives way to a live activity on the wings and in the card, and comes back when the activity ends. An activity is short and the user asked for it, while the failure stays until it's fixed, and the card the user needs while recording is the one with Stop on it.
 
 Two activities show one at a time: `high` first, then the newest start. A second activity's wing doesn't cycle. The card lists all of them.
 
