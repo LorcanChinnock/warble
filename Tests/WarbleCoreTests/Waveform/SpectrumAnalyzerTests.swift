@@ -38,10 +38,10 @@ private func frames(of samples: [Float], sampleRate: Double = 48_000) throws -> 
     #expect(last == [0, 0, 0, 0])
 }
 
-@Test func framesComeAboutThirtyTimesASecond() throws {
+@Test func framesComeAboutFifteenTimesASecond() throws {
     let count = try frames(of: tone(440, amplitude: 0.5)).count
     // A second of audio, less the first window, which is filled before the first frame.
-    #expect((26...30).contains(count))
+    #expect((13...15).contains(count))
 }
 
 @Test func aSampleRateOfNothingIsRefused() {

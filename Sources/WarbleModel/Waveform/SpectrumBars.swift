@@ -12,8 +12,8 @@ public struct SpectrumBars: Equatable, Sendable {
     static let floor = -70.0
     static let ceiling = -20.0
     /// How far a bar moves toward its level in each frame: quickly up, slowly down.
-    static let attack = 0.7
-    static let release = 0.18
+    static let attack = 0.91
+    static let release = 0.33
 
     /// Each bar's height from 0 to 1.
     public private(set) var heights = [Double](repeating: 0, count: SpectrumBars.count)

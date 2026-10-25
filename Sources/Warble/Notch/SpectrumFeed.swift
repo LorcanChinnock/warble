@@ -8,7 +8,7 @@ protocol SpectrumListener: AnyObject {
     func spectrum(_ bands: [Float])
 }
 
-/// Carries the audio tap's frames from the audio queue to the bars that draw them, about 30 a second while the waveform
+/// Carries the audio tap's frames from the audio queue to the bars that draw them, about 15 a second while the waveform
 /// shows and none otherwise. It's the one place a frame crosses to the main actor, and it never passes through `reduce`.
 final class SpectrumFeed: @unchecked Sendable {
     /// Read and changed on the main actor only. Weak, so a bar that goes away needs no goodbye.

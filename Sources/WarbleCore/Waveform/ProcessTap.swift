@@ -1,3 +1,4 @@
+import Accelerate
 import AudioToolbox
 import CoreAudio
 import Foundation
@@ -139,22 +140,32 @@ public final class ProcessTap: AudioTap {
     }
 
     /// The channels averaged into one.
-    private nonisolated static func mix(
+    nonisolated static func mix(
         _ buffers: UnsafeMutableAudioBufferListPointer, channels: Int, interleaved: Bool, into mono: inout [Float]
     ) {
         guard let frames = frames(in: buffers, channels: channels, interleaved: interleaved) else { return }
-        let count = min(frames, mono.count)
-        for frame in 0..<count {
-            var sum: Float = 0
+        let count = vDSP_Length(min(frames, mono.count))
+        var average = 1 / Float(channels)
+        mono.withUnsafeMutableBufferPointer { mono in
+            guard let out = mono.baseAddress else { return }
             if interleaved {
                 guard let data = buffers[0].mData?.assumingMemoryBound(to: Float.self) else { return }
-                for channel in 0..<channels { sum += data[frame * channels + channel] }
+                let stride = vDSP_Stride(channels)
+                vDSP_vsmul(data, stride, &average, out, 1, count)
+                for channel in 1..<max(channels, 1) { vDSP_vsma(data + channel, stride, &average, out, 1, out, 1, count) }
             } else {
+                var first = true
                 for channel in 0..<min(channels, buffers.count) {
-                    sum += buffers[channel].mData?.assumingMemoryBound(to: Float.self)[frame] ?? 0
+                    guard let data = buffers[channel].mData?.assumingMemoryBound(to: Float.self) else { continue }
+                    if first {
+                        vDSP_vsmul(data, 1, &average, out, 1, count)
+                        first = false
+                    } else {
+                        vDSP_vsma(data, 1, &average, out, 1, out, 1, count)
+                    }
                 }
+                if first { vDSP_vclr(out, 1, count) }
             }
-            mono[frame] = sum / Float(channels)
         }
     }
 
