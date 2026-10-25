@@ -74,12 +74,6 @@ final class NotchController {
                     self.store.dispatch(.virtualTitleChanged(preferences.virtualTitle))
                 }
                 self.syncWaveform()
-                if preferences.answerLinks != state.answersLinks {
-                    self.store.dispatch(.linksChanged(preferences.answerLinks))
-                }
-                if preferences.commandLine != state.listensForCommands {
-                    self.store.dispatch(.commandLineChanged(preferences.commandLine))
-                }
                 if preferences.virtualNotchRules != self.rules {
                     self.layOut()
                 }

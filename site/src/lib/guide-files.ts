@@ -7,7 +7,6 @@ export const groups = [
   { name: 'Get started' },
   { name: 'Playback' },
   { name: 'Displays' },
-  { name: 'For developers' },
   { name: 'Reference' },
   { name: 'Help' },
 ] as const;

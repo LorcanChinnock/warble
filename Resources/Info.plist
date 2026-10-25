@@ -54,16 +54,5 @@
 	<!-- Sparkle's generate_keys --account warble: CONTRIBUTING.md › Release secrets. -->
 	<key>SUPublicEDKey</key>
 	<string>c1GBjC8bB3xx0Em++xPuUuOFRQZP0LfCsLgoiir/sP0=</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>dev.lorcan.Warble</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>warble</string>
-			</array>
-		</dict>
-	</array>
 </dict>
 </plist>

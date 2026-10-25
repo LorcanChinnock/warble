@@ -149,7 +149,7 @@ public final class EffectRunner {
                     logError("Couldn't clear listening stats: \(error.localizedDescription)")
                 }
             }
-        case .watchClicksOutside, .turnOffWaveform, .openApp, .launchAndPlay, .openLink, .haptic, .gatherFacts, .followPlayers, .toggleKeyboard, .showWelcome, .openSettings, .listenForCommands:
+        case .watchClicksOutside, .turnOffWaveform, .openApp, .launchAndPlay, .openLink, .haptic, .gatherFacts, .followPlayers, .toggleKeyboard, .showWelcome:
             platform(effect)
         }
     }

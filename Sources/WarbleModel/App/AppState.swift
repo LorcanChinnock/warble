@@ -76,10 +76,6 @@ public struct AppState: Equatable, Sendable {
         get { notches.showsVirtualTitle }
         set { notches.showsVirtualTitle = newValue }
     }
-    /// Whether `warble://` links do anything, which the Developer card in Settings turns on.
-    public internal(set) var answersLinks: Bool
-    /// Whether Warble answers the `warble` command line, which the Developer card turns on. Off, no socket is open.
-    public internal(set) var listensForCommands: Bool
     /// The live waveform: whether Settings has it on, and whether the audio tap runs.
     public var showsWaveform: Bool { waveform.isOn }
     public var capturesAudio: Bool { waveform.captures }
@@ -103,14 +99,13 @@ public struct AppState: Equatable, Sendable {
         get { notches.followsVolume }
         set { notches.followsVolume = newValue }
     }
-    public internal(set) var listening = false
 
     /// `checks` are what the Doctor finds before it has asked macOS anything: what it finds while the adapter works.
     public init(
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
         showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, podcastSkips: Bool = false,
         dragArtOut: Bool = false, showsSleepTimer: Bool = false, hidesFromCapture: Bool = false, showsVirtualTitle: Bool = true,
-        answersLinks: Bool = false, listensForCommands: Bool = false, showsWaveform: Bool = false, keepsStats: Bool = false,
+        showsWaveform: Bool = false, keepsStats: Bool = false,
         checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
@@ -121,8 +116,6 @@ public struct AppState: Equatable, Sendable {
         self.podcastSkips = podcastSkips
         self.dragArtOut = dragArtOut
         sleep = SleepTimerState(isOn: showsSleepTimer)
-        self.answersLinks = answersLinks
-        self.listensForCommands = listensForCommands
         lyrics = LyricsState(isOn: showsLyrics)
         waveform = WaveformState(isOn: showsWaveform)
         stats = StatsState(isOn: keepsStats)

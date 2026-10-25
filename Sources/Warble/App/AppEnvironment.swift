@@ -1,4 +1,3 @@
-import AppIntents
 import os
 import SwiftUI
 import WarbleCore
@@ -51,8 +50,7 @@ final class AppEnvironment {
                 swipeToSkip: preferences.swipeToSkip, podcastSkips: preferences.podcastSkips, dragArtOut: preferences.dragArtOut,
                 showsSleepTimer: preferences.sleepTimer,
                 hidesFromCapture: preferences.hideFromCapture, showsVirtualTitle: preferences.virtualTitle,
-                answersLinks: preferences.answerLinks, listensForCommands: preferences.commandLine,
-                showsWaveform: preferences.waveform && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion,
+                                showsWaveform: preferences.waveform && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion,
                 keepsStats: preferences.stats,
                 checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
             ),
@@ -88,15 +86,7 @@ final class AppEnvironment {
         let settingsWindow = settingsWindow
         let welcomeWindow = welcomeWindow
         platform.showWelcome = { [weak welcomeWindow] in welcomeWindow?.show() }
-        // What the `warble` command asks: it does what the notch's buttons do, on the main actor where the store runs.
-        let remote = RemoteHandler(state: { store.state }, dispatch: dispatch, volume: volume, outputs: outputs, clock: SystemClock())
-        AppDependencyManager.shared.add(dependency: remote)
-        platform.commandHandler = { request in await MainActor.run { remote.handle(request) } }
-        platform.openSettings = { [weak settingsWindow] name in
-            settingsWindow?.show(section: name.flatMap(SettingsSection.init(rawValue:)))
-        }
         let toast = toast
-        platform.showError = { [weak toast] message in toast?.error(message) }
         hotkeys.onUnavailable = { failed in
             // Settings › Shortcuts says so under the shortcut, so the toast is for when it isn't showing.
             guard !settingsWindow.isShowing(.shortcuts) else { return }

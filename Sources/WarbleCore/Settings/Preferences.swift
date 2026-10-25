@@ -35,10 +35,6 @@ public enum PreferenceKey {
     public static let waveformRefused = "waveformRefused"
     /// Whether Warble counts the time each track plays, on this Mac only, for the weekly summary in Settings.
     public static let stats = "stats"
-    /// Whether `warble://` links do anything, in the Developer card. Off, Warble ignores them.
-    public static let answerLinks = "answerLinks"
-    /// Whether Warble opens the socket the `warble` command talks to, in the Developer card. Off, no socket exists.
-    public static let commandLine = "commandLine"
 
     /// Whether Warble reads the front tab of a browser when a track starts there, so the idle card can reopen it. Off,
     /// Warble never scripts a browser, and macOS never asks for permission to.
@@ -71,8 +67,6 @@ public struct Preferences {
             PreferenceKey.waveform: false,
             PreferenceKey.waveformRefused: false,
             PreferenceKey.stats: false,
-            PreferenceKey.answerLinks: false,
-            PreferenceKey.commandLine: false,
             PreferenceKey.resumeBrowserTabs: false,
             PreferenceKey.hasSeenWelcome: false,
         ]
@@ -184,14 +178,6 @@ public struct Preferences {
 
     public var virtualTitle: Bool {
         store.bool(forKey: PreferenceKey.virtualTitle)
-    }
-
-    public var answerLinks: Bool {
-        store.bool(forKey: PreferenceKey.answerLinks)
-    }
-
-    public var commandLine: Bool {
-        store.bool(forKey: PreferenceKey.commandLine)
     }
 
     /// `nil` means the user cleared the shortcut.

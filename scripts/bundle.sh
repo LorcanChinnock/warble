@@ -1,7 +1,7 @@
 #!/bin/bash
 # Builds a release binary and assembles a signed app in build/.
 # Only WARBLE_RELEASE=1 (make dist) builds Warble.app, with the update feed. Every other build is WarbleDev.app, with its own
-# name, bundle ID, executable and warble-dev:// scheme and no feed, so it never replaces or answers for an installed release.
+# name, bundle ID and executable and no feed, so it never replaces or answers for an installed release.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -16,17 +16,15 @@ fi
 universal="build/universal"
 rm -rf "$universal"
 mkdir -p "$universal"
-# SwiftBuild, the build system Xcode uses, because only it writes the constant values the intents' metadata is made from.
+# SwiftBuild, the build system Xcode uses.
 for arch in arm64 x86_64; do
     swift build --build-system swiftbuild -c release --arch "$arch" ${resolved[@]+"${resolved[@]}"}
     bin_path="$(swift build --build-system swiftbuild -c release --arch "$arch" --show-bin-path)"
     mkdir "$universal/$arch"
-    cp "$bin_path/Warble" "$bin_path/WarbleCLI" "$universal/$arch/"
+    cp "$bin_path/Warble" "$universal/$arch/"
 done
-for exe in Warble WarbleCLI; do
-    lipo -create "$universal/arm64/$exe" "$universal/x86_64/$exe" -output "$universal/$exe"
-    lipo -info "$universal/$exe"
-done
+lipo -create "$universal/arm64/Warble" "$universal/x86_64/Warble" -output "$universal/Warble"
+lipo -info "$universal/Warble"
 binary="$universal/Warble"
 
 # Since macOS 15.4, MediaRemote answers only Apple-signed processes, so the now-playing source runs
@@ -65,9 +63,6 @@ app="build/$name.app"
 rm -rf "$app"
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources" "$app/Contents/Frameworks"
 cp "$binary" "$app/Contents/MacOS/$name"
-# The `warble` command, which asks the running app over a socket (Settings › Developer). It's `warble-cli` here, since a
-# `warble` beside the app's own `Warble` would collide on a case-insensitive volume. Homebrew's cask and Settings link it.
-cp "$universal/WarbleCLI" "$app/Contents/MacOS/warble-cli"
 ditto "$bin_path/Sparkle.framework" "$app/Contents/Frameworks/Sparkle.framework"
 cp Resources/Info.plist "$app/Contents/Info.plist"
 cp Resources/AppIcon.icns "$app/Contents/Resources/AppIcon.icns"
@@ -78,8 +73,6 @@ cp Resources/Acknowledgements.txt "$app/Contents/Resources/Acknowledgements.txt"
 cp "$adapter_src/bin/mediaremote-adapter.pl" "$app/Contents/Resources/mediaremote-adapter.pl"
 ditto "$adapter_build/MediaRemoteAdapter.framework" "$app/Contents/Resources/MediaRemoteAdapter.framework"
 cp "$adapter_build/MediaRemoteAdapterTestClient" "$app/Contents/Resources/MediaRemoteAdapterTestClient"
-# Shortcuts and Spotlight list the app's actions from this metadata, which SwiftPM doesn't write.
-scripts/app-intents.sh "$app/Contents/Resources"
 # One .lproj folder per language, where Bundle.main finds the app's strings and the permission prompts' text.
 for catalog in Resources/*.xcstrings; do
     xcrun xcstringstool compile "$catalog" --output-directory "$app/Contents/Resources"
@@ -93,8 +86,6 @@ if [ "$name" = WarbleDev ]; then
         -c "Set :CFBundleName WarbleDev" \
         -c "Set :CFBundleDisplayName WarbleDev" \
         -c "Set :CFBundleExecutable WarbleDev" \
-        -c "Set :CFBundleURLTypes:0:CFBundleURLName $dev_id" \
-        -c "Set :CFBundleURLTypes:0:CFBundleURLSchemes:0 warble-dev" \
         -c "Delete :SUFeedURL" \
         "$app/Contents/Info.plist"
 fi
@@ -118,7 +109,6 @@ codesign --force --sign "$identity" "$app/Contents/Frameworks/Sparkle.framework"
 # The adapter's build signs it ad hoc; sign it again with the app's identity, before the app seals its resources.
 codesign --force --sign "$identity" "$app/Contents/Resources/MediaRemoteAdapterTestClient"
 codesign --force --sign "$identity" "$app/Contents/Resources/MediaRemoteAdapter.framework"
-codesign --force --sign "$identity" "$app/Contents/MacOS/warble-cli"
 # The entitlement lets the app send Music and Spotify Apple Events once it runs under the hardened runtime.
 codesign --force --sign "$identity" --entitlements Resources/Warble.entitlements "$app"
 version="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$app/Contents/Info.plist")"

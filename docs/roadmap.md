@@ -66,14 +66,6 @@ Synced lyrics, gestures and podcast controls, each off until you turn it on, plu
 - [#133](https://github.com/LorcanChinnock/warble/issues/133) feat(notch): hide Warble while the screen is shared or recorded
 - [#113](https://github.com/LorcanChinnock/warble/issues/113) feat(notch): show the title in the middle of a virtual notch
 
-## [0.3: for developers](https://github.com/LorcanChinnock/warble/issues/39)
-
-The `warble` command, `warble://` links and Shortcuts actions. They share one table of commands, each of which does what the matching button in the notch does.
-
-- [#40](https://github.com/LorcanChinnock/warble/issues/40) feat(cli): the warble command
-- [#41](https://github.com/LorcanChinnock/warble/issues/41) feat(url): warble:// links
-- [#43](https://github.com/LorcanChinnock/warble/issues/43) feat(shortcuts): Shortcuts actions
-
 ## [0.4: extras](https://github.com/LorcanChinnock/warble/issues/44)
 
 The live waveform, a sleep timer and listening stats, plus research into replacing the volume overlay.

@@ -93,24 +93,10 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.podcastSkips = on
     case .dragArtOutChanged(let on):
         state.dragArtOut = on
-    case .linksChanged(let on):
-        state.answersLinks = on
-    case .commandLineChanged(let on):
-        state.listensForCommands = on
     case .waveformChanged, .audioCaptureDenied:
         effects += state.waveform.reduce(action, shared: state.shared, at: now)
     case .statsChanged, .refreshStats, .statsLoaded, .clearStats, .willQuit:
         effects += state.stats.reduce(action, shared: state.shared, at: now)
-    case .linkOpened(let command):
-        // Links are one more way in, so each does what its button does. With links off a link changes nothing.
-        guard state.answersLinks else { break }
-        guard let action = command.action else {
-            if case .settings(let section) = command {
-                effects.append(.openSettings(section: section))
-            }
-            break
-        }
-        return reduce(&state, action, now: now)
     case .launched, .welcomeClosed:
         break
     case .tick:
@@ -189,12 +175,6 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
     }
     shared = state.shared
     var effects = state.notches.follow(shared, at: now)
-    // The command line's socket is open only while Settings has it on, and is asked for once each time that changes. A
-    // Warble that opens with it on asks on its first action.
-    if state.listensForCommands != state.listening {
-        state.listening = state.listensForCommands
-        effects.append(.listenForCommands(state.listening))
-    }
     // The audio tap runs only while the waveform can be seen, and is asked for once each time that changes.
     effects += state.waveform.follow(drawsBars: state.drawsBars)
     // Opening a notch checks again whatever the Doctor found, in case the user fixed it, such as in System Settings,

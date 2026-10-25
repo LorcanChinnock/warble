@@ -36,8 +36,6 @@ public enum AppEffect: Equatable, Sendable {
     case showWelcome
     /// Watch Music and Spotify open and quit (true), or stop.
     case followPlayers(Bool)
-    /// Open the socket the `warble` command talks to (true), or close it and remove it. Asked once when the setting changes.
-    case listenForCommands(Bool)
     /// Start the audio tap that feeds the live waveform (true), or stop it and let go of it. Asked once each time that changes.
     case captureAudio(Bool)
     /// Turn the waveform's setting off, because macOS refused the tap.
@@ -48,6 +46,4 @@ public enum AppEffect: Equatable, Sendable {
     case loadStats(since: Date)
     /// Delete every span kept.
     case clearStats
-    /// Open Settings, on the section with this name if it's one of `RemoteCommand.settingsSections`.
-    case openSettings(section: String?)
 }

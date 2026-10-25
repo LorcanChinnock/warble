@@ -12,13 +12,6 @@ final class PlatformEffects {
     var toggleKeyboard: () -> Void = {}
     /// Opens the welcome window, which `AppEnvironment` sets once it's built.
     var showWelcome: () -> Void = {}
-    /// Opens Settings on the section with this name, which `AppEnvironment` sets once the window exists.
-    var openSettings: (String?) -> Void = { _ in }
-    /// Answers a request from the `warble` command, which `AppEnvironment` sets.
-    var commandHandler: @Sendable (RemoteRequest) async -> RemoteResponse = { _ in .failure(.unavailable("Warble isn't ready")) }
-    /// Tells the user something went wrong that the effect can't fix, as a toast, which `AppEnvironment` sets.
-    var showError: (String) -> Void = { _ in }
-    private var commandServer: AgentSocket.Server?
     private var clickMonitor: Any?
     private var playerObservers: [NSObjectProtocol] = []
 
@@ -61,10 +54,6 @@ final class PlatformEffects {
             toggleKeyboard()
         case .showWelcome:
             showWelcome()
-        case .openSettings(let section):
-            openSettings(section)
-        case .listenForCommands(let listen):
-            listenForCommands(listen)
         case .turnOffWaveform:
             // macOS said no, so the setting says so too, until it's turned on again.
             UserDefaults.standard.set(false, forKey: PreferenceKey.waveform)
@@ -73,34 +62,6 @@ final class PlatformEffects {
         default:
             break
         }
-    }
-
-    /// Opens the socket the `warble` command talks to, or closes it, so while the setting is off no socket exists.
-    private func listenForCommands(_ listen: Bool) {
-        guard listen else {
-            stopListening()
-            return
-        }
-        guard commandServer == nil else { return }
-        guard let bundleIdentifier = Bundle.main.bundleIdentifier, let url = RemoteSocketPath.url(bundleIdentifier: bundleIdentifier) else {
-            log.error("No place for the command line's socket")
-            return
-        }
-        let server = AgentSocket.Server(url: url, handler: commandHandler)
-        do {
-            try server.start()
-            commandServer = server
-            log.notice("Answering the command line at \(url.path, privacy: .private)")
-        } catch {
-            log.error("The command line's socket didn't open: \(error.message, privacy: .public)")
-            showError(String(localized: "The warble command couldn't start: \(error.message)"))
-        }
-    }
-
-    /// Closes the socket and removes it, as the setting turning off and quitting do.
-    func stopListening() {
-        commandServer?.stop()
-        commandServer = nil
     }
 
     /// Clicks in other apps close the open notches; a click on the panel itself is the panel's own.

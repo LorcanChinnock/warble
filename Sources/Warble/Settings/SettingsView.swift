@@ -4,7 +4,7 @@ import WarbleCore
 
 /// The Settings window's sections, in sidebar order. Players arrives with its feature.
 enum SettingsSection: String, CaseIterable, Identifiable {
-    case general, notch, stats, shortcuts, developer, about
+    case general, notch, stats, shortcuts, about
 
     var id: String { rawValue }
 
@@ -14,7 +14,6 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         case .notch: String(localized: "Notch")
         case .stats: String(localized: "Stats")
         case .shortcuts: String(localized: "Shortcuts")
-        case .developer: String(localized: "Developer")
         case .about: String(localized: "About")
         }
     }
@@ -25,7 +24,6 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         case .notch: String(localized: "What the notch shows.")
         case .stats: String(localized: "What you listened to this week.")
         case .shortcuts: String(localized: "Control playback from any app. None are set until you add one.")
-        case .developer: String(localized: "For scripts and launchers. Everything here starts off.")
         case .about: String(localized: "Version, updates and help.")
         }
     }
@@ -36,7 +34,6 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         case .notch: "menubar.rectangle"
         case .stats: "chart.bar"
         case .shortcuts: "command"
-        case .developer: "hammer"
         case .about: "info.circle"
         }
     }
@@ -74,7 +71,6 @@ struct SettingsView: View {
                 case .notch: NotchSettings()
                 case .stats: StatsSettings()
                 case .shortcuts: ShortcutsSettings()
-                case .developer: DeveloperSettings()
                 case .about: AboutSettings()
                 }
             }
@@ -410,33 +406,6 @@ private struct ShortcutsSettings: View {
         }
         // Switching pages or closing the window stops a recording, so no key stays caught.
         .onDisappear { recorder.reset() }
-    }
-}
-
-/// Ways for scripts and other apps to control Warble, each off until it's turned on. Each is its own group, so the
-/// command line and the rest can join it.
-private struct DeveloperSettings: View {
-    @Setting(PreferenceKey.answerLinks) private var answerLinks: Bool
-    @Setting(PreferenceKey.commandLine) private var commandLine: Bool
-
-    var body: some View {
-        SectionPage(section: .developer) {
-            SettingsGroup(footer: Text("Try it with warble now. Only programs running as you can use it, and only while this is on. While it's off, Warble opens nothing for it.")) {
-                SettingsToggleRow(
-                    title: Text("Allow the warble command"),
-                    detail: Text("Scripts and status bars can read what's playing and control it from Terminal."),
-                    isOn: $commandLine
-                )
-                CommandLinkRow()
-            }
-            SettingsGroup(footer: Text("Try it in Terminal with open warble://toggle. The user guide lists every link. While this is off, Warble ignores them.")) {
-                SettingsToggleRow(
-                    title: Text("Answer warble:// links"),
-                    detail: Text("Links like warble://toggle control playback from a script, a launcher or Terminal."),
-                    isOn: $answerLinks
-                )
-            }
-        }
     }
 }
 
