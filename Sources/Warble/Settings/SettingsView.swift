@@ -226,6 +226,8 @@ private struct NotchSettings: View {
     @Setting(PreferenceKey.trackChangeToast) private var trackChangeToast: Bool
     @Setting(PreferenceKey.toastsInFullScreen) private var toastsInFullScreen: Bool
     @Setting(PreferenceKey.lyrics) private var lyrics: Bool
+    @Setting(PreferenceKey.waveform) private var waveform: Bool
+    @Setting(PreferenceKey.waveformRefused) private var waveformRefused: Bool
     @Setting(PreferenceKey.swipeToSkip) private var swipeToSkip: Bool
     @Setting(PreferenceKey.dragArtOut) private var dragArtOut: Bool
     @Setting(PreferenceKey.podcastSkips) private var podcastSkips: Bool
@@ -271,6 +273,18 @@ private struct NotchSettings: View {
                     detail: Text("The line being sung, while a song plays."),
                     isOn: $lyrics
                 )
+            }
+            SettingsGroup(footer: waveformRefused && !waveform
+                ? Text("macOS didn't let Warble hear your Mac's audio. Allow Warble in System Settings › Privacy & Security › Screen & System Audio Recording, then turn this on again.")
+                : Text("The first time, macOS asks to let Warble hear your Mac's audio. Warble uses it only to move the bars, and keeps nothing. It listens only while the bars show, and with Reduce Motion on the bars stand still.")) {
+                SettingsToggleRow(
+                    title: Text("Move the bars with the sound"),
+                    detail: Text("The bars beside the notch follow the music instead of looping."),
+                    isOn: $waveform
+                )
+                .onChange(of: waveform) { _, on in
+                    if on { waveformRefused = false }
+                }
             }
             SettingsGroup(footer: Text("Needs a trackpad, or a Magic Mouse, where you swipe with one finger. Scrolling up and down over the notch still changes the volume.")) {
                 SettingsToggleRow(

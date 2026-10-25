@@ -45,7 +45,7 @@ struct RestingContent: View {
                 if model.doctor.needsAttention {
                     AttentionButton(model: model, size: art)
                 } else if let playback {
-                    PlayStateBars(isPlaying: playback.isPlaying, isShown: isIn, reduceMotion: reduceMotion)
+                    PlayStateBars(isPlaying: playback.isPlaying, isShown: isIn, reduceMotion: reduceMotion, spectrum: model.showsWaveform ? model.spectrum : nil)
                         .frame(width: min(18, art), height: art * 0.6)
                         .accessibilityHidden(true)
                 }

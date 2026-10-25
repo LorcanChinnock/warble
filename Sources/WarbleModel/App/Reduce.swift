@@ -97,6 +97,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.answersLinks = on
     case .commandLineChanged(let on):
         state.listensForCommands = on
+    case .waveformChanged, .audioCaptureDenied:
+        effects += state.waveform.reduce(action, shared: state.shared, at: now)
     case .linkOpened(let command):
         // Links are one more way in, so each does what its button does. With links off a link changes nothing.
         guard state.answersLinks else { break }
@@ -190,6 +192,8 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
         state.listening = state.listensForCommands
         effects.append(.listenForCommands(state.listening))
     }
+    // The audio tap runs only while the waveform can be seen, and is asked for once each time that changes.
+    effects += state.waveform.follow(drawsBars: state.drawsBars)
     // Opening a notch checks again whatever the Doctor found, in case the user fixed it, such as in System Settings,
     // which tells Warble nothing.
     if state.notches.watchesClicks, !old.notches.watchesClicks, state.doctor.adapter != .working {

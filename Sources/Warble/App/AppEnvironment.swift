@@ -26,6 +26,8 @@ final class AppEnvironment {
     let welcomeWindow: WelcomeWindow
     let toast: Toast
     let recorder: ShortcutRecorder
+    /// Where the live waveform's frames go from the audio tap to the bars.
+    let spectrum = SpectrumFeed()
 
     /// `lastPlayed` is where the last track played is kept, which the preview keeps only in memory. `lyrics` is where
     /// lyrics come from, which the preview makes up rather than asking LRCLIB.
@@ -47,6 +49,7 @@ final class AppEnvironment {
                 showsSleepTimer: preferences.sleepTimer,
                 hidesFromCapture: preferences.hideFromCapture, showsVirtualTitle: preferences.virtualTitle,
                 answersLinks: preferences.answerLinks, listensForCommands: preferences.commandLine,
+                showsWaveform: preferences.waveform && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion,
                 checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
             ),
             clock: SystemClock(), scheduler: TimerScheduler()
@@ -56,7 +59,9 @@ final class AppEnvironment {
         doctor = DoctorModel(updater: updater, dispatch: dispatch)
         volume = SystemVolume()
         let outputs = CoreAudioOutputs()
-        runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: LastPlayedFile.remembering, lyrics: lyrics)
+        runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: LastPlayedFile.remembering, lyrics: lyrics, audioTap: ProcessTap())
+        let spectrum = spectrum
+        runner.spectrum = { spectrum.receive($0) }
         platform = PlatformEffects(dispatch: dispatch)
         store.perform = { [weak runner] in runner?.perform($0) }
         runner.dispatch = dispatch

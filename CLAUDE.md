@@ -94,6 +94,7 @@ Claude Code loads only this file, so read a feature's note before you change tha
 | [Developer](docs/architecture/developer.md) | changing the `warble` command, links, the socket or Settings › Developer |
 | [Motion](docs/architecture/motion.md) | changing how the notch moves between states |
 | [Website](docs/architecture/website.md) | changing `site/` or the user guide |
+| [Live waveform](docs/architecture/waveform.md) | changing the waveform, the audio tap or what the play-state bars draw |
 | [Performance](docs/architecture/performance.md) | changing anything on the hover, expand or play/pause path, or adding a timer |
 
 ## Rules enforced by `make lint`

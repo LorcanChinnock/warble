@@ -269,6 +269,9 @@
     "MIT License" : {
 
     },
+    "Move the bars with the sound" : {
+
+    },
     "Moves the Mac's sound to another output, such as AirPods." : {
 
     },
@@ -567,6 +570,12 @@
     "That link isn't one Warble knows. The guide lists the ones it does." : {
 
     },
+    "The bars beside the notch follow the music instead of looping." : {
+
+    },
+    "The first time, macOS asks to let Warble hear your Mac's audio. Warble uses it only to move the bars, and keeps nothing. It listens only while the bars show, and with Reduce Motion on the bars stand still." : {
+
+    },
     "The line being sung, while a song plays." : {
 
     },
@@ -685,6 +694,9 @@
 
     },
     "macOS asks once for each browser. Works with Safari, Chrome, Brave, Edge, Arc and Vivaldi. Without it, or in another browser, the button opens the browser." : {
+
+    },
+    "macOS didn't let Warble hear your Mac's audio. Allow Warble in System Settings › Privacy & Security › Screen & System Audio Recording, then turn this on again." : {
 
     },
     "macOS will ask the first time %@ plays." : {
