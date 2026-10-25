@@ -12,7 +12,7 @@ struct DoctorCard: View {
                 if model.player.playback != nil {
                     Button { model.onShowDoctor(false) } label: {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.scaled(12, weight: .semibold))
                             .foregroundStyle(Native.secondary)
                             .frame(width: 20, height: 20)
                             .contentShape(Rectangle())
@@ -21,7 +21,7 @@ struct DoctorCard: View {
                     .accessibilityLabel("Back to what's playing")
                 }
                 Text(Doctor.headline(doctor.checks))
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.scaled(13, weight: .semibold))
                     .foregroundStyle(.white)
                     .lineLimit(1)
                     .accessibilityAddTraits(.isHeader)
@@ -29,7 +29,7 @@ struct DoctorCard: View {
                 if doctor.needsAttention {
                     Button("Not Now", action: doctor.notNow)
                         .buttonStyle(.notch)
-                        .font(.system(size: 11))
+                        .font(.scaled(11))
                         .foregroundStyle(Native.secondary)
                         .help("Hide the \"!\" until Warble opens again")
                 }
@@ -53,13 +53,13 @@ private struct CheckRow: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             mark
-                .font(.system(size: 11, weight: .semibold))
+                .font(.scaled(11, weight: .semibold))
                 .frame(width: 14)
                 .accessibilityHidden(true)
             // A check that passed, or couldn't be checked yet, takes one line; what it found is in its tooltip.
             if check.outcome == .pass || check.outcome == .unknown {
                 Text(check.title)
-                    .font(.system(size: 11))
+                    .font(.scaled(11))
                     .foregroundStyle(Native.secondary)
                     .lineLimit(1)
                     .help(check.detail)
@@ -68,18 +68,20 @@ private struct CheckRow: View {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(alignment: .firstTextBaseline, spacing: 8) {
                         Text(check.title)
-                            .font(.system(size: 11, weight: .semibold))
+                            .font(.scaled(11, weight: .semibold))
                             .foregroundStyle(.white)
-                            .lineLimit(1)
+                            .lineLimit(2)
+                            .fixedSize(horizontal: false, vertical: true)
                         Spacer(minLength: 0)
                         if let fix = check.fix, let title = check.fixTitle {
                             Button(title) { perform(fix) }
                                 .buttonStyle(FixButtonStyle())
+                                .fixedSize()
                                 .pressedByKeyboard { perform(fix) }
                         }
                     }
                     Text(check.detail)
-                        .font(.system(size: 11))
+                        .font(.scaled(11))
                         .foregroundStyle(Native.secondary)
                         .lineLimit(3)
                         .fixedSize(horizontal: false, vertical: true)
@@ -115,7 +117,7 @@ private struct CheckRow: View {
 private struct FixButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 11, weight: .semibold))
+            .font(.scaled(11, weight: .semibold))
             .foregroundStyle(.black)
             .padding(.horizontal, 10)
             .padding(.vertical, 3)

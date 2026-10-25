@@ -100,7 +100,7 @@ public enum NotchLayout {
     /// controls and the volume.
     public static let expandedDrop: CGFloat = 160
     /// How far Expanded reaches with the Doctor's card: a heading, then a line or two for each check and its fix.
-    public static let doctorDrop: CGFloat = 220
+    public static let doctorDrop: CGFloat = 240
     /// How far the idle card reaches: the art beside three short lines, with no controls below.
     public static let idleDrop: CGFloat = 76
     /// How far a track-change toast reaches below the camera housing: a line for the title and one for the artist.
