@@ -5,7 +5,7 @@ import WarbleCore
 struct DemoHint: View {
     var body: some View {
         Text("Hover here to see what's playing")
-            .font(.system(size: 12))
+            .font(.scaled(12))
             .foregroundStyle(Native.secondary)
             .lineLimit(1)
             .padding(.horizontal, 16)

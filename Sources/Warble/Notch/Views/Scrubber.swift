@@ -41,7 +41,7 @@ struct Scrubber: View {
 
     private func time(_ text: String, alignment: Alignment) -> some View {
         Text(verbatim: text)
-            .font(.system(size: 11).monospacedDigit())
+            .font(.scaled(11, monospacedDigits: true))
             .foregroundStyle(Native.secondary)
             .frame(minWidth: 34, alignment: alignment)
     }
