@@ -17,7 +17,7 @@ By default, Warble is calm: a small, fast notch that shows what's playing and st
 Design and write for the first person on this list; the later ones opt in to more.
 
 - **The listener.** Wants play/pause, skip and to see what's on. Never opens Settings. Every default is set for them.
-- **The podcast and audiobook listener.** Skips 15 seconds, changes the speed, sets a sleep timer.
+- **The podcast and audiobook listener.** Skips 15 seconds and changes the speed.
 - **The music fan.** Turns on lyrics, switches speakers.
 - **The multi-display user.** Uses the virtual notch on external displays and Macs without a notch, and sets rules per display.
 
@@ -84,7 +84,6 @@ Claude Code loads only this file, so read a feature's note before you change tha
 | [Accessibility](docs/architecture/accessibility.md) | adding or changing any control or label |
 | [Lyrics](docs/architecture/lyrics.md) | changing the lyric line, the lyrics card or the LRCLIB client |
 | [Idle](docs/architecture/idle.md) | changing when the notch goes back to Idle |
-| [Sleep timer](docs/architecture/sleep-timer.md) | changing the sleep timer |
 | [Welcome and the demo](docs/architecture/welcome.md) | changing the first launch, the welcome window or the demo |
 | [Idle card](docs/architecture/idle-card.md) | changing what the notch shows while nothing plays, or the last track played |
 | [Motion](docs/architecture/motion.md) | changing how the notch moves between states |

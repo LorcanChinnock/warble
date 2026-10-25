@@ -225,7 +225,6 @@ private struct NotchSettings: View {
     @Setting(PreferenceKey.swipeToSkip) private var swipeToSkip: Bool
     @Setting(PreferenceKey.dragArtOut) private var dragArtOut: Bool
     @Setting(PreferenceKey.podcastSkips) private var podcastSkips: Bool
-    @Setting(PreferenceKey.sleepTimer) private var sleepTimer: Bool
     @Setting(PreferenceKey.resumeBrowserTabs) private var resumeBrowserTabs: Bool
     @Setting(PreferenceKey.hideFromCapture) private var hideFromCapture: Bool
     @Setting(PreferenceKey.virtualTitle) private var virtualTitle: Bool
@@ -287,13 +286,6 @@ private struct NotchSettings: View {
                     title: Text("Skip by seconds in podcasts"),
                     detail: Text("Go back 15 seconds or forward 30 in a podcast or audiobook."),
                     isOn: $podcastSkips
-                )
-            }
-            SettingsGroup(footer: Text("The timer button sits beside the output button. A timer stops if you pause, and it never starts by itself.")) {
-                SettingsToggleRow(
-                    title: Text("Show a sleep timer in the player"),
-                    detail: Text("Pause after 15 minutes, 30 minutes, an hour or at the end of the track."),
-                    isOn: $sleepTimer
                 )
             }
             SettingsGroup(footer: Text("macOS asks once for each browser. Works with Safari, Chrome, Brave, Edge, Arc and Vivaldi. Without it, or in another browser, the button opens the browser.")) {

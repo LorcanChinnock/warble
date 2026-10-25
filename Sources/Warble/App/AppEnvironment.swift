@@ -43,7 +43,6 @@ final class AppEnvironment {
                 showsTrackToast: preferences.trackChangeToast, toastsInFullScreen: preferences.toastsInFullScreen,
                 showsLyrics: preferences.lyrics,
                 swipeToSkip: preferences.swipeToSkip, podcastSkips: preferences.podcastSkips, dragArtOut: preferences.dragArtOut,
-                showsSleepTimer: preferences.sleepTimer,
                 hidesFromCapture: preferences.hideFromCapture, showsVirtualTitle: preferences.virtualTitle,
                 checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
             ),

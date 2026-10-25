@@ -54,7 +54,6 @@ final class NotchSurface {
         model.onMenu = { [weak self] open in self?.menu(open: open) }
         model.onShowDoctor = { show in dispatch(.showDoctor(display: display, show)) }
         model.onShowLyrics = { show in dispatch(.showLyrics(display: display, show)) }
-        model.onSetSleepTimer = { choice in dispatch(.setSleepTimer(choice)) }
         model.onDragArt = { [weak self] dragging in self?.dragArt(dragging) }
         panel.onKey = { [weak self] event in self?.onKey(event) ?? false }
     }
@@ -71,9 +70,6 @@ final class NotchSurface {
             model.hasLyrics = value.hasLyrics
             model.skipsBySeconds = value.skipsBySeconds
             model.artDrag = value.artDrag
-            model.showsSleepTimer = value.showsSleepTimer
-            model.sleepTimer = value.sleepTimer
-            model.canSetSleepTimer = value.canSetSleepTimer
             panel.ignoresMouseEvents = value.ignoresMouseEvents
             // Set only on a change, since this runs on every dispatch, hovers included.
             if panel.sharingType != value.sharingType {

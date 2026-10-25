@@ -60,10 +60,6 @@ public struct AppState: Equatable, Sendable {
     public var swipeToSkip: Bool { scroll.swipeToSkip }
     /// Whether a podcast or audiobook skips by seconds rather than by track, which Settings turns on.
     public internal(set) var podcastSkips: Bool
-    /// The sleep timer: whether the player's card has its button, which Settings turns on, and the timer running, if any.
-    public internal(set) var sleep: SleepTimerState
-    public var showsSleepTimer: Bool { sleep.isOn }
-    public var sleepTimer: SleepTimer? { sleep.timer }
     /// Whether the art can be dragged out of the player's card, which Settings turns on.
     public internal(set) var dragArtOut: Bool
     /// Whether every notch is left out of screen sharing, recordings and screenshots, which Settings turns on.
@@ -96,7 +92,7 @@ public struct AppState: Equatable, Sendable {
     public init(
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
         showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, showsLyrics: Bool = false, swipeToSkip: Bool = false, podcastSkips: Bool = false,
-        dragArtOut: Bool = false, showsSleepTimer: Bool = false, hidesFromCapture: Bool = false, showsVirtualTitle: Bool = true,
+        dragArtOut: Bool = false, hidesFromCapture: Bool = false, showsVirtualTitle: Bool = true,
         checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
@@ -106,7 +102,6 @@ public struct AppState: Equatable, Sendable {
         scroll = ScrollState(swipeToSkip: swipeToSkip)
         self.podcastSkips = podcastSkips
         self.dragArtOut = dragArtOut
-        sleep = SleepTimerState(isOn: showsSleepTimer)
         lyrics = LyricsState(isOn: showsLyrics)
     }
 
@@ -116,7 +111,7 @@ public struct AppState: Equatable, Sendable {
     /// Where each part of the state keeps its deadline: a feature that can come due on its own adds one line here. Key paths
     /// rather than the features themselves, so asking for the deadline copies and boxes nothing.
     private static let deadlines: [any KeyPath<AppState, Date?> & Sendable] = [
-        \.hideAt, \.idle.deadline, \.toast.deadline, \.lyrics.deadline, \.sleep.deadline, \.onboarding.deadline,
+        \.hideAt, \.idle.deadline, \.toast.deadline, \.lyrics.deadline, \.onboarding.deadline,
         \.scroll.deadline, \.last.deadline, \.doctor.deadline, \.notches.deadline,
     ]
 
@@ -167,11 +162,6 @@ public struct AppState: Equatable, Sendable {
     public var skipsBySeconds: Bool {
         guard podcastSkips, showsPlayback, let playback, playback.duration != nil else { return false }
         return SpokenWord.contains(playback)
-    }
-
-    /// Whether a sleep timer can run now: Settings has it on and something is playing, not about to be hidden.
-    public var canSetSleepTimer: Bool {
-        sleep.canSet(shared)
     }
 
     /// What the features may read of this state.

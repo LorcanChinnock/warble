@@ -20,10 +20,6 @@ final class NotchModel {
     var hasLyrics = false
     /// Whether a podcast or audiobook is playing, so the player's card skips by seconds rather than by track.
     var skipsBySeconds = false
-    /// Whether the player's card has a sleep timer button, the timer running, and whether one can be started now.
-    var showsSleepTimer = false
-    var sleepTimer: SleepTimer?
-    var canSetSleepTimer = false
     /// What dragging the art out of the player's card carries, or `nil` when Settings has it off or there's nothing.
     var artDrag: ArtDrag?
     /// What Expanded holds. `NotchSurface` sets it with `state`, inside the same animation, so a change of card morphs.
@@ -53,8 +49,6 @@ final class NotchModel {
     @ObservationIgnored var onShowDoctor: (Bool) -> Void = { _ in }
     /// Called to swap the open card between the player and the lyrics.
     @ObservationIgnored var onShowLyrics: (Bool) -> Void = { _ in }
-    /// Called with a choice to start a sleep timer, or `nil` to turn the one running off.
-    @ObservationIgnored var onSetSleepTimer: (SleepTimer.Choice?) -> Void = { _ in }
     /// Called with true when the art begins to be dragged out of the card, and false when the drag ends.
     @ObservationIgnored var onDragArt: (Bool) -> Void = { _ in }
 

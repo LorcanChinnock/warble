@@ -13,9 +13,6 @@ struct NotchRender: Equatable {
     var hasLyrics: Bool
     var skipsBySeconds: Bool
     var artDrag: ArtDrag?
-    var showsSleepTimer: Bool
-    var sleepTimer: SleepTimer?
-    var canSetSleepTimer: Bool
     var isVirtual: Bool
     var showsTitle: Bool
     var isAlwaysShown: Bool
@@ -37,9 +34,6 @@ struct NotchRender: Equatable {
         hasLyrics = app.hasLyricsCard
         skipsBySeconds = app.skipsBySeconds
         artDrag = app.artDrag
-        showsSleepTimer = app.showsSleepTimer
-        sleepTimer = app.sleepTimer
-        canSetSleepTimer = app.canSetSleepTimer
         isVirtual = surface.isVirtual
         showsTitle = app.titleInNotch(display)
         isAlwaysShown = surface.isAlwaysShown

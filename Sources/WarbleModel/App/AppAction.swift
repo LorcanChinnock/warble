@@ -25,8 +25,6 @@ public enum AppAction: Equatable, Sendable {
     case command(PlaybackCommand)
     /// Back or forward through a podcast or audiobook by `by` seconds from where it is, from the player's card.
     case skip(by: TimeInterval)
-    /// The player's card started a sleep timer, or turned the one running off with `nil`.
-    case setSleepTimer(SleepTimer.Choice?)
     /// One of Warble's actions, from a global shortcut, and later the command line, links and Shortcuts.
     case perform(WarbleAction)
     /// Bring the app that's playing to the front, or while Idle the one that played last.
@@ -70,7 +68,6 @@ public enum AppAction: Equatable, Sendable {
     case swipeToSkipChanged(Bool)
     case podcastSkipsChanged(Bool)
     case dragArtOutChanged(Bool)
-    case sleepTimerSettingChanged(Bool)
     case hidesFromCaptureChanged(Bool)
     case virtualTitleChanged(Bool)
     /// The lyrics found for the fetch numbered `pass`, or `nil` when there are none.

@@ -71,7 +71,6 @@ Synced lyrics, gestures and podcast controls, each off until you turn it on, plu
 A sleep timer, plus research into replacing the volume overlay.
 
 - [#46](https://github.com/LorcanChinnock/warble/issues/46) spike: replacing the volume and brightness overlay ([findings](spikes/volume-brightness-overlay.md))
-- [#47](https://github.com/LorcanChinnock/warble/issues/47) feat(player): sleep timer
 - [#17](https://github.com/LorcanChinnock/warble/issues/17) feat(player): source chips
 
 ## [1.0: translations](https://github.com/LorcanChinnock/warble/issues/49)

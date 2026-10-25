@@ -40,8 +40,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         // a hide pending, there's no position to skip from, so it sends nothing.
         guard state.showsPlayback, state.hideAt == nil, let playback = state.playback else { break }
         return reduce(&state, .command(.seek(to: playback.position(skipping: seconds, at: now))), now: now)
-    case .setSleepTimer, .sleepTimerSettingChanged:
-        effects += state.sleep.reduce(action, shared: state.shared, at: now)
     case .openApp:
         if let bundleIdentifier = state.playback?.bundleIdentifier ?? state.lastPlayed?.bundleIdentifier {
             effects.append(.openApp(bundleIdentifier: bundleIdentifier))
@@ -103,8 +101,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         effects += state.toast.reduce(action, shared: state.shared, at: now)
         effects += state.notches.reduce(action, shared: state.shared, at: now)
     }
-    // Before Idle is settled, so the pause it guesses is treated like any other pause.
-    effects += followSleepTimer(&state, at: now)
     effects += settle(&state, from: old, at: now)
     // After Idle has had its say, so a track that's no longer shown has nothing to announce.
     state.toast.announce(notice, shared: state.shared, isOpen: state.notches.isOpen(state.shared), at: now)
@@ -112,17 +108,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     // Last, so the line follows whatever this action did: a new track, a seek, a pause, Idle or a tick.
     effects += state.lyrics.follow(state.shared, at: now)
     return effects
-}
-
-/// Keeps the sleep timer in step with what's playing, and pauses at once when it's due.
-private func followSleepTimer(_ state: inout AppState, at now: Date) -> [AppEffect] {
-    guard state.sleep.expire(state.shared, at: now) == .due, let playback = state.playback else { return [] }
-    // In the gap between tracks the source has reported nothing, so the pause is sent but not shown, which would keep the
-    // track on screen after the hide.
-    if state.hideAt == nil {
-        show(playback.playing(false, at: now), in: &state, at: now)
-    }
-    return [.send(.pause)]
 }
 
 extension PlaybackState {
