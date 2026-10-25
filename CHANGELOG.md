@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.1.0-beta.8](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.7...v0.1.0-beta.8) (2026-10-25)
+
+
+### Features
+
+* **i18n:** first translations ([#52](https://github.com/LorcanChinnock/warble/issues/52)) ([#208](https://github.com/LorcanChinnock/warble/issues/208)) ([8be4abf](https://github.com/LorcanChinnock/warble/commit/8be4abf9a2aecfcab6c6ddc1daacec9da5ab6498))
+* **settings:** give the Settings window the notch's look and feel ([#194](https://github.com/LorcanChinnock/warble/issues/194)) ([#200](https://github.com/LorcanChinnock/warble/issues/200)) ([3606a20](https://github.com/LorcanChinnock/warble/commit/3606a200614f264bbe5129cc42590ab1971d86dd))
+* **shortcuts:** Shortcuts actions ([#43](https://github.com/LorcanChinnock/warble/issues/43)) ([#203](https://github.com/LorcanChinnock/warble/issues/203)) ([e32752e](https://github.com/LorcanChinnock/warble/commit/e32752e96ccb79be6d079ce07f47f05339c45e4f))
+* **stats:** weekly listening stats, kept on this Mac ([#48](https://github.com/LorcanChinnock/warble/issues/48)) ([#206](https://github.com/LorcanChinnock/warble/issues/206)) ([43ff2c0](https://github.com/LorcanChinnock/warble/commit/43ff2c05f424e8d439333ce2b1e4f354757a789f))
+* **waveform:** live waveform from a Core Audio tap ([#45](https://github.com/LorcanChinnock/warble/issues/45)) ([#205](https://github.com/LorcanChinnock/warble/issues/205)) ([1e38424](https://github.com/LorcanChinnock/warble/commit/1e384246e0ac83b953678f7f5dd6041781b292e8))
+
+
+### Bug Fixes
+
+* **doctor:** scale the Doctor card with Text size ([#217](https://github.com/LorcanChinnock/warble/issues/217)) ([#218](https://github.com/LorcanChinnock/warble/issues/218)) ([2944c82](https://github.com/LorcanChinnock/warble/commit/2944c82e22406f3228dca658da9b4bede7d5cd5e))
+* **i18n:** shorten the Spanish largest text size to fit ([#211](https://github.com/LorcanChinnock/warble/issues/211)) ([#212](https://github.com/LorcanChinnock/warble/issues/212)) ([41881d8](https://github.com/LorcanChinnock/warble/commit/41881d8124ec276792ab96ff9e7a64118c71bc54))
+* **notch:** scale the notch's own text with Text size ([#209](https://github.com/LorcanChinnock/warble/issues/209)) ([#210](https://github.com/LorcanChinnock/warble/issues/210)) ([4f9e15c](https://github.com/LorcanChinnock/warble/commit/4f9e15c34b6cdb2e3690311f868ffa8b87ca9557))
+* **settings:** even sidebar rows and a Stats subtitle that stays true ([#219](https://github.com/LorcanChinnock/warble/issues/219)) ([#220](https://github.com/LorcanChinnock/warble/issues/220)) ([ddcb72e](https://github.com/LorcanChinnock/warble/commit/ddcb72ef562e8439bcc02749267b9d8afd1fd65e))
+
+
+### Performance Improvements
+
+* **waveform:** check the waveform in perf-app and trim its cost ([#213](https://github.com/LorcanChinnock/warble/issues/213)) ([#221](https://github.com/LorcanChinnock/warble/issues/221)) ([df6caaf](https://github.com/LorcanChinnock/warble/commit/df6caafead355a166db3df5ea99ee1105eed8278))
+* **waveform:** cut the live waveform's CPU cost ([#213](https://github.com/LorcanChinnock/warble/issues/213)) ([#214](https://github.com/LorcanChinnock/warble/issues/214)) ([e26f988](https://github.com/LorcanChinnock/warble/commit/e26f988966109567ac84e1289dce2d3dbdc28f51))
+
 ## [0.1.0-beta.7](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.6...v0.1.0-beta.7) (2026-10-23)
 
 
