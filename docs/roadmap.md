@@ -63,7 +63,7 @@ Podcast skips, off until you turn them on, and the title in the middle of a virt
 Source chips, plus research into replacing the volume overlay.
 
 - [#46](https://github.com/LorcanChinnock/warble/issues/46) spike: replacing the volume and brightness overlay ([findings](spikes/volume-brightness-overlay.md))
-- [#17](https://github.com/LorcanChinnock/warble/issues/17) feat(player): source chips
+- [#17](https://github.com/LorcanChinnock/warble/issues/17) feat(player): source chips (parked: the code from [#241](https://github.com/LorcanChinnock/warble/pull/241) was reverted in [#245](https://github.com/LorcanChinnock/warble/issues/245) until mediaremote-adapter can report a second player)
 
 ## Removed
 

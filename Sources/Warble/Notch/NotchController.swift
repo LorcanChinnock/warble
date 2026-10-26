@@ -121,9 +121,6 @@ final class NotchController {
         if shown != Self.shown(old) {
             player.playback = shown
         }
-        if new.chips != old.chips {
-            player.chips = new.chips
-        }
         if new.lastPlayed != old.lastPlayed {
             player.lastPlayed = new.lastPlayed
         }

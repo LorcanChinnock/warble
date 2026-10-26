@@ -15,7 +15,7 @@ private struct Run {
 
     init() {
         send(.housingsChanged([builtIn, external]))
-        send(.sourceReported(bundleIdentifier: "app", song))
+        send(.playbackReported(song))
         effects = []
     }
 
