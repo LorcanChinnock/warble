@@ -244,22 +244,3 @@ private func idleState(_ intent: HoverIntent) -> NotchState {
     #expect(NotchCard(isPlaying: true, needsAttention: true, showsDoctor: false) == .player)
     #expect(NotchCard(isPlaying: true, needsAttention: true, showsDoctor: true) == .doctor)
 }
-
-@Test func theKeyboardShortcutOpensTheNotchAndKeepsItOpenWhereverThePointerGoes() {
-    var opened = intent((.keyboard, 0))
-    #expect(opened.state == .pinned)
-    opened.handle(.pointerEntered, at: entered + 1)
-    opened.handle(.pointerLeft, at: entered + 2)
-    opened.advance(to: entered + 10)
-    #expect(opened.state == .pinned)
-}
-
-@Test func theKeyboardShortcutClosesAnOpenNotch() {
-    #expect(intent((.keyboard, 0), (.keyboard, 1)).state == .resting)
-    #expect(intent((.click, 0), (.keyboard, 1)).state == .resting)
-    #expect(intent((.pointerEntered, 0), (.keyboard, 1)).state == .resting)
-}
-
-@Test func theKeyboardShortcutLeavesANotchOpenUnderAMenu() {
-    #expect(intent((.keyboard, 0), (.menuOpened, 1), (.keyboard, 2)).state == .pinned)
-}

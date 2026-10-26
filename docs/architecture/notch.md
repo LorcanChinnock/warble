@@ -1,6 +1,6 @@
 # The notch
 
-Read this before changing the panel, its states and cards, hover, displays, toasts, scrolling, shortcuts or the keyboard. Back to the [architecture index](../../CLAUDE.md#architecture).
+Read this before changing the panel, its states and cards, hover, displays, toasts, scrolling or the keys it takes. Back to the [architecture index](../../CLAUDE.md#architecture).
 
 ## Surfaces and displays
 
@@ -40,8 +40,8 @@ A right-click or Control-click on any notch, in any state, opens `NotchMenu`: th
 
 ## Toasts
 
-`Toast` shows a short message near the bottom of the screen under the pointer. Notices that slide out of the notch, such as a track change, are another thing: `ToastQueue` (WarbleModel) decides which one shows and for how long, with no timers of its own. With `PreferenceKey.trackChangeToast` on (it starts off), `reduce` posts a `TrackToast` (WarbleModel) for each new track while no notch is open, and each resting notch draws it as `NotchState.toast`: the wings with the title and artist in a strip below, `NotchLayout.toastDrop` deep. Only the housing takes the hover, as at rest. Opening a notch, playback stopping or turning the setting off dismisses it. In the `resting` preview, next and previous change the preview track, so a shortcut for Next track shows the toast.
+`Toast` shows a short message near the bottom of the screen under the pointer. Notices that slide out of the notch, such as a track change, are another thing: `ToastQueue` (WarbleModel) decides which one shows and for how long, with no timers of its own. With `PreferenceKey.trackChangeToast` on (it starts off), `reduce` posts a `TrackToast` (WarbleModel) for each new track while no notch is open, and each resting notch draws it as `NotchState.toast`: the wings with the title and artist in a strip below, `NotchLayout.toastDrop` deep. Only the housing takes the hover, as at rest. Opening a notch, playback stopping or turning the setting off dismisses it. In the `resting` preview, next and previous change the preview track, so Next track shows the toast.
 
-## Shortcuts and the keyboard
+## Keys
 
-`HotkeyCenter` registers the global shortcuts of `WarbleAction`, none of which has one by default. A press dispatches `.perform(action)`, which does what the matching button does. `WarbleAction.openNotch` opens the notch on the pointer's display with the keyboard in it (`HoverEvent.keyboard`, which pins it open). Only then does `NotchPanel` take key, and Warble comes to the front, since VoiceOver and Tab follow only the app in front. Warble has no menu bar of its own, and `NotchSurface` gives the app that was in front its place back when the notch closes, unless a click has moved on. Notch buttons use `.buttonStyle(.notch)`, so Space or Return presses the one with the focus ring. Keys no control used reach `NotchPanel.keyDown`, and `NotchKey` (WarbleModel) says what each does: Space plays or pauses, ← and → seek 10 seconds, ⇧← and ⇧→ skip, ↑ and ↓ change the volume, Esc closes.
+`HotkeyCenter` (`Sources/Warble/Keys`) holds the two keys Warble takes from every app, each only briefly and through the `HotkeyRegistrar` port, so no permission is needed: Escape while a notch is open with the pointer on it (`.takeEscape`) and ⌘Z while a toast offers Undo. Warble has no other global shortcut, and no key reaches a notch directly, since `NotchPanel` never becomes key.

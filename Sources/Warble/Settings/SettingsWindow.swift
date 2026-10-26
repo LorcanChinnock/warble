@@ -37,11 +37,6 @@ final class SettingsWindow {
         }
     }
 
-    /// Whether the window is open on `section`.
-    func isShowing(_ section: SettingsSection) -> Bool {
-        window?.isVisible == true && navigation.section == section
-    }
-
     private func makeWindow() -> NSWindow {
         let window = NSWindow(
             contentRect: NSRect(origin: .zero, size: Self.size),

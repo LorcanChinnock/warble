@@ -1,8 +1,8 @@
 import Foundation
 import WarbleCore
 
-/// A track that plays without a player, for `-notchPreviewState resting`. Next and previous change its title, such as
-/// from a shortcut, to show the track-change toast; other commands only change what the notch shows.
+/// A track that plays without a player, for `-notchPreviewState resting`. Next and previous change its title, to show
+/// the track-change toast; other commands only change what the notch shows.
 @MainActor
 final class PreviewSource: NowPlayingSource {
     let states: AsyncStream<PlaybackState?>

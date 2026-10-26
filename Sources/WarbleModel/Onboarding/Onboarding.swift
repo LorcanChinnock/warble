@@ -59,7 +59,7 @@ public struct Onboarding: Feature {
     private static func endsDemo(_ action: AppAction) -> Bool {
         switch action {
         case .pointer(_, let inside): inside
-        case .hover, .menu, .perform(.openNotch): true
+        case .hover, .menu: true
         case .playbackReported(let playback): playback?.isPlaying == true
         default: false
         }

@@ -38,8 +38,7 @@ enum Perf {
         }
     }
 
-    /// The click or key being handled and its timestamp, for `untilNextFrame`, or `nil` outside of one, such as for a
-    /// global shortcut.
+    /// The click or key being handled and its timestamp, for `untilNextFrame`, or `nil` outside of one.
     static var input: (cause: String, timestamp: TimeInterval)? {
         guard let event = NSApp.currentEvent else { return nil }
         switch event.type {

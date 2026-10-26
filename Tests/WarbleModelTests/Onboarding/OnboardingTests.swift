@@ -81,10 +81,9 @@ private let demoLength = NotchMotion.demoResting + NotchMotion.demoExpanded + No
     #expect(state.card("built-in") == .idle)
 }
 
-@Test(arguments: [HoverEvent.click, .keyboard])
-func aClickOrTheKeyboardEndsTheDemoAtOnce(_ event: HoverEvent) {
+@Test func aClickEndsTheDemoAtOnce() {
     var state = launched()
-    #expect(reduce(&state, .hover(display: "built-in", event), now: now + 1).contains(.showWelcome))
+    #expect(reduce(&state, .hover(display: "built-in", .click), now: now + 1).contains(.showWelcome))
     #expect(state.onboarding.demo.step == nil)
 }
 
@@ -146,15 +145,6 @@ func aClickOrTheKeyboardEndsTheDemoAtOnce(_ event: HoverEvent) {
     #expect(frame.height == housing.frame.height + NotchLayout.hintDrop)
     #expect(frame.contains(housing.frame))
     #expect(NotchLayout.hoverArea(.hint, notch: housing.frame) == housing.frame)
-}
-
-@Test func theOpenNotchShortcutEndsTheDemoBeforeItAsksForTheKeyboard() {
-    var state = launched()
-    let effects = reduce(&state, .perform(.openNotch), now: now + 1)
-    #expect(effects.contains(.showWelcome))
-    #expect(effects.contains(.toggleKeyboard))
-    // The notch is already the idle one when the keyboard is asked to open it, so it counts as opening.
-    #expect(state.notchState("built-in") == .idle)
 }
 
 @Test func theDemoDrawsItsTrackWhileLeavingWhatTheSourcesSaidAlone() {

@@ -19,14 +19,12 @@ public enum PreferenceKey {
 
     /// Whether the welcome window has been seen, or didn't need to be because Warble was in use before it existed.
     public static let hasSeenWelcome = "hasSeenWelcome"
-
-    public static func hotkey(_ action: WarbleAction) -> String { "hotkey.\(action.rawValue)" }
 }
 
 /// Typed read access to settings; `@Setting` in views uses the same keys and `Preferences.defaults`.
 public struct Preferences {
     public static var defaults: [String: Any] {
-        var values: [String: Any] = [
+        [
             PreferenceKey.showMenuBarIcon: true,
             PreferenceKey.textSize: TextSize.standard.rawValue,
             PreferenceKey.virtualNotch: [String: String](),
@@ -36,10 +34,6 @@ public struct Preferences {
             PreferenceKey.virtualTitle: true,
             PreferenceKey.hasSeenWelcome: false,
         ]
-        for action in WarbleAction.allCases {
-            values[PreferenceKey.hotkey(action)] = action.defaultCombo?.encoded ?? ""
-        }
-        return values
     }
 
     private let store: UserDefaults
@@ -104,10 +98,5 @@ public struct Preferences {
 
     public var virtualTitle: Bool {
         store.bool(forKey: PreferenceKey.virtualTitle)
-    }
-
-    /// `nil` means the user cleared the shortcut.
-    public func hotkey(for action: WarbleAction) -> KeyCombo? {
-        KeyCombo(encoded: store.string(forKey: PreferenceKey.hotkey(action)) ?? "")
     }
 }

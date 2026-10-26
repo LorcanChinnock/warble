@@ -53,8 +53,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             store.dispatch(.adapterChanged(Doctor.Adapter(AdapterSupervisor(bundled: false).backend)))
             startFallback()
         }
-        environment.hotkeys.onPress = { [weak store] action in store?.dispatch(.perform(action)) }
-        environment.hotkeys.start()
         self.notch = notch
         // The previews are for looking at the notch, so they skip the welcome window. Reads the saved domain, since
         // `UserDefaults` also answers with registered defaults.

@@ -24,7 +24,6 @@ final class AppEnvironment {
     let settingsWindow: SettingsWindow
     let welcomeWindow: WelcomeWindow
     let toast: Toast
-    let recorder: ShortcutRecorder
 
     /// `lastPlayed` is where the last track played is kept, which the preview keeps only in memory..
     init(lastPlayed: any LastPlayedStore) {
@@ -61,20 +60,11 @@ final class AppEnvironment {
         navigation = SettingsNavigation()
         settingsWindow = SettingsWindow(navigation: navigation)
         toast = Toast(hotkeys: hotkeys, settings: settings)
-        recorder = ShortcutRecorder(hotkeys: hotkeys, settings: settings)
         welcomeWindow = WelcomeWindow(dispatch: dispatch)
         settingsWindow.environment = self
         welcomeWindow.environment = self
-        let settingsWindow = settingsWindow
         let welcomeWindow = welcomeWindow
         platform.showWelcome = { [weak welcomeWindow] in welcomeWindow?.show() }
-        let toast = toast
-        hotkeys.onUnavailable = { failed in
-            // Settings › Shortcuts says so under the shortcut, so the toast is for when it isn't showing.
-            guard !settingsWindow.isShowing(.shortcuts) else { return }
-            // Usually another app owns the shortcut, or two Warble actions share it.
-            toast.error("Shortcut unavailable: \(failed.sorted().joined(separator: ", ")). Another app may use it, so choose a different one in Settings › Shortcuts.")
-        }
     }
 }
 
@@ -86,8 +76,6 @@ extension View {
             .environment(environment.updater)
             .environment(environment.displays)
             .environment(environment.loginItem)
-            .environment(environment.hotkeys)
             .environment(environment.navigation)
-            .environment(environment.recorder)
     }
 }

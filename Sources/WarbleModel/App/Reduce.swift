@@ -19,11 +19,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
             }
             show(playback, in: &state, at: now)
         }
-    case .perform(let action):
-        if let command = action.command {
-            return reduce(&state, .command(command), now: now)
-        }
-        effects.append(.toggleKeyboard)
     case .command(let command):
         // Shows what a command will do before the app reports back, so a click on play/pause answers at once. Skipping
         // waits for the app, since only it knows the next track, and the app's next report replaces the guess either way.
@@ -61,10 +56,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         effects.append(.setVolume(volume))
     case .scrolled(let delta, let precise, let inverted, let volume, let isMuted):
         effects += VolumeScroll.effects(delta, precise: precise, inverted: inverted, volume: volume, isMuted: isMuted)
-    case .volumeKey(let delta, let volume, let isMuted):
-        if let volume {
-            effects.append(.setVolume(NotchKey.volume(changing: isMuted ? 0 : volume, by: delta)))
-        }
     case .volumeRead(let volume, let isMuted):
         state.volume = volume
         state.isMuted = isMuted
