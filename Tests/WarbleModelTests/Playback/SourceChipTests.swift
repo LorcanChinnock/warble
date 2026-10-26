@@ -151,3 +151,14 @@ private actor Single: NowPlayingSource {
     await source.finish()
     #expect(await reports.next() == nil)
 }
+
+@Test func aSkipThroughAReportOfNothingStillShowsTheTrackToast() {
+    var run = Run()
+    run.send(.trackToastChanged(true))
+    run.report("a", track("a"))
+    run.report("a", nil)
+    var next = track("a")
+    next.title = "Next song"
+    run.report("a", next)
+    #expect(run.state.toasts.current?.content.title == "Next song")
+}

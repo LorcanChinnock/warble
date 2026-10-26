@@ -24,9 +24,7 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         if let followed {
             if followed == source, let report {
                 // A guess at what a command will do shows at once and this report replaces it.
-                if before == source {
-                    notice = TrackToast.notice(from: state.playback, to: report)
-                }
+                notice = TrackToast.notice(from: state.playback, to: report)
                 show(report, in: &state, at: now)
             } else if followed != before {
                 show(state.reports[followed], in: &state, at: now)
