@@ -17,9 +17,10 @@ concurrency:
 
 jobs:
   claude-review:
-    # Skips drafts until they're marked ready, and release-please's PR, which only bumps the
-    # version and changelog.
-    if: ${{ !github.event.pull_request.draft && !startsWith(github.head_ref, 'release-please--') }}
+    # Skips drafts until they're marked ready, release-please's PR, which only bumps the version
+    # and changelog, and Dependabot's PRs, which run without the repository's secrets so the
+    # review has no token to sign in with.
+    if: ${{ !github.event.pull_request.draft && !startsWith(github.head_ref, 'release-please--') && github.actor != 'dependabot[bot]' }}
     # Optional: Filter by PR author
     # if: |
     #   github.event.pull_request.user.login == 'external-contributor' ||
