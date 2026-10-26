@@ -5,8 +5,7 @@ import WarbleCore
 
 private let log = Logger.warble("hotkeys")
 
-/// Holds the keys Warble takes from every app only briefly: Escape while a notch is open and ⌘Z while a toast offers
-/// Undo.
+/// Holds the key Warble takes from every app only briefly: Escape while a notch is open.
 @MainActor
 final class HotkeyCenter: HotkeyRegistrar {
     private var handlerInstalled = false
@@ -20,7 +19,7 @@ final class HotkeyCenter: HotkeyRegistrar {
     }
 
     /// Takes `combo` from every app until `unregisterTemporary(for:)`, for a key that only means something briefly,
-    /// such as ⌘Z while a toast offers Undo. Replaces the key `owner` held before and leaves every other owner's alone.
+    /// such as Escape while a notch is open. Replaces the key `owner` held before and leaves every other owner's alone.
     /// False when it couldn't be registered.
     @discardableResult
     func registerTemporary(_ combo: KeyCombo, for owner: TemporaryKey, onPress: @escaping () -> Void) -> Bool {

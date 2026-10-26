@@ -59,7 +59,7 @@ final class AppEnvironment {
         runner.logError = { message in Logger.warble("notch").error("\(message, privacy: .public)") }
         navigation = SettingsNavigation()
         settingsWindow = SettingsWindow(navigation: navigation)
-        toast = Toast(hotkeys: hotkeys, settings: settings)
+        toast = Toast(settings: settings)
         welcomeWindow = WelcomeWindow(dispatch: dispatch)
         settingsWindow.environment = self
         welcomeWindow.environment = self

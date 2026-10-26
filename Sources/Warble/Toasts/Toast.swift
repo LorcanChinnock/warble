@@ -1,5 +1,4 @@
 import AppKit
-import Carbon.HIToolbox
 import SwiftUI
 import WarbleCore
 
@@ -9,15 +8,12 @@ final class Toast {
     private var panel: NSPanel?
     private var hideTask: Task<Void, Never>?
     private var duration: Duration?
-    private var undoable: PendingAction?
     private var shown: ToastText?
     private var actionTitle: String?
-    private let hotkeys: HotkeyCenter
     private let settings: SettingsStore
     fileprivate static let font = ScaledFont.scaled(13, weight: .semibold)
 
-    init(hotkeys: HotkeyCenter, settings: SettingsStore) {
-        self.hotkeys = hotkeys
+    init(settings: SettingsStore) {
         self.settings = settings
     }
 
@@ -33,30 +29,17 @@ final class Toast {
     }
 
     /// Shows `message`; `duration` nil keeps it visible until the next call. The pointer holds it, and a click dismisses it.
-    /// With `undoable`, the toast offers Undo, which ⌘Z also presses from any app while the toast shows, and the action
-    /// commits once the toast goes away any other way.
     /// With `cancel`, it offers Cancel for the work it describes. With `reveal`, it offers Show, which selects that file in Finder.
-    func show(_ message: LocalizedStringResource, duration: Duration? = .seconds(1.5), undoable: PendingAction? = nil, cancel: (() -> Void)? = nil, reveal: URL? = nil) {
-        show(String(localized: message), duration: duration, undoable: undoable, cancel: cancel, reveal: reveal)
+    func show(_ message: LocalizedStringResource, duration: Duration? = .seconds(1.5), cancel: (() -> Void)? = nil, reveal: URL? = nil) {
+        show(String(localized: message), duration: duration, cancel: cancel, reveal: reveal)
     }
 
     /// A toast whose text is already localized.
     @_disfavoredOverload
-    func show<S: StringProtocol>(_ message: S, duration: Duration? = .seconds(1.5), undoable: PendingAction? = nil, cancel: (() -> Void)? = nil, reveal: URL? = nil) {
+    func show<S: StringProtocol>(_ message: S, duration: Duration? = .seconds(1.5), cancel: (() -> Void)? = nil, reveal: URL? = nil) {
         let message = String(message)
-        settle()
-        self.undoable = undoable
         let panel = panel ?? makePanel()
-        if let undoable {
-            // The panel never becomes key, so ⌘Z can't reach it through the responder chain.
-            hotkeys.registerTemporary(KeyCombo(keyCode: UInt32(kVK_ANSI_Z), modifiers: KeyCombo.command), for: .toast) { [weak self] in
-                undoable.undo()
-                self?.hide()
-            }
-        }
-        let action: ToastView.Action? = if let undoable {
-            ToastView.Action(title: String(localized: "Undo")) { [weak self] in undoable.undo(); self?.hide() }
-        } else if let cancel {
+        let action: ToastView.Action? = if let cancel {
             ToastView.Action(title: String(localized: "Cancel"), perform: cancel)
         } else if let reveal {
             ToastView.Action(title: String(localized: "Show")) { [weak self] in NSWorkspace.shared.activateFileViewerSelecting([reveal]); self?.hide() }
@@ -87,7 +70,7 @@ final class Toast {
     @_disfavoredOverload
     func progress<S: StringProtocol>(_ message: S) {
         let message = String(message)
-        guard let panel, let shown, undoable == nil else {
+        guard let panel, let shown else {
             show(message, duration: nil)
             return
         }
@@ -136,16 +119,6 @@ final class Toast {
 
     private func hide() {
         panel?.orderOut(nil)
-        settle()
-    }
-
-    private func settle() {
-        let pending = undoable
-        undoable = nil
-        if pending != nil {
-            hotkeys.unregisterTemporary(for: .toast)
-        }
-        pending?.commit()
     }
 
     private func makePanel() -> NSPanel {

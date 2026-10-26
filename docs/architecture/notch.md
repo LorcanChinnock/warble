@@ -44,4 +44,4 @@ A right-click or Control-click on any notch, in any state, opens `NotchMenu`: th
 
 ## Keys
 
-`HotkeyCenter` (`Sources/Warble/Keys`) holds the two keys Warble takes from every app, each only briefly and through the `HotkeyRegistrar` port, so no permission is needed: Escape while a notch is open with the pointer on it (`.takeEscape`) and ⌘Z while a toast offers Undo. Warble has no other global shortcut, and no key reaches a notch directly, since `NotchPanel` never becomes key.
+`HotkeyCenter` (`Sources/Warble/Keys`) holds the one key Warble takes from every app, only briefly and through the `HotkeyRegistrar` port, so no permission is needed: Escape while a notch is open with the pointer on it (`.takeEscape`). Warble has no other global shortcut, and no key reaches a notch directly, since `NotchPanel` never becomes key.
