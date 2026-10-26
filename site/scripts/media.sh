@@ -5,7 +5,7 @@ set -eu
 src=../docs/media
 out=public/media
 mkdir -p "$out"
-for name in rest hover skip idle; do
+for name in rest hover skip; do
   clip="$src/$name.mp4"
   # Even dimensions for yuv420p, which every browser decodes.
   scale="scale=trunc(iw/2)*2:trunc(ih/2)*2"
