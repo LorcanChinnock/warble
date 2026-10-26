@@ -39,7 +39,7 @@ final class AppEnvironment {
         store = Store(
             state: AppState(
                 stayVisibleAfterPausing: preferences.stayVisibleAfterPausing, idleHover: preferences.idleHover,
-                showsTrackToast: preferences.trackChangeToast, toastsInFullScreen: preferences.toastsInFullScreen,
+                showsTrackToast: preferences.trackChangeToast,
                 swipeToSkip: preferences.swipeToSkip, podcastSkips: preferences.podcastSkips, dragArtOut: preferences.dragArtOut,
                 showsVirtualTitle: preferences.virtualTitle,
                 checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))

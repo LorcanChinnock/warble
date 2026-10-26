@@ -5,12 +5,9 @@ public struct ToastState: Feature {
     public internal(set) var queue = ToastQueue<TrackToast>()
     /// Whether a track change posts a toast, which Settings turns on.
     public internal(set) var isOn: Bool
-    /// Whether the toast also shows over a full-screen app, which Settings turns on.
-    public internal(set) var inFullScreen: Bool
 
-    public init(isOn: Bool = false, inFullScreen: Bool = false) {
+    public init(isOn: Bool = false) {
         self.isOn = isOn
-        self.inFullScreen = inFullScreen
     }
 
     var deadline: Date? { queue.deadline }
@@ -22,8 +19,6 @@ public struct ToastState: Feature {
             if !on {
                 dismiss(at: now)
             }
-        case .toastsInFullScreenChanged(let on):
-            inFullScreen = on
         case .tick:
             queue.advance(to: now)
         default:

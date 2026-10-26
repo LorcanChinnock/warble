@@ -29,7 +29,6 @@ Settings is always dark, like the notch, whatever your Mac's appearance. Every c
 
 Click **More options** at the bottom of General to show these. They're all off at first, except where noted.
 
-- **Show the message over full-screen apps.** Only works while the message above is on. The message also slides out over an app in full screen, such as a film or a game, then goes. The notch itself still stays out of a full-screen app.
 - **Swipe over the notch to skip.** Swiping left over the notch with two fingers skips to the next song, and swiping right goes back. It needs a trackpad, or a Magic Mouse. Scrolling up and down still changes the volume. See [Use gestures](/docs/use-gestures/).
 - **Drag the album art out of the player.** You can drag the art from the open player into another app: a folder gets the picture as a file, and a message or a note gets the picture. A click on the art still opens the app. See [Use gestures](/docs/use-gestures/#drag-the-album-art-out).
 - **Skip by seconds in podcasts.** A podcast or an audiobook has back 15 seconds and forward 30 in place of previous and next. Songs keep previous and next. See [Listen to podcasts](/docs/listen-to-podcasts/).

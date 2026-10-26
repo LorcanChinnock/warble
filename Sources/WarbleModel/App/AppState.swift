@@ -56,7 +56,6 @@ public struct AppState: Equatable, Sendable {
         get { toast.isOn }
         set { toast.isOn = newValue }
     }
-    public var toastsInFullScreen: Bool { toast.inFullScreen }
     /// Whether a sideways swipe over a notch skips, which Settings turns on, and the trackpad gesture under way.
     public internal(set) var scroll: ScrollState
     public var swipeToSkip: Bool { scroll.swipeToSkip }
@@ -88,14 +87,14 @@ public struct AppState: Equatable, Sendable {
     /// `checks` are what the Doctor finds before it has asked macOS anything: what it finds while the adapter works.
     public init(
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
-        showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, swipeToSkip: Bool = false, podcastSkips: Bool = false,
+        showsTrackToast: Bool = false, swipeToSkip: Bool = false, podcastSkips: Bool = false,
         dragArtOut: Bool = false, showsVirtualTitle: Bool = true,
         checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
         doctor = DoctorState(checks: checks)
         notches = Notches(idleHover: idleHover, showsVirtualTitle: showsVirtualTitle)
-        toast = ToastState(isOn: showsTrackToast, inFullScreen: toastsInFullScreen)
+        toast = ToastState(isOn: showsTrackToast)
         scroll = ScrollState(swipeToSkip: swipeToSkip)
         self.podcastSkips = podcastSkips
         self.dragArtOut = dragArtOut
@@ -165,7 +164,7 @@ public struct AppState: Equatable, Sendable {
     var shared: SharedState {
         SharedState(
             playback: playback, showsPlayback: showsPlayback, hideAt: hideAt, needsAttention: needsAttention,
-            hasToast: toasts.current != nil, toastsInFullScreen: toastsInFullScreen,
+            hasToast: toasts.current != nil,
             demoState: onboarding.notchState, demoCard: onboarding.card
         )
     }

@@ -132,9 +132,8 @@ public struct Notches: Feature {
             surface.hover.state, isPlaying: shared.showsPlayback, needsAttention: shared.needsAttention, idleHover: idleHover,
             isAlwaysShown: surface.isAlwaysShown, showsToast: shared.hasToast && !showsTitle(surface, shared)
         )
-        // A full-screen app has the top of its display to itself, apart from the toast when Settings lets it through.
-        guard surface.isFullScreen else { return state }
-        return state == .toast && shared.toastsInFullScreen ? .toast : .hidden
+        // A full-screen app has the top of its display to itself.
+        return surface.isFullScreen ? .hidden : state
     }
 
     /// What the notch holds when Expanded.
@@ -146,14 +145,13 @@ public struct Notches: Feature {
     }
 
     /// Only a virtual notch has room for the title, since a real one's middle is the camera. It scrolls the title once for
-    /// each track, which says what a track-change toast would, so the toast leaves it alone. Over a full-screen app the
-    /// notch is hidden, so the toast, if Settings lets it through, stays.
+    /// each track, which says what a track-change toast would, so the toast leaves it alone.
     func showsTitle(_ surface: Surface, _ shared: SharedState) -> Bool {
         showsVirtualTitle && surface.isVirtual && !surface.isFullScreen && shared.showsPlayback && shared.playback?.title.isEmpty == false
     }
 
     /// Without anything playing, a "!" or a card to open while Idle, a notch draws nothing, or only a blank notch, and
-    /// takes no hover or click. Nor does one over a full-screen app, so a toast there can't open the card.
+    /// takes no hover or click. Nor does one over a full-screen app.
     func answersPointer(_ surface: Surface, _ shared: SharedState) -> Bool {
         guard !surface.isFullScreen else { return false }
         let state = notchState(surface, shared)

@@ -188,7 +188,6 @@ private struct VirtualNotchRow: View {
 /// The switches few people need, folded away until asked for.
 private struct MoreOptions: View {
     @Setting(PreferenceKey.trackChangeToast) private var trackChangeToast: Bool
-    @Setting(PreferenceKey.toastsInFullScreen) private var toastsInFullScreen: Bool
     @Setting(PreferenceKey.swipeToSkip) private var swipeToSkip: Bool
     @Setting(PreferenceKey.dragArtOut) private var dragArtOut: Bool
     @Setting(PreferenceKey.podcastSkips) private var podcastSkips: Bool
@@ -196,12 +195,6 @@ private struct MoreOptions: View {
 
     var body: some View {
         SettingsDisclosure(title: Text("More options")) {
-            SettingsToggleRow(
-                title: Text("Show the message over full-screen apps"),
-                detail: Text("Only the message shows. The notch stays out of the way."),
-                isOn: $toastsInFullScreen
-            )
-            .disabled(!trackChangeToast)
             SettingsToggleRow(
                 title: Text("Swipe over the notch to skip"),
                 detail: Text("Swipe left with two fingers for the next song, or right to go back. Needs a trackpad or a Magic Mouse."),

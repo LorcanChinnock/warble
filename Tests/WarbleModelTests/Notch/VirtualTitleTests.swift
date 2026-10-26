@@ -82,14 +82,13 @@ private struct Run {
     #expect(run.state.notchState("external") == .toast)
 }
 
-@Test func overAFullScreenAppTheToastStaysAndTheTitleGoes() {
+@Test func overAFullScreenAppTheTitleAndTheToastGo() {
     var run = Run(showsTrackToast: true)
-    run.send(.toastsInFullScreenChanged(true))
     run.send(.sourceReported(bundleIdentifier: "app", song))
     run.send(.fullScreenChanged(["external"]))
     run.send(.sourceReported(bundleIdentifier: "app", next), after: 1)
     #expect(!run.state.titleInNotch("external"))
-    #expect(run.state.notchState("external") == .toast)
+    #expect(run.state.notchState("external") == .hidden)
 }
 
 @Test func theTitleDoesNotChangeWhatAHoverOpens() {

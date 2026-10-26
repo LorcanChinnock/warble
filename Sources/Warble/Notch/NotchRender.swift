@@ -14,7 +14,7 @@ struct NotchRender: Equatable {
     var showsTitle: Bool
     var isAlwaysShown: Bool
     var showsDoctor: Bool
-    /// A toast over a full-screen app lets clicks through to the app, since it takes no hover or click.
+    /// A notch over a full-screen app lets clicks through to the app, since it draws nothing there.
     var ignoresMouseEvents: Bool
 
     /// `nil` when the display has no surface or the store has no state for it, so the last render stands.

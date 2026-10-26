@@ -46,9 +46,6 @@ final class NotchController {
                 if preferences.trackChangeToast != state.showsTrackToast {
                     self.store.dispatch(.trackToastChanged(preferences.trackChangeToast))
                 }
-                if preferences.toastsInFullScreen != state.toastsInFullScreen {
-                    self.store.dispatch(.toastsInFullScreenChanged(preferences.toastsInFullScreen))
-                }
                 if preferences.swipeToSkip != state.swipeToSkip {
                     self.store.dispatch(.swipeToSkipChanged(preferences.swipeToSkip))
                 }
