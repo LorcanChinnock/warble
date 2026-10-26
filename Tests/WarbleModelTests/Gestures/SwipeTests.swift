@@ -19,7 +19,7 @@ private struct Run {
         state = AppState(swipeToSkip: swipeToSkip)
         send(.housingsChanged([builtIn]))
         if let playing {
-            send(.playbackReported(playing))
+            send(.sourceReported(bundleIdentifier: "app", playing))
         }
         effects = []
     }

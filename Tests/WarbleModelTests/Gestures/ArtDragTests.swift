@@ -25,7 +25,7 @@ private struct Run {
         state = AppState(dragArtOut: dragArtOut)
         send(.housingsChanged([builtIn]))
         if let playing {
-            send(.playbackReported(playing))
+            send(.sourceReported(bundleIdentifier: "app", playing))
         }
         effects = []
     }
@@ -161,7 +161,7 @@ private struct Run {
     run.open()
     run.send(.hover(display: "built-in", .dragging(true)))
     run.send(.pointer(display: "built-in", inside: false))
-    run.send(.playbackReported(nil))
+    run.send(.sourceReported(bundleIdentifier: "app", nil))
     run.wait(AppState.hideDelay)
     #expect(run.state.artDrag == nil)
     run.send(.hover(display: "built-in", .dragging(false)))

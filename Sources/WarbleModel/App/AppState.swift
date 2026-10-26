@@ -9,6 +9,10 @@ public struct AppState: Equatable, Sendable {
 
     /// What's playing as the notch shows it, which outlasts a source's report of nothing by `hideDelay`.
     public internal(set) var playback: PlaybackState?
+    /// Which app the notch follows and why, from what every app has reported. `playback` is that app's report.
+    public internal(set) var sources = SourcePriority()
+    /// What each app last reported playing, by bundle identifier.
+    var reports: [String: PlaybackState] = [:]
     /// When `playback` goes after a report of nothing, or `nil` when no hide is pending.
     public internal(set) var hideAt: Date?
     /// Hides a paused track a while after the pause, unless the pointer is on a notch.
@@ -100,6 +104,13 @@ public struct AppState: Equatable, Sendable {
         scroll = ScrollState(swipeToSkip: swipeToSkip)
         self.podcastSkips = podcastSkips
         self.dragArtOut = dragArtOut
+    }
+
+    /// One chip for each app playing while more than one is, the followed app's first. With a single player there are none.
+    public var chips: [SourceChip] {
+        let playing = sources.ranked.filter { reports[$0]?.isPlaying == true }
+        guard playing.count > 1 else { return [] }
+        return playing.map { SourceChip(bundleIdentifier: $0, isFollowed: $0 == sources.followed) }
     }
 
     /// Whether the notches draw what's playing: something is, and it isn't Idle.

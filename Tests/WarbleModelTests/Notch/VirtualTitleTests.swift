@@ -33,14 +33,14 @@ private struct Run {
 
 @Test func aVirtualNotchDrawsTheTitleWhilePlayingAndARealOneNever() {
     var run = Run()
-    run.send(.playbackReported(song))
+    run.send(.sourceReported(bundleIdentifier: "app", song))
     #expect(run.titles == [false, true])
     #expect(run.state.notchState("external") == .resting)
 }
 
 @Test func theTitleFollowsSettings() {
     var run = Run(showsVirtualTitle: false)
-    run.send(.playbackReported(song))
+    run.send(.sourceReported(bundleIdentifier: "app", song))
     #expect(run.titles == [false, false])
     run.send(.virtualTitleChanged(true))
     #expect(run.titles == [false, true])
@@ -51,8 +51,8 @@ private struct Run {
 @Test func noTitleShowsWhileIdle() {
     var run = Run()
     #expect(run.titles == [false, false])
-    run.send(.playbackReported(song))
-    run.send(.playbackReported(nil), after: 1)
+    run.send(.sourceReported(bundleIdentifier: "app", song))
+    run.send(.sourceReported(bundleIdentifier: "app", nil), after: 1)
     run.send(.tick, after: AppState.hideDelay)
     #expect(run.state.notchState("external") == .idle)
     #expect(run.titles == [false, false])
@@ -68,8 +68,8 @@ private struct Run {
 
 @Test func theTitleSaysWhatTheTrackChangeToastWould() {
     var run = Run(showsTrackToast: true)
-    run.send(.playbackReported(song))
-    run.send(.playbackReported(next), after: 1)
+    run.send(.sourceReported(bundleIdentifier: "app", song))
+    run.send(.sourceReported(bundleIdentifier: "app", next), after: 1)
     #expect(run.state.toasts.current != nil)
     #expect(run.state.notchState("built-in") == .toast)
     #expect(run.state.notchState("external") == .resting)
@@ -77,17 +77,17 @@ private struct Run {
 
 @Test func withoutTheTitleAVirtualNotchShowsTheToastAsBefore() {
     var run = Run(showsVirtualTitle: false, showsTrackToast: true)
-    run.send(.playbackReported(song))
-    run.send(.playbackReported(next), after: 1)
+    run.send(.sourceReported(bundleIdentifier: "app", song))
+    run.send(.sourceReported(bundleIdentifier: "app", next), after: 1)
     #expect(run.state.notchState("external") == .toast)
 }
 
 @Test func overAFullScreenAppTheToastStaysAndTheTitleGoes() {
     var run = Run(showsTrackToast: true)
     run.send(.toastsInFullScreenChanged(true))
-    run.send(.playbackReported(song))
+    run.send(.sourceReported(bundleIdentifier: "app", song))
     run.send(.fullScreenChanged(["external"]))
-    run.send(.playbackReported(next), after: 1)
+    run.send(.sourceReported(bundleIdentifier: "app", next), after: 1)
     #expect(!run.state.titleInNotch("external"))
     #expect(run.state.notchState("external") == .toast)
 }
@@ -97,7 +97,7 @@ private struct Run {
     var off = Run(showsVirtualTitle: false)
     for index in 0..<2 {
         var run = index == 0 ? on : off
-        run.send(.playbackReported(song))
+        run.send(.sourceReported(bundleIdentifier: "app", song))
         run.send(.hover(display: "external", .click))
         #expect(run.state.notchState("external") == .expanded)
         if index == 0 { on = run } else { off = run }
