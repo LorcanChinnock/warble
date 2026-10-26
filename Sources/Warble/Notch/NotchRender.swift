@@ -9,15 +9,12 @@ struct NotchRender: Equatable {
     var isPlaying: Bool
     var toast: TrackToast?
     var skipsBySeconds: Bool
-    var artDrag: ArtDrag?
     var isVirtual: Bool
     var showsTitle: Bool
     var isAlwaysShown: Bool
     var showsDoctor: Bool
-    /// A toast over a full-screen app lets clicks through to the app, since it takes no hover or click.
+    /// A notch over a full-screen app lets clicks through to the app, since it draws nothing there.
     var ignoresMouseEvents: Bool
-    /// The window server leaves the panel out of every capture, ScreenCaptureKit's included, and still draws it.
-    var sharingType: NSWindow.SharingType
 
     /// `nil` when the display has no surface or the store has no state for it, so the last render stands.
     init?(_ app: AppState, display: String) {
@@ -27,13 +24,11 @@ struct NotchRender: Equatable {
         isPlaying = app.drawsPlayback
         toast = app.toasts.current?.content
         skipsBySeconds = app.skipsBySeconds
-        artDrag = app.artDrag
         isVirtual = surface.isVirtual
         showsTitle = app.titleInNotch(display)
         isAlwaysShown = surface.isAlwaysShown
         showsDoctor = surface.showsDoctor
         ignoresMouseEvents = surface.isFullScreen
-        sharingType = app.hidesFromCapture ? .none : .readOnly
     }
 
     /// The toast only while its state is the one showing it.

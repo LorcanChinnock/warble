@@ -13,22 +13,11 @@ public enum PreferenceKey {
     public static let idleHover = "idleHover"
     /// Whether the new track's title and artist slide out of the notch for a moment when the track changes.
     public static let trackChangeToast = "trackChangeToast"
-    /// Whether that toast also slides out over a full-screen app, where the resting notch never shows.
-    public static let toastsInFullScreen = "toastsInFullScreen"
-    /// Whether a sideways two-finger swipe over the notch skips to the next or previous track.
-    public static let swipeToSkip = "swipeToSkip"
     /// Whether a podcast or audiobook has back 15 and forward 30 seconds in place of previous and next.
     public static let podcastSkips = "podcastSkips"
-    /// Whether the art in the player's card can be dragged into another app, as the image and the track's link.
-    public static let dragArtOut = "dragArtOut"
-    /// Whether the notch is left out of screen sharing, recordings and screenshots, while you still see it.
-    public static let hideFromCapture = "hideFromCapture"
     /// Whether a virtual notch shows the title of what's playing in its middle.
     public static let virtualTitle = "virtualTitle"
 
-    /// Whether Warble reads the front tab of a browser when a track starts there, so the idle card can reopen it. Off,
-    /// Warble never scripts a browser, and macOS never asks for permission to.
-    public static let resumeBrowserTabs = "resumeBrowserTabs"
 
     /// Whether the welcome window has been seen, or didn't need to be because Warble was in use before it existed.
     public static let hasSeenWelcome = "hasSeenWelcome"
@@ -46,13 +35,8 @@ public struct Preferences {
             PreferenceKey.stayVisibleAfterPausing: IdleAfterPause.defaultDelay,
             PreferenceKey.idleHover: IdleHover.lastPlayed.rawValue,
             PreferenceKey.trackChangeToast: false,
-            PreferenceKey.toastsInFullScreen: false,
-            PreferenceKey.swipeToSkip: false,
             PreferenceKey.podcastSkips: false,
-            PreferenceKey.dragArtOut: false,
-            PreferenceKey.hideFromCapture: false,
             PreferenceKey.virtualTitle: true,
-            PreferenceKey.resumeBrowserTabs: false,
             PreferenceKey.hasSeenWelcome: false,
         ]
         for action in WarbleAction.allCases {
@@ -121,28 +105,8 @@ public struct Preferences {
         store.bool(forKey: PreferenceKey.trackChangeToast)
     }
 
-    public var toastsInFullScreen: Bool {
-        store.bool(forKey: PreferenceKey.toastsInFullScreen)
-    }
-
-    public var swipeToSkip: Bool {
-        store.bool(forKey: PreferenceKey.swipeToSkip)
-    }
-
     public var podcastSkips: Bool {
         store.bool(forKey: PreferenceKey.podcastSkips)
-    }
-
-    public var dragArtOut: Bool {
-        store.bool(forKey: PreferenceKey.dragArtOut)
-    }
-
-    public var hideFromCapture: Bool {
-        store.bool(forKey: PreferenceKey.hideFromCapture)
-    }
-
-    public var resumeBrowserTabs: Bool {
-        store.bool(forKey: PreferenceKey.resumeBrowserTabs)
     }
 
     public var virtualTitle: Bool {

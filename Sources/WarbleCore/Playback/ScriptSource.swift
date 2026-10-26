@@ -133,19 +133,6 @@ public final class ScriptSource: NowPlayingSource {
         await execute(player.launchAndPlayScript) { _ in true }.result ?? false
     }
 
-    /// The address to reopen `title` at, from the front tab of the running `bundleIdentifier`, or `nil` when it isn't a
-    /// browser Warble reads, isn't running, has no window, shows some other page or refuses the script. Asks macOS for
-    /// Automation permission for the browser the first time, so the caller checks the setting first.
-    public nonisolated static func tabLink(in bundleIdentifier: String, title: String) async -> URL? {
-        guard let browser = Browser(rawValue: bundleIdentifier),
-              !NSRunningApplication.runningApplications(withBundleIdentifier: bundleIdentifier).isEmpty else { return nil }
-        let (result, _) = await execute(browser.frontTabScript) { result in
-            (0..<result.numberOfItems).map { result.atIndex($0 + 1)?.stringValue }
-        }
-        guard let items = result, items.count == 2, let address = items[0], let tabTitle = items[1] else { return nil }
-        return Browser.link(address: address, tabTitle: tabTitle, trackTitle: title)
-    }
-
     /// The items of the list `source` returns, or `nil` when it fails.
     private func run(_ source: String) async -> [ScriptValue]? {
         let (result, error) = await Self.execute(source) { result in

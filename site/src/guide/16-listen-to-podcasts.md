@@ -9,8 +9,7 @@ Turn this on, and when a podcast or an audiobook plays, the player's buttons cha
 ## Turn it on
 
 1. Right-click the notch, or click the Warble icon in the menu bar, and choose **Settings…**.
-2. Click **More options**.
-3. Turn on **Skip by seconds in podcasts**.
+2. Turn on **Skip by seconds in podcasts**.
 
 ## Skip back and forward
 

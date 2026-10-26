@@ -69,11 +69,11 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .resumeLastPlayed:
         // Idle with a session still reporting means a paused track, which the app can resume. With no session, a play
         // command would go nowhere, so open the track if it has a link. Spotify reopens on the track it had, so launch it
-        // and play. A tab with a saved address opens it in its browser. Anything else just opens its app.
+        // and play. Anything else just opens its app.
         if state.playback != nil {
             return reduce(&state, .command(.play), now: now)
         } else if let url = state.lastPlayed?.resumeURL {
-            effects.append(.openLink(url, in: state.lastPlayed?.resumeBrowser))
+            effects.append(.openLink(url))
         } else if let player = state.lastPlayed.flatMap({ ScriptedPlayer(rawValue: $0.bundleIdentifier) }), player == .spotify {
             effects.append(.launchAndPlay(player))
         } else if let bundleIdentifier = state.lastPlayed?.bundleIdentifier {
@@ -81,8 +81,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         }
     case .setVolume(let volume):
         effects.append(.setVolume(volume))
-    case .scrolled, .swipeToSkipChanged:
-        effects += state.scroll.reduce(action, shared: state.shared, at: now)
+    case .scrolled(let delta, let precise, let inverted, let volume, let isMuted):
+        effects += VolumeScroll.effects(delta, precise: precise, inverted: inverted, volume: volume, isMuted: isMuted)
     case .volumeKey(let delta, let volume, let isMuted):
         if let volume {
             effects.append(.setVolume(NotchKey.volume(changing: isMuted ? 0 : volume, by: delta)))
@@ -100,17 +100,15 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .adapterChanged, .factsGathered, .playersChanged, .automationDenied, .fallbackReported, .notNow:
         effects += state.doctor.reduce(action, shared: state.shared, at: now)
     case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .showDoctor, .dismiss, .idleHoverChanged,
-        .hidesFromCaptureChanged, .virtualTitleChanged:
+        .virtualTitleChanged:
         effects += state.notches.reduce(action, shared: state.shared, at: now)
     case .stayVisibleChanged(let delay):
         state.idle.delay = delay
         state.idle.advance(to: now)
-    case .trackToastChanged, .toastsInFullScreenChanged:
+    case .trackToastChanged:
         effects += state.toast.reduce(action, shared: state.shared, at: now)
     case .podcastSkipsChanged(let on):
         state.podcastSkips = on
-    case .dragArtOutChanged(let on):
-        state.dragArtOut = on
     case .launched, .welcomeClosed:
         break
     case .tick:

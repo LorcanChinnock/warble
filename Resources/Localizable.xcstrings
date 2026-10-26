@@ -1313,59 +1313,6 @@
         }
       }
     },
-    "Drag the album art out of the player" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Albumcover aus dem Player ziehen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Arrastrar la carátula fuera del reproductor"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Faire glisser la pochette hors du lecteur"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trascina la copertina fuori dal player"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "プレーヤーからアルバムアートをドラッグ"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "플레이어에서 앨범 아트 끌어내기"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Arraste a capa do álbum para fora do player"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "将专辑封面拖出播放器"
-          }
-        }
-      }
-    },
-    "Drop it in a message, a note or a folder to share the song." : {},
     "Every display connected now has a notch." : {
       "localizations" : {
         "de" : {
@@ -1727,59 +1674,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "帮助与用户指南"
-          }
-        }
-      }
-    },
-    "Hidden" : {},
-    "Hide from screen sharing and recordings" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bei Bildschirmfreigabe und Aufnahmen ausblenden"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ocultar en pantalla compartida y grabaciones"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Masquer lors du partage d’écran et des enregistrements"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nascondi da condivisione schermo e registrazioni"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "画面共有や収録から隠す"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "화면 공유 및 녹화에서 숨기기"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ocultar em compartilhamentos e gravações de tela"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在屏幕共享和录制中隐藏"
           }
         }
       }
@@ -2356,7 +2250,6 @@
         }
       }
     },
-    "More options" : {},
     "Needs fixing" : {
       "localizations" : {
         "de" : {
@@ -3347,58 +3240,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "目前只能显示“音乐”和 Spotify。"
-          }
-        }
-      }
-    },
-    "Only the message shows. The notch stays out of the way." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nur die Meldung erscheint. Die Notch bleibt aus dem Weg."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solo se muestra el aviso. El notch no estorba."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seul le message s’affiche. Le notch reste discret."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compare solo il messaggio. Il notch resta fuori dai piedi."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "メッセージだけを表示します。ノッチは邪魔になりません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "메시지만 표시됩니다. 노치는 방해가 되지 않게 유지됩니다."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Só a mensagem aparece. O notch fica fora do caminho."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "只显示消息，刘海不会碍事。"
           }
         }
       }
@@ -5015,59 +4856,6 @@
         }
       }
     },
-    "Remember the page a track played on, so the play button can open it again. macOS asks once for each browser." : {},
-    "Reopen browser tracks from the idle card" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Browser-Titel von der Ruhekarte erneut öffnen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reabrir pistas del navegador desde la tarjeta de reposo"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rouvrir les morceaux du navigateur depuis la carte de repos"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Riapri i brani del browser dalla scheda a riposo"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "待機カードからブラウザの曲を開き直す"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "대기 카드에서 브라우저 곡 다시 열기"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reabrir faixas do navegador pelo cartão de espera"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "从空闲卡片重新打开浏览器中的曲目"
-          }
-        }
-      }
-    },
     "Repeat" : {
       "localizations" : {
         "de" : {
@@ -5434,7 +5222,6 @@
         }
       }
     },
-    "Show the message over full-screen apps" : {},
     "Show the title in a virtual notch" : {
       "localizations" : {
         "de" : {
@@ -5539,7 +5326,6 @@
         }
       }
     },
-    "Shown" : {},
     "Shuffle" : {
       "localizations" : {
         "de" : {
@@ -5796,59 +5582,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "支持。"
-          }
-        }
-      }
-    },
-    "Swipe left with two fingers for the next song, or right to go back. Needs a trackpad or a Magic Mouse." : {},
-    "Swipe over the notch to skip" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Über die Notch wischen, um zu springen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deslizar sobre el notch para saltar"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Balayer sur le notch pour passer au suivant"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scorri sul notch per saltare"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ノッチの上でスワイプしてスキップ"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "노치 위에서 쓸어넘겨 건너뛰기"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deslize sobre o notch para pular"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在刘海上轻扫以切歌"
           }
         }
       }
@@ -6942,58 +6675,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "适用于任何在播放的 App。"
-          }
-        }
-      }
-    },
-    "You still see the notch. People watching your screen don't." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Du siehst die Notch weiterhin. Personen, die deinen Bildschirm sehen, nicht."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sigues viendo el notch. Quien mire tu pantalla, no."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vous voyez toujours le notch. Pas ceux qui regardent votre écran."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tu vedi comunque il notch. Chi guarda il tuo schermo no."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ノッチはあなたには見えますが、画面を見ている相手には見えません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "노치는 계속 보입니다. 내 화면을 보는 사람들에게는 보이지 않습니다."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Você ainda vê o notch. Quem assiste à sua tela, não."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "你仍能看到刘海，但看你屏幕的人看不到。"
           }
         }
       }

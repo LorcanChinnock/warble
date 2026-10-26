@@ -51,15 +51,11 @@ The first public beta: what's playing in the notch, playback and volume controls
 - [#188](https://github.com/LorcanChinnock/warble/issues/188) feat(player): resume the last track after its app has quit, on a normal install
 - [#185](https://github.com/LorcanChinnock/warble/issues/185) fix(player): the last-played card's play button does nothing once the app's session has gone
 
-## [0.2: gestures and podcasts](https://github.com/LorcanChinnock/warble/issues/33)
+## [0.2: podcasts and virtual notch titles](https://github.com/LorcanChinnock/warble/issues/33)
 
-Gestures and podcast controls, each off until you turn it on, plus the title in the middle of a virtual notch.
+Podcast skips, off until you turn them on, and the title in the middle of a virtual notch.
 
-- [#36](https://github.com/LorcanChinnock/warble/issues/36) feat(gestures): swipe over the notch to skip
-- [#132](https://github.com/LorcanChinnock/warble/issues/132) feat(gestures): drag the album art out
 - [#37](https://github.com/LorcanChinnock/warble/issues/37) feat(player): skip 15 seconds and change speed for podcasts
-- [#38](https://github.com/LorcanChinnock/warble/issues/38) feat(notch): show the track-change toast in full screen
-- [#133](https://github.com/LorcanChinnock/warble/issues/133) feat(notch): hide Warble while the screen is shared or recorded
 - [#113](https://github.com/LorcanChinnock/warble/issues/113) feat(notch): show the title in the middle of a virtual notch
 
 ## [0.4: extras](https://github.com/LorcanChinnock/warble/issues/44)
@@ -68,6 +64,10 @@ Source chips, plus research into replacing the volume overlay.
 
 - [#46](https://github.com/LorcanChinnock/warble/issues/46) spike: replacing the volume and brightness overlay ([findings](spikes/volume-brightness-overlay.md))
 - [#17](https://github.com/LorcanChinnock/warble/issues/17) feat(player): source chips
+
+## Removed
+
+These shipped and were taken out again to keep Warble a small notch for the listener: swipe to skip, dragging the album art out, reopening browser tracks, the track-change message over full-screen apps and hiding from screen sharing ([#243](https://github.com/LorcanChinnock/warble/issues/243)), and, before them, notch activities, the developer group, stats, the waveform, the sleep timer and lyrics ([#237](https://github.com/LorcanChinnock/warble/issues/237)).
 
 ## [1.0: translations](https://github.com/LorcanChinnock/warble/issues/49)
 

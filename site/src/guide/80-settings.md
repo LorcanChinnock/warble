@@ -1,6 +1,6 @@
 ---
 title: Settings
-summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a new song shows its title, how displays without a notch behave, turn on extras such as swipe to skip, and set keyboard shortcuts, including one that opens the notch.
+summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a new song shows its title, how displays without a notch behave, turn on skipping by seconds in podcasts, and set keyboard shortcuts, including one that opens the notch.
 group: Reference
 ---
 
@@ -23,18 +23,8 @@ Settings is always dark, like the notch, whatever your Mac's appearance. Every c
 - **Stay visible after pausing.** How long a paused song stays in the notch before Warble hides behind the camera again, from 5 seconds to 5 minutes.
 - **When nothing is playing, hover shows.** **Last Played** shows the card with the last song you played, so you can [pick up where you left off](/docs/pick-up-where-you-left-off/). **Nothing** keeps Warble out of sight until something plays.
 - **Show a message when the song changes.** Off at first. Turn it on, and when a new song starts, its title and artist slide out of the notch for two seconds, so you can see what's on without pointing at it. Skip a few songs in a row and you see only the last one. Point at the notch or click the message to open the full player.
-- **Displays.** For each display without a notch, choose whether Warble draws one there, and whether it shows the song's title in the middle. See [External displays](/docs/external-displays/).
-
-### More options
-
-Click **More options** at the bottom of General to show these. They're all off at first, except where noted.
-
-- **Show the message over full-screen apps.** Only works while the message above is on. The message also slides out over an app in full screen, such as a film or a game, then goes. The notch itself still stays out of a full-screen app.
-- **Swipe over the notch to skip.** Swiping left over the notch with two fingers skips to the next song, and swiping right goes back. It needs a trackpad, or a Magic Mouse. Scrolling up and down still changes the volume. See [Use gestures](/docs/use-gestures/).
-- **Drag the album art out of the player.** You can drag the art from the open player into another app: a folder gets the picture as a file, and a message or a note gets the picture. A click on the art still opens the app. See [Use gestures](/docs/use-gestures/#drag-the-album-art-out).
 - **Skip by seconds in podcasts.** A podcast or an audiobook has back 15 seconds and forward 30 in place of previous and next. Songs keep previous and next. See [Listen to podcasts](/docs/listen-to-podcasts/).
-- **Reopen browser tracks from the idle card.** When a song or video starts in a browser, Warble notes the page in the front tab, so the play button on the idle card can open it again in the same browser. macOS asks once for each browser. See [Pick up where you left off](/docs/pick-up-where-you-left-off/).
-- **Hide from screen sharing and recordings.** Warble stays out of what others see when you share your screen in a call, and out of your screen recordings and screenshots. You still see the notch and can use it as usual.
+- **Displays.** For each display without a notch, choose whether Warble draws one there, and whether it shows the song's title in the middle. See [External displays](/docs/external-displays/).
 
 > [!NOTE]
 > Warble's animations follow **Reduce motion** in System Settings › Accessibility › Display.

@@ -41,14 +41,14 @@ Or [download the latest release](https://warble.lorcanchinnock.com/download) and
 ## Features
 
 - **What's playing, in the notch.** The album art sits on one side, and on the other a few bars move while it plays. Open it to see the song on a soft glow in the album art's colours.
-- **Controls.** Play, pause, skip, move through the song, and turn shuffle and repeat on or off when the app has them. Turn on going back 15 seconds or forward 30 in a podcast or an audiobook. Drag the volume bar, or scroll over the notch to change the volume. Turn on swiping left or right over the notch to skip, and dragging the album art into a message, a note or a folder.
+- **Controls.** Play, pause, skip, move through the song, and turn shuffle and repeat on or off when the app has them. Turn on going back 15 seconds or forward 30 in a podcast or an audiobook. Drag the volume bar, or scroll over the notch to change the volume.
 - **Switch speakers.** Move your Mac's sound to its own speakers, headphones or AirPods from the notch.
 - **Any player.** Apple Music, Spotify, podcast apps and video in your browser.
 - **Calm by default.** A paused song stays for a few seconds, then Warble gets out of the way. When nothing is playing, it hides behind the notch and uses no CPU. Hover over the notch to see the last song you played and play it again.
 - **Every Mac.** Macs without a notch, and external displays, get a virtual one that shows the title of what's playing, and you choose which displays show it.
 - **Help when it can't see.** If something stops Warble seeing what's playing, a small "!" appears beside the notch. Click it to see what's wrong and how to fix it.
 - **For everyone.** Works with VoiceOver and with the keyboard alone, and follows Increase Contrast and Reduce Motion.
-- **Settings, if you want them.** Open at login, a larger text size, how long a paused song stays, a message when the track changes, even over full-screen apps, swiping to skip, skipping by seconds in podcasts, dragging the album art out, hiding from screen sharing and recordings, and your own keyboard shortcuts, one of which opens the notch. Right-click the notch for Settings or to quit, even with the menu bar icon hidden.
+- **Settings, if you want them.** Open at login, a larger text size, how long a paused song stays, a message when the track changes, skipping by seconds in podcasts, and your own keyboard shortcuts, one of which opens the notch. Right-click the notch for Settings or to quit, even with the menu bar icon hidden.
 
 ## Privacy
 

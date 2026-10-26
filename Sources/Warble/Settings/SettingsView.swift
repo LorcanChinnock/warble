@@ -77,6 +77,7 @@ private struct GeneralSettings: View {
     @Setting(PreferenceKey.stayVisibleAfterPausing) private var stayVisible: Double
     @Setting(PreferenceKey.idleHover) private var idleHover: IdleHover
     @Setting(PreferenceKey.trackChangeToast) private var trackChangeToast: Bool
+    @Setting(PreferenceKey.podcastSkips) private var podcastSkips: Bool
     @Environment(LoginItem.self) private var loginItem
 
     var body: some View {
@@ -134,9 +135,13 @@ private struct GeneralSettings: View {
                     detail: Text("The new song's title and artist slide out of the notch for two seconds."),
                     isOn: $trackChangeToast
                 )
+                SettingsToggleRow(
+                    title: Text("Skip by seconds in podcasts"),
+                    detail: Text("Go back 15 seconds or forward 30 in a podcast or audiobook, in place of previous and next."),
+                    isOn: $podcastSkips
+                )
             }
             DisplaysGroup()
-            MoreOptions()
         }
     }
 }
@@ -180,53 +185,6 @@ private struct VirtualNotchRow: View {
                 selection: $rules.virtualNotchRule(for: display),
                 options: VirtualNotchRule.allCases.map { WarbleOption(value: $0, title: $0.label) },
                 label: Text(verbatim: name)
-            )
-        }
-    }
-}
-
-/// The switches few people need, folded away until asked for.
-private struct MoreOptions: View {
-    @Setting(PreferenceKey.trackChangeToast) private var trackChangeToast: Bool
-    @Setting(PreferenceKey.toastsInFullScreen) private var toastsInFullScreen: Bool
-    @Setting(PreferenceKey.swipeToSkip) private var swipeToSkip: Bool
-    @Setting(PreferenceKey.dragArtOut) private var dragArtOut: Bool
-    @Setting(PreferenceKey.podcastSkips) private var podcastSkips: Bool
-    @Setting(PreferenceKey.resumeBrowserTabs) private var resumeBrowserTabs: Bool
-    @Setting(PreferenceKey.hideFromCapture) private var hideFromCapture: Bool
-
-    var body: some View {
-        SettingsDisclosure(title: Text("More options")) {
-            SettingsToggleRow(
-                title: Text("Show the message over full-screen apps"),
-                detail: Text("Only the message shows. The notch stays out of the way."),
-                isOn: $toastsInFullScreen
-            )
-            .disabled(!trackChangeToast)
-            SettingsToggleRow(
-                title: Text("Swipe over the notch to skip"),
-                detail: Text("Swipe left with two fingers for the next song, or right to go back. Needs a trackpad or a Magic Mouse."),
-                isOn: $swipeToSkip
-            )
-            SettingsToggleRow(
-                title: Text("Drag the album art out of the player"),
-                detail: Text("Drop it in a message, a note or a folder to share the song."),
-                isOn: $dragArtOut
-            )
-            SettingsToggleRow(
-                title: Text("Skip by seconds in podcasts"),
-                detail: Text("Go back 15 seconds or forward 30 in a podcast or audiobook, in place of previous and next."),
-                isOn: $podcastSkips
-            )
-            SettingsToggleRow(
-                title: Text("Reopen browser tracks from the idle card"),
-                detail: Text("Remember the page a track played on, so the play button can open it again. macOS asks once for each browser."),
-                isOn: $resumeBrowserTabs
-            )
-            SettingsToggleRow(
-                title: Text("Hide from screen sharing and recordings"),
-                detail: Text("You still see the notch. People watching your screen don't."),
-                isOn: $hideFromCapture
             )
         }
     }

@@ -39,9 +39,9 @@ final class AppEnvironment {
         store = Store(
             state: AppState(
                 stayVisibleAfterPausing: preferences.stayVisibleAfterPausing, idleHover: preferences.idleHover,
-                showsTrackToast: preferences.trackChangeToast, toastsInFullScreen: preferences.toastsInFullScreen,
-                swipeToSkip: preferences.swipeToSkip, podcastSkips: preferences.podcastSkips, dragArtOut: preferences.dragArtOut,
-                hidesFromCapture: preferences.hideFromCapture, showsVirtualTitle: preferences.virtualTitle,
+                showsTrackToast: preferences.trackChangeToast,
+                podcastSkips: preferences.podcastSkips,
+                showsVirtualTitle: preferences.virtualTitle,
                 checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
             ),
             clock: SystemClock(), scheduler: TimerScheduler()
@@ -56,11 +56,6 @@ final class AppEnvironment {
         store.perform = { [weak runner] in runner?.perform($0) }
         runner.dispatch = dispatch
         runner.platform = { [weak platform] in platform?.perform($0) }
-        runner.tabLink = { bundleIdentifier, title in
-            // Only with the setting on, so macOS never asks about a browser until the user has asked for this.
-            guard Preferences().resumeBrowserTabs else { return nil }
-            return await ScriptSource.tabLink(in: bundleIdentifier, title: title)
-        }
         runner.appName = { NSRunningApplication.runningApplications(withBundleIdentifier: $0).first?.localizedName }
         runner.logError = { message in Logger.warble("notch").error("\(message, privacy: .public)") }
         navigation = SettingsNavigation()

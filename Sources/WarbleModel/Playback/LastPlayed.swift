@@ -2,7 +2,7 @@ import Foundation
 
 /// The last track Warble saw, which the idle card shows and Warble keeps across launches.
 public struct LastPlayed: Codable, Equatable, Sendable {
-    /// The app that played it, such as `com.apple.Music`. For a tab, the browser.
+    /// The app that played it, such as `com.apple.Music`.
     public var bundleIdentifier: String
     /// The app's name as it was when the track played, for when the app isn't running or has gone.
     public var appName: String?
@@ -36,12 +36,6 @@ public struct LastPlayed: Codable, Equatable, Sendable {
     /// Whether `other` is the same track from the same app, whatever its art or link.
     func isSameTrack(as other: LastPlayed) -> Bool {
         bundleIdentifier == other.bundleIdentifier && title == other.title && artist == other.artist
-    }
-
-    /// The browser a tab's `link` is opened in, so it plays where it did rather than in the default browser. Only for a
-    /// browser Warble can read a tab from: any other app's link goes to whatever handles it.
-    public var resumeBrowser: String? {
-        Browser(rawValue: bundleIdentifier)?.bundleIdentifier
     }
 
     /// Whether `state` is worth remembering in place of `previous`, the state last remembered: a new track, or the art
