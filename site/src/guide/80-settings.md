@@ -1,6 +1,6 @@
 ---
 title: Settings
-summary: Open Warble at login, change the text size, how long a paused song stays, whether a new song shows its title, and how displays without a notch behave.
+summary: Open Warble at login, change the text size, how long a paused song stays, and how displays without a notch behave.
 group: Reference
 ---
 
@@ -21,7 +21,6 @@ Settings is always dark, like the notch, whatever your Mac's appearance. Every c
 - **Show icon in the menu bar.** Turn it off to keep the menu bar tidy. Right-click the notch for the same menu, or open Warble from Applications to get the icon back.
 - **Text size.** Makes the notch's own words larger, such as the times and the hints: **Standard**, **Large** or **Larger**. Song titles and artists stay the size they are.
 - **Stay visible after pausing.** How long a paused song stays in the notch before Warble hides behind the camera again, from 5 seconds to 5 minutes.
-- **Show a message when the song changes.** Off at first. Turn it on, and when a new song starts, its title and artist slide out of the notch for two seconds, so you can see what's on without pointing at it. Skip a few songs in a row and you see only the last one. Point at the notch or click the message to open the full player.
 - **Displays.** For each display without a notch, choose whether Warble draws one there, and whether it shows the song's title in the middle. See [External displays](/docs/external-displays/).
 
 > [!NOTE]

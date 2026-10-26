@@ -100,7 +100,6 @@ final class NotchSurface {
         let notch = housing
         let card = value.card
         let isPlaying = value.isPlaying
-        let toast = value.shownToast
         guard let frame = NotchLayout.frame(state, notch: notch, card: card) else {
             guard shown != nil else { return }
             shown = nil
@@ -121,7 +120,7 @@ final class NotchSurface {
             }
             return
         }
-        guard shown?.state != state || shown?.frame != frame || model.card != card || model.isPlaying != isPlaying || model.toast != toast
+        guard shown?.state != state || shown?.frame != frame || model.card != card || model.isPlaying != isPlaying
         else { return }
         let previous = shown
         shown = (state, frame)
@@ -149,7 +148,6 @@ final class NotchSurface {
                 model.state = state
                 model.card = card
                 model.isPlaying = isPlaying
-                model.toast = toast
             } completion: { [weak self] in
                 guard let self, morph == self.morphs, self.panelFrame != frame else { return }
                 self.show(in: frame)
@@ -158,7 +156,6 @@ final class NotchSurface {
             model.state = state
             model.card = card
             model.isPlaying = isPlaying
-            model.toast = toast
             show(in: frame)
         }
         panel.track(NotchLayout.hoverArea(state, notch: notch, card: card) ?? .zero)

@@ -1,6 +1,6 @@
 # Spike: replacing the volume and brightness overlay
 
-Findings for [#46](https://github.com/LorcanChinnock/warble/issues/46). Nothing was built. Checked on macOS 27.0.1 (a MacBook with a built-in display), plus what other notch and HUD apps do.
+Findings for [#46](https://github.com/LorcanChinnock/warble/issues/46). Nothing was built. The toast queue it builds on was removed in [#257](https://github.com/LorcanChinnock/warble/issues/257), so this would bring it back from git history. Checked on macOS 27.0.1 (a MacBook with a built-in display), plus what other notch and HUD apps do.
 
 ## Answer
 

@@ -13,8 +13,8 @@ private struct Run {
     var effects: [AppEffect] = []
     var now = start
 
-    init(showsVirtualTitle: Bool = true, showsTrackToast: Bool = false) {
-        state = AppState(showsTrackToast: showsTrackToast, showsVirtualTitle: showsVirtualTitle)
+    init(showsVirtualTitle: Bool = true) {
+        state = AppState(showsVirtualTitle: showsVirtualTitle)
         send(.housingsChanged([builtIn, external]))
         effects = []
     }
@@ -66,24 +66,8 @@ private struct Run {
     #expect(run.state.deadline == nil)
 }
 
-@Test func theTitleSaysWhatTheTrackChangeToastWould() {
-    var run = Run(showsTrackToast: true)
-    run.send(.playbackReported(song))
-    run.send(.playbackReported(next), after: 1)
-    #expect(run.state.toasts.current != nil)
-    #expect(run.state.notchState("built-in") == .toast)
-    #expect(run.state.notchState("external") == .resting)
-}
-
-@Test func withoutTheTitleAVirtualNotchShowsTheToastAsBefore() {
-    var run = Run(showsVirtualTitle: false, showsTrackToast: true)
-    run.send(.playbackReported(song))
-    run.send(.playbackReported(next), after: 1)
-    #expect(run.state.notchState("external") == .toast)
-}
-
-@Test func overAFullScreenAppTheTitleAndTheToastGo() {
-    var run = Run(showsTrackToast: true)
+@Test func overAFullScreenAppTheTitleGoes() {
+    var run = Run()
     run.send(.playbackReported(song))
     run.send(.fullScreenChanged(["external"]))
     run.send(.playbackReported(next), after: 1)

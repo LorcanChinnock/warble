@@ -35,9 +35,6 @@ A long title fades out at the end. It slowly scrolls to its end once when the so
 
 To turn this off, open **Settings…** › **General** and turn off **Show the title in a virtual notch**.
 
-> [!NOTE]
-> If you also turn on the message when the track changes, a notch with the title doesn't show it, since the title already tells you. A notch on your MacBook's own display still does.
-
 ## Full-screen apps
 
 When an app is full screen, it has the whole display to itself, so the notch on that display hides until you leave full screen.

@@ -30,8 +30,6 @@ final class NotchModel {
     @ObservationIgnored var scrolledTitle: String?
     /// Whether its display is set to show a notch always, so Idle draws a blank notch even on a virtual housing.
     var isAlwaysShown = false
-    /// The track-change toast, while `state` is `toast`. Set with `state`, like `card`.
-    var toast: TrackToast?
     @ObservationIgnored var onClick: () -> Void = {}
     /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
     @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }

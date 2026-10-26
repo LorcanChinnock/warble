@@ -23,7 +23,6 @@ final class AppEnvironment {
     let navigation: SettingsNavigation
     let settingsWindow: SettingsWindow
     let welcomeWindow: WelcomeWindow
-    let toast: Toast
 
     /// `lastPlayed` is where the last track played is kept, which the preview keeps only in memory..
     init(lastPlayed: any LastPlayedStore) {
@@ -38,7 +37,6 @@ final class AppEnvironment {
         store = Store(
             state: AppState(
                 stayVisibleAfterPausing: preferences.stayVisibleAfterPausing,
-                showsTrackToast: preferences.trackChangeToast,
                 showsVirtualTitle: preferences.virtualTitle,
                 checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
             ),
@@ -58,7 +56,6 @@ final class AppEnvironment {
         runner.logError = { message in Logger.warble("notch").error("\(message, privacy: .public)") }
         navigation = SettingsNavigation()
         settingsWindow = SettingsWindow(navigation: navigation)
-        toast = Toast(settings: settings)
         welcomeWindow = WelcomeWindow(dispatch: dispatch)
         settingsWindow.environment = self
         welcomeWindow.environment = self

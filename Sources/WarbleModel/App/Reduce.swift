@@ -4,7 +4,6 @@ import Foundation
 /// the same state, action and time always give the same result.
 public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [AppEffect] {
     let old = state
-    var notice: Notice<TrackToast>?
     var effects: [AppEffect] = []
     // First, so a touch or something playing ends the first-run demo before the action meets the notch it drew over.
     effects += state.onboarding.reduce(action, shared: state.shared, at: now)
@@ -14,9 +13,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
             // Hidden only if nothing follows in time; each report of nothing waits again from now.
             state.hideAt = now + AppState.hideDelay
         } else {
-            if let playback {
-                notice = TrackToast.notice(from: state.playback, to: playback)
-            }
             show(playback, in: &state, at: now)
         }
     case .command(let command):
@@ -69,8 +65,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .stayVisibleChanged(let delay):
         state.idle.delay = delay
         state.idle.advance(to: now)
-    case .trackToastChanged:
-        effects += state.toast.reduce(action, shared: state.shared, at: now)
     case .launched, .welcomeClosed:
         break
     case .tick:
@@ -78,12 +72,9 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
             show(nil, in: &state, at: now)
         }
         state.idle.advance(to: now)
-        effects += state.toast.reduce(action, shared: state.shared, at: now)
         effects += state.notches.reduce(action, shared: state.shared, at: now)
     }
     effects += settle(&state, from: old, at: now)
-    // After Idle has had its say, so a track that's no longer shown has nothing to announce.
-    state.toast.announce(notice, shared: state.shared, isOpen: state.notches.isOpen(state.shared), at: now)
     effects += state.last.follow(state.shared, at: now)
     return effects
 }
@@ -120,12 +111,6 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
     for _ in 0..<4 {
         shared = state.shared
         state.notches.settle(from: old.notches, oldShared: oldShared, shared: shared)
-        // The open card shows the track, so a toast has nothing left to say, even once the notch closes again. Nor has one
-        // for a track no longer shown, which would come back if the same track reported again before its deadline.
-        if state.notches.isOpen(shared) || !state.showsPlayback {
-            state.toast.dismiss(at: now)
-            shared = state.shared
-        }
         let hovering = state.notches.isHovered(shared)
         guard hovering != state.hovering else { break }
         state.hovering = hovering

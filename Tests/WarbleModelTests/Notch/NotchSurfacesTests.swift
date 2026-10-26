@@ -135,37 +135,11 @@ private struct Run {
     #expect(run.state.deadline == nil)
 }
 
-@Test func anOpenNotchHoldsOffIdleAndDismissesTheToast() {
+@Test func anOpenNotchHoldsOffIdle() {
     var run = Run()
-    run.state.showsTrackToast = true
     run.send(.playbackReported(PlaybackState(bundleIdentifier: "com.apple.Music", title: "Next", elapsedTimestamp: start, rate: 1)))
-    #expect(run.state.notchState("built-in") == .toast)
     run.send(.hover(display: "built-in", .click))
-    #expect(run.state.toasts.current == nil)
     #expect(run.state.hovering)
-}
-
-@Test func playbackStoppingDismissesTheToastSoTheSameTrackReturningDoesntBringItBack() {
-    var run = Run()
-    run.state.showsTrackToast = true
-    let next = PlaybackState(bundleIdentifier: "com.apple.Music", title: "Next", elapsedTimestamp: start, rate: 1)
-    run.send(.playbackReported(next))
-    #expect(run.state.toasts.current != nil)
-    run.send(.playbackReported(nil), after: 0.1)
-    run.wait(AppState.hideDelay)
-    #expect(!run.state.showsPlayback)
-    #expect(run.state.toasts.current == nil)
-    #expect(run.state.deadline == nil)
-    run.send(.playbackReported(next), after: 0.1)
-    #expect(run.state.notchState("built-in") == .resting)
-}
-
-@Test func aToastIsntPostedWhileANotchIsOpen() {
-    var run = Run()
-    run.state.showsTrackToast = true
-    run.send(.hover(display: "built-in", .click))
-    run.send(.playbackReported(PlaybackState(bundleIdentifier: "com.apple.Music", title: "Next", elapsedTimestamp: start, rate: 1)))
-    #expect(run.state.toasts.current == nil)
 }
 
 @Test func housingsThatStayKeepTheirHover() {

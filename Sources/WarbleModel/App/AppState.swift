@@ -41,12 +41,6 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var outputs: [AudioOutput] = []
     public internal(set) var currentOutput: UInt32?
     /// The new track's title and artist, shown for a moment after a skip when Settings turns it on.
-    public internal(set) var toast: ToastState
-    public var toasts: ToastQueue<TrackToast> { toast.queue }
-    public internal(set) var showsTrackToast: Bool {
-        get { toast.isOn }
-        set { toast.isOn = newValue }
-    }
     /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns off.
     public internal(set) var showsVirtualTitle: Bool {
         get { notches.showsVirtualTitle }
@@ -71,13 +65,12 @@ public struct AppState: Equatable, Sendable {
     /// `checks` are what the Doctor finds before it has asked macOS anything: what it finds while the adapter works.
     public init(
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay,
-        showsTrackToast: Bool = false, showsVirtualTitle: Bool = true,
+        showsVirtualTitle: Bool = true,
         checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
         doctor = DoctorState(checks: checks)
         notches = Notches(showsVirtualTitle: showsVirtualTitle)
-        toast = ToastState(isOn: showsTrackToast)
     }
 
     /// Whether the notches draw what's playing: something is, and it isn't Idle.
@@ -86,7 +79,7 @@ public struct AppState: Equatable, Sendable {
     /// Where each part of the state keeps its deadline: a feature that can come due on its own adds one line here. Key paths
     /// rather than the features themselves, so asking for the deadline copies and boxes nothing.
     private static let deadlines: [any KeyPath<AppState, Date?> & Sendable] = [
-        \.hideAt, \.idle.deadline, \.toast.deadline, \.onboarding.deadline,
+        \.hideAt, \.idle.deadline, \.onboarding.deadline,
         \.last.deadline, \.doctor.deadline, \.notches.deadline,
     ]
 
@@ -130,7 +123,6 @@ public struct AppState: Equatable, Sendable {
     var shared: SharedState {
         SharedState(
             playback: playback, showsPlayback: showsPlayback, hideAt: hideAt, needsAttention: needsAttention,
-            hasToast: toasts.current != nil,
             demoState: onboarding.notchState, demoCard: onboarding.card
         )
     }

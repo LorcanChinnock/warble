@@ -1,8 +1,8 @@
 import Foundation
 
 /// The notches, one for each camera housing: what the pointer has done to each, which card each shows, and the display
-/// settings that decide how they draw. What they draw also depends on the other features (what's playing, a toast, the
-/// Doctor, the first-run demo), which they read through `SharedState`.
+/// settings that decide how they draw. What they draw also depends on the other features (what's playing, the Doctor, the
+/// first-run demo), which they read through `SharedState`.
 public struct Notches: Feature {
     /// One notch for each camera housing, real or virtual, by `NotchHousing.display`.
     public internal(set) var surfaces: [String: Surface] = [:]
@@ -120,8 +120,7 @@ public struct Notches: Feature {
     /// The state the notch draws. The first-run demo draws over every notch until it ends.
     func notchState(_ surface: Surface, _ shared: SharedState) -> NotchState {
         let state = shared.demoState ?? NotchState(
-            surface.hover.state, isPlaying: shared.showsPlayback, needsAttention: shared.needsAttention,
-            showsToast: shared.hasToast && !showsTitle(surface, shared)
+            surface.hover.state, isPlaying: shared.showsPlayback, needsAttention: shared.needsAttention
         )
         // A full-screen app has the top of its display to itself.
         return surface.isFullScreen ? .hidden : state
@@ -135,8 +134,7 @@ public struct Notches: Feature {
         )
     }
 
-    /// Only a virtual notch has room for the title, since a real one's middle is the camera. It scrolls the title once for
-    /// each track, which says what a track-change toast would, so the toast leaves it alone.
+    /// Only a virtual notch has room for the title, since a real one's middle is the camera.
     func showsTitle(_ surface: Surface, _ shared: SharedState) -> Bool {
         showsVirtualTitle && surface.isVirtual && !surface.isFullScreen && shared.showsPlayback && shared.playback?.title.isEmpty == false
     }

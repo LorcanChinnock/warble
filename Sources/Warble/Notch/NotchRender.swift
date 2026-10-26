@@ -7,7 +7,6 @@ struct NotchRender: Equatable {
     var state: NotchState
     var card: NotchCard
     var isPlaying: Bool
-    var toast: TrackToast?
     var isVirtual: Bool
     var showsTitle: Bool
     var isAlwaysShown: Bool
@@ -21,14 +20,10 @@ struct NotchRender: Equatable {
         self.state = state
         self.card = card
         isPlaying = app.drawsPlayback
-        toast = app.toasts.current?.content
         isVirtual = surface.isVirtual
         showsTitle = app.titleInNotch(display)
         isAlwaysShown = surface.isAlwaysShown
         showsDoctor = surface.showsDoctor
         ignoresMouseEvents = surface.isFullScreen
     }
-
-    /// The toast only while its state is the one showing it.
-    var shownToast: TrackToast? { state == .toast ? toast : nil }
 }

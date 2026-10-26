@@ -39,9 +39,6 @@ final class NotchController {
                 if preferences.stayVisibleAfterPausing != state.idle.delay {
                     self.store.dispatch(.stayVisibleChanged(preferences.stayVisibleAfterPausing))
                 }
-                if preferences.trackChangeToast != state.showsTrackToast {
-                    self.store.dispatch(.trackToastChanged(preferences.trackChangeToast))
-                }
                 if preferences.virtualTitle != state.showsVirtualTitle {
                     self.store.dispatch(.virtualTitleChanged(preferences.virtualTitle))
                 }

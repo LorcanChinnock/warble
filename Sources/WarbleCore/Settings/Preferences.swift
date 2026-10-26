@@ -9,8 +9,6 @@ public enum PreferenceKey {
     public static let virtualNotch = "virtualNotch"
     /// How many seconds a paused track stays in the notch before it goes Idle.
     public static let stayVisibleAfterPausing = "stayVisibleAfterPausing"
-    /// Whether the new track's title and artist slide out of the notch for a moment when the track changes.
-    public static let trackChangeToast = "trackChangeToast"
     /// Whether a virtual notch shows the title of what's playing in its middle.
     public static let virtualTitle = "virtualTitle"
 
@@ -27,7 +25,6 @@ public struct Preferences {
             PreferenceKey.textSize: TextSize.standard.rawValue,
             PreferenceKey.virtualNotch: [String: String](),
             PreferenceKey.stayVisibleAfterPausing: IdleAfterPause.defaultDelay,
-            PreferenceKey.trackChangeToast: false,
             PreferenceKey.virtualTitle: true,
             PreferenceKey.hasSeenWelcome: false,
         ]
@@ -83,10 +80,6 @@ public struct Preferences {
     /// Never negative, so a stray value goes Idle at once rather than never.
     public var stayVisibleAfterPausing: TimeInterval {
         max(store.double(forKey: PreferenceKey.stayVisibleAfterPausing), 0)
-    }
-
-    public var trackChangeToast: Bool {
-        store.bool(forKey: PreferenceKey.trackChangeToast)
     }
 
     public var virtualTitle: Bool {

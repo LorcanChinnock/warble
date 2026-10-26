@@ -73,7 +73,6 @@ private struct GeneralSettings: View {
     @Setting(PreferenceKey.showMenuBarIcon) private var showMenuBarIcon: Bool
     @Setting(PreferenceKey.textSize) private var textSize: TextSize
     @Setting(PreferenceKey.stayVisibleAfterPausing) private var stayVisible: Double
-    @Setting(PreferenceKey.trackChangeToast) private var trackChangeToast: Bool
     @Environment(LoginItem.self) private var loginItem
 
     var body: some View {
@@ -117,11 +116,6 @@ private struct GeneralSettings: View {
                     options: IdleAfterPause.choices(including: stayVisible).map { seconds in
                         WarbleOption(value: seconds, title: Text(verbatim: Duration.seconds(seconds).formatted(.units(allowed: [.minutes, .seconds], width: .wide))))
                     }
-                )
-                SettingsToggleRow(
-                    title: Text("Show a message when the song changes"),
-                    detail: Text("The new song's title and artist slide out of the notch for two seconds."),
-                    isOn: $trackChangeToast
                 )
             }
             DisplaysGroup()

@@ -49,7 +49,6 @@ public enum AppAction: Equatable, Sendable {
     case notNow
     /// Settings changed.
     case stayVisibleChanged(TimeInterval)
-    case trackToastChanged(Bool)
     case virtualTitleChanged(Bool)
     /// Warble opened, with whether it's the first time. Dispatched once, by `AppDelegate`.
     case launched(firstRun: Bool)
