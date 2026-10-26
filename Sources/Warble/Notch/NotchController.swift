@@ -6,7 +6,7 @@ import WarbleCore
 private let log = Logger.warble("notch")
 
 /// Draws a notch over each camera housing, real or virtual, as `Store` decides, and moves, adds or removes them when
-/// displays or their rules change. At rest it does no work: no timers, no polling and no event monitors.
+/// displays change. At rest it does no work: no timers, no polling and no event monitors.
 @MainActor
 final class NotchController {
     /// What's playing as the notch shows it, which `Store` keeps from what the sources report.
@@ -15,12 +15,10 @@ final class NotchController {
     private let environment: AppEnvironment
     private var store: Store { environment.store }
     private let player: PlayerModel
-    private var doctor: DoctorModel { environment.doctor }
     private var volume: SystemVolume { environment.volume }
     /// One for each housing, by `NotchDisplay.id`.
     private var surfaces: [String: NotchSurface] = [:]
-    private var rules: [String: VirtualNotchRule] = [:]
-    /// While the displays or their rules change, the notches move at once rather than morph.
+    /// While the displays change, the notches move at once rather than morph.
     private var layingOut = false
     private var observers: [NSObjectProtocol] = []
 
@@ -30,29 +28,6 @@ final class NotchController {
         player = PlayerModel { [weak store] in store?.dispatch($0) }
         store.onChange = { [weak self] old, new, action in self?.stateChanged(from: old, to: new, by: action) }
         environment.displays.onChange = { [weak self] in self?.layOut() }
-        // Any write to Warble's defaults; only a change of rule lays the notches out again.
-        observers.append(NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: UserDefaults.standard, queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated {
-                guard let self else { return }
-                let preferences = Preferences()
-                let state = self.store.state
-                if preferences.stayVisibleAfterPausing != state.idle.delay {
-                    self.store.dispatch(.stayVisibleChanged(preferences.stayVisibleAfterPausing))
-                }
-                if preferences.trackChangeToast != state.showsTrackToast {
-                    self.store.dispatch(.trackToastChanged(preferences.trackChangeToast))
-                }
-                if preferences.podcastSkips != state.podcastSkips {
-                    self.store.dispatch(.podcastSkipsChanged(preferences.podcastSkips))
-                }
-                if preferences.virtualTitle != state.showsVirtualTitle {
-                    self.store.dispatch(.virtualTitleChanged(preferences.virtualTitle))
-                }
-                if preferences.virtualNotchRules != self.rules {
-                    self.layOut()
-                }
-            }
-        })
         // Going full screen, or back, switches Space; only then can a display start or stop showing a full-screen app.
         observers.append(NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.activeSpaceDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.readFullScreen() }
@@ -68,11 +43,10 @@ final class NotchController {
         }
     }
 
-    /// Puts a surface over each housing the displays and their rules call for, moving the ones that stay and removing
+    /// Puts a surface over each housing the displays call for, moving the ones that stay and removing
     /// the rest at once.
     private func layOut() {
-        rules = Preferences().virtualNotchRules
-        let housings = environment.displays.housings(rules: rules)
+        let housings = environment.displays.housings
         let kept = Set(housings.map(\.display))
         for (display, surface) in surfaces where !kept.contains(display) {
             surface.remove()
@@ -94,33 +68,23 @@ final class NotchController {
     private func makeSurface(_ housing: NotchHousing) -> NotchSurface {
         let store = store
         let surface = NotchSurface(
-            display: housing.display, housing: housing.frame, player: player, doctor: doctor, settings: environment.settings,
+            display: housing.display, housing: housing.frame, player: player,
             dispatch: { [weak store] in store?.dispatch($0) }
         ) { [weak self] in self?.scroll($0) }
         surface.makeMenu = { [weak self] in
             guard let self else { return nil }
-            return NotchMenu.make(source: self.playback?.bundleIdentifier ?? self.player.lastPlayed?.bundleIdentifier, updater: self.environment.updater, settingsWindow: self.environment.settingsWindow) { [weak self] in
+            return NotchMenu.make(source: self.playback?.bundleIdentifier, updater: self.environment.updater, settingsWindow: self.environment.settingsWindow) { [weak self] in
                 self?.store.dispatch(.openApp)
             }
         }
         return surface
     }
 
-    /// Draws what `Store` decided: the track, the last one played, the volume and outputs, the Doctor's checks, and each
+    /// Draws what `Store` decided: the track, the volume and outputs, and each
     /// notch's state.
-    /// What's playing, or the demo's track while the first-run demo plays one.
-    private static func shown(_ state: AppState) -> PlaybackState? {
-        guard let start = state.demoTrackStart else { return state.playback }
-        return DemoTrack.playback(startedAt: start)
-    }
-
     private func stateChanged(from old: AppState, to new: AppState, by action: AppAction) {
-        let shown = Self.shown(new)
-        if shown != Self.shown(old) {
-            player.playback = shown
-        }
-        if new.lastPlayed != old.lastPlayed {
-            player.lastPlayed = new.lastPlayed
+        if new.playback != old.playback {
+            player.playback = new.playback
         }
         if new.volume != old.volume || new.isMuted != old.isMuted {
             player.volume = new.volume
@@ -130,10 +94,6 @@ final class NotchController {
             player.outputs = new.outputs
             player.currentOutput = new.currentOutput
         }
-        if new.doctor.adapter != old.doctor.adapter {
-            log.notice("Adapter is \(String(describing: new.doctor.adapter), privacy: .public)")
-        }
-        doctor.apply(new.doctor)
         if isPlayPause(action), old.hideAt == nil, old.playback != nil {
             // Timed from the click or key to the first frame that shows the new state.
             let input = Perf.input
@@ -160,7 +120,7 @@ final class NotchController {
 
     private func isPlayPause(_ action: AppAction) -> Bool {
         switch action {
-        case .command(.togglePlayPause), .command(.play), .command(.pause), .resumeLastPlayed: true
+        case .command(.togglePlayPause), .command(.play), .command(.pause): true
         default: false
         }
     }

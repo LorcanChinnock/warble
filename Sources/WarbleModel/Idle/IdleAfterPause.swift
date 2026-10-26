@@ -13,24 +13,15 @@ public enum IdleEvent: Sendable {
 /// ever. It holds no timers: after each call the owner schedules one for `deadline`, if any, and calls `advance(to:)`
 /// when it fires. With nothing paused there's no deadline, so no timer runs.
 public struct IdleAfterPause: Equatable, Sendable {
-    /// How long a paused track stays on screen unless the user changes it in `PreferenceKey.stayVisibleAfterPausing`.
-    public static let defaultDelay: TimeInterval = 10
-
-    /// The delays Settings offers, in seconds, shortest first, with `current` among them so a value set some other way,
-    /// such as `defaults write`, still shows.
-    public static func choices(including current: TimeInterval) -> [TimeInterval] {
-        let offered: [TimeInterval] = [5, defaultDelay, 30, 60, 300]
-        return offered.contains(current) ? offered : (offered + [current]).sorted()
-    }
-
     /// How long a paused track stays on screen once the pointer is away.
-    public var delay: TimeInterval
+    public static let delay: TimeInterval = 10
+
     /// Whether the notch is Idle: nothing is playing, or a track was paused for `delay`.
     public private(set) var isIdle = true
     /// When `isIdle` turns true if nothing else happens, or `nil` when nothing is due.
     public var deadline: Date? {
         guard !isIdle, !held else { return nil }
-        return countdownFrom.map { $0 + delay }
+        return countdownFrom.map { $0 + Self.delay }
     }
 
     private var track: Track?
@@ -39,9 +30,7 @@ public struct IdleAfterPause: Equatable, Sendable {
     /// When the paused track's countdown started: the pause, a new track, or the pointer leaving.
     private var countdownFrom: Date?
 
-    public init(delay: TimeInterval = Self.defaultDelay) {
-        self.delay = delay
-    }
+    public init() {}
 
     public mutating func handle(_ event: IdleEvent, at date: Date) {
         advance(to: date)

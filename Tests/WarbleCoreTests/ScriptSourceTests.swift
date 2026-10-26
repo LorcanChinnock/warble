@@ -32,25 +32,22 @@ private func stateReport(_ items: [NSAppleEventDescriptor]) -> [ScriptValue] {
     let report = stateReport([
         NSAppleEventDescriptor(string: "playing"), NSAppleEventDescriptor(string: "Song"), NSAppleEventDescriptor(string: "Artist"),
         NSAppleEventDescriptor(string: "Album"), NSAppleEventDescriptor(double: 240), NSAppleEventDescriptor(double: 30),
-        NSAppleEventDescriptor(string: "off"), NSAppleEventDescriptor(string: "all"), missingValue, missingValue,
+        NSAppleEventDescriptor(string: "off"), NSAppleEventDescriptor(string: "all"), missingValue,
     ])
     let state = try #require(PlaybackState(player: .music, report: report, at: .now))
     #expect(state.title == "Song")
     #expect(state.duration == 240)
     #expect(state.repeatMode == .all)
-    #expect(state.link == nil)
 }
 
-@Test func spotifysLinkIsReadIntoTheState() throws {
+@Test func spotifysArtworkURLIsReadFromTheReport() throws {
     let report = stateReport([
         NSAppleEventDescriptor(string: "playing"), NSAppleEventDescriptor(string: "Song"), NSAppleEventDescriptor(string: "Artist"),
         NSAppleEventDescriptor(string: "Album"), NSAppleEventDescriptor(double: 240), NSAppleEventDescriptor(double: 30),
         NSAppleEventDescriptor(string: "off"), NSAppleEventDescriptor(string: "off"),
         NSAppleEventDescriptor(string: "https://i.scdn.co/image/ab67616d0000b273"),
-        NSAppleEventDescriptor(string: "spotify:track:0aym2LBJBk9DAYuHHutrIl"),
     ])
-    let state = try #require(PlaybackState(player: .spotify, report: report, at: .now))
-    #expect(state.link == URL(string: "https://open.spotify.com/track/0aym2LBJBk9DAYuHHutrIl"))
+    #expect(PlaybackState(player: .spotify, report: report, at: .now) != nil)
     #expect(PlaybackState.artworkURL(in: report) == URL(string: "https://i.scdn.co/image/ab67616d0000b273"))
 }
 

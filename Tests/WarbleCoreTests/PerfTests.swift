@@ -44,15 +44,6 @@ import WarbleModel
         }
         try check(time, budget: .microseconds(Budget.artworkColours), "Artwork colours")
     }
-
-    /// Each new track's art is shrunk for the idle card before it's saved, off the main thread.
-    @Test func shrinkingTheArtForTheIdleCardStaysInBudget() throws {
-        let art = try cover()
-        let time = try fastest {
-            #expect(LastPlayedFile.thumbnail(art, pixels: LastPlayedFile.artworkPixels) != nil)
-        }
-        try check(time, budget: .microseconds(Budget.thumbnail), "Idle card art")
-    }
 }
 
 /// Twice the CI runner's baselines in `docs/performance.md`, in microseconds; change both together.
@@ -60,7 +51,6 @@ private enum Budget {
     static let trackLine = 1012.0
     static let pauseLine = 16.2
     static let artworkColours = 2809.0
-    static let thumbnail = 2295.0
 }
 
 /// The fastest run of `body`, after one untimed run that warms caches. It runs at least fifteen times and for at least

@@ -12,23 +12,8 @@ public enum AppEffect: Equatable, Sendable {
     /// Send a command to the app that's playing.
     case send(PlaybackCommand)
     case openApp(bundleIdentifier: String)
-    /// Open a player that has quit and tell it to play, so it resumes the track it had. Only on a click, which is when
-    /// macOS asks for Automation permission.
-    case launchAndPlay(ScriptedPlayer)
-    /// Open a link in whatever app handles it.
-    case openLink(URL)
     case setVolume(Double)
     /// A light tick on a Force Touch trackpad.
     case haptic
     case selectOutput(UInt32)
-    /// Shrink the art of `PlaybackState` for the idle card, then answer `.remembered` with `pass`.
-    case remember(PlaybackState, pass: Int)
-    /// Save the last track played for the next launch; the latest save wins.
-    case saveLastPlayed(LastPlayed)
-    /// Gather the Doctor's facts, then answer `.factsGathered` with `pass`.
-    case gatherFacts(Doctor.Adapter, pass: Int)
-    /// Open the welcome window, which `.welcomeClosed` answers.
-    case showWelcome
-    /// Watch Music and Spotify open and quit (true), or stop.
-    case followPlayers(Bool)
 }

@@ -37,22 +37,11 @@ struct ExpandedContent: View {
                 // VoiceOver starts here when the notch opens from the keyboard, ahead of the art beside it.
                 .accessibilitySortPriority(1)
                 Spacer(minLength: 0)
-                if model.doctor.needsAttention {
-                    Button { model.onShowDoctor(true) } label: {
-                        Image(systemName: "exclamationmark.circle.fill")
-                            .font(.system(size: 13))
-                            .foregroundStyle(Native.secondary)
-                            .frame(width: 24, height: 24)
-                            .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.notch)
-                    .accessibilityLabel("Show what's wrong")
-                }
             }
             Spacer(minLength: 0)
             Scrubber(playback: playback) { model.player.send(.seek(to: $0)) }
             Spacer(minLength: 0)
-            PlaybackControls(playback: playback, skipsBySeconds: model.skipsBySeconds, send: model.player.send, skip: model.player.skip)
+            PlaybackControls(playback: playback, send: model.player.send)
             Spacer(minLength: 0)
             HStack(spacing: 8) {
                 if let volume = model.player.volume {

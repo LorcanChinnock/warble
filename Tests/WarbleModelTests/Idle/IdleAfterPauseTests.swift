@@ -123,17 +123,3 @@ private func idle(_ events: (IdleEvent, TimeInterval)...) -> IdleAfterPause {
     late.advance(to: start + 300)
     #expect(late.isIdle)
 }
-
-@Test func aShorterDelayMovesTheDeadline() {
-    var quick = idle((.playback(track(playing: false)), 0))
-    quick.delay = 3
-    #expect(quick.deadline == start + 3)
-}
-
-@Test func settingsOffersTheDefaultDelay() {
-    #expect(IdleAfterPause.choices(including: IdleAfterPause.defaultDelay) == [5, 10, 30, 60, 300])
-}
-
-@Test func aDelaySetElsewhereJoinsTheChoicesInOrder() {
-    #expect(IdleAfterPause.choices(including: 45) == [5, 10, 30, 45, 60, 300])
-}

@@ -1,40 +1,32 @@
 ---
 title: When nothing shows
-summary: Find out why Warble can't see what's playing, and fix it.
+summary: Find out why the notch shows nothing while something plays, and fix it.
 group: Help
 ---
 
-Warble normally shows whatever plays in any app, your browser included. If something stops it, a small **!** appears beside the notch, even when nothing is playing.
+Warble normally shows whatever plays in any app, your browser included. When the notch stays hidden while something plays, work down this list.
 
-## See what's wrong
+## Check the basics
 
-1. Click the **!** beside the notch. If something is playing, you can also hover over the notch and click the **!** next to the song.
-2. Read the list. Each check shows a tick when it's fine. A check with a problem says what's wrong and has a button that fixes it.
-
-When everything is fixed, the **!** goes away. If you don't want to fix something now, click **Not Now**, and the **!** stays hidden until you open Warble again.
+- **Is something playing?** A paused song leaves the notch after 10 seconds, and with nothing playing Warble draws nothing at all.
+- **Is an app full screen?** The notch on that display hides until you leave full screen.
+- **Is Warble running?** Look for its three-bar icon in the menu bar. If it isn't there, open Warble from your Applications folder.
 
 ## Reading what's playing
 
-Warble reads what's playing directly from macOS. If it can't, it falls back to following only Music and Spotify.
+Warble reads what's playing directly from macOS. When it can't, it falls back to following only Music and Spotify, so other apps, such as your browser, don't show.
 
-- **Part of Warble is missing.** Click **Download Warble** and install it again.
-- **macOS won't let Warble read what's playing.** This can happen after a macOS update. Click **Check for Updates** to get the version of Warble that works with it.
-- **This kept stopping.** Click **Open Warble Again**. If it keeps happening, check for updates.
+- **Part of Warble is missing.** [Download Warble](/download) and install it again.
+- **macOS won't let Warble read what's playing.** This can happen after a macOS update. Click the menu bar icon and choose **Check for Updates…** to get the version of Warble that works with it.
+- **This kept stopping.** Quit Warble and open it again. If it keeps happening, check for updates.
 
 ## Permission for Music and Spotify
 
 While Warble follows Music and Spotify itself, it needs your permission to control them. macOS asks the first time each one plays. If you clicked **Don't Allow**:
 
-1. Click **Open Settings** next to **Permission**.
+1. Open **System Settings**, choose **Privacy & Security**, then **Automation**.
 2. Under **Warble**, turn on **Music** or **Spotify**.
-3. Play something. The **!** goes away when the song shows.
+3. Play something again.
 
 > [!NOTE]
 > Warble asks for this permission only when it can't read what's playing directly. Most people never see the request.
-
-## Players
-
-While Warble follows only Music and Spotify, other apps, such as your browser, don't show. If neither is open, click **Open Music**, or open Spotify, and play something.
-
-> [!TIP]
-> If the notch shows nothing and there's no **!**, Warble is working and nothing is playing. A paused song also leaves the notch after 10 seconds. Hover over the notch to check: it shows the last song you played, or **Nothing playing**. Start something in any app and it appears. While an app is full screen, the notch on that display hides until you leave full screen.

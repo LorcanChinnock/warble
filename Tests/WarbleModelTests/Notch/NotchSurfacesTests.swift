@@ -100,27 +100,16 @@ private struct Run {
     #expect(run.effects == [.takeEscape(false), .watchClicksOutside(false), .followVolume(false)])
 }
 
-@Test func onlyThePlayersCardFollowsTheVolume() {
+@Test func withNothingPlayingAClickOpensNothingAndFollowsNoVolume() {
     var run = Run(playing: nil)
     run.send(.hover(display: "built-in", .click))
-    #expect(run.state.card("built-in") == .idle)
+    #expect(run.state.notchState("built-in") == .hidden)
     #expect(!run.effects.contains(.followVolume(true)))
-}
-
-@Test func theDoctorsCardShowsUntilTheNotchCloses() {
-    var run = Run()
-    // The resting "!" asks for the checks, then its click opens the notch on them.
-    run.send(.showDoctor(display: "built-in", true))
-    run.send(.hover(display: "built-in", .click))
-    #expect(run.state.card("built-in") == .doctor)
-    run.send(.dismiss(except: nil))
-    run.send(.hover(display: "built-in", .click))
-    #expect(run.state.card("built-in") == .player)
 }
 
 @Test func withNothingPlayingAndNothingOpenNothingIsDueOrWatched() {
     let run = Run(playing: nil)
-    #expect(run.state.notchState("built-in") == .idle)
+    #expect(run.state.notchState("built-in") == .hidden)
     #expect(run.state.deadline == nil)
     #expect(!run.state.watchesClicks)
     #expect(!run.state.takesEscape)
@@ -135,37 +124,11 @@ private struct Run {
     #expect(run.state.deadline == nil)
 }
 
-@Test func anOpenNotchHoldsOffIdleAndDismissesTheToast() {
+@Test func anOpenNotchHoldsOffIdle() {
     var run = Run()
-    run.state.showsTrackToast = true
     run.send(.playbackReported(PlaybackState(bundleIdentifier: "com.apple.Music", title: "Next", elapsedTimestamp: start, rate: 1)))
-    #expect(run.state.notchState("built-in") == .toast)
     run.send(.hover(display: "built-in", .click))
-    #expect(run.state.toasts.current == nil)
     #expect(run.state.hovering)
-}
-
-@Test func playbackStoppingDismissesTheToastSoTheSameTrackReturningDoesntBringItBack() {
-    var run = Run()
-    run.state.showsTrackToast = true
-    let next = PlaybackState(bundleIdentifier: "com.apple.Music", title: "Next", elapsedTimestamp: start, rate: 1)
-    run.send(.playbackReported(next))
-    #expect(run.state.toasts.current != nil)
-    run.send(.playbackReported(nil), after: 0.1)
-    run.wait(AppState.hideDelay)
-    #expect(!run.state.showsPlayback)
-    #expect(run.state.toasts.current == nil)
-    #expect(run.state.deadline == nil)
-    run.send(.playbackReported(next), after: 0.1)
-    #expect(run.state.notchState("built-in") == .resting)
-}
-
-@Test func aToastIsntPostedWhileANotchIsOpen() {
-    var run = Run()
-    run.state.showsTrackToast = true
-    run.send(.hover(display: "built-in", .click))
-    run.send(.playbackReported(PlaybackState(bundleIdentifier: "com.apple.Music", title: "Next", elapsedTimestamp: start, rate: 1)))
-    #expect(run.state.toasts.current == nil)
 }
 
 @Test func housingsThatStayKeepTheirHover() {
@@ -212,13 +175,12 @@ private struct Run {
 }
 
 @MainActor
-@Test func theDisplaysGiveTheHousingsTheirRulesCallFor() {
+@Test func theDisplaysGiveTheHousingsTheyCallFor() {
     let displays = FakeDisplays()
     var changes = 0
     displays.onChange = { changes += 1 }
     displays.displays = [NotchDisplay(id: "external", frame: CGRect(x: 0, y: 0, width: 1920, height: 1080), menuBarHeight: 24, notch: nil, isMain: true)]
     #expect(changes == 1)
-    #expect(displays.housings(rules: [:]).map(\.display) == ["external"])
-    #expect(displays.housings(rules: ["external": .off]).isEmpty)
+    #expect(displays.housings.map(\.display) == ["external"])
 }
 

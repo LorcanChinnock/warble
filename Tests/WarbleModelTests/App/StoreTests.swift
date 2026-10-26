@@ -26,12 +26,12 @@ private func store() -> (Store, FakeClock, FakeScheduler) {
 @Test func theStoreArmsOneTimerForTheEarliestDeadlineAndTicksAtIt() {
     let (store, clock, scheduler) = store()
     store.dispatch(.playbackReported(paused))
-    #expect(scheduler.deadline == start + IdleAfterPause.defaultDelay)
+    #expect(scheduler.deadline == start + IdleAfterPause.delay)
     // Nothing new is due, so the timer stays as it is.
     store.dispatch(.playbackReported(paused))
     #expect(scheduler.armed == 1)
     // The timer fires a moment early; the tick still counts as at the deadline.
-    clock.now = start + IdleAfterPause.defaultDelay - 0.001
+    clock.now = start + IdleAfterPause.delay - 0.001
     scheduler.run()
     #expect(!store.state.showsPlayback)
     #expect(scheduler.deadline == nil)

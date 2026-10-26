@@ -10,13 +10,6 @@ if [ -n "$hits" ]; then
     exit 1
 fi
 
-hits=$(grep -rnE '@AppStorage[( ]|AppStorage\(' Sources || true)
-if [ -n "$hits" ]; then
-    echo "Use @Setting instead; @AppStorage catches up an update late, so views mixing it with other state show combinations that never existed:"
-    echo "$hits"
-    exit 1
-fi
-
 # WarbleModel builds and tests on Linux, where only Foundation and the standard library exist. The Linux build is the
 # backstop; this names the cause first.
 hits=$(find Sources/WarbleModel Tests/WarbleModelTests -name '*.swift' -exec awk '

@@ -14,7 +14,6 @@ The play/pause, next and previous keys on your keyboard control what's playing, 
 
 - The closed notch reads "Now playing", then the song and the artist, and whether it's playing or paused.
 - In the open notch, every button has a name. The position and the volume work like any other slider.
-- If Warble can't see what's playing, the "!" reads "Show what's wrong". Each check in the list says whether it's OK or needs fixing.
 
 ## Increase Contrast and Reduce Motion
 

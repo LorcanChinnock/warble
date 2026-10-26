@@ -16,7 +16,7 @@ To close it, move the pointer away, click anywhere else, or press <kbd>Esc</kbd>
 ## Play, pause and skip
 
 - Click the play or pause button in the middle.
-- Click the buttons either side of it to go back or skip to the next song. Turn on **Skip by seconds in podcasts** in Settings, and in a podcast or an audiobook they go back 15 seconds and forward 30 instead. See [Listen to podcasts](/docs/listen-to-podcasts/).
+- Click the buttons either side of it to go back or skip to the next song.
 - If the app has shuffle or repeat, their buttons appear at the left and right ends. Click repeat once to repeat everything, and again to repeat just the one song.
 
 The keyboard's play/pause, next and previous keys work as they always have.
@@ -38,4 +38,4 @@ The volume is your Mac's own, so it changes everything you hear, not just the ap
 
 ## The notch menu
 
-Right-click the notch, or Control-click it, for a short menu: open the app that's playing, open **Settings…**, check for updates, or quit Warble. It works even if you've hidden the menu bar icon.
+Right-click the notch, or Control-click it, for a short menu: open the app that's playing, open **Settings…**, check for updates, or quit Warble.

@@ -28,28 +28,6 @@ public enum NotchMotion {
     /// How long the bars take to drop as the content leaves, all together.
     public static let barDrop: TimeInterval = 0.14
 
-    /// How long each step of the first-run demo shows: resting, then open, then Idle with its hint.
-    public static let demoResting: TimeInterval = 2.5
-    public static let demoExpanded: TimeInterval = 4
-    public static let demoHint: TimeInterval = 8
-
-    /// A title too long for a virtual notch waits this long after it appears, then scrolls to its end at this many
-    /// points a second, holds there and snaps back. It does this once for a track and never loops.
-    public static let titleScrollWait: TimeInterval = 1.5
-    public static let titleScrollSpeed = 18.0
-    public static let titleScrollHold: TimeInterval = 1.2
-    public static let titleScrollSnap: TimeInterval = 0.12
-
-    /// The scroll of a title that is `travel` points too wide: its length in seconds and the moments within it, as
-    /// fractions, at the start, when the scroll begins, when it ends, when the hold ends and when it is back.
-    public static func titleScroll(travel: Double) -> (duration: TimeInterval, keyTimes: [Double]) {
-        let begins = titleScrollWait
-        let ends = begins + max(travel, 0) / titleScrollSpeed
-        let held = ends + titleScrollHold
-        let back = held + titleScrollSnap
-        return (back, [0, begins / back, ends / back, held / back, 1])
-    }
-
     /// How long after the shape starts to move the bar at `index`, counting from the left, starts to rise. With Reduce
     /// Motion they all show at once.
     public static func barDelay(_ index: Int, reduceMotion: Bool = false) -> TimeInterval {

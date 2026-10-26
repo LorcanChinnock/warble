@@ -19,10 +19,6 @@ public struct PlaybackState: Equatable, Sendable {
     /// `nil` when the source doesn't say.
     public var shuffle: ShuffleMode?
     public var repeatMode: RepeatMode?
-    /// A link to the track that opens anywhere, such as Spotify's, where the source gives one.
-    public var link: URL?
-    /// What kind of thing is playing, or `nil` when the source doesn't say.
-    public var mediaType: MediaType?
 
     public init(
         bundleIdentifier: String,
@@ -35,9 +31,7 @@ public struct PlaybackState: Equatable, Sendable {
         rate: Double = 0,
         artwork: Data? = nil,
         shuffle: ShuffleMode? = nil,
-        repeatMode: RepeatMode? = nil,
-        link: URL? = nil,
-        mediaType: MediaType? = nil
+        repeatMode: RepeatMode? = nil
     ) {
         self.bundleIdentifier = bundleIdentifier
         self.title = title
@@ -50,8 +44,6 @@ public struct PlaybackState: Equatable, Sendable {
         self.artwork = artwork
         self.shuffle = shuffle
         self.repeatMode = repeatMode
-        self.link = link
-        self.mediaType = mediaType
     }
 
     public var isPlaying: Bool { rate != 0 }
@@ -87,21 +79,9 @@ public struct PlaybackState: Equatable, Sendable {
         return state
     }
 
-    /// The position `seconds` on from where it is at `date`, or back for a negative number, kept within the track.
-    public func position(skipping seconds: TimeInterval, at date: Date) -> TimeInterval {
-        clamped(elapsed(at: date) + seconds)
-    }
-
     private func clamped(_ position: TimeInterval) -> TimeInterval {
         min(max(position, 0), duration ?? .infinity)
     }
-}
-
-/// What kind of thing a source says is playing.
-public enum MediaType: Equatable, Sendable {
-    case music, podcast, audiobook
-    /// Anything else, such as a video or a page's audio.
-    case other
 }
 
 public enum ShuffleMode: String, CaseIterable, Sendable {

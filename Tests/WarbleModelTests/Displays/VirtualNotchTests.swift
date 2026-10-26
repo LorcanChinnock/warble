@@ -37,51 +37,26 @@ private func main(_ display: NotchDisplay) -> NotchDisplay {
     #expect(VirtualNotch.housing(in: external.frame, menuBarHeight: 0).height == 24)
 }
 
-@Test func onlyTheRealNotchShowsByDefaultWithTheLidOpen() throws {
+@Test func onlyTheRealNotchShowsWithTheLidOpen() throws {
     let notch = try #require(builtIn.notch)
-    #expect(VirtualNotch.housings([builtIn, external], rules: [:]) == [NotchHousing(display: "built-in", frame: notch, isVirtual: false)])
+    #expect(VirtualNotch.housings([builtIn, external]) == [NotchHousing(display: "built-in", frame: notch, isVirtual: false)])
 }
 
 @Test func theMainDisplayTakesOverWhenTheLidCloses() {
-    let housings = VirtualNotch.housings([main(external)], rules: [:])
+    let housings = VirtualNotch.housings([main(external)])
     #expect(housings == [NotchHousing(display: "external", frame: CGRect(x: 2712, y: 1416, width: 160, height: 24), isVirtual: true)])
 }
 
 @Test func aMacWithoutANotchDrawsOneOnItsMainDisplay() {
     var air = builtIn
     air.notch = nil
-    let housings = VirtualNotch.housings([air, external], rules: [:])
+    let housings = VirtualNotch.housings([air, external])
     #expect(housings.map(\.display) == ["built-in"])
     #expect(housings.map(\.isVirtual) == [true])
 }
 
-@Test func otherDisplaysDrawNothingUntilTheyreGivenARule() {
+@Test func otherDisplaysDrawNothing() {
     var second = external
     second.id = "second"
-    #expect(VirtualNotch.housings([main(external), second], rules: [:]).map(\.display) == ["external"])
-}
-
-@Test func alwaysShowsBesideTheRealNotch() {
-    let housings = VirtualNotch.housings([builtIn, external], rules: ["external": .always])
-    #expect(housings.map(\.display) == ["built-in", "external"])
-    #expect(housings.map(\.isVirtual) == [false, true])
-}
-
-@Test func onlyAlwaysKeepsABlankNotchWhileNothingPlays() {
-    let always = VirtualNotch.housings([builtIn, external], rules: ["external": .always])
-    #expect(always.map(\.isAlwaysShown) == [false, true])
-    #expect(VirtualNotch.housings([main(external)], rules: [:]).map(\.isAlwaysShown) == [false])
-}
-
-@Test func offHidesTheMainDisplayEvenWithTheLidClosed() {
-    #expect(VirtualNotch.housings([main(external)], rules: ["external": .off]).isEmpty)
-}
-
-@Test func aRuleNeverHidesARealNotch() {
-    #expect(VirtualNotch.housings([builtIn], rules: ["built-in": .off]).count == 1)
-}
-
-@Test func onlyTheMainDisplayStandsInForTheNotchByDefault() {
-    #expect(VirtualNotchRule.default(isMain: true) == .noNotch)
-    #expect(VirtualNotchRule.default(isMain: false) == .off)
+    #expect(VirtualNotch.housings([main(external), second]).map(\.display) == ["external"])
 }

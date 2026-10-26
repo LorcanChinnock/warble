@@ -41,14 +41,13 @@ Or [download the latest release](https://warble.lorcanchinnock.com/download) and
 ## Features
 
 - **What's playing, in the notch.** The album art sits on one side, and on the other a few bars move while it plays. Open it to see the song on a soft glow in the album art's colours.
-- **Controls.** Play, pause, skip, move through the song, and turn shuffle and repeat on or off when the app has them. Turn on going back 15 seconds or forward 30 in a podcast or an audiobook. Drag the volume bar, or scroll over the notch to change the volume.
+- **Controls.** Play, pause, skip, move through the song, and turn shuffle and repeat on or off when the app has them. Drag the volume bar, or scroll over the notch to change the volume.
 - **Switch speakers.** Move your Mac's sound to its own speakers, headphones or AirPods from the notch.
 - **Any player.** Apple Music, Spotify, podcast apps and video in your browser.
-- **Calm by default.** A paused song stays for a few seconds, then Warble gets out of the way. When nothing is playing, it hides behind the notch and uses no CPU. Hover over the notch to see the last song you played and play it again.
-- **Every Mac.** Macs without a notch, and external displays, get a virtual one that shows the title of what's playing, and you choose which displays show it.
-- **Help when it can't see.** If something stops Warble seeing what's playing, a small "!" appears beside the notch. Click it to see what's wrong and how to fix it.
+- **Calm by default.** A paused song stays for a few seconds, then Warble gets out of the way. When nothing is playing, it hides behind the notch and uses no CPU.
+- **Every Mac.** A Mac without a notch, or a MacBook with its lid closed, gets a notch Warble draws at the top of the main display.
 - **For everyone.** Works with VoiceOver, and follows Increase Contrast and Reduce Motion.
-- **Settings, if you want them.** Open at login, a larger text size, how long a paused song stays, a message when the track changes, and skipping by seconds in podcasts. Right-click the notch for Settings or to quit, even with the menu bar icon hidden.
+- **Little to set up.** One switch, Open at login. Right-click the notch, or use the menu bar icon, for Settings, updates and Quit.
 
 ## Privacy
 

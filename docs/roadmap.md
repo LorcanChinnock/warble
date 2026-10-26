@@ -51,13 +51,6 @@ The first public beta: what's playing in the notch, playback and volume controls
 - [#188](https://github.com/LorcanChinnock/warble/issues/188) feat(player): resume the last track after its app has quit, on a normal install
 - [#185](https://github.com/LorcanChinnock/warble/issues/185) fix(player): the last-played card's play button does nothing once the app's session has gone
 
-## [0.2: podcasts and virtual notch titles](https://github.com/LorcanChinnock/warble/issues/33)
-
-Podcast skips, off until you turn them on, and the title in the middle of a virtual notch.
-
-- [#37](https://github.com/LorcanChinnock/warble/issues/37) feat(player): skip 15 seconds and change speed for podcasts
-- [#113](https://github.com/LorcanChinnock/warble/issues/113) feat(notch): show the title in the middle of a virtual notch
-
 ## [0.4: extras](https://github.com/LorcanChinnock/warble/issues/44)
 
 Source chips, plus research into replacing the volume overlay.
@@ -70,6 +63,8 @@ Source chips, plus research into replacing the volume overlay.
 These shipped and were taken out again to keep Warble a small notch for the listener: swipe to skip, dragging the album art out, reopening browser tracks, the track-change message over full-screen apps and hiding from screen sharing ([#243](https://github.com/LorcanChinnock/warble/issues/243)), and, before them, notch activities, the developer group, stats, the waveform, the sleep timer, lyrics, the Shortcuts actions, and the command line and URL scheme ([#237](https://github.com/LorcanChinnock/warble/issues/237)).
 
 The Shortcuts tab, its global shortcuts and the notch's keyboard mode were removed too ([#246](https://github.com/LorcanChinnock/warble/issues/246)).
+
+Before 1.0 the rest of the extras went, so Warble is only the notch that shows what's playing and controls it ([#257](https://github.com/LorcanChinnock/warble/issues/257)): podcast skips, the track-change message, the welcome window and first-run demo, Doctor and its "!", the rules for each display and the title in a virtual notch, the last-played card, and the Text size, Stay visible after pausing and menu bar icon settings.
 
 ## [1.0: translations](https://github.com/LorcanChinnock/warble/issues/49)
 

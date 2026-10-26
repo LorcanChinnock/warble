@@ -15,7 +15,7 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var idle: IdleAfterPause
     /// Whether the pointer is on a notch or a card is open, which holds off Idle.
     public internal(set) var hovering = false
-    /// The notches, one for each camera housing, and the settings they draw by.
+    /// The notches, one for each camera housing.
     public internal(set) var notches: Notches
     /// One notch for each camera housing, real or virtual, by `NotchHousing.display`.
     public internal(set) var surfaces: [String: Surface] {
@@ -27,35 +27,12 @@ public struct AppState: Equatable, Sendable {
         get { notches.fullScreen }
         set { notches.fullScreen = newValue }
     }
-    /// The Doctor's checks behind the "!".
-    public internal(set) var doctor: DoctorState
-    /// Whether a Doctor check failed, which draws a resting notch with a "!" even when nothing is playing.
-    public var needsAttention: Bool { doctor.needsAttention }
-    /// The last track played, which the idle card shows. It outlasts what's playing, and Warble too.
-    public internal(set) var last = LastPlayedState()
-    public var lastPlayed: LastPlayed? { last.lastPlayed }
     /// The output's volume from 0 to 1, read while the player's card is open; `nil` when it can't be changed.
     public internal(set) var volume: Double?
     public internal(set) var isMuted = false
     /// The outputs to offer and the one playing, read while the player's card is open.
     public internal(set) var outputs: [AudioOutput] = []
     public internal(set) var currentOutput: UInt32?
-    /// The new track's title and artist, shown for a moment after a skip when Settings turns it on.
-    public internal(set) var toast: ToastState
-    public var toasts: ToastQueue<TrackToast> { toast.queue }
-    public internal(set) var showsTrackToast: Bool {
-        get { toast.isOn }
-        set { toast.isOn = newValue }
-    }
-    /// Whether a podcast or audiobook skips by seconds rather than by track, which Settings turns on.
-    public internal(set) var podcastSkips: Bool
-    /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns off.
-    public internal(set) var showsVirtualTitle: Bool {
-        get { notches.showsVirtualTitle }
-        set { notches.showsVirtualTitle = newValue }
-    }
-    /// The first-run demo of the notch and the welcome window after it, which happen once, on a first launch.
-    public internal(set) var onboarding = Onboarding()
     /// What the effects last asked for, so each is asked for once per change.
     public internal(set) var watchesClicks: Bool {
         get { notches.watchesClicks }
@@ -70,17 +47,9 @@ public struct AppState: Equatable, Sendable {
         set { notches.followsVolume = newValue }
     }
 
-    /// `checks` are what the Doctor finds before it has asked macOS anything: what it finds while the adapter works.
-    public init(
-        stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay,
-        showsTrackToast: Bool = false, podcastSkips: Bool = false, showsVirtualTitle: Bool = true,
-        checks: [Doctor.Check] = []
-    ) {
-        idle = IdleAfterPause(delay: stayVisibleAfterPausing)
-        doctor = DoctorState(checks: checks)
-        notches = Notches(showsVirtualTitle: showsVirtualTitle)
-        toast = ToastState(isOn: showsTrackToast)
-        self.podcastSkips = podcastSkips
+    public init() {
+        idle = IdleAfterPause()
+        notches = Notches()
     }
 
     /// Whether the notches draw what's playing: something is, and it isn't Idle.
@@ -89,8 +58,7 @@ public struct AppState: Equatable, Sendable {
     /// Where each part of the state keeps its deadline: a feature that can come due on its own adds one line here. Key paths
     /// rather than the features themselves, so asking for the deadline copies and boxes nothing.
     private static let deadlines: [any KeyPath<AppState, Date?> & Sendable] = [
-        \.hideAt, \.idle.deadline, \.toast.deadline, \.onboarding.deadline,
-        \.last.deadline, \.doctor.deadline, \.notches.deadline,
+        \.hideAt, \.idle.deadline, \.notches.deadline,
     ]
 
     /// The earliest time something changes if nothing else happens, or `nil` when nothing is due, so `Store` runs one
@@ -104,45 +72,13 @@ public struct AppState: Equatable, Sendable {
         surfaces[display].map(notchState)
     }
 
-    /// What the notch over `display` holds when Expanded.
-    public func card(_ display: String) -> NotchCard? {
-        surfaces[display].map(card)
-    }
-
     func notchState(_ surface: Surface) -> NotchState {
         notches.notchState(surface, shared)
     }
 
-    /// Whether the notch over `display` draws the title in its middle.
-    public func titleInNotch(_ display: String) -> Bool {
-        surfaces[display].map { notches.showsTitle($0, shared) } ?? false
-    }
-
-    /// When the first-run demo's preview track started while it shows one. The notches draw that track in place of
-    /// `playback`, which stays what the sources said.
-    public var demoTrackStart: Date? { onboarding.trackStart }
-
-    /// Whether the notches draw a playing track: a real one, or the demo's.
-    public var drawsPlayback: Bool { showsPlayback || demoTrackStart != nil }
-
-    func card(_ surface: Surface) -> NotchCard {
-        notches.card(surface, shared)
-    }
-
-    /// Whether the player's card skips back and forward by seconds rather than by track: Settings turns it on, and a
-    /// podcast or audiobook is playing, with a length to move through.
-    public var skipsBySeconds: Bool {
-        guard podcastSkips, showsPlayback, let playback, playback.duration != nil else { return false }
-        return SpokenWord.contains(playback)
-    }
-
     /// What the features may read of this state.
     var shared: SharedState {
-        SharedState(
-            playback: playback, showsPlayback: showsPlayback, hideAt: hideAt, needsAttention: needsAttention,
-            hasToast: toasts.current != nil,
-            demoState: onboarding.notchState, demoCard: onboarding.card
-        )
+        SharedState(playback: playback, showsPlayback: showsPlayback, hideAt: hideAt)
     }
 
     func answersPointer(_ surface: Surface) -> Bool {

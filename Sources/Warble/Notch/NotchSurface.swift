@@ -13,8 +13,6 @@ final class NotchSurface {
     let display: String
     /// The camera housing the panel is drawn over.
     var housing: CGRect
-    /// Whether the housing is one Warble draws on a display without a notch.
-    var isVirtual: Bool { model.isVirtual }
     /// What the store last decided for this notch, which `render` draws.
     private var last: NotchRender?
     var state: NotchState { last?.state ?? .hidden }
@@ -31,21 +29,20 @@ final class NotchSurface {
     private var morphs = 0
 
     init(
-        display: String, housing: CGRect, player: PlayerModel, doctor: DoctorModel, settings: SettingsStore,
+        display: String, housing: CGRect, player: PlayerModel,
         dispatch: @escaping (AppAction) -> Void, onScroll: @escaping (NSEvent) -> Void
     ) {
         self.display = display
         self.housing = housing
         self.dispatch = dispatch
-        model = NotchModel(player: player, doctor: doctor)
-        panel = NotchPanel(model: model, settings: settings)
+        model = NotchModel(player: player)
+        panel = NotchPanel(model: model)
         panel.onPointer = { inside in dispatch(.pointer(display: display, inside: inside)) }
         panel.onScroll = onScroll
         panel.onDisplaced = { [weak self] in self?.replace() }
         panel.onMenu = { [weak self] event in self?.showMenu(for: event) }
         model.onClick = { dispatch(.hover(display: display, .click)) }
         model.onMenu = { [weak self] open in self?.menu(open: open) }
-        model.onShowDoctor = { show in dispatch(.showDoctor(display: display, show)) }
     }
 
     /// Draws what the store decided for this notch: takes the value, then morphs to it, growing the panel before the morph
@@ -53,11 +50,6 @@ final class NotchSurface {
     func render(_ app: AppState, animated: Bool) {
         if let value = NotchRender(app, display: display) {
             last = value
-            model.isVirtual = value.isVirtual
-            model.showsTitle = value.showsTitle
-            model.isAlwaysShown = value.isAlwaysShown
-            model.showsDoctor = value.showsDoctor
-            model.skipsBySeconds = value.skipsBySeconds
             panel.ignoresMouseEvents = value.ignoresMouseEvents
         }
         if let last {
@@ -99,10 +91,8 @@ final class NotchSurface {
     private func draw(_ value: NotchRender, animated: Bool) {
         let state = value.state
         let notch = housing
-        let card = value.card
         let isPlaying = value.isPlaying
-        let toast = value.shownToast
-        guard let frame = NotchLayout.frame(state, notch: notch, card: card) else {
+        guard let frame = NotchLayout.frame(state, notch: notch) else {
             guard shown != nil else { return }
             shown = nil
             morphs += 1
@@ -122,7 +112,7 @@ final class NotchSurface {
             }
             return
         }
-        guard shown?.state != state || shown?.frame != frame || model.card != card || model.isPlaying != isPlaying || model.toast != toast
+        guard shown?.state != state || shown?.frame != frame || model.isPlaying != isPlaying
         else { return }
         let previous = shown
         shown = (state, frame)
@@ -138,9 +128,8 @@ final class NotchSurface {
         }
         model.notch = notch
         if animated, let panelFrame {
-            // Grow the panel before the shape does, so nothing is clipped, and shrink it once the shape has. The card and
-            // what's playing change in the same animation as the state, so resuming from the idle card, or playback
-            // stopping under the full card, morphs from one card to the other and cross-fades their content.
+            // Grow the panel before the shape does, so nothing is clipped, and shrink it once the shape has. What's playing
+            // changes in the same animation as the state, so playback starting or stopping cross-fades the content.
             let union = panelFrame.union(frame)
             if union != panelFrame {
                 show(in: union)
@@ -148,21 +137,17 @@ final class NotchSurface {
             let reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
             withAnimation(reduceMotion ? Native.fade : Native.morph, completionCriteria: .removed) {
                 model.state = state
-                model.card = card
                 model.isPlaying = isPlaying
-                model.toast = toast
             } completion: { [weak self] in
                 guard let self, morph == self.morphs, self.panelFrame != frame else { return }
                 self.show(in: frame)
             }
         } else {
             model.state = state
-            model.card = card
             model.isPlaying = isPlaying
-            model.toast = toast
             show(in: frame)
         }
-        panel.track(NotchLayout.hoverArea(state, notch: notch, card: card) ?? .zero)
+        panel.track(NotchLayout.hoverArea(state, notch: notch) ?? .zero)
         log.notice("Notch \(state.rawValue, privacy: .public) at \(NSStringFromRect(frame), privacy: .public) over \(NSStringFromRect(notch), privacy: .public)")
     }
 

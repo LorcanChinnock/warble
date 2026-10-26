@@ -7,7 +7,7 @@ struct WarbleApp: App {
 
     var body: some Scene {
         let environment = appDelegate.environment
-        MenuBarExtra(isInserted: showMenuBarIcon(environment.settings)) {
+        MenuBarExtra {
             WarbleMenu(updater: environment.updater, settingsWindow: environment.settingsWindow)
                 .inject(environment)
         } label: {
@@ -18,16 +18,6 @@ struct WarbleApp: App {
                 Image(systemName: "arrow.down.circle")
             }
         }
-    }
-}
-
-/// Settings › General › Show menu bar icon. A scene can't read the environment `@Setting` reads, so it reads the store.
-@MainActor
-private func showMenuBarIcon(_ settings: SettingsStore) -> Binding<Bool> {
-    Binding {
-        settings.value(forKey: PreferenceKey.showMenuBarIcon) as? Bool ?? true
-    } set: {
-        settings.set($0, forKey: PreferenceKey.showMenuBarIcon)
     }
 }
 
@@ -52,7 +42,6 @@ private struct WarbleMenu: View {
     let settingsWindow: SettingsWindow
 
     var body: some View {
-        DisplaysMenu()
         if let version = updater.pendingVersion {
             Button("Update to \(version)…") { updater.checkForUpdates() }
         } else {
@@ -64,22 +53,5 @@ private struct WarbleMenu: View {
         Divider()
         Button("Quit Warble") { NSApp.terminate(nil) }
             .keyboardShortcut("q")
-    }
-}
-
-/// A rule for each display without a camera housing, as in Settings › General, a click closer.
-private struct DisplaysMenu: View {
-    @Environment(Displays.self) private var displays
-
-    var body: some View {
-        let virtual = displays.all.filter { $0.notch == nil }
-        if !virtual.isEmpty {
-            Menu("Notch on Displays") {
-                ForEach(virtual, id: \.id) { display in
-                    VirtualNotchPicker(display: display, name: displays.names[display.id] ?? display.id)
-                }
-            }
-            Divider()
-        }
     }
 }

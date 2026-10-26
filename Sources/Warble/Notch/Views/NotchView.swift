@@ -15,17 +15,14 @@ struct NotchView: View {
             shape
                 .fill(Native.panel)
                 .frame(width: size.width, height: size.height)
-                // A virtual housing has no camera to hide behind, so there Idle draws nothing, though it still takes the
-                // pointer, unless its display is set to show a notch always.
-                .opacity(state == .idle && model.isVirtual && !model.isAlwaysShown ? 0 : 1)
                 .transaction(snapWithReduceMotion)
             // Each state's content keeps its own size while the shape morphs, so it fades rather than reflows. What it
             // shows is passed in, so content on its way out keeps the track that stopped rather than going blank.
-            // While Idle, the player still holds the paused track, which only the idle card shows.
+            // Once nothing is playing, the player still holds the paused track, which nothing shows.
             let playback = model.isPlaying ? model.player.playback : nil
-            NotchContent(state: state, card: model.card, playback: playback, artwork: model.player.artwork, colours: model.player.colours, model: model)
+            NotchContent(state: state, playback: playback, artwork: model.player.artwork, colours: model.player.colours, model: model)
                 .frame(width: size.width, height: size.height, alignment: .top)
-                .id(ContentID(state: state == .toast ? .resting : state, card: model.card, isPlaying: playback != nil))
+                .id(ContentID(state: state, isPlaying: playback != nil))
                 .transition(ContentTransition())
         }
         .mask(alignment: .top) {
@@ -46,12 +43,9 @@ struct NotchView: View {
     }
 }
 
-/// Tells one state's content from the next, so a change of card, such as resuming from the idle card, or a track
-/// starting beside the "!", fades too. A toast is Resting's content with a strip below, so the wings stay put while
-/// only the strip comes and goes.
+/// Tells one state's content from the next, so a track starting or stopping under the same state fades too.
 private struct ContentID: Hashable {
     let state: NotchState
-    let card: NotchCard
     let isPlaying: Bool
 }
 
@@ -67,41 +61,19 @@ private struct ContentTransition: Transition {
 
 private struct NotchContent: View {
     let state: NotchState
-    let card: NotchCard
     let playback: PlaybackState?
     let artwork: NSImage?
     let colours: ArtworkColours?
     let model: NotchModel
 
     var body: some View {
-        switch (state, card, playback) {
-        case (.expanded, .player, let playback?):
+        switch (state, playback) {
+        case (.expanded, let playback?):
             ExpandedContent(playback: playback, artwork: artwork, model: model)
                 .padding(.top, model.notch.height)
                 .background { Glow(colours: colours) }
-        case (.expanded, .doctor, _):
-            DoctorCard(model: model)
-                .padding(.top, model.notch.height)
-        case (.expanded, .idle, _):
-            IdleCard(model: model)
-                .padding(.top, model.notch.height)
-        case (.resting, _, let playback?), (.toast, _, let playback?):
-            VStack(spacing: 0) {
-                RestingContent(playback: playback, artwork: artwork, notch: model.notch, model: model)
-                if state == .toast, let toast = model.toast {
-                    ToastLines(toast: toast)
-                        // A skip while it shows swaps the words with a fade.
-                        .id(toast)
-                        .transition(ContentTransition())
-                }
-            }
-        case (.hint, _, _):
-            VStack(spacing: 0) {
-                Color.clear.frame(height: model.notch.height)
-                DemoHint()
-            }
-        case (.resting, _, nil):
-            RestingContent(playback: nil, artwork: nil, notch: model.notch, model: model)
+        case (.resting, let playback?):
+            RestingContent(playback: playback, artwork: artwork, notch: model.notch, model: model)
         default:
             Color.clear.accessibilityHidden(true)
         }

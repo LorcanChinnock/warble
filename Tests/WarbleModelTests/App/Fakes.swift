@@ -118,29 +118,11 @@ final class FakeOutputs: AudioOutputs {
     }
 }
 
-/// Holds the first save back, so a later one would overtake it without the chain.
-final class FakeLastPlayed: LastPlayedInMemory, @unchecked Sendable {
-    override func save(_ lastPlayed: LastPlayed) throws {
-        if saved.isEmpty {
-            Thread.sleep(forTimeInterval: 0.05)
-        }
-        try super.save(lastPlayed)
-    }
-}
-
-/// What the app remembers of a report, without shrinking its art.
-func remembering(_ state: PlaybackState, appName: String?) -> LastPlayed {
-    LastPlayed(bundleIdentifier: state.bundleIdentifier, appName: appName, title: state.title, artist: state.artist, artwork: state.artwork, link: state.link)
-}
-
 @MainActor
 func makeRunner(
-    hotkeys: FakeHotkeys = FakeHotkeys(), volume: FakeVolume = FakeVolume(), outputs: FakeOutputs = FakeOutputs(),
-    lastPlayed: FakeLastPlayed = FakeLastPlayed()
+    hotkeys: FakeHotkeys = FakeHotkeys(), volume: FakeVolume = FakeVolume(), outputs: FakeOutputs = FakeOutputs()
 ) -> EffectRunner {
-    EffectRunner(
-        hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: { remembering($0, appName: $1) }
-    )
+    EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs)
 }
 
 /// A player that records the commands it's sent.

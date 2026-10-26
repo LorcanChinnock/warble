@@ -66,7 +66,7 @@ The submodule is pinned to a tagged commit. Dependabot checks it weekly, but it 
 
 ```
 Sources/WarbleModel/    Pure logic that needs only Foundation, tested on Linux: the app's state and reduce (App/), and each feature's rules
-Sources/WarbleCore/     Logic that needs Apple frameworks but no window: preferences, the sources, Core Audio, the last track's file
+Sources/WarbleCore/     Logic that needs Apple frameworks but no window: the sources, Core Audio
 Sources/Warble/         The app: the composition root (App/), the notch, Settings, the menu bar menu and updates
 Tests/WarbleModelTests/ WarbleModel's Swift Testing suite, in the same folders, with the ports' fakes in App/Fakes.swift
 Tests/WarbleCoreTests/  WarbleCore's Swift Testing suite
@@ -79,14 +79,14 @@ site/                   The website (see site/README.md)
 
 If logic can be tested without a window, a display, or a permission, put it in `WarbleModel` and add a test. If it needs an Apple framework, such as Core Audio or AppKit's colour maths, put it in `WarbleCore` instead, keeping the Apple part as thin as you can. CI also runs `WarbleModel`'s tests on Linux, which keeps it portable. `Warble` holds the AppKit and SwiftUI code that needs a real session.
 
-Each target is split into feature folders: `App`, `Playback`, `Notch`, `Idle`, `Toasts`, `Doctor`, `Keys`, `Displays`, `Volume`, `Design` and `Settings`.
+Each target is split into feature folders: `App`, `Playback`, `Notch`, `Idle`, `Keys`, `Displays`, `Volume`, `Design` and `Settings`.
 
 ## Adding a feature
 
 Everything the app decides goes through one store. `AppState` holds it, `AppAction` is what can happen, and `reduce(_:_:now:)` in `Sources/WarbleModel/App` turns an action into the next state and a list of `AppEffect`s, the work to do outside it. `Store` runs it on the main actor and keeps one timer for the state's earliest deadline. A new feature adds files rather than growing a central class:
 
 1. **State.** Add what the feature decides to `AppState`, or a struct of its own inside it. If it waits for something, take timestamped events and return the next deadline rather than running a timer, as `HoverIntent` and `IdleAfterPause` do, and include that deadline in `AppState.deadline`. With nothing playing there must be none.
-2. **Actions.** Add an `AppAction` case for each thing that can happen: a click, a key, a setting changing, an answer from slow work. Handle it in `reduce`. If it changes what follows from the notches' states, the settle pass at the end of `reduce` is where that goes.
+2. **Actions.** Add an `AppAction` case for each thing that can happen: a click, a key, an answer from slow work. Handle it in `reduce`. If it changes what follows from the notches' states, the settle pass at the end of `reduce` is where that goes.
 3. **Effects.** Add an `AppEffect` case for each piece of work outside the state, such as sending a command or saving a file. `EffectRunner` carries out the ones that go through a port, and `PlatformEffects` (`Sources/Warble/App`) the ones that need AppKit. Slow work runs off the main actor and comes back as an action.
 4. **Ports.** If the runner needs something new from the Mac, add a protocol to `App/Ports.swift` with the real implementation in WarbleCore or the app and a fake in `Tests/WarbleModelTests/App/Fakes.swift`. Add one only when a test needs the fake.
 5. **Folders.** Put the feature's files in a folder of its name in each target that has any, and its tests in the same folder under `Tests/WarbleModelTests`.

@@ -12,41 +12,19 @@ final class NotchModel {
     var notch = CGRect.zero
     /// What's playing, shared by every display's notch.
     let player: PlayerModel
-    /// The checks behind the "!", shared by every display's notch.
-    let doctor: DoctorModel
-    /// Whether the open card shows the Doctor's checks rather than the player.
-    var showsDoctor = false
-    /// Whether a podcast or audiobook is playing, so the player's card skips by seconds rather than by track.
-    var skipsBySeconds = false
-    /// What Expanded holds. `NotchSurface` sets it with `state`, inside the same animation, so a change of card morphs.
-    var card = NotchCard.player
     /// Whether the notch shows what's playing, rather than Idle. While Idle, `player` may still hold the paused track.
-    /// Set with `state`, like `card`.
+    /// Set with `state`.
     var isPlaying = false
-    /// Whether the housing is one Warble draws on a display without a notch, where Idle shows nothing at all rather
-    /// than black over the camera.
-    var isVirtual = false
-    /// Whether the resting notch draws the title in its middle, which only a virtual notch does.
-    var showsTitle = false
-    /// The title last scrolled, so a title scrolls once for a track, not again each time the notch closes over it.
-    @ObservationIgnored var scrolledTitle: String?
-    /// Whether its display is set to show a notch always, so Idle draws a blank notch even on a virtual housing.
-    var isAlwaysShown = false
-    /// The track-change toast, while `state` is `toast`. Set with `state`, like `card`.
-    var toast: TrackToast?
     @ObservationIgnored var onClick: () -> Void = {}
     /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
     @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }
-    /// Called to swap the open card between the player and the checks.
-    @ObservationIgnored var onShowDoctor: (Bool) -> Void = { _ in }
 
-    init(player: PlayerModel, doctor: DoctorModel) {
+    init(player: PlayerModel) {
         self.player = player
-        self.doctor = doctor
     }
 
-    /// Hidden and Idle draw at the housing's size, black on black, so the wings slide out from behind it and back in.
+    /// Hidden draws at the housing's size, black on black, so the wings slide out from behind it and back in.
     func size(_ state: NotchState) -> CGSize {
-        NotchLayout.frame(state, notch: notch, card: card)?.size ?? notch.size
+        NotchLayout.frame(state, notch: notch)?.size ?? notch.size
     }
 }
