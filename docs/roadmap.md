@@ -67,7 +67,7 @@ Source chips, plus research into replacing the volume overlay.
 
 ## Removed
 
-These shipped and were taken out again to keep Warble a small notch for the listener: swipe to skip, dragging the album art out, reopening browser tracks, the track-change message over full-screen apps and hiding from screen sharing ([#243](https://github.com/LorcanChinnock/warble/issues/243)), and, before them, notch activities, the developer group, stats, the waveform, the sleep timer and lyrics ([#237](https://github.com/LorcanChinnock/warble/issues/237)).
+These shipped and were taken out again to keep Warble a small notch for the listener: swipe to skip, dragging the album art out, reopening browser tracks, the track-change message over full-screen apps and hiding from screen sharing ([#243](https://github.com/LorcanChinnock/warble/issues/243)), and, before them, notch activities, the developer group, stats, the waveform, the sleep timer, lyrics, the Shortcuts actions, and the command line and URL scheme ([#237](https://github.com/LorcanChinnock/warble/issues/237)).
 
 ## [1.0: translations](https://github.com/LorcanChinnock/warble/issues/49)
 
