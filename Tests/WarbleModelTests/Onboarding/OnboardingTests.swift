@@ -90,23 +90,23 @@ func aClickOrTheKeyboardEndsTheDemoAtOnce(_ event: HoverEvent) {
 
 @Test func somethingPlayingEndsTheDemoAtOnce() {
     var state = launched()
-    #expect(reduce(&state, .sourceReported(bundleIdentifier: "app", playing), now: now + 1).contains(.showWelcome))
+    #expect(reduce(&state, .playbackReported(playing), now: now + 1).contains(.showWelcome))
     #expect(state.onboarding.demo.step == nil)
     #expect(state.notchState("built-in") == .resting)
 }
 
 @Test func aReportOfNothingOrAPauseLeavesTheDemoAlone() {
     var state = launched()
-    _ = reduce(&state, .sourceReported(bundleIdentifier: "app", nil), now: now + 1)
+    _ = reduce(&state, .playbackReported(nil), now: now + 1)
     var paused = playing
     paused.rate = 0
-    _ = reduce(&state, .sourceReported(bundleIdentifier: "app", paused), now: now + 1)
+    _ = reduce(&state, .playbackReported(paused), now: now + 1)
     #expect(state.onboarding.demo.step == .resting)
 }
 
 @Test func somethingAlreadyPlayingAtLaunchSkipsTheDemo() {
     var state = AppState()
-    _ = reduce(&state, .sourceReported(bundleIdentifier: "app", playing), now: now)
+    _ = reduce(&state, .playbackReported(playing), now: now)
     #expect(reduce(&state, .launched(firstRun: true), now: now) == [.showWelcome])
     #expect(state.onboarding.demo.step == nil)
 }

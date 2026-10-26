@@ -60,7 +60,7 @@ public struct Onboarding: Feature {
         switch action {
         case .pointer(_, let inside): inside
         case .hover, .menu, .perform(.openNotch): true
-        case .sourceReported(_, let playback): playback?.isPlaying == true
+        case .playbackReported(let playback): playback?.isPlaying == true
         default: false
         }
     }

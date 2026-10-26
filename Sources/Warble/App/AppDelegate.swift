@@ -31,8 +31,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let source = PreviewSource { [weak store] in store?.state.playback }
             runner.source = source
             Task {
-                for await report in source.reports {
-                    store.dispatch(.sourceReported(bundleIdentifier: report.bundleIdentifier, report.state))
+                for await state in source.states {
+                    store.dispatch(.playbackReported(state))
                 }
             }
         } else if let paths = Bundle.main.resourceURL.flatMap(AdapterSource.Paths.init(resources:)) {
@@ -40,8 +40,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             source.start()
             runner.source = source
             Task {
-                for await report in source.reports {
-                    store.dispatch(.sourceReported(bundleIdentifier: report.bundleIdentifier, report.state))
+                for await state in source.states {
+                    store.dispatch(.playbackReported(state))
                 }
                 // The states end only when the adapter gives up.
                 store.dispatch(.adapterChanged(Doctor.Adapter(source.backend)))
@@ -96,8 +96,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         fallback.start()
         environment.runner.source = fallback
         Task {
-            for await report in fallback.reports {
-                store.dispatch(.sourceReported(bundleIdentifier: report.bundleIdentifier, report.state))
+            for await state in fallback.states {
+                store.dispatch(.playbackReported(state))
                 store.dispatch(.fallbackReported)
             }
         }

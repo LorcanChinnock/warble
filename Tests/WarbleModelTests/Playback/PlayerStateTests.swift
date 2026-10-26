@@ -14,7 +14,7 @@ private struct Run {
     init(playing: PlaybackState? = song) {
         send(.housingsChanged([notch]))
         if let playing {
-            send(.sourceReported(bundleIdentifier: "app", playing))
+            send(.playbackReported(playing))
         }
         effects = []
     }
@@ -57,7 +57,7 @@ private struct Run {
 
 @Test func nothingIsGuessedWhileAHideIsPending() {
     var run = Run()
-    run.send(.sourceReported(bundleIdentifier: "app", nil))
+    run.send(.playbackReported(nil))
     run.send(.command(.togglePlayPause))
     #expect(run.state.playback == song)
     #expect(run.state.hideAt != nil)
@@ -190,23 +190,23 @@ private struct Run {
 
 @Test func aNewTrackOrNewArtIsRememberedButAPauseOrSeekIsnt() {
     var run = Run(playing: nil)
-    run.send(.sourceReported(bundleIdentifier: "app", song))
+    run.send(.playbackReported(song))
     #expect(run.effects == [.remember(song, pass: 1)])
-    run.send(.sourceReported(bundleIdentifier: "app", song.playing(false, at: start + 5)))
-    run.send(.sourceReported(bundleIdentifier: "app", song.seeked(to: 50, at: start + 6)))
+    run.send(.playbackReported(song.playing(false, at: start + 5)))
+    run.send(.playbackReported(song.seeked(to: 50, at: start + 6)))
     #expect(run.effects.count == 1)
     var withArt = song
     withArt.artwork = Data([1, 2, 3])
-    run.send(.sourceReported(bundleIdentifier: "app", withArt))
+    run.send(.playbackReported(withArt))
     #expect(run.effects.last == .remember(withArt, pass: 2))
 }
 
 @Test func aRememberedTrackIsShownAndSavedUnlessANewerOneHasBegun() {
     var run = Run(playing: nil)
-    run.send(.sourceReported(bundleIdentifier: "app", song))
+    run.send(.playbackReported(song))
     var next = song
     next.title = "Next"
-    run.send(.sourceReported(bundleIdentifier: "app", next))
+    run.send(.playbackReported(next))
     run.effects = []
     // The first track's art finished shrinking after the next began.
     run.send(.remembered(LastPlayed(bundleIdentifier: song.bundleIdentifier, title: "Song"), pass: 1))
@@ -222,11 +222,11 @@ private struct Run {
     let found = URL(string: "https://example.com/watch?v=1")
     let tab = PlaybackState(bundleIdentifier: "com.google.Chrome", title: "Video", elapsedTimestamp: start, rate: 1)
     var run = Run(playing: nil)
-    run.send(.sourceReported(bundleIdentifier: "app", tab))
+    run.send(.playbackReported(tab))
     run.send(.remembered(LastPlayed(bundleIdentifier: tab.bundleIdentifier, title: "Video", link: found), pass: 1))
     var withArt = tab
     withArt.artwork = Data([1])
-    run.send(.sourceReported(bundleIdentifier: "app", withArt))
+    run.send(.playbackReported(withArt))
     // The tab's title no longer names the track by then, so the second look finds no address.
     run.send(.remembered(LastPlayed(bundleIdentifier: tab.bundleIdentifier, title: "Video", artwork: Data([1])), pass: 2))
     #expect(run.state.lastPlayed?.link == found)

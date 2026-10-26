@@ -50,7 +50,6 @@ struct ExpandedContent: View {
                 }
             }
             Spacer(minLength: 0)
-            SourceChips(chips: model.player.chips, follow: model.player.follow)
             Scrubber(playback: playback) { model.player.send(.seek(to: $0)) }
             Spacer(minLength: 0)
             PlaybackControls(playback: playback, skipsBySeconds: model.skipsBySeconds, send: model.player.send, skip: model.player.skip)

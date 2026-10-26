@@ -9,37 +9,15 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     // First, so a touch or something playing ends the first-run demo before the action meets the notch it drew over.
     effects += state.onboarding.reduce(action, shared: state.shared, at: now)
     switch action {
-    case .sourceReported(let source, let report):
-        let before = state.sources.followed
-        if let report {
-            if !report.isPlaying, state.sources.pinned == source { state.sources.pinned = nil }
-            state.sources.update(source, isPlaying: report.isPlaying, at: now)
-            state.reports[source] = report
-        } else {
-            if state.sources.pinned == source { state.sources.pinned = nil }
-            state.sources.remove(source)
-            state.reports[source] = nil
-        }
-        let followed = state.sources.followed
-        if let followed {
-            if followed == source, let report {
-                // A guess at what a command will do shows at once and this report replaces it.
-                notice = TrackToast.notice(from: state.playback, to: report)
-                show(report, in: &state, at: now)
-            } else if followed != before {
-                show(state.reports[followed], in: &state, at: now)
-            }
-        } else if state.playback != nil {
+    case .playbackReported(let playback):
+        if playback == nil, state.playback != nil {
             // Hidden only if nothing follows in time; each report of nothing waits again from now.
             state.hideAt = now + AppState.hideDelay
         } else {
-            show(nil, in: &state, at: now)
-        }
-    case .followSource(let source):
-        guard source == nil || state.sources.ranked.contains(source!) else { break }
-        state.sources.pinned = source
-        if let followed = state.sources.followed, followed != state.playback?.bundleIdentifier {
-            show(state.reports[followed], in: &state, at: now)
+            if let playback {
+                notice = TrackToast.notice(from: state.playback, to: playback)
+            }
+            show(playback, in: &state, at: now)
         }
     case .perform(let action):
         if let command = action.command {
