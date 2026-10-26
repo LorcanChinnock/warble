@@ -19,6 +19,6 @@ The play/pause, next and previous keys on your keyboard control what's playing, 
 ## Increase Contrast and Reduce Motion
 
 - With **Increase contrast** on, grey text gets lighter, and the open notch has a solid border in the album's colour instead of a glow.
-- With **Reduce motion** on, the notch changes shape at once and only its contents fade. The bars stand still, even with **Move the bars with the sound** on.
+- With **Reduce motion** on, the notch changes shape at once and only its contents fade. The play-state bars stand still.
 
 Increase contrast is in System Settings › Accessibility › Display, and Reduce motion is in Accessibility › Motion. Warble never uses colour alone to show something: shuffle and repeat show a dot under them when they're on.
