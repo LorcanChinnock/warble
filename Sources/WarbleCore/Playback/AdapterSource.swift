@@ -59,7 +59,7 @@ public final class AdapterSource: NowPlayingSource {
         (states, continuation) = AsyncStream.makeStream(bufferingPolicy: .bufferingNewest(1))
     }
 
-    /// Which backend the supervisor has settled on, which tells the Doctor why the adapter gave up.
+    /// Which backend the supervisor has settled on, which says why the adapter gave up.
     public var backend: AdapterSupervisor.Backend {
         runner.withLock { $0.supervisor.backend }
     }

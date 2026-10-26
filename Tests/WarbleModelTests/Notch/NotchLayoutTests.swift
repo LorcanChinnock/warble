@@ -75,24 +75,11 @@ private let notch = CGRect(x: 856, y: 1205.5, width: 208, height: 37.5)
     #expect(NotchState(.pinned) == .expanded)
 }
 
-@Test func aRestingNotchOnlyDrawsWingsWithSomethingPlayingOrAMessageForTheUser() {
-    #expect(NotchState(.resting, isPlaying: true, needsAttention: false) == .resting)
-    #expect(NotchState(.expanded, isPlaying: true, needsAttention: false) == .expanded)
-    #expect(NotchState(.pinned, isPlaying: true, needsAttention: false) == .expanded)
-    // The "!" with nothing playing keeps the wings; with neither, the notch is Idle.
-    #expect(NotchState(.resting, isPlaying: false, needsAttention: true) == .resting)
-    #expect(NotchState(.resting, isPlaying: false, needsAttention: false) == .idle)
-}
-
-@Test func theDoctorsCardReachesFurtherDownThanThePlayerAtTheSameWidth() throws {
-    let player = try #require(NotchLayout.frame(.expanded, notch: notch))
-    let doctor = try #require(NotchLayout.frame(.expanded, notch: notch, card: .doctor))
-    #expect(doctor.width == player.width)
-    #expect(doctor.maxY == notch.maxY)
-    #expect(doctor.height == notch.height + NotchLayout.doctorDrop)
-    #expect(NotchLayout.hoverArea(.expanded, notch: notch, card: .doctor) == doctor)
-    // Resting looks the same whatever Expanded will hold.
-    #expect(NotchLayout.frame(.resting, notch: notch, card: .doctor) == NotchLayout.frame(.resting, notch: notch))
+@Test func aRestingNotchOnlyDrawsWingsWithSomethingPlaying() {
+    #expect(NotchState(.resting, isPlaying: true) == .resting)
+    #expect(NotchState(.expanded, isPlaying: true) == .expanded)
+    #expect(NotchState(.pinned, isPlaying: true) == .expanded)
+    #expect(NotchState(.resting, isPlaying: false) == .idle)
 }
 
 @Test(arguments: fifteenInchAir)

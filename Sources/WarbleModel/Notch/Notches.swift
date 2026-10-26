@@ -1,8 +1,8 @@
 import Foundation
 
 /// The notches, one for each camera housing: what the pointer has done to each, which card each shows, and the display
-/// settings that decide how they draw. What they draw also depends on the other features (what's playing and the
-/// Doctor), which they read through `SharedState`.
+/// settings that decide how they draw. What they draw also depends on what's playing, which they read through
+/// `SharedState`.
 public struct Notches: Feature {
     /// One notch for each camera housing, real or virtual, by `NotchHousing.display`.
     public internal(set) var surfaces: [String: Surface] = [:]
@@ -55,9 +55,6 @@ public struct Notches: Feature {
         case .menu(let display, let open):
             surfaces[display]?.showsMenu = open
             handle(open ? .menuOpened : .menuClosed, on: display, shared, at: now)
-        case .showDoctor(let display, let show):
-            // From the resting "!", the click that follows opens the notch on the checks.
-            surfaces[display]?.showsDoctor = show
         case .dismiss(let except):
             dismiss(except: except, shared, at: now)
         case .virtualTitleChanged(let on):
@@ -81,10 +78,6 @@ public struct Notches: Feature {
                 // Start over, so a pointer still on the notch when it's drawn again is reported as entering again.
                 surfaces[display]?.hover = HoverIntent()
                 surfaces[display]?.pointerInside = false
-            }
-            if old.notchState(before, oldShared) == .expanded, notchState(surface, shared) != .expanded {
-                // The checks show until the notch closes; the next open shows the player again.
-                surfaces[display]?.showsDoctor = false
             }
         }
     }
@@ -120,7 +113,7 @@ public struct Notches: Feature {
     /// The state the notch draws.
     func notchState(_ surface: Surface, _ shared: SharedState) -> NotchState {
         let state = NotchState(
-            surface.hover.state, isPlaying: shared.showsPlayback, needsAttention: shared.needsAttention
+            surface.hover.state, isPlaying: shared.showsPlayback
         )
         // A full-screen app has the top of its display to itself.
         return surface.isFullScreen ? .hidden : state
@@ -128,10 +121,7 @@ public struct Notches: Feature {
 
     /// What the notch holds when Expanded.
     func card(_ surface: Surface, _ shared: SharedState) -> NotchCard {
-        NotchCard(
-            isPlaying: shared.showsPlayback && shared.playback != nil, needsAttention: shared.needsAttention,
-            showsDoctor: surface.showsDoctor
-        )
+        NotchCard(isPlaying: shared.showsPlayback && shared.playback != nil)
     }
 
     /// Only a virtual notch has room for the title, since a real one's middle is the camera.
@@ -182,8 +172,6 @@ public struct Notches: Feature {
         public internal(set) var isFullScreen = false
         public internal(set) var hover = HoverIntent()
         public internal(set) var pointerInside = false
-        /// Whether the open card shows the Doctor's checks rather than the player, until the notch closes.
-        public internal(set) var showsDoctor = false
         /// Whether a menu from this notch is open, which takes Escape for itself.
         public internal(set) var showsMenu = false
 

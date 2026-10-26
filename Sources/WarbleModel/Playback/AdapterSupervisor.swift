@@ -40,7 +40,7 @@ public struct AdapterSupervisor: Equatable, Sendable {
 
     private var restarts = 0
     private var testRetries = 0
-    /// How the last `test` exited, which tells the Doctor why Warble gave up; `nil` until one has run.
+    /// How the last `test` exited, which says why Warble gave up; `nil` until one has run.
     public private(set) var lastTestStatus: Int32?
 
     public private(set) var backend: Backend

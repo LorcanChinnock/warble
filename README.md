@@ -46,7 +46,6 @@ Or [download the latest release](https://warble.lorcanchinnock.com/download) and
 - **Any player.** Apple Music, Spotify, podcast apps and video in your browser.
 - **Calm by default.** A paused song stays for a few seconds, then Warble gets out of the way. When nothing is playing, it hides behind the notch and uses no CPU. Hover over the notch to see the last song you played and play it again.
 - **Every Mac.** Macs without a notch, and external displays, get a virtual one that shows the title of what's playing, and you choose which displays show it.
-- **Help when it can't see.** If something stops Warble seeing what's playing, a small "!" appears beside the notch. Click it to see what's wrong and how to fix it.
 - **For everyone.** Works with VoiceOver, and follows Increase Contrast and Reduce Motion.
 - **Settings, if you want them.** Open at login, a larger text size, and how long a paused song stays. Right-click the notch for Settings or to quit, even with the menu bar icon hidden.
 

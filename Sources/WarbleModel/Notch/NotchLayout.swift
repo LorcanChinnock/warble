@@ -5,13 +5,13 @@ import Foundation
 
 /// What the notch panel shows.
 public enum NotchState: String, CaseIterable, Sendable {
-    /// Nothing is playing and nothing needs the user's attention, and the housing doesn't answer a hover: nothing is drawn.
+    /// Nothing is playing, and the housing doesn't answer a hover: nothing is drawn.
     case hidden
-    /// Nothing is playing and nothing needs the user's attention: the panel covers the camera housing exactly and shows
+    /// Nothing is playing: the panel covers the camera housing exactly and shows
     /// nothing, black on a real housing and on a virtual one set to Always, and clear on any other virtual one, so a
     /// hover can open the idle card.
     case idle
-    /// Something is playing, or a Doctor check failed, and the pointer is elsewhere: the notch widened by a wing on each side.
+    /// Something is playing and the pointer is elsewhere: the notch widened by a wing on each side.
     case resting
     /// Hovered or clicked: the full card with the art and room for the controls.
     case expanded
@@ -25,8 +25,8 @@ public enum NotchState: String, CaseIterable, Sendable {
     }
 
     /// How far `hover` has opened the notch, given whether anything is playing.
-    public init(_ hover: HoverState, isPlaying: Bool, needsAttention: Bool) {
-        if isPlaying || needsAttention {
+    public init(_ hover: HoverState, isPlaying: Bool) {
+        if isPlaying {
             self.init(hover)
         } else {
             self = hover == .resting ? .idle : .expanded
@@ -38,21 +38,12 @@ public enum NotchState: String, CaseIterable, Sendable {
 public enum NotchCard: Sendable {
     /// What's playing and its controls.
     case player
-    /// The Doctor's checks, each with its fix.
-    case doctor
     /// While Idle: the last track played and a button to resume it, or a line saying nothing has played yet.
     case idle
 
-    /// What Expanded holds: the checks when asked for, what's playing, the checks again when one failed with nothing
-    /// playing, and otherwise the idle card.
-    public init(isPlaying: Bool, needsAttention: Bool, showsDoctor: Bool) {
-        if showsDoctor {
-            self = .doctor
-        } else if isPlaying {
-            self = .player
-        } else {
-            self = needsAttention ? .doctor : .idle
-        }
+    /// What Expanded holds: what's playing, and otherwise the idle card.
+    public init(isPlaying: Bool) {
+        self = isPlaying ? .player : .idle
     }
 }
 
@@ -68,8 +59,6 @@ public enum NotchLayout {
     /// How far Expanded reaches below the camera housing: the art beside three lines of text, then the position, the
     /// controls and the volume.
     public static let expandedDrop: CGFloat = 160
-    /// How far Expanded reaches with the Doctor's card: a heading, then a line or two for each check and its fix.
-    public static let doctorDrop: CGFloat = 240
     /// How far the idle card reaches: the art beside three short lines, with no controls below.
     public static let idleDrop: CGFloat = 76
     /// Room either side of the notch once expanded, for the art beside the text. Measured from the notch, so the card
@@ -117,7 +106,6 @@ public enum NotchLayout {
     private static func drop(_ card: NotchCard) -> CGFloat {
         switch card {
         case .player: expandedDrop
-        case .doctor: doctorDrop
         case .idle: idleDrop
         }
     }

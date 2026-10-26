@@ -79,11 +79,3 @@ private struct Run {
     #expect(run.state.notchState("external") == .hidden)
 }
 
-@Test func aFullScreenAppHidesTheDoctorsMarkToo() {
-    var run = Run()
-    run.state = AppState(checks: [Doctor.Check(.adapter, .fail, .adapterMissing, fix: .reinstall)])
-    run.send(.housingsChanged([builtIn]))
-    #expect(run.state.notchState("built-in") == .resting)
-    run.send(.fullScreenChanged(["built-in"]))
-    #expect(run.state.notchState("built-in") == .hidden)
-}

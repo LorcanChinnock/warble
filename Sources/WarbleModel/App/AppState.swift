@@ -27,10 +27,6 @@ public struct AppState: Equatable, Sendable {
         get { notches.fullScreen }
         set { notches.fullScreen = newValue }
     }
-    /// The Doctor's checks behind the "!".
-    public internal(set) var doctor: DoctorState
-    /// Whether a Doctor check failed, which draws a resting notch with a "!" even when nothing is playing.
-    public var needsAttention: Bool { doctor.needsAttention }
     /// The last track played, which the idle card shows. It outlasts what's playing, and Warble too.
     public internal(set) var last = LastPlayedState()
     public var lastPlayed: LastPlayed? { last.lastPlayed }
@@ -40,7 +36,6 @@ public struct AppState: Equatable, Sendable {
     /// The outputs to offer and the one playing, read while the player's card is open.
     public internal(set) var outputs: [AudioOutput] = []
     public internal(set) var currentOutput: UInt32?
-    /// The new track's title and artist, shown for a moment after a skip when Settings turns it on.
     /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns off.
     public internal(set) var showsVirtualTitle: Bool {
         get { notches.showsVirtualTitle }
@@ -60,14 +55,11 @@ public struct AppState: Equatable, Sendable {
         set { notches.followsVolume = newValue }
     }
 
-    /// `checks` are what the Doctor finds before it has asked macOS anything: what it finds while the adapter works.
     public init(
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay,
-        showsVirtualTitle: Bool = true,
-        checks: [Doctor.Check] = []
+        showsVirtualTitle: Bool = true
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
-        doctor = DoctorState(checks: checks)
         notches = Notches(showsVirtualTitle: showsVirtualTitle)
     }
 
@@ -77,8 +69,7 @@ public struct AppState: Equatable, Sendable {
     /// Where each part of the state keeps its deadline: a feature that can come due on its own adds one line here. Key paths
     /// rather than the features themselves, so asking for the deadline copies and boxes nothing.
     private static let deadlines: [any KeyPath<AppState, Date?> & Sendable] = [
-        \.hideAt, \.idle.deadline,
-        \.last.deadline, \.doctor.deadline, \.notches.deadline,
+        \.hideAt, \.idle.deadline, \.last.deadline, \.notches.deadline,
     ]
 
     /// The earliest time something changes if nothing else happens, or `nil` when nothing is due, so `Store` runs one
@@ -112,9 +103,7 @@ public struct AppState: Equatable, Sendable {
 
     /// What the features may read of this state.
     var shared: SharedState {
-        SharedState(
-            playback: playback, showsPlayback: showsPlayback, hideAt: hideAt, needsAttention: needsAttention
-        )
+        SharedState(playback: playback, showsPlayback: showsPlayback, hideAt: hideAt)
     }
 
     func answersPointer(_ surface: Surface) -> Bool {

@@ -5,8 +5,7 @@ import WarbleCore
 
 /// The art in the left wing and the play-state bars in the right, either side of the camera housing (a virtual one has
 /// the title between them), each centred in a
-/// square as tall as the housing. When a Doctor check fails, a "!" takes the bars' place, and with nothing playing it's
-/// all that shows.
+/// square as tall as the housing.
 struct RestingContent: View {
     let playback: PlaybackState?
     let artwork: NSImage?
@@ -42,9 +41,7 @@ struct RestingContent: View {
                 Spacer(minLength: 0)
             }
             Group {
-                if model.doctor.needsAttention {
-                    AttentionButton(model: model, size: art)
-                } else if let playback {
+                if let playback {
                     PlayStateBars(isPlaying: playback.isPlaying, isShown: isIn, reduceMotion: reduceMotion)
                         .frame(width: min(18, art), height: art * 0.6)
                         .accessibilityHidden(true)

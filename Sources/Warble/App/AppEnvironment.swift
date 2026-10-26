@@ -12,8 +12,6 @@ final class AppEnvironment {
     /// Carries out what the store asks for, the AppKit part through `platform`.
     let runner: EffectRunner
     let platform: PlatformEffects
-    /// The checks behind the "!", as the notch's cards draw them.
-    let doctor: DoctorModel
     /// The output's volume, which a scroll or a key reads before it changes it.
     let volume: SystemVolume
     let updater: Updater
@@ -36,14 +34,12 @@ final class AppEnvironment {
         store = Store(
             state: AppState(
                 stayVisibleAfterPausing: preferences.stayVisibleAfterPausing,
-                showsVirtualTitle: preferences.virtualTitle,
-                checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
+                showsVirtualTitle: preferences.virtualTitle
             ),
             clock: SystemClock(), scheduler: TimerScheduler()
         )
         let store = store
         let dispatch: (AppAction) -> Void = { [weak store] in store?.dispatch($0) }
-        doctor = DoctorModel(updater: updater, dispatch: dispatch)
         volume = SystemVolume()
         let outputs = CoreAudioOutputs()
         runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: LastPlayedFile.remembering)

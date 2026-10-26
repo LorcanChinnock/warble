@@ -15,7 +15,6 @@ final class NotchController {
     private let environment: AppEnvironment
     private var store: Store { environment.store }
     private let player: PlayerModel
-    private var doctor: DoctorModel { environment.doctor }
     private var volume: SystemVolume { environment.volume }
     /// One for each housing, by `NotchDisplay.id`.
     private var surfaces: [String: NotchSurface] = [:]
@@ -88,7 +87,7 @@ final class NotchController {
     private func makeSurface(_ housing: NotchHousing) -> NotchSurface {
         let store = store
         let surface = NotchSurface(
-            display: housing.display, housing: housing.frame, player: player, doctor: doctor, settings: environment.settings,
+            display: housing.display, housing: housing.frame, player: player, settings: environment.settings,
             dispatch: { [weak store] in store?.dispatch($0) }
         ) { [weak self] in self?.scroll($0) }
         surface.makeMenu = { [weak self] in
@@ -100,7 +99,7 @@ final class NotchController {
         return surface
     }
 
-    /// Draws what `Store` decided: the track, the last one played, the volume and outputs, the Doctor's checks, and each
+    /// Draws what `Store` decided: the track, the last one played, the volume and outputs, and each
     /// notch's state.
     private func stateChanged(from old: AppState, to new: AppState, by action: AppAction) {
         if new.playback != old.playback {
@@ -117,10 +116,6 @@ final class NotchController {
             player.outputs = new.outputs
             player.currentOutput = new.currentOutput
         }
-        if new.doctor.adapter != old.doctor.adapter {
-            log.notice("Adapter is \(String(describing: new.doctor.adapter), privacy: .public)")
-        }
-        doctor.apply(new.doctor)
         if isPlayPause(action), old.hideAt == nil, old.playback != nil {
             // Timed from the click or key to the first frame that shows the new state.
             let input = Perf.input

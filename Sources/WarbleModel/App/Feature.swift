@@ -26,8 +26,4 @@ struct SharedState: Equatable, Sendable {
     var showsPlayback: Bool
     /// When `playback` goes after a report of nothing, or `nil` when no hide is pending.
     var hideAt: Date?
-
-    // What the notches draw besides what's playing.
-    /// Whether a Doctor check failed, which draws a "!".
-    var needsAttention = false
 }

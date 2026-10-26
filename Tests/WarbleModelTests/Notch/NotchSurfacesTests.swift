@@ -107,17 +107,6 @@ private struct Run {
     #expect(!run.effects.contains(.followVolume(true)))
 }
 
-@Test func theDoctorsCardShowsUntilTheNotchCloses() {
-    var run = Run()
-    // The resting "!" asks for the checks, then its click opens the notch on them.
-    run.send(.showDoctor(display: "built-in", true))
-    run.send(.hover(display: "built-in", .click))
-    #expect(run.state.card("built-in") == .doctor)
-    run.send(.dismiss(except: nil))
-    run.send(.hover(display: "built-in", .click))
-    #expect(run.state.card("built-in") == .player)
-}
-
 @Test func withNothingPlayingAndNothingOpenNothingIsDueOrWatched() {
     let run = Run(playing: nil)
     #expect(run.state.notchState("built-in") == .idle)

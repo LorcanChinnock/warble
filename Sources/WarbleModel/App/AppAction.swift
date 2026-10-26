@@ -15,8 +15,6 @@ public enum AppAction: Equatable, Sendable {
     case hover(display: String, HoverEvent)
     /// A menu from `display`'s notch opened (true) or closed, which keeps an open card open under it.
     case menu(display: String, open: Bool)
-    /// The open card on `display` swapped to the Doctor's checks (true) or back to the player.
-    case showDoctor(display: String, Bool)
     /// A click outside or Escape: every open notch closes, but `except`.
     case dismiss(except: String?)
     /// A command from a notch button or a key in an open notch, which shows what it will do at once.
@@ -36,17 +34,6 @@ public enum AppAction: Equatable, Sendable {
     /// The last track played, read from disk at launch or shrunk for the idle card after `.remember`.
     case lastPlayedLoaded(LastPlayed?)
     case remembered(LastPlayed, pass: Int)
-    /// How the adapter is doing, as the app last saw it.
-    case adapterChanged(Doctor.Adapter)
-    /// What the Doctor found for the refresh numbered `pass`.
-    case factsGathered(Doctor.Facts, pass: Int)
-    /// Music or Spotify opened or quit, or macOS refused a script: check again.
-    case playersChanged
-    case automationDenied
-    /// The AppleScript fallback reported, which clears a failing Automation check once the user allowed it.
-    case fallbackReported
-    /// Not now on the Doctor's card: hide the "!" for what fails now.
-    case notNow
     /// Settings changed.
     case stayVisibleChanged(TimeInterval)
     case virtualTitleChanged(Bool)

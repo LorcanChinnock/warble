@@ -31,13 +31,13 @@ final class NotchSurface {
     private var morphs = 0
 
     init(
-        display: String, housing: CGRect, player: PlayerModel, doctor: DoctorModel, settings: SettingsStore,
+        display: String, housing: CGRect, player: PlayerModel, settings: SettingsStore,
         dispatch: @escaping (AppAction) -> Void, onScroll: @escaping (NSEvent) -> Void
     ) {
         self.display = display
         self.housing = housing
         self.dispatch = dispatch
-        model = NotchModel(player: player, doctor: doctor)
+        model = NotchModel(player: player)
         panel = NotchPanel(model: model, settings: settings)
         panel.onPointer = { inside in dispatch(.pointer(display: display, inside: inside)) }
         panel.onScroll = onScroll
@@ -45,7 +45,6 @@ final class NotchSurface {
         panel.onMenu = { [weak self] event in self?.showMenu(for: event) }
         model.onClick = { dispatch(.hover(display: display, .click)) }
         model.onMenu = { [weak self] open in self?.menu(open: open) }
-        model.onShowDoctor = { show in dispatch(.showDoctor(display: display, show)) }
     }
 
     /// Draws what the store decided for this notch: takes the value, then morphs to it, growing the panel before the morph
@@ -56,7 +55,6 @@ final class NotchSurface {
             model.isVirtual = value.isVirtual
             model.showsTitle = value.showsTitle
             model.isAlwaysShown = value.isAlwaysShown
-            model.showsDoctor = value.showsDoctor
             panel.ignoresMouseEvents = value.ignoresMouseEvents
         }
         if let last {

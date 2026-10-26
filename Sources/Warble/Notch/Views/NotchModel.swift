@@ -12,10 +12,6 @@ final class NotchModel {
     var notch = CGRect.zero
     /// What's playing, shared by every display's notch.
     let player: PlayerModel
-    /// The checks behind the "!", shared by every display's notch.
-    let doctor: DoctorModel
-    /// Whether the open card shows the Doctor's checks rather than the player.
-    var showsDoctor = false
     /// What Expanded holds. `NotchSurface` sets it with `state`, inside the same animation, so a change of card morphs.
     var card = NotchCard.player
     /// Whether the notch shows what's playing, rather than Idle. While Idle, `player` may still hold the paused track.
@@ -33,12 +29,9 @@ final class NotchModel {
     @ObservationIgnored var onClick: () -> Void = {}
     /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
     @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }
-    /// Called to swap the open card between the player and the checks.
-    @ObservationIgnored var onShowDoctor: (Bool) -> Void = { _ in }
 
-    init(player: PlayerModel, doctor: DoctorModel) {
+    init(player: PlayerModel) {
         self.player = player
-        self.doctor = doctor
     }
 
     /// Hidden and Idle draw at the housing's size, black on black, so the wings slide out from behind it and back in.

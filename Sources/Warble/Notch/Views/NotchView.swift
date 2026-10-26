@@ -78,9 +78,6 @@ private struct NotchContent: View {
             ExpandedContent(playback: playback, artwork: artwork, model: model)
                 .padding(.top, model.notch.height)
                 .background { Glow(colours: colours) }
-        case (.expanded, .doctor, _):
-            DoctorCard(model: model)
-                .padding(.top, model.notch.height)
         case (.expanded, .idle, _):
             IdleCard(model: model)
                 .padding(.top, model.notch.height)

@@ -44,13 +44,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     store.dispatch(.playbackReported(state))
                 }
                 // The states end only when the adapter gives up.
-                store.dispatch(.adapterChanged(Doctor.Adapter(source.backend)))
+                log.notice("The adapter gave up; following Music and Spotify with AppleScript (\(String(describing: source.backend), privacy: .public))")
                 startFallback()
             }
             self.source = source
         } else {
             log.error("The adapter isn't in the app's resources; build with make bundle")
-            store.dispatch(.adapterChanged(Doctor.Adapter(AdapterSupervisor(bundled: false).backend)))
             startFallback()
         }
         self.notch = notch
@@ -84,13 +83,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func startFallback() {
         let fallback = ScriptSource()
         let store = environment.store
-        fallback.onAutomationDenied = { [weak store] in store?.dispatch(.automationDenied) }
         fallback.start()
         environment.runner.source = fallback
         Task {
             for await state in fallback.states {
                 store.dispatch(.playbackReported(state))
-                store.dispatch(.fallbackReported)
             }
         }
         self.fallback = fallback

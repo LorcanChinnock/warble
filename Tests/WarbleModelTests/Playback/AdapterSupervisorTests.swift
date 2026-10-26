@@ -110,10 +110,3 @@ import Testing
 @Test func anAdapterThatIsntBundledStartsOnAppleScript() {
     #expect(AdapterSupervisor(bundled: false).backend == .script(because: .notBundled))
 }
-
-@Test func theDoctorReadsItsAdapterFactFromTheBackend() {
-    #expect(Doctor.Adapter(.adapter) == .working)
-    #expect(Doctor.Adapter(.restarting) == .working)
-    #expect(Doctor.Adapter(.script(because: .notBundled)) == .missing)
-    #expect(Doctor.Adapter(.script(because: .gaveUp(testStatus: 4))) == .stopped(testStatus: 4))
-}

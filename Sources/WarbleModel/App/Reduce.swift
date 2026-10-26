@@ -55,10 +55,7 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.currentOutput = current
     case .lastPlayedLoaded, .remembered:
         effects += state.last.reduce(action, shared: state.shared, at: now)
-    case .adapterChanged, .factsGathered, .playersChanged, .automationDenied, .fallbackReported, .notNow:
-        effects += state.doctor.reduce(action, shared: state.shared, at: now)
-    case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .showDoctor, .dismiss,
-        .virtualTitleChanged:
+    case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .dismiss, .virtualTitleChanged:
         effects += state.notches.reduce(action, shared: state.shared, at: now)
     case .stayVisibleChanged(let delay):
         state.idle.delay = delay
@@ -113,11 +110,5 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
         state.idle.handle(hovering ? .hoverStarted : .hoverEnded, at: now)
     }
     shared = state.shared
-    var effects = state.notches.follow(shared, at: now)
-    // Opening a notch checks again whatever the Doctor found, in case the user fixed it, such as in System Settings,
-    // which tells Warble nothing.
-    if state.notches.watchesClicks, !old.notches.watchesClicks, state.doctor.adapter != .working {
-        effects.append(state.doctor.refresh())
-    }
-    return effects
+    return state.notches.follow(shared, at: now)
 }

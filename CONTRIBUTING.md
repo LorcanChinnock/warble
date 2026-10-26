@@ -79,7 +79,7 @@ site/                   The website (see site/README.md)
 
 If logic can be tested without a window, a display, or a permission, put it in `WarbleModel` and add a test. If it needs an Apple framework, such as Core Audio or AppKit's colour maths, put it in `WarbleCore` instead, keeping the Apple part as thin as you can. CI also runs `WarbleModel`'s tests on Linux, which keeps it portable. `Warble` holds the AppKit and SwiftUI code that needs a real session.
 
-Each target is split into feature folders: `App`, `Playback`, `Notch`, `Idle`, `Doctor`, `Keys`, `Displays`, `Volume`, `Design` and `Settings`.
+Each target is split into feature folders: `App`, `Playback`, `Notch`, `Idle`, `Keys`, `Displays`, `Volume`, `Design` and `Settings`.
 
 ## Adding a feature
 

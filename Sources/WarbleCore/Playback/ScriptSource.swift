@@ -26,9 +26,6 @@ public final class ScriptSource: NowPlayingSource {
     /// Scripts run one at a time, off the main thread: a player that's busy, or a permission prompt, holds a script up.
     private nonisolated static let queue = DispatchQueue(label: "Warble.ScriptSource")
 
-    /// Called on the main actor when macOS refuses a script because the user turned off Automation for Warble.
-    public var onAutomationDenied: () -> Void = {}
-
     public init() {
         (states, continuation) = AsyncStream.makeStream(bufferingPolicy: .bufferingNewest(1))
     }
@@ -135,22 +132,15 @@ public final class ScriptSource: NowPlayingSource {
 
     /// The items of the list `source` returns, or `nil` when it fails.
     private func run(_ source: String) async -> [ScriptValue]? {
-        let (result, error) = await Self.execute(source) { result in
+        await Self.execute(source) { result in
             (0..<result.numberOfItems).map { ScriptValue(result.atIndex($0 + 1)) }
-        }
-        if error == Self.automationDenied {
-            onAutomationDenied()
-        }
-        return result
+        }.result
     }
 
     /// The bytes `source` returns, or `nil` when it fails or returns `missing value`.
     private nonisolated static func runForData(_ source: String) async -> Data? {
         await execute(source) { $0.artworkData }.result ?? nil
     }
-
-    /// The error a script fails with when the user turned off Automation for Warble.
-    private static let automationDenied = -1743
 
     /// What `read` makes of the script's result, or `nil` and the error number when it fails.
     private nonisolated static func execute<T: Sendable>(_ source: String, _ read: @escaping @Sendable (NSAppleEventDescriptor) -> T) async -> (result: T?, error: Int?) {

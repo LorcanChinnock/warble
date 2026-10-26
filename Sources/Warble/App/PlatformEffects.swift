@@ -10,7 +10,6 @@ final class PlatformEffects {
     private let dispatch: (AppAction) -> Void
     /// Opens or closes the notch with the keyboard. The notch sets it, since it knows which notch the pointer is on.
     private var clickMonitor: Any?
-    private var playerObservers: [NSObjectProtocol] = []
 
     init(dispatch: @escaping (AppAction) -> Void) {
         self.dispatch = dispatch
@@ -35,13 +34,6 @@ final class PlatformEffects {
             NSWorkspace.shared.open(url)
         case .haptic:
             NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .now)
-        case .gatherFacts(let adapter, let pass):
-            let dispatch = dispatch
-            Task {
-                dispatch(.factsGathered(await Doctor.facts(adapter: adapter), pass: pass))
-            }
-        case .followPlayers(let follow):
-            followPlayers(follow)
         default:
             break
         }
@@ -56,24 +48,6 @@ final class PlatformEffects {
         } else if !watch, let monitor = clickMonitor {
             NSEvent.removeMonitor(monitor)
             clickMonitor = nil
-        }
-    }
-
-    /// Music and Spotify opening or quitting changes what macOS says about Automation, and what the fallback can follow.
-    private func followPlayers(_ follow: Bool) {
-        let following = !playerObservers.isEmpty
-        guard follow != following else { return }
-        guard follow else {
-            playerObservers.forEach(NSWorkspace.shared.notificationCenter.removeObserver)
-            playerObservers = []
-            return
-        }
-        for name in [NSWorkspace.didLaunchApplicationNotification, NSWorkspace.didTerminateApplicationNotification] {
-            playerObservers.append(NSWorkspace.shared.notificationCenter.addObserver(forName: name, object: nil, queue: .main) { [weak self] notification in
-                let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication
-                guard app?.bundleIdentifier.flatMap(ScriptedPlayer.init(rawValue:)) != nil else { return }
-                MainActor.assumeIsolated { self?.dispatch(.playersChanged) }
-            })
         }
     }
 }

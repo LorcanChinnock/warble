@@ -82,7 +82,7 @@ public final class EffectRunner {
                     logError("Couldn't save the last track played: \(error.localizedDescription)")
                 }
             }
-        case .watchClicksOutside, .openApp, .launchAndPlay, .openLink, .haptic, .gatherFacts, .followPlayers:
+        case .watchClicksOutside, .openApp, .launchAndPlay, .openLink, .haptic:
             platform(effect)
         }
     }
