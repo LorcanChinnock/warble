@@ -10,7 +10,7 @@ final class SettingsWindow {
     private let navigation: SettingsNavigation
     /// What the window's views read. `AppEnvironment` sets it once it's built, which holds this window.
     weak var environment: AppEnvironment?
-    static let size = NSSize(width: 720, height: 520)
+    static let size = NSSize(width: 560, height: 500)
 
     init(navigation: SettingsNavigation) {
         self.navigation = navigation

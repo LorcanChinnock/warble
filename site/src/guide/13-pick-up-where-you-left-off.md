@@ -17,7 +17,7 @@ If the app is still open, the song carries on from where you paused it. If you'v
 
 ### Songs and videos in a browser
 
-A browser can't carry on once you've closed the tab, so Warble can note the page instead. Open **Settings…**, choose **Notch** and turn on **Reopen browser tracks from the idle card**. Then the play button opens that page again in the same browser. It works with Safari, Chrome, Brave, Edge, Arc and Vivaldi.
+A browser can't carry on once you've closed the tab, so Warble can note the page instead. Open **Settings…**, click **More options** and turn on **Reopen browser tracks from the idle card**. Then the play button opens that page again in the same browser. It works with Safari, Chrome, Brave, Edge, Arc and Vivaldi.
 
 macOS asks once for each browser whether Warble may control it. Warble only looks at the front tab when a track starts, and only keeps the page if its title names the track. Without the setting, or in another browser, the button opens the browser and you find the page yourself.
 
@@ -35,6 +35,6 @@ If you haven't played anything since installing Warble, the card says **Nothing 
 
 ## Turn off the card
 
-If you'd rather a hover did nothing while nothing is playing, open **Settings…** from the Warble icon in the menu bar, choose **Notch**, and set **When nothing is playing, hover shows** to **Nothing**.
+If you'd rather a hover did nothing while nothing is playing, open **Settings…** from the Warble icon in the menu bar, and set **When nothing is playing, hover shows** to **Nothing**.
 
 When you pause, the song stays in the notch for 10 seconds before Warble hides. To change how long, set **Stay visible after pausing** in Settings › **General**.

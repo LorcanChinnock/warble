@@ -33,7 +33,7 @@ A real notch has the camera in the middle. A notch Warble draws has nothing ther
 
 A long title fades out at the end. It slowly scrolls to its end once when the song changes, then jumps back to the start and stays there. It never loops. Point at the notch to see the whole title in the player. With **Reduce Motion** on in System Settings, it doesn't scroll.
 
-To turn this off, open **Settings…** › **Notch** and turn off **Show the title in a virtual notch**.
+To turn this off, open **Settings…** › **General** and turn off **Show the title in a virtual notch**.
 
 > [!NOTE]
 > If you also turn on the message when the track changes, a notch with the title doesn't show it, since the title already tells you. A notch on your MacBook's own display still does.

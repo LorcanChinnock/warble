@@ -221,58 +221,6 @@
         }
       }
     },
-    "A long title fades out and scrolls once when the song changes, unless Reduce Motion is on. The track-change message skips a virtual notch that shows the title, since the title says the same." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ein langer Titel blendet aus und läuft beim Songwechsel einmal durch, außer „Bewegung reduzieren“ ist aktiv. Die Meldung beim Titelwechsel entfällt bei einer virtuellen Notch, die den Titel zeigt, da dieser dasselbe sagt."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un título largo se desvanece y se desplaza una vez al cambiar la canción, salvo que Reducir movimiento esté activado. El aviso de cambio de pista no aparece en un notch virtual que ya muestra el título, porque dice lo mismo."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un titre long s’estompe et défile une fois au changement de morceau, sauf si « Réduire les animations » est activé. Le message de changement de morceau ne s’affiche pas sur un notch virtuel qui montre le titre, puisqu’il dit la même chose."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un titolo lungo sfuma e scorre una volta quando cambia il brano, a meno che Riduci movimento sia attivo. Il messaggio di cambio brano salta il notch virtuale che mostra il titolo, perché dice già la stessa cosa."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "曲が変わると、長いタイトルはフェードアウトして一度だけスクロールします（「視差効果を減らす」がオンのときを除く）。タイトルを表示する仮想ノッチでは、同じ内容になるため曲が変わったときのメッセージを表示しません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "긴 제목은 노래가 바뀔 때 흐려지며 한 번 스크롤됩니다. 동작 줄이기가 켜져 있으면 스크롤되지 않습니다. 가상 노치에 제목이 표시되는 경우에는 같은 내용이므로 곡 변경 메시지를 표시하지 않습니다."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Um título longo some e rola uma vez quando a música muda, a menos que Reduzir Movimento esteja ativado. O aviso de troca de faixa não aparece em um notch virtual que mostra o título, pois o título já diz o mesmo."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "歌曲切换时，过长的标题会淡出并滚动一次；开启“减弱动态效果”时除外。显示标题的虚拟刘海不会再弹出换歌消息，因为标题已经说明了。"
-          }
-        }
-      }
-    },
     "About" : {
       "localizations" : {
         "de" : {
@@ -529,58 +477,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "始终"
-          }
-        }
-      }
-    },
-    "Animations follow Reduce Motion in System Settings › Accessibility › Display." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Animationen folgen „Bewegung reduzieren“ unter Systemeinstellungen › Bedienungshilfen › Anzeige."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Las animaciones siguen Reducir movimiento en Ajustes del Sistema › Accesibilidad › Pantalla."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les animations suivent « Réduire les animations » dans Réglages Système › Accessibilité › Affichage."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Le animazioni seguono Riduci movimento in Impostazioni di Sistema › Accessibilità › Monitor."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "アニメーションはシステム設定 › アクセシビリティ › ディスプレイの「視差効果を減らす」に従います。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "애니메이션은 시스템 설정 › 손쉬운 사용 › 디스플레이의 동작 줄이기 설정을 따릅니다."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "As animações seguem Reduzir Movimento em Ajustes do Sistema › Acessibilidade › Monitor."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "动画会遵循“系统设置” › “辅助功能” › “显示器”中的“减弱动态效果”。"
           }
         }
       }
@@ -1157,58 +1053,6 @@
         }
       }
     },
-    "Control playback from any app. None are set until you add one." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Steuere die Wiedergabe aus jeder App. Ohne dein Zutun ist keiner festgelegt."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Controla la reproducción desde cualquier app. No hay ninguno hasta que añadas uno."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Contrôlez la lecture depuis n’importe quelle app. Aucun n’est défini tant que vous n’en ajoutez pas."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Controlla la riproduzione da qualsiasi app. Non ce n'è nessuna finché non ne aggiungi una."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "どのアプリからでも再生を操作できます。追加するまでは何も設定されていません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "어떤 앱에서든 재생을 제어합니다. 추가하기 전에는 아무것도 지정되어 있지 않습니다."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Controle a reprodução de qualquer app. Nenhum vem definido até você adicionar."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在任何 App 中控制播放。添加之前不会设置任何快捷键。"
-          }
-        }
-      }
-    },
     "Could be better" : {
       "localizations" : {
         "de" : {
@@ -1521,110 +1365,7 @@
         }
       }
     },
-    "Drag the art into another app to share the song." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zieh das Cover in eine andere App, um den Song zu teilen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Arrastra la carátula a otra app para compartir la canción."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Faites glisser la pochette dans une autre app pour partager le morceau."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trascina la copertina in un'altra app per condividere il brano."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "アートを別のアプリにドラッグして曲を共有できます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "아트를 다른 앱으로 끌어다 놓아 노래를 공유하세요."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Arraste a capa para outro app para compartilhar a música."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "将封面拖到其他 App 即可分享歌曲。"
-          }
-        }
-      }
-    },
-    "Drop it in a message, a note or a folder. It brings the picture, and a link to the song when the app playing gives one. A click on the art still opens the app." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lege es in einer Nachricht, einer Notiz oder einem Ordner ab. Es bringt das Bild mit und einen Link zum Song, wenn die abspielende App einen liefert. Ein Klick auf das Cover öffnet weiterhin die App."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Suéltala en un mensaje, una nota o una carpeta. Lleva la imagen y, si la app que reproduce lo ofrece, un enlace a la canción. Un clic en la carátula sigue abriendo la app."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Déposez-la dans un message, une note ou un dossier. Elle emporte l’image, et un lien vers le morceau quand l’app qui joue en fournit un. Un clic sur la pochette ouvre toujours l’app."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rilasciala in un messaggio, una nota o una cartella. Porta con sé l'immagine e, se l'app in riproduzione lo fornisce, un link al brano. Un clic sulla copertina apre comunque l'app."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "メッセージ、メモ、フォルダにドロップできます。画像と、再生中のアプリが提供していれば曲へのリンクも一緒に渡されます。アートをクリックすると、これまでどおりアプリが開きます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "메시지, 메모 또는 폴더에 놓으세요. 이미지와 함께, 재생 중인 앱이 제공하면 노래 링크도 전달됩니다. 아트를 클릭하면 여전히 앱이 열립니다."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solte em uma mensagem, uma nota ou uma pasta. Ela leva a imagem e, quando o app que toca fornece, um link da música. Um clique na capa ainda abre o app."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "可拖到信息、备忘录或文件夹中。它会带上图片；若正在播放的 App 提供歌曲链接，也会一并带上。点按封面仍会打开该 App。"
-          }
-        }
-      }
-    },
+    "Drop it in a message, a note or a folder to share the song." : {},
     "Every display connected now has a notch." : {
       "localizations" : {
         "de" : {
@@ -1937,58 +1678,7 @@
         }
       }
     },
-    "Go back 15 seconds or forward 30 in a podcast or audiobook." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Springe in einem Podcast oder Hörbuch 15 Sekunden zurück oder 30 vor."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Retrocede 15 segundos o avanza 30 en un pódcast o audiolibro."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reculez de 15 secondes ou avancez de 30 dans un podcast ou un livre audio."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Torna indietro di 15 secondi o vai avanti di 30 in un podcast o audiolibro."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Podcastやオーディオブックで15秒戻る、30秒進む。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "팟캐스트나 오디오북에서 15초 뒤로 또는 30초 앞으로 이동합니다."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Volte 15 segundos ou avance 30 em um podcast ou audiolivro."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在播客或有声书中后退 15 秒或快进 30 秒。"
-          }
-        }
-      }
-    },
+    "Go back 15 seconds or forward 30 in a podcast or audiobook, in place of previous and next." : {},
     "Help and user guide" : {
       "localizations" : {
         "de" : {
@@ -2041,6 +1731,7 @@
         }
       }
     },
+    "Hidden" : {},
     "Hide from screen sharing and recordings" : {
       "localizations" : {
         "de" : {
@@ -2193,58 +1884,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "将鼠标悬停在此处查看正在播放的内容"
-          }
-        }
-      }
-    },
-    "How Warble looks and where it shows." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wie Warble aussieht und wo es erscheint."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cómo se ve Warble y dónde aparece."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’apparence de Warble et où il s’affiche."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aspetto di Warble e dove compare."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Warbleの見た目と表示する場所。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Warble의 모양과 표시 위치."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Como o Warble aparece e onde."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Warble 的外观和显示位置。"
           }
         }
       }
@@ -2717,58 +2356,7 @@
         }
       }
     },
-    "Needs a trackpad, or a Magic Mouse, where you swipe with one finger. Scrolling up and down over the notch still changes the volume." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erfordert ein Trackpad oder eine Magic Mouse, auf der du mit einem Finger wischst. Scrollen über der Notch nach oben und unten ändert weiterhin die Lautstärke."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Necesita un trackpad o un Magic Mouse, donde se desliza con un dedo. Desplazarte arriba y abajo sobre el notch sigue cambiando el volumen."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nécessite un trackpad ou une Magic Mouse, où l’on balaie avec un doigt. Défiler vers le haut ou le bas sur le notch change toujours le volume."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Serve un trackpad o un Magic Mouse, dove scorri con un dito. Scorrere su e giù sul notch cambia comunque il volume."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "トラックパッド、または1本指でスワイプするMagic Mouseが必要です。ノッチの上で上下にスクロールすると、これまでどおり音量が変わります。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "트랙패드 또는 한 손가락으로 쓸어넘길 수 있는 Magic Mouse가 필요합니다. 노치 위에서 위아래로 스크롤하면 계속 음량이 조절됩니다."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Requer um trackpad ou um Magic Mouse, onde você desliza com um dedo. Rolar para cima e para baixo sobre o notch ainda muda o volume."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "需要触控板或妙控鼠标，用一根手指轻扫。在刘海上向上或向下滚动仍可调节音量。"
-          }
-        }
-      }
-    },
+    "More options" : {},
     "Needs fixing" : {
       "localizations" : {
         "de" : {
@@ -3603,58 +3191,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开"
-          }
-        }
-      }
-    },
-    "On a display without a notch, the song's title shows in the middle." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Auf einem Bildschirm ohne Notch erscheint der Songtitel in der Mitte."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En una pantalla sin notch, el título de la canción se muestra en el centro."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sur un écran sans notch, le titre du morceau s’affiche au milieu."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Su uno schermo senza notch, il titolo del brano compare al centro."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ノッチのないディスプレイでは、曲のタイトルが中央に表示されます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "노치가 없는 디스플레이에서는 노래 제목이 가운데에 표시됩니다."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Em uma tela sem notch, o título da música aparece no meio."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在没有刘海的显示器上，歌曲标题会显示在中间。"
           }
         }
       }
@@ -5479,58 +5015,7 @@
         }
       }
     },
-    "Remember the page a track played on, so the play button can open it again." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Merkt sich die Seite, auf der ein Titel lief, damit die Wiedergabetaste sie erneut öffnen kann."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Recuerda la página donde sonó una pista para que el botón de reproducir pueda abrirla de nuevo."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mémorise la page où un morceau a joué, pour que le bouton lecture puisse la rouvrir."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ricorda la pagina su cui è stato riprodotto un brano, così il pulsante di riproduzione può riaprirla."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "曲を再生したページを覚えておき、再生ボタンでもう一度開けるようにします。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "곡을 재생한 페이지를 기억해 두었다가 재생 버튼으로 다시 열 수 있게 합니다."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lembra a página em que uma faixa tocou, para o botão de reproduzir poder abri-la de novo."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "记住曲目播放所在的页面，让播放按钮可以再次打开它。"
-          }
-        }
-      }
-    },
+    "Remember the page a track played on, so the play button can open it again. macOS asks once for each browser." : {},
     "Reopen browser tracks from the idle card" : {
       "localizations" : {
         "de" : {
@@ -5687,6 +5172,7 @@
         }
       }
     },
+    "Settings pages" : {},
     "Settings…" : {
       "localizations" : {
         "de" : {
@@ -5895,58 +5381,7 @@
         }
       }
     },
-    "Show a message when the track changes" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Meldung beim Titelwechsel zeigen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar un aviso cuando cambie la pista"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Afficher un message au changement de morceau"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostra un messaggio quando cambia il brano"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "曲が変わったときにメッセージを表示"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "곡이 바뀔 때 메시지 표시"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar um aviso quando a faixa muda"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "换歌时显示消息"
-          }
-        }
-      }
-    },
+    "Show a message when the song changes" : {},
     "Show icon in the menu bar" : {
       "localizations" : {
         "de" : {
@@ -5999,58 +5434,7 @@
         }
       }
     },
-    "Show it over full-screen apps too" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Auch über Apps im Vollbildmodus zeigen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrarlo también sobre apps en pantalla completa"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’afficher aussi par-dessus les apps en plein écran"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostralo anche sopra le app a schermo intero"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "フルスクリーンのアプリの上にも表示"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "전체 화면 앱 위에도 표시"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar também sobre apps em tela cheia"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在全屏 App 上方也显示"
-          }
-        }
-      }
-    },
+    "Show the message over full-screen apps" : {},
     "Show the title in a virtual notch" : {
       "localizations" : {
         "de" : {
@@ -6155,6 +5539,7 @@
         }
       }
     },
+    "Shown" : {},
     "Shuffle" : {
       "localizations" : {
         "de" : {
@@ -6415,58 +5800,7 @@
         }
       }
     },
-    "Swipe left with two fingers for the next song, or right to go back." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wische mit zwei Fingern nach links für den nächsten Song oder nach rechts zurück."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desliza a la izquierda con dos dedos para la canción siguiente, o a la derecha para volver."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Balayez vers la gauche avec deux doigts pour le morceau suivant, ou vers la droite pour revenir en arrière."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scorri a sinistra con due dita per il brano successivo, o a destra per tornare indietro."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2本指で左にスワイプすると次の曲、右にスワイプすると前の曲です。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "두 손가락으로 왼쪽으로 쓸어넘기면 다음 곡, 오른쪽으로 쓸어넘기면 이전 곡입니다."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deslize para a esquerda com dois dedos para a próxima música, ou para a direita para voltar."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "用两根手指向左轻扫切到下一首，向右轻扫返回上一首。"
-          }
-        }
-      }
-    },
+    "Swipe left with two fingers for the next song, or right to go back. Needs a trackpad or a Magic Mouse." : {},
     "Swipe over the notch to skip" : {
       "localizations" : {
         "de" : {
@@ -6675,58 +6009,7 @@
         }
       }
     },
-    "The notch stays hidden behind the camera until you point at it." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die Notch bleibt hinter der Kamera verborgen, bis du darauf zeigst."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El notch permanece oculto tras la cámara hasta que lo señalas."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Le notch reste caché derrière la caméra jusqu’à ce que vous le pointiez."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Il notch resta nascosto dietro la fotocamera finché non lo indichi."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ポインタを合わせるまで、ノッチはカメラの裏に隠れたままです。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "포인터를 가져가기 전까지 노치는 카메라 뒤에 숨겨져 있습니다."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O notch fica escondido atrás da câmera até você apontar para ele."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "刘海会藏在摄像头后面，直到你将鼠标指向它。"
-          }
-        }
-      }
-    },
+    "The song's title shows in the middle." : {},
     "Then the notch hides until something plays." : {
       "localizations" : {
         "de" : {
@@ -6775,110 +6058,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "之后刘海会隐藏，直到有内容播放。"
-          }
-        }
-      }
-    },
-    "These buttons take the place of previous and next. Songs keep previous and next either way." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diese Tasten ersetzen „Zurück“ und „Weiter“. Bei Songs bleiben „Zurück“ und „Weiter“ in jedem Fall erhalten."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Estos botones sustituyen a anterior y siguiente. Las canciones conservan anterior y siguiente en cualquier caso."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ces boutons remplacent précédent et suivant. Les morceaux gardent précédent et suivant dans tous les cas."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Questi pulsanti prendono il posto di precedente e successivo. Per i brani restano comunque precedente e successivo."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "これらのボタンは「前の曲」「次の曲」の代わりになります。曲では、どちらの場合も前後への移動ができます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이 버튼은 이전 및 다음 버튼 자리를 대신합니다. 노래에는 어느 쪽이든 이전 및 다음 버튼이 유지됩니다."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Estes botões substituem anterior e próxima. Nas músicas, anterior e próxima continuam de qualquer jeito."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "这些按钮会取代上一首和下一首。无论如何，歌曲仍保留上一首和下一首。"
-          }
-        }
-      }
-    },
-    "This covers sharing your screen in a call, screen recordings and screenshots." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Das gilt für Bildschirmfreigabe in Anrufen, Bildschirmaufnahmen und Screenshots."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Esto incluye compartir pantalla en una llamada, grabaciones de pantalla y capturas."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cela couvre le partage d’écran pendant un appel, les enregistrements d’écran et les captures d’écran."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vale per la condivisione dello schermo in una chiamata, le registrazioni dello schermo e gli screenshot."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "通話中の画面共有、画面収録、スクリーンショットが対象です。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "통화 중 화면 공유, 화면 녹화, 스크린샷에 적용됩니다."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Isso vale para compartilhar a tela em uma chamada, gravações de tela e capturas de tela."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "包括通话中的屏幕共享、屏幕录制和截屏。"
           }
         }
       }
@@ -7139,58 +6318,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "版本 %@"
-          }
-        }
-      }
-    },
-    "Version, updates and help." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Version, Updates und Hilfe."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Versión, actualizaciones y ayuda."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Version, mises à jour et aide."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Versione, aggiornamenti e aiuto."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バージョン、アップデート、ヘルプ。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "버전, 업데이트 및 도움말."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Versão, atualizações e ajuda."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "版本、更新与帮助。"
           }
         }
       }
@@ -7611,58 +6738,6 @@
         }
       }
     },
-    "What the notch shows." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Was die Notch zeigt."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lo que muestra el notch."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ce que le notch affiche."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cosa mostra il notch."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ノッチに表示する内容。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "노치에 표시되는 내용."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O que o notch mostra."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "刘海显示的内容。"
-          }
-        }
-      }
-    },
     "What's playing" : {
       "localizations" : {
         "de" : {
@@ -8075,58 +7150,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "macOS %@"
-          }
-        }
-      }
-    },
-    "macOS asks once for each browser. Works with Safari, Chrome, Brave, Edge, Arc and Vivaldi. Without it, or in another browser, the button opens the browser." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "macOS fragt einmal pro Browser. Funktioniert mit Safari, Chrome, Brave, Edge, Arc und Vivaldi. Ohne das, oder in einem anderen Browser, öffnet die Taste den Browser."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "macOS pregunta una vez por cada navegador. Funciona con Safari, Chrome, Brave, Edge, Arc y Vivaldi. Sin esto, o en otro navegador, el botón abre el navegador."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "macOS demande une fois pour chaque navigateur. Fonctionne avec Safari, Chrome, Brave, Edge, Arc et Vivaldi. Sans cela, ou dans un autre navigateur, le bouton ouvre le navigateur."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "macOS lo chiede una volta per ogni browser. Funziona con Safari, Chrome, Brave, Edge, Arc e Vivaldi. Senza, o con un altro browser, il pulsante apre il browser."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "macOSはブラウザごとに一度だけ確認します。Safari、Chrome、Brave、Edge、Arc、Vivaldiで使えます。許可しない場合やほかのブラウザでは、ボタンはブラウザを開きます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "macOS에서 브라우저마다 한 번씩 묻습니다. Safari, Chrome, Brave, Edge, Arc, Vivaldi에서 작동합니다. 허용하지 않거나 다른 브라우저에서는 버튼이 브라우저를 엽니다."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O macOS pergunta uma vez para cada navegador. Funciona com Safari, Chrome, Brave, Edge, Arc e Vivaldi. Sem isso, ou em outro navegador, o botão abre o navegador."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "macOS 会为每个浏览器询问一次。适用于 Safari、Chrome、Brave、Edge、Arc 和 Vivaldi。未允许或使用其他浏览器时，该按钮会打开浏览器。"
           }
         }
       }

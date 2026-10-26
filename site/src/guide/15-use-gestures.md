@@ -15,7 +15,7 @@ Scroll up or down over the notch, with two fingers on a trackpad or with your mo
 Swiping is off at first.
 
 1. Right-click the notch, or click the Warble icon in the menu bar, and choose **Settings…**.
-2. Choose **Notch**.
+2. Click **More options**.
 3. Turn on **Swipe over the notch to skip**.
 
 Then point at the notch and swipe:
@@ -38,7 +38,7 @@ Left and right mean the way your fingers move, whichever scroll direction you've
 Dragging the art is off at first.
 
 1. Right-click the notch, or click the Warble icon in the menu bar, and choose **Settings…**.
-2. Choose **Notch**.
+2. Click **More options**.
 3. Turn on **Drag the album art out of the player**.
 
 Then share what's playing:
