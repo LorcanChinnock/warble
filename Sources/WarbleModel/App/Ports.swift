@@ -27,8 +27,6 @@ public protocol HotkeyRegistrar: AnyObject {
 public enum TemporaryKey: CaseIterable, Sendable {
     /// Escape while a notch is open.
     case notch
-    /// ⌘Z while a toast offers Undo.
-    case toast
 }
 
 /// The displays connected now, and a call when they change: plugged in or removed, a new resolution, or the lid closing.
