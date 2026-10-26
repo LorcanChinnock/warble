@@ -5,7 +5,7 @@ public enum AppAction: Equatable, Sendable {
     /// What a source reports playing, or `nil` when it reports nothing. A guess at what a command will do comes in the
     /// same way, so it shows at once and the app's next report replaces it.
     case playbackReported(PlaybackState?)
-    /// The housings the displays and their rules call for now.
+    /// The housings the displays call for now.
     case housingsChanged([NotchHousing])
     /// The displays that show a full-screen app now, by `NotchDisplay.id`.
     case fullScreenChanged(Set<String>)
@@ -36,7 +36,6 @@ public enum AppAction: Equatable, Sendable {
     case remembered(LastPlayed, pass: Int)
     /// Settings changed.
     case stayVisibleChanged(TimeInterval)
-    case virtualTitleChanged(Bool)
     /// `AppState.deadline` came due.
     case tick
 }

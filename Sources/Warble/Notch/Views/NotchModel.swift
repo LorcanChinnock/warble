@@ -20,12 +20,6 @@ final class NotchModel {
     /// Whether the housing is one Warble draws on a display without a notch, where Idle shows nothing at all rather
     /// than black over the camera.
     var isVirtual = false
-    /// Whether the resting notch draws the title in its middle, which only a virtual notch does.
-    var showsTitle = false
-    /// The title last scrolled, so a title scrolls once for a track, not again each time the notch closes over it.
-    @ObservationIgnored var scrolledTitle: String?
-    /// Whether its display is set to show a notch always, so Idle draws a blank notch even on a virtual housing.
-    var isAlwaysShown = false
     @ObservationIgnored var onClick: () -> Void = {}
     /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
     @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }

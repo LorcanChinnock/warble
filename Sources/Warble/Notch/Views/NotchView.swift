@@ -16,8 +16,8 @@ struct NotchView: View {
                 .fill(Native.panel)
                 .frame(width: size.width, height: size.height)
                 // A virtual housing has no camera to hide behind, so there Idle draws nothing, though it still takes the
-                // pointer, unless its display is set to show a notch always.
-                .opacity(state == .idle && model.isVirtual && !model.isAlwaysShown ? 0 : 1)
+                // pointer.
+                .opacity(state == .idle && model.isVirtual ? 0 : 1)
                 .transaction(snapWithReduceMotion)
             // Each state's content keeps its own size while the shape morphs, so it fades rather than reflows. What it
             // shows is passed in, so content on its way out keeps the track that stopped rather than going blank.

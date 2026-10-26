@@ -1,24 +1,19 @@
 import Foundation
 
-/// The notches, one for each camera housing: what the pointer has done to each, which card each shows, and the display
-/// settings that decide how they draw. What they draw also depends on what's playing, which they read through
-/// `SharedState`.
+/// The notches, one for each camera housing: what the pointer has done to each and which card each shows. What they
+/// draw also depends on what's playing, which they read through `SharedState`.
 public struct Notches: Feature {
     /// One notch for each camera housing, real or virtual, by `NotchHousing.display`.
     public internal(set) var surfaces: [String: Surface] = [:]
     /// The displays that show a full-screen app, by `NotchDisplay.id`, whose notches draw nothing.
     public internal(set) var fullScreen: Set<String> = []
-    /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns off.
-    public internal(set) var showsVirtualTitle: Bool
 
     /// What the effects last asked for, so each is asked for once per change.
     public internal(set) var watchesClicks = false
     public internal(set) var takesEscape = false
     public internal(set) var followsVolume = false
 
-    public init(showsVirtualTitle: Bool = true) {
-        self.showsVirtualTitle = showsVirtualTitle
-    }
+    public init() {}
 
     /// When a hover next opens or closes a notch, or `nil` when none is due.
     var deadline: Date? { surfaces.values.compactMap(\.hover.deadline).min() }
@@ -32,7 +27,6 @@ public struct Notches: Feature {
             for housing in housings {
                 var surface = self.surfaces[housing.display] ?? Surface(housing)
                 surface.isVirtual = housing.isVirtual
-                surface.isAlwaysShown = housing.isAlwaysShown
                 surface.isFullScreen = fullScreen.contains(housing.display)
                 surfaces[housing.display] = surface
             }
@@ -57,8 +51,6 @@ public struct Notches: Feature {
             handle(open ? .menuOpened : .menuClosed, on: display, shared, at: now)
         case .dismiss(let except):
             dismiss(except: except, shared, at: now)
-        case .virtualTitleChanged(let on):
-            showsVirtualTitle = on
         case .tick:
             for display in surfaces.keys {
                 surfaces[display]?.hover.advance(to: now)
@@ -124,11 +116,6 @@ public struct Notches: Feature {
         NotchCard(isPlaying: shared.showsPlayback && shared.playback != nil)
     }
 
-    /// Only a virtual notch has room for the title, since a real one's middle is the camera.
-    func showsTitle(_ surface: Surface, _ shared: SharedState) -> Bool {
-        showsVirtualTitle && surface.isVirtual && !surface.isFullScreen && shared.showsPlayback && shared.playback?.title.isEmpty == false
-    }
-
     /// Without anything playing, a "!" or a card to open while Idle, a notch draws nothing, or only a blank notch, and
     /// takes no hover or click. Nor does one over a full-screen app.
     func answersPointer(_ surface: Surface, _ shared: SharedState) -> Bool {
@@ -166,8 +153,6 @@ public struct Notches: Feature {
     public struct Surface: Equatable, Sendable {
         /// Whether the housing is one Warble draws on a display without a notch.
         public internal(set) var isVirtual: Bool
-        /// Whether a blank notch stays drawn over the housing while nothing is playing.
-        public internal(set) var isAlwaysShown: Bool
         /// Whether the display shows a full-screen app, which hides its notch.
         public internal(set) var isFullScreen = false
         public internal(set) var hover = HoverIntent()
@@ -177,7 +162,6 @@ public struct Notches: Feature {
 
         init(_ housing: NotchHousing) {
             isVirtual = housing.isVirtual
-            isAlwaysShown = housing.isAlwaysShown
         }
     }
 }

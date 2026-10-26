@@ -118,51 +118,6 @@ private struct GeneralSettings: View {
                     }
                 )
             }
-            DisplaysGroup()
-        }
-    }
-}
-
-/// A rule for each display without a notch, and the title that goes in the middle of a notch Warble draws.
-private struct DisplaysGroup: View {
-    @Setting(PreferenceKey.virtualTitle) private var virtualTitle: Bool
-    @Environment(Displays.self) private var displays
-
-    var body: some View {
-        let virtual = displays.all.filter { $0.notch == nil }
-        SettingsGroup(
-            title: Text("Displays"),
-            footer: Text("On displays without a notch, and Macs without one, Warble can draw a notch of its own.")
-        ) {
-            if virtual.isEmpty {
-                SettingsRow(title: Text("Every display connected now has a notch.")) {}
-            }
-            ForEach(virtual, id: \.id) { display in
-                VirtualNotchRow(display: display, name: displays.names[display.id] ?? display.id)
-            }
-            if !virtual.isEmpty {
-                SettingsToggleRow(
-                    title: Text("Show the title in a virtual notch"),
-                    detail: Text("The song's title shows in the middle."),
-                    isOn: $virtualTitle
-                )
-            }
-        }
-    }
-}
-
-private struct VirtualNotchRow: View {
-    let display: NotchDisplay
-    let name: String
-    @Setting(PreferenceKey.virtualNotch) private var rules: [String: String]
-
-    var body: some View {
-        SettingsRow(title: Text(verbatim: name), speaksForControl: true) {
-            WarbleMenuPicker(
-                selection: $rules.virtualNotchRule(for: display),
-                options: VirtualNotchRule.allCases.map { WarbleOption(value: $0, title: $0.label) },
-                label: Text(verbatim: name)
-            )
         }
     }
 }

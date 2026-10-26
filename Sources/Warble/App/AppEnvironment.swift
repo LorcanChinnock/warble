@@ -33,8 +33,7 @@ final class AppEnvironment {
         let preferences = Preferences()
         store = Store(
             state: AppState(
-                stayVisibleAfterPausing: preferences.stayVisibleAfterPausing,
-                showsVirtualTitle: preferences.virtualTitle
+                stayVisibleAfterPausing: preferences.stayVisibleAfterPausing
             ),
             clock: SystemClock(), scheduler: TimerScheduler()
         )
@@ -61,7 +60,6 @@ extension View {
         self
             .environment(environment.settings)
             .environment(environment.updater)
-            .environment(environment.displays)
             .environment(environment.loginItem)
             .environment(environment.navigation)
     }

@@ -5,12 +5,8 @@ public enum PreferenceKey {
     public static let showMenuBarIcon = "showMenuBarIcon"
     /// How large Warble draws its own text, a `TextSize`.
     public static let textSize = "textSize"
-    /// Each display's `VirtualNotchRule` raw value, by `NotchDisplay.id`. A display missing from it follows its default.
-    public static let virtualNotch = "virtualNotch"
     /// How many seconds a paused track stays in the notch before it goes Idle.
     public static let stayVisibleAfterPausing = "stayVisibleAfterPausing"
-    /// Whether a virtual notch shows the title of what's playing in its middle.
-    public static let virtualTitle = "virtualTitle"
 
 
 }
@@ -21,9 +17,7 @@ public struct Preferences {
         [
             PreferenceKey.showMenuBarIcon: true,
             PreferenceKey.textSize: TextSize.standard.rawValue,
-            PreferenceKey.virtualNotch: [String: String](),
             PreferenceKey.stayVisibleAfterPausing: IdleAfterPause.defaultDelay,
-            PreferenceKey.virtualTitle: true,
         ]
     }
 
@@ -53,18 +47,9 @@ public struct Preferences {
         TextSize(rawValue: store.string(forKey: PreferenceKey.textSize) ?? "") ?? .standard
     }
 
-    /// The rules the user has set, leaving out any that isn't a rule.
-    public var virtualNotchRules: [String: VirtualNotchRule] {
-        let stored = store.dictionary(forKey: PreferenceKey.virtualNotch) as? [String: String] ?? [:]
-        return stored.compactMapValues(VirtualNotchRule.init(rawValue:))
-    }
-
     /// Never negative, so a stray value goes Idle at once rather than never.
     public var stayVisibleAfterPausing: TimeInterval {
         max(store.double(forKey: PreferenceKey.stayVisibleAfterPausing), 0)
     }
 
-    public var virtualTitle: Bool {
-        store.bool(forKey: PreferenceKey.virtualTitle)
-    }
 }

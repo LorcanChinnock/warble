@@ -6,7 +6,7 @@ import WarbleCore
 private let log = Logger.warble("notch")
 
 /// Draws a notch over each camera housing, real or virtual, as `Store` decides, and moves, adds or removes them when
-/// displays or their rules change. At rest it does no work: no timers, no polling and no event monitors.
+/// displays change. At rest it does no work: no timers, no polling and no event monitors.
 @MainActor
 final class NotchController {
     /// What's playing as the notch shows it, which `Store` keeps from what the sources report.
@@ -18,8 +18,7 @@ final class NotchController {
     private var volume: SystemVolume { environment.volume }
     /// One for each housing, by `NotchDisplay.id`.
     private var surfaces: [String: NotchSurface] = [:]
-    private var rules: [String: VirtualNotchRule] = [:]
-    /// While the displays or their rules change, the notches move at once rather than morph.
+    /// While the displays change, the notches move at once rather than morph.
     private var layingOut = false
     private var observers: [NSObjectProtocol] = []
 
@@ -29,7 +28,7 @@ final class NotchController {
         player = PlayerModel { [weak store] in store?.dispatch($0) }
         store.onChange = { [weak self] old, new, action in self?.stateChanged(from: old, to: new, by: action) }
         environment.displays.onChange = { [weak self] in self?.layOut() }
-        // Any write to Warble's defaults; only a change of rule lays the notches out again.
+        // Any write to Warble's defaults.
         observers.append(NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: UserDefaults.standard, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated {
                 guard let self else { return }
@@ -37,12 +36,6 @@ final class NotchController {
                 let state = self.store.state
                 if preferences.stayVisibleAfterPausing != state.idle.delay {
                     self.store.dispatch(.stayVisibleChanged(preferences.stayVisibleAfterPausing))
-                }
-                if preferences.virtualTitle != state.showsVirtualTitle {
-                    self.store.dispatch(.virtualTitleChanged(preferences.virtualTitle))
-                }
-                if preferences.virtualNotchRules != self.rules {
-                    self.layOut()
                 }
             }
         })
@@ -61,11 +54,10 @@ final class NotchController {
         }
     }
 
-    /// Puts a surface over each housing the displays and their rules call for, moving the ones that stay and removing
+    /// Puts a surface over each housing the displays call for, moving the ones that stay and removing
     /// the rest at once.
     private func layOut() {
-        rules = Preferences().virtualNotchRules
-        let housings = environment.displays.housings(rules: rules)
+        let housings = environment.displays.housings
         let kept = Set(housings.map(\.display))
         for (display, surface) in surfaces where !kept.contains(display) {
             surface.remove()

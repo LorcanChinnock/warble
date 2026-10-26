@@ -175,13 +175,12 @@ private struct Run {
 }
 
 @MainActor
-@Test func theDisplaysGiveTheHousingsTheirRulesCallFor() {
+@Test func theDisplaysGiveTheHousingsTheyCallFor() {
     let displays = FakeDisplays()
     var changes = 0
     displays.onChange = { changes += 1 }
     displays.displays = [NotchDisplay(id: "external", frame: CGRect(x: 0, y: 0, width: 1920, height: 1080), menuBarHeight: 24, notch: nil, isMain: true)]
     #expect(changes == 1)
-    #expect(displays.housings(rules: [:]).map(\.display) == ["external"])
-    #expect(displays.housings(rules: ["external": .off]).isEmpty)
+    #expect(displays.housings.map(\.display) == ["external"])
 }
 

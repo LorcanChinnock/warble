@@ -50,15 +50,6 @@ import Testing
     }
 }
 
-@Test func everyDisplayFollowsItsDefaultUntilGivenAVirtualNotchRule() throws {
-    let suite = try TestDefaults()
-    defer { suite.remove() }
-    Preferences.registerDefaults(in: suite.store)
-    #expect(Preferences(store: suite.store).virtualNotchRules.isEmpty)
-    suite.store.set(["studio": "always", "old": "sometimes"], forKey: PreferenceKey.virtualNotch)
-    #expect(Preferences(store: suite.store).virtualNotchRules == ["studio": .always])
-}
-
 @Test func aPausedTrackStaysVisibleForTenSecondsByDefault() throws {
     let suite = try TestDefaults()
     defer { suite.remove() }

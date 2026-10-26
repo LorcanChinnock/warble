@@ -15,7 +15,7 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var idle: IdleAfterPause
     /// Whether the pointer is on a notch or a card is open, which holds off Idle.
     public internal(set) var hovering = false
-    /// The notches, one for each camera housing, and the settings they draw by.
+    /// The notches, one for each camera housing.
     public internal(set) var notches: Notches
     /// One notch for each camera housing, real or virtual, by `NotchHousing.display`.
     public internal(set) var surfaces: [String: Surface] {
@@ -36,11 +36,6 @@ public struct AppState: Equatable, Sendable {
     /// The outputs to offer and the one playing, read while the player's card is open.
     public internal(set) var outputs: [AudioOutput] = []
     public internal(set) var currentOutput: UInt32?
-    /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns off.
-    public internal(set) var showsVirtualTitle: Bool {
-        get { notches.showsVirtualTitle }
-        set { notches.showsVirtualTitle = newValue }
-    }
     /// What the effects last asked for, so each is asked for once per change.
     public internal(set) var watchesClicks: Bool {
         get { notches.watchesClicks }
@@ -55,12 +50,9 @@ public struct AppState: Equatable, Sendable {
         set { notches.followsVolume = newValue }
     }
 
-    public init(
-        stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay,
-        showsVirtualTitle: Bool = true
-    ) {
+    public init(stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
-        notches = Notches(showsVirtualTitle: showsVirtualTitle)
+        notches = Notches()
     }
 
     /// Whether the notches draw what's playing: something is, and it isn't Idle.
@@ -90,11 +82,6 @@ public struct AppState: Equatable, Sendable {
 
     func notchState(_ surface: Surface) -> NotchState {
         notches.notchState(surface, shared)
-    }
-
-    /// Whether the notch over `display` draws the title in its middle.
-    public func titleInNotch(_ display: String) -> Bool {
-        surfaces[display].map { notches.showsTitle($0, shared) } ?? false
     }
 
     func card(_ surface: Surface) -> NotchCard {

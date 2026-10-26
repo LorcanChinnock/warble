@@ -18,7 +18,7 @@ Design and write for the first person on this list; the later ones opt in to mor
 
 - **The listener.** Wants play/pause, skip and to see what's on. Never opens Settings. Every default is set for them.
 - **The music fan.** Switches speakers.
-- **The multi-display user.** Uses the virtual notch on external displays and Macs without a notch, and sets rules per display.
+- **The external-display user.** Uses the virtual notch on a Mac without a notch, or with the lid closed.
 
 What this means in practice:
 - UI strings, Settings and the user guide speak to everyone. Avoid jargon.

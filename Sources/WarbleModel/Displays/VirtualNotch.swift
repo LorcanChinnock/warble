@@ -3,20 +3,6 @@ import CoreGraphics
 #endif
 import Foundation
 
-/// When a display without a camera housing draws a notch of its own.
-public enum VirtualNotchRule: String, CaseIterable, Sendable {
-    case off
-    case always
-    /// Only while no display has a camera housing: a MacBook's lid is closed, or the Mac has no notch at all.
-    case noNotch
-
-    /// What a display follows until it's given a rule: the main display stands in for the built-in notch when that's
-    /// closed or missing, and every other display draws nothing.
-    public static func `default`(isMain: Bool) -> Self {
-        isMain ? .noNotch : .off
-    }
-}
-
 /// A display as the notch sees it. All rects are in AppKit space.
 public struct NotchDisplay: Equatable, Sendable {
     /// Stays the same across launches and reconnections, so a rule follows its display.
@@ -43,19 +29,15 @@ public struct NotchHousing: Equatable, Sendable {
     public var display: String
     public var frame: CGRect
     public var isVirtual: Bool
-    /// Whether a blank notch stays drawn over it while nothing is playing: only a virtual one whose rule is Always. One
-    /// that stands in for a closed or missing notch draws nothing then, as the real one would.
-    public var isAlwaysShown: Bool
 
-    public init(display: String, frame: CGRect, isVirtual: Bool, isAlwaysShown: Bool = false) {
+    public init(display: String, frame: CGRect, isVirtual: Bool) {
         self.display = display
         self.frame = frame
         self.isVirtual = isVirtual
-        self.isAlwaysShown = isAlwaysShown
     }
 }
 
-/// Where Warble draws a notch: over each camera housing, and at the top centre of each display whose rule asks for one.
+/// Where Warble draws a notch: over each camera housing, and at the top centre of the main display when none has one.
 public enum VirtualNotch {
     /// A little narrower than a MacBook's housing, about 185 points, so the panel doesn't feel too wide on a display
     /// that has no camera to hide.
@@ -70,22 +52,16 @@ public enum VirtualNotch {
         return CGRect(x: (frame.midX - width / 2).rounded(), y: frame.maxY - height, width: width, height: height)
     }
 
-    /// The housings to draw over, in the order of `displays`: the real one where there is one, and a virtual one where
-    /// the display's rule in `rules`, or its default, says so.
-    public static func housings(_ displays: [NotchDisplay], rules: [String: VirtualNotchRule]) -> [NotchHousing] {
+    /// The housings to draw over, in the order of `displays`: the real one where there is one, and a virtual one on the
+    /// main display while no display has a real one, because a MacBook's lid is closed or the Mac has no notch.
+    public static func housings(_ displays: [NotchDisplay]) -> [NotchHousing] {
         let noNotch = !displays.contains { $0.notch != nil }
         return displays.compactMap { display in
             if let notch = display.notch {
                 return NotchHousing(display: display.id, frame: notch, isVirtual: false)
             }
-            let rule = rules[display.id] ?? .default(isMain: display.isMain)
-            switch rule {
-            case .off: return nil
-            case .noNotch where !noNotch: return nil
-            case .always, .noNotch:
-                let frame = housing(in: display.frame, menuBarHeight: display.menuBarHeight)
-                return NotchHousing(display: display.id, frame: frame, isVirtual: true, isAlwaysShown: rule == .always)
-            }
+            guard noNotch, display.isMain else { return nil }
+            return NotchHousing(display: display.id, frame: housing(in: display.frame, menuBarHeight: display.menuBarHeight), isVirtual: true)
         }
     }
 }

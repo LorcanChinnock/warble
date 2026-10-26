@@ -37,9 +37,9 @@ public protocol DisplayProvider: AnyObject {
 }
 
 extension DisplayProvider {
-    /// The housings the displays connected now call for under `rules`.
-    public func housings(rules: [String: VirtualNotchRule]) -> [NotchHousing] {
-        VirtualNotch.housings(displays, rules: rules)
+    /// The housings the displays connected now call for.
+    public var housings: [NotchHousing] {
+        VirtualNotch.housings(displays)
     }
 }
 

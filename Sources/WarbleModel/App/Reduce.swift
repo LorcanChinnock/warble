@@ -55,7 +55,7 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.currentOutput = current
     case .lastPlayedLoaded, .remembered:
         effects += state.last.reduce(action, shared: state.shared, at: now)
-    case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .dismiss, .virtualTitleChanged:
+    case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .dismiss:
         effects += state.notches.reduce(action, shared: state.shared, at: now)
     case .stayVisibleChanged(let delay):
         state.idle.delay = delay

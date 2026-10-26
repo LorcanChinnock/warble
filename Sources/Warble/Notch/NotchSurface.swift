@@ -53,8 +53,6 @@ final class NotchSurface {
         if let value = NotchRender(app, display: display) {
             last = value
             model.isVirtual = value.isVirtual
-            model.showsTitle = value.showsTitle
-            model.isAlwaysShown = value.isAlwaysShown
             panel.ignoresMouseEvents = value.ignoresMouseEvents
         }
         if let last {

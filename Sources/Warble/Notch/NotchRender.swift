@@ -8,8 +8,6 @@ struct NotchRender: Equatable {
     var card: NotchCard
     var isPlaying: Bool
     var isVirtual: Bool
-    var showsTitle: Bool
-    var isAlwaysShown: Bool
     /// A notch over a full-screen app lets clicks through to the app, since it draws nothing there.
     var ignoresMouseEvents: Bool
 
@@ -20,8 +18,6 @@ struct NotchRender: Equatable {
         self.card = card
         isPlaying = app.showsPlayback
         isVirtual = surface.isVirtual
-        showsTitle = app.titleInNotch(display)
-        isAlwaysShown = surface.isAlwaysShown
         ignoresMouseEvents = surface.isFullScreen
     }
 }
