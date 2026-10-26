@@ -7,7 +7,7 @@ private let song = PlaybackState(bundleIdentifier: "com.apple.Music", title: "So
 
 private func playing() -> AppState {
     var state = AppState()
-    _ = reduce(&state, .playbackReported(song), now: start)
+    _ = reduce(&state, .sourceReported(bundleIdentifier: "app", song), now: start)
     return state
 }
 

@@ -17,6 +17,8 @@ final class PlayerModel {
         }
     }
     private(set) var lastPlayedArtwork: NSImage?
+    /// One chip for each app playing while more than one is.
+    var chips: [SourceChip] = []
     var playback: PlaybackState? {
         didSet {
             let artworkChanged = playback?.artwork != oldValue?.artwork
@@ -64,6 +66,14 @@ final class PlayerModel {
     /// Brings the app that's playing to the front, or while Idle the one that played last.
     func openApp() {
         dispatch(.openApp)
+    }
+
+    /// Follows the app of `chip` until it stops playing. A chip for another app also brings that app to the front.
+    func follow(_ chip: SourceChip) {
+        dispatch(.followSource(chip.bundleIdentifier))
+        if !chip.isFollowed {
+            dispatch(.openApp)
+        }
     }
 
     /// Plays the last track again from the idle card.

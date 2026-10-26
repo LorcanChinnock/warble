@@ -2,9 +2,11 @@ import Foundation
 
 /// Something that happened, which `reduce` turns into a new `AppState` and any `AppEffect`s.
 public enum AppAction: Equatable, Sendable {
-    /// What a source reports playing, or `nil` when it reports nothing. A guess at what a command will do comes in the
-    /// same way, so it shows at once and the app's next report replaces it.
-    case playbackReported(PlaybackState?)
+    /// What the app `bundleIdentifier` reports playing, or `nil` when it reports nothing. The notch follows one app at a
+    /// time, chosen by `AppState.sources`.
+    case sourceReported(bundleIdentifier: String, PlaybackState?)
+    /// A click on a source chip: follow that app until it stops playing. `nil` lets the priority list decide again.
+    case followSource(String?)
     /// The housings the displays and their rules call for now.
     case housingsChanged([NotchHousing])
     /// The displays that show a full-screen app now, by `NotchDisplay.id`.

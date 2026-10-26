@@ -17,7 +17,7 @@ private struct Run {
         // The title would take the virtual notch's toast, which these tests are not about.
         state = AppState(showsTrackToast: showsTrackToast, toastsInFullScreen: toastsInFullScreen, showsVirtualTitle: false)
         send(.housingsChanged([builtIn, external]))
-        send(.playbackReported(song))
+        send(.sourceReported(bundleIdentifier: "app", song))
         send(.fullScreenChanged(["built-in"]))
     }
 
@@ -41,14 +41,14 @@ private struct Run {
 @Test func overAFullScreenAppOnlyTheToastShows() {
     var run = Run()
     #expect(run.fullScreen == .hidden)
-    run.send(.playbackReported(next), after: 1)
+    run.send(.sourceReported(bundleIdentifier: "app", next), after: 1)
     #expect(run.fullScreen == .toast)
     #expect(run.state.notchState("external") == .toast)
 }
 
 @Test func theToastGoesFromAFullScreenAppAndTheNotchStaysHidden() {
     var run = Run()
-    run.send(.playbackReported(next), after: 1)
+    run.send(.sourceReported(bundleIdentifier: "app", next), after: 1)
     run.wait(TrackToast.duration)
     #expect(run.fullScreen == .hidden)
     #expect(run.state.notchState("external") == .resting)
@@ -57,20 +57,20 @@ private struct Run {
 
 @Test func withTheSettingOffAFullScreenAppShowsNoToast() {
     var run = Run(toastsInFullScreen: false)
-    run.send(.playbackReported(next), after: 1)
+    run.send(.sourceReported(bundleIdentifier: "app", next), after: 1)
     #expect(run.fullScreen == .hidden)
     #expect(run.state.notchState("external") == .toast)
 }
 
 @Test func withTheToastOffAFullScreenAppShowsNone() {
     var run = Run(showsTrackToast: false)
-    run.send(.playbackReported(next), after: 1)
+    run.send(.sourceReported(bundleIdentifier: "app", next), after: 1)
     #expect(run.fullScreen == .hidden)
 }
 
 @Test func turningTheSettingOffHidesAToastOverAFullScreenApp() {
     var run = Run()
-    run.send(.playbackReported(next), after: 1)
+    run.send(.sourceReported(bundleIdentifier: "app", next), after: 1)
     run.send(.toastsInFullScreenChanged(false))
     #expect(run.fullScreen == .hidden)
     #expect(run.state.notchState("external") == .toast)
@@ -80,7 +80,7 @@ private struct Run {
 
 @Test func aToastOverAFullScreenAppDoesntOpenTheCard() {
     var run = Run()
-    run.send(.playbackReported(next), after: 1)
+    run.send(.sourceReported(bundleIdentifier: "app", next), after: 1)
     run.send(.pointer(display: "built-in", inside: true))
     run.send(.hover(display: "built-in", .click))
     run.wait(HoverIntent.expandDelay)

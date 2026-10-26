@@ -49,3 +49,5 @@ A right-click or Control-click on any notch, in any state, opens `NotchMenu`: th
 ## Shortcuts and the keyboard
 
 `HotkeyCenter` registers the global shortcuts of `WarbleAction`, none of which has one by default. A press dispatches `.perform(action)`, which does what the matching button does. `WarbleAction.openNotch` opens the notch on the pointer's display with the keyboard in it (`HoverEvent.keyboard`, which pins it open). Only then does `NotchPanel` take key, and Warble comes to the front, since VoiceOver and Tab follow only the app in front. Warble has no menu bar of its own, and `NotchSurface` gives the app that was in front its place back when the notch closes, unless a click has moved on. Notch buttons use `.buttonStyle(.notch)`, so Space or Return presses the one with the focus ring. Keys no control used reach `NotchPanel.keyDown`, and `NotchKey` (WarbleModel) says what each does: Space plays or pauses, ← and → seek 10 seconds, ⇧← and ⇧→ skip, ↑ and ↓ change the volume, Esc closes.
+
+`SourceChips` in the open player card draws `AppState.chips` and dispatches `.followSource`. A click on the chip of an app that isn't followed also dispatches `.openApp`.

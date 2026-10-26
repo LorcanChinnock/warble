@@ -20,17 +20,17 @@ private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
 }
 
 @Test func withNothingPlayingNothingIsDue() {
-    let nothing = state((.playbackReported(nil), 0), (.tick, 3))
+    let nothing = state((.sourceReported(bundleIdentifier: "app", nil), 0), (.tick, 3))
     #expect(nothing.playback == nil)
     #expect(!nothing.showsPlayback)
     #expect(nothing.deadline == nil)
 }
 
 @Test func aSkipDoesntCloseTheNotch() {
-    var skipping = state((.playbackReported(track()), 0), (.playbackReported(nil), 10))
+    var skipping = state((.sourceReported(bundleIdentifier: "app", track()), 0), (.sourceReported(bundleIdentifier: "app", nil), 10))
     #expect(skipping.playback == track())
     #expect(skipping.deadline == start + 10 + AppState.hideDelay)
-    _ = reduce(&skipping, .playbackReported(track("Next")), now: start + 10.5)
+    _ = reduce(&skipping, .sourceReported(bundleIdentifier: "app", track("Next")), now: start + 10.5)
     #expect(skipping.playback == track("Next"))
     #expect(skipping.hideAt == nil)
     #expect(skipping.deadline == nil)
@@ -38,7 +38,7 @@ private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
 }
 
 @Test func aSourceThatStopsReportingHidesAfterTheDelayAndGoesIdle() {
-    var stopped = state((.playbackReported(track()), 0), (.playbackReported(nil), 10))
+    var stopped = state((.sourceReported(bundleIdentifier: "app", track()), 0), (.sourceReported(bundleIdentifier: "app", nil), 10))
     _ = reduce(&stopped, .tick, now: start + 11.4)
     #expect(stopped.playback != nil)
     _ = reduce(&stopped, .tick, now: start + 10 + AppState.hideDelay)
@@ -48,12 +48,12 @@ private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
 }
 
 @Test func eachReportOfNothingWaitsAgain() {
-    let waiting = state((.playbackReported(track()), 0), (.playbackReported(nil), 10), (.playbackReported(nil), 11))
+    let waiting = state((.sourceReported(bundleIdentifier: "app", track()), 0), (.sourceReported(bundleIdentifier: "app", nil), 10), (.sourceReported(bundleIdentifier: "app", nil), 11))
     #expect(waiting.hideAt == start + 11 + AppState.hideDelay)
 }
 
 @Test func pausingGoesIdleAfterTheDelay() {
-    var paused = state((.playbackReported(track()), 0), (.playbackReported(track(playing: false)), 5))
+    var paused = state((.sourceReported(bundleIdentifier: "app", track()), 0), (.sourceReported(bundleIdentifier: "app", track(playing: false)), 5))
     #expect(paused.deadline == start + 5 + IdleAfterPause.defaultDelay)
     _ = reduce(&paused, .tick, now: start + 14.9)
     #expect(paused.showsPlayback)
@@ -63,14 +63,14 @@ private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
 }
 
 @Test func resumingBeforeTheDeadlineCancelsIt() {
-    let resumed = state((.playbackReported(track()), 0), (.playbackReported(track(playing: false)), 5), (.playbackReported(track()), 8), (.tick, 15))
+    let resumed = state((.sourceReported(bundleIdentifier: "app", track()), 0), (.sourceReported(bundleIdentifier: "app", track(playing: false)), 5), (.sourceReported(bundleIdentifier: "app", track()), 8), (.tick, 15))
     #expect(resumed.showsPlayback)
     #expect(resumed.deadline == nil)
 }
 
 @Test func hoverHoldsAPausedTrackAndLeavingStartsTheWaitAgain() {
     // A click pins the notch open, so only the pause's countdown could be due, and the pointer holds it.
-    var held = state((.playbackReported(track(playing: false)), 0), (.hover(display: "built-in", .click), 2), (.hover(display: "built-in", .click), 2))
+    var held = state((.sourceReported(bundleIdentifier: "app", track(playing: false)), 0), (.hover(display: "built-in", .click), 2), (.hover(display: "built-in", .click), 2))
     #expect(held.hovering)
     #expect(held.deadline == nil)
     _ = reduce(&held, .tick, now: start + 60)
@@ -81,7 +81,7 @@ private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
 }
 
 @Test func changingTheDelayAppliesToAPauseUnderWay() {
-    var paused = state((.playbackReported(track(playing: false)), 0))
+    var paused = state((.sourceReported(bundleIdentifier: "app", track(playing: false)), 0))
     _ = reduce(&paused, .stayVisibleChanged(5), now: start + 6)
     #expect(!paused.showsPlayback)
 }

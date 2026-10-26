@@ -59,7 +59,7 @@ private struct Run {
 /// A song playing, then a hover that opens the built-in notch, with the notches' states after each.
 private func playAndHover(hidesFromCapture: Bool) -> (run: Run, playing: [NotchState?], hovered: [NotchState?]) {
     var run = Run(hidesFromCapture: hidesFromCapture)
-    run.send(.playbackReported(song))
+    run.send(.sourceReported(bundleIdentifier: "app", song))
     let playing = run.notches
     run.send(.pointer(display: "built-in", inside: true), after: 1)
     run.wait(HoverIntent.expandDelay)
@@ -78,7 +78,7 @@ private func playAndHover(hidesFromCapture: Bool) -> (run: Run, playing: [NotchS
 
 @Test func turningHidingFromCaptureOnLeavesAnOpenCardOpen() {
     var run = Run()
-    run.send(.playbackReported(song))
+    run.send(.sourceReported(bundleIdentifier: "app", song))
     run.send(.hover(display: "built-in", .click))
     run.effects = []
     run.send(.hidesFromCaptureChanged(true))

@@ -33,7 +33,7 @@ private func replay(_ name: String, count: Int = .max) throws -> PlaybackState? 
 
 private func playing(_ playback: PlaybackState, podcastSkips: Bool = true) -> AppState {
     var state = AppState(podcastSkips: podcastSkips)
-    _ = reduce(&state, .playbackReported(playback), now: start)
+    _ = reduce(&state, .sourceReported(bundleIdentifier: "app", playback), now: start)
     return state
 }
 
@@ -124,7 +124,7 @@ private func playing(_ playback: PlaybackState, podcastSkips: Bool = true) -> Ap
     #expect(!state.skipsBySeconds)
     // Nor once the source reports nothing and the hide is pending.
     var stopping = playing(episode)
-    _ = reduce(&stopping, .playbackReported(nil), now: start + 1)
+    _ = reduce(&stopping, .sourceReported(bundleIdentifier: "app", nil), now: start + 1)
     #expect(reduce(&stopping, .skip(by: -SpokenWord.back), now: start + 1.2).isEmpty)
 }
 
