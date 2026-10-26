@@ -16,7 +16,7 @@ final class NotchPanel: NSPanel {
     private var trackingArea: NSTrackingArea?
 
     @MainActor
-    init(model: NotchModel, settings: SettingsStore) {
+    init(model: NotchModel) {
         super.init(contentRect: .zero, styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: true)
         // Above the menu bar and its status items, which the wings partly cover, as Shot's recording pill sits. Higher
         // levels, such as boring.notch's .mainMenu + 3, would also cover pop-up menus that open under the menu bar.
@@ -32,7 +32,7 @@ final class NotchPanel: NSPanel {
         // an Idle virtual notch, drawn clear, still reports a hover.
         ignoresMouseEvents = false
         // Built once, so a change of state animates instead of replacing the view.
-        contentView = NSView(hosting: NotchView(model: model), settings: settings)
+        contentView = NSView(hosting: NotchView(model: model))
         // The window server fits windows to each half-built arrangement while displays change, and nothing else moves this one.
         for name in [NSWindow.didMoveNotification, NSWindow.didChangeScreenNotification] {
             NotificationCenter.default.addObserver(forName: name, object: self, queue: .main) { [weak self] _ in

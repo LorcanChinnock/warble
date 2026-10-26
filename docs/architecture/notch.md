@@ -32,7 +32,7 @@ To see the notch without playing anything, launch with `open build/WarbleDev.app
 
 ## The context menu
 
-A right-click or Control-click on a notch that's showing opens `NotchMenu`: the app it follows, Settings, updates and Quit, so Warble can be reached with its menu bar icon off. `NotchPanel.sendEvent` takes the click before SwiftUI, and while the menu is open `HoverIntent` keeps a resting notch resting and `reduce` lets go of Escape, so the key closes the menu.
+A right-click or Control-click on a notch that's showing opens `NotchMenu`: the app it follows, Settings, updates and Quit, so Warble can be reached from the notch as well as the menu bar. `NotchPanel.sendEvent` takes the click before SwiftUI, and while the menu is open `HoverIntent` keeps a resting notch resting and `reduce` lets go of Escape, so the key closes the menu.
 
 ## Keys
 

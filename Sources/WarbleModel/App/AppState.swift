@@ -47,8 +47,8 @@ public struct AppState: Equatable, Sendable {
         set { notches.followsVolume = newValue }
     }
 
-    public init(stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay) {
-        idle = IdleAfterPause(delay: stayVisibleAfterPausing)
+    public init() {
+        idle = IdleAfterPause()
         notches = Notches()
     }
 

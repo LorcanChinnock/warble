@@ -29,14 +29,14 @@ final class NotchSurface {
     private var morphs = 0
 
     init(
-        display: String, housing: CGRect, player: PlayerModel, settings: SettingsStore,
+        display: String, housing: CGRect, player: PlayerModel,
         dispatch: @escaping (AppAction) -> Void, onScroll: @escaping (NSEvent) -> Void
     ) {
         self.display = display
         self.housing = housing
         self.dispatch = dispatch
         model = NotchModel(player: player)
-        panel = NotchPanel(model: model, settings: settings)
+        panel = NotchPanel(model: model)
         panel.onPointer = { inside in dispatch(.pointer(display: display, inside: inside)) }
         panel.onScroll = onScroll
         panel.onDisplaced = { [weak self] in self?.replace() }

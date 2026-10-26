@@ -54,7 +54,7 @@ private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
 
 @Test func pausingGoesIdleAfterTheDelay() {
     var paused = state((.playbackReported(track()), 0), (.playbackReported(track(playing: false)), 5))
-    #expect(paused.deadline == start + 5 + IdleAfterPause.defaultDelay)
+    #expect(paused.deadline == start + 5 + IdleAfterPause.delay)
     _ = reduce(&paused, .tick, now: start + 14.9)
     #expect(paused.showsPlayback)
     _ = reduce(&paused, .tick, now: start + 15)
@@ -77,11 +77,5 @@ private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
     #expect(held.showsPlayback)
     _ = reduce(&held, .dismiss(except: nil), now: start + 60)
     #expect(!held.hovering)
-    #expect(held.deadline == start + 60 + IdleAfterPause.defaultDelay)
-}
-
-@Test func changingTheDelayAppliesToAPauseUnderWay() {
-    var paused = state((.playbackReported(track(playing: false)), 0))
-    _ = reduce(&paused, .stayVisibleChanged(5), now: start + 6)
-    #expect(!paused.showsPlayback)
+    #expect(held.deadline == start + 60 + IdleAfterPause.delay)
 }

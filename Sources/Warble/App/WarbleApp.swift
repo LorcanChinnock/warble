@@ -7,7 +7,7 @@ struct WarbleApp: App {
 
     var body: some Scene {
         let environment = appDelegate.environment
-        MenuBarExtra(isInserted: showMenuBarIcon(environment.settings)) {
+        MenuBarExtra {
             WarbleMenu(updater: environment.updater, settingsWindow: environment.settingsWindow)
                 .inject(environment)
         } label: {
@@ -18,16 +18,6 @@ struct WarbleApp: App {
                 Image(systemName: "arrow.down.circle")
             }
         }
-    }
-}
-
-/// Settings › General › Show menu bar icon. A scene can't read the environment `@Setting` reads, so it reads the store.
-@MainActor
-private func showMenuBarIcon(_ settings: SettingsStore) -> Binding<Bool> {
-    Binding {
-        settings.value(forKey: PreferenceKey.showMenuBarIcon) as? Bool ?? true
-    } set: {
-        settings.set($0, forKey: PreferenceKey.showMenuBarIcon)
     }
 }
 

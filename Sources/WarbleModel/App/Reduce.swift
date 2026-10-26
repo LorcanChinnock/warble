@@ -42,9 +42,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.currentOutput = current
     case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .dismiss:
         effects += state.notches.reduce(action, shared: state.shared, at: now)
-    case .stayVisibleChanged(let delay):
-        state.idle.delay = delay
-        state.idle.advance(to: now)
     case .tick:
         if let hideAt = state.hideAt, hideAt <= now {
             show(nil, in: &state, at: now)

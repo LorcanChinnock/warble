@@ -28,8 +28,6 @@ public enum AppAction: Equatable, Sendable {
     case volumeRead(Double?, isMuted: Bool)
     case selectOutput(UInt32)
     case outputsRead([AudioOutput], current: UInt32?)
-    /// Settings changed.
-    case stayVisibleChanged(TimeInterval)
     /// `AppState.deadline` came due.
     case tick
 }

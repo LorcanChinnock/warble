@@ -85,26 +85,6 @@ struct SettingsToggleRow: View {
     }
 }
 
-/// A row that picks one of a few values from a menu, showing the current one in grey with a chevron.
-struct SettingsMenuRow<Value: Hashable>: View {
-    let title: Text
-    var detail: Text?
-    @Binding var selection: Value
-    let options: [WarbleOption<Value>]
-
-    var body: some View {
-        SettingsRow(title: title, detail: detail, speaksForControl: true) {
-            WarbleMenuPicker(selection: $selection, options: options, label: title, hint: detail)
-        }
-    }
-}
-
-/// A value to choose, and its name.
-struct WarbleOption<Value: Hashable> {
-    let value: Value
-    let title: Text
-}
-
 /// A switch that is white when on and grey when off, with the knob on the right when on.
 struct WarbleToggle: View {
     @Binding var isOn: Bool
@@ -132,85 +112,6 @@ struct WarbleToggle: View {
             Toggle(isOn: $isOn) { label }
                 .accessibilityHint(hint ?? Text(verbatim: ""))
         }
-    }
-}
-
-/// A few short choices side by side, the chosen one a white pill with black text.
-struct WarbleSegmented<Value: Hashable>: View {
-    @Binding var selection: Value
-    let options: [WarbleOption<Value>]
-    let label: Text
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Namespace private var pill
-
-    var body: some View {
-        HStack(spacing: 2) {
-            ForEach(options.indices, id: \.self) { index in
-                let option = options[index]
-                let chosen = option.value == selection
-                Button {
-                    selection = option.value
-                } label: {
-                    option.title
-                        .font(.callout.weight(chosen ? .semibold : .regular))
-                        .foregroundStyle(chosen ? AnyShapeStyle(.black) : AnyShapeStyle(Native.secondary))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 5)
-                        .frame(maxWidth: .infinity)
-                        .background {
-                            if chosen {
-                                Capsule().fill(.white).matchedGeometryEffect(id: "pill", in: pill)
-                            }
-                        }
-                        .contentShape(Capsule())
-                }
-                .buttonStyle(.notch)
-                .accessibilityAddTraits(chosen ? .isSelected : [])
-            }
-        }
-        .padding(2)
-        .background(Native.track, in: Capsule())
-        .animation(reduceMotion ? Native.fade : Native.morph, value: selection)
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel(label)
-    }
-}
-
-/// The menu behind `SettingsMenuRow`: the current value in grey, with a chevron.
-struct WarbleMenuPicker<Value: Hashable>: View {
-    @Binding var selection: Value
-    let options: [WarbleOption<Value>]
-    let label: Text
-    var hint: Text?
-
-    private var current: Text? { options.first { $0.value == selection }?.title }
-
-    var body: some View {
-        Menu {
-            Picker(selection: $selection) {
-                ForEach(options.indices, id: \.self) { index in
-                    options[index].title.tag(options[index].value)
-                }
-            } label: {
-                label
-            }
-            .pickerStyle(.inline)
-        } label: {
-            HStack(spacing: 6) {
-                current
-                Image(systemName: "chevron.up.chevron.down")
-                    .font(.caption2.weight(.semibold))
-                    .accessibilityHidden(true)
-            }
-            .foregroundStyle(Native.secondary)
-            .contentShape(Rectangle())
-        }
-        .menuStyle(.button)
-        .buttonStyle(.plain)
-        .menuIndicator(.hidden)
-        .fixedSize()
-        .accessibilityLabel(label)
-        .accessibilityHint(hint ?? Text(verbatim: ""))
     }
 }
 

@@ -28,17 +28,6 @@ final class NotchController {
         player = PlayerModel { [weak store] in store?.dispatch($0) }
         store.onChange = { [weak self] old, new, action in self?.stateChanged(from: old, to: new, by: action) }
         environment.displays.onChange = { [weak self] in self?.layOut() }
-        // Any write to Warble's defaults.
-        observers.append(NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: UserDefaults.standard, queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated {
-                guard let self else { return }
-                let preferences = Preferences()
-                let state = self.store.state
-                if preferences.stayVisibleAfterPausing != state.idle.delay {
-                    self.store.dispatch(.stayVisibleChanged(preferences.stayVisibleAfterPausing))
-                }
-            }
-        })
         // Going full screen, or back, switches Space; only then can a display start or stop showing a full-screen app.
         observers.append(NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.activeSpaceDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.readFullScreen() }
@@ -79,7 +68,7 @@ final class NotchController {
     private func makeSurface(_ housing: NotchHousing) -> NotchSurface {
         let store = store
         let surface = NotchSurface(
-            display: housing.display, housing: housing.frame, player: player, settings: environment.settings,
+            display: housing.display, housing: housing.frame, player: player,
             dispatch: { [weak store] in store?.dispatch($0) }
         ) { [weak self] in self?.scroll($0) }
         surface.makeMenu = { [weak self] in

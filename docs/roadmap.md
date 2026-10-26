@@ -64,6 +64,8 @@ These shipped and were taken out again to keep Warble a small notch for the list
 
 The Shortcuts tab, its global shortcuts and the notch's keyboard mode were removed too ([#246](https://github.com/LorcanChinnock/warble/issues/246)).
 
+Before 1.0 the rest of the extras went, so Warble is only the notch that shows what's playing and controls it ([#257](https://github.com/LorcanChinnock/warble/issues/257)): podcast skips, the track-change message, the welcome window and first-run demo, Doctor and its "!", the rules for each display and the title in a virtual notch, the last-played card, and the Text size, Stay visible after pausing and menu bar icon settings.
+
 ## [1.0: translations](https://github.com/LorcanChinnock/warble/issues/49)
 
 The first translations of the app.

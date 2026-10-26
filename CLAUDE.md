@@ -59,7 +59,7 @@ Local builds are `WarbleDev.app`. A real installed version is `/Applications/War
 
 Three targets:
 - `Sources/WarbleModel`: logic that needs only Foundation, so CI builds and tests it on Linux: the app's state, `reduce` and their ports (`App/`), notch geometry, playback state and its interpolation, the hover state machine, source priority. It may import CoreGraphics only inside `#if canImport(CoreGraphics)`. Linux Foundation has `CGFloat`, `CGPoint`, `CGSize` and `CGRect`, but not `CGPath`, `CGColor` or `CGImage`.
-- `Sources/WarbleCore`: logic that needs Apple frameworks but no window, display or permission, including the real side of most ports: preferences, the now-playing sources, Core Audio volume and outputs (`SystemVolume`, `CoreAudioOutputs`), artwork colours and `TimerScheduler`.
+- `Sources/WarbleCore`: logic that needs Apple frameworks but no window, display or permission, including the real side of most ports: the now-playing sources, Core Audio volume and outputs (`SystemVolume`, `CoreAudioOutputs`), artwork colours and `TimerScheduler`.
 - `Sources/Warble`: AppKit and SwiftUI that need a real session. `WarbleApp` is a `MenuBarExtra` with an `AppDelegate` adaptor; `Updater` wraps Sparkle. It draws the store's state, turns AppKit events into actions and carries out the effects that need AppKit, and decides nothing else.
 
 **If logic can be tested without a window, it goes in WarbleModel with a test, or in WarbleCore if it needs an Apple framework.** Tests are top-level `@Test func` with sentence-style names: `Tests/WarbleModelTests` (run on Linux) and `Tests/WarbleCoreTests` (macOS). The app target has no tests.
@@ -88,7 +88,6 @@ Claude Code loads only this file, so read a feature's note before you change tha
 ## Rules enforced by `make lint`
 
 - Use `NSView(hosting:)`, never `NSHostingView(rootView:)`/`NSHostingController`; a plain hosting view crashes when content changes under a visible window. `HostingView.swift`, which defines the helper, is exempt.
-- Use `@Setting`, never `@AppStorage`; `@AppStorage` updates late, so views show inconsistent state.
 - Don't use `onTapGesture(count: 2)` next to a single tap; every single click waits out the double-click interval. Use one `onTapGesture` and read `NSApp.currentEvent?.clickCount`.
 - WarbleModel and its tests import only Foundation, Synchronization and Testing, plus CoreGraphics inside `#if canImport(CoreGraphics)`.
 - Every `runs-on: macos-*` needs a `# macOS: <reason>` comment on the line above.

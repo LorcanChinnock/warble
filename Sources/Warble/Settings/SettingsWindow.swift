@@ -2,28 +2,20 @@ import AppKit
 import SwiftUI
 
 /// The Settings window, made the first time it opens. Its content is dropped when it closes, so a closed window keeps
-/// nothing observing settings or displays.
+/// nothing observing the login item or updates.
 @MainActor
 final class SettingsWindow {
     private var window: NSWindow?
     private var closeObserver: NSObjectProtocol?
-    private let navigation: SettingsNavigation
     /// What the window's views read. `AppEnvironment` sets it once it's built, which holds this window.
     weak var environment: AppEnvironment?
     static let size = NSSize(width: 560, height: 500)
 
-    init(navigation: SettingsNavigation) {
-        self.navigation = navigation
-    }
-
-    func show(section: SettingsSection? = nil) {
+    func show() {
         guard let environment else { return }
-        if let section {
-            navigation.section = section
-        }
         let window = window ?? makeWindow()
         if window.contentView?.subviews.isEmpty ?? true {
-            window.contentView = NSView(hosting: SettingsView().inject(environment), settings: environment.settings)
+            window.contentView = NSView(hosting: SettingsView().inject(environment))
         }
         // Warble has no Dock icon, so it takes one while Settings is open, to show in ⌘Tab and get the app menu.
         NSApp.setActivationPolicy(.regular)

@@ -38,4 +38,4 @@ The volume is your Mac's own, so it changes everything you hear, not just the ap
 
 ## The notch menu
 
-Right-click the notch, or Control-click it, for a short menu: open the app that's playing, open **Settings…**, check for updates, or quit Warble. It works even if you've hidden the menu bar icon.
+Right-click the notch, or Control-click it, for a short menu: open the app that's playing, open **Settings…**, check for updates, or quit Warble.
