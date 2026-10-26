@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0-beta.10](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.9...v0.1.0-beta.10) (2026-10-26)
+
+
+### Features
+
+* **player:** source chips for several players ([#241](https://github.com/LorcanChinnock/warble/issues/241)) ([8084ccd](https://github.com/LorcanChinnock/warble/commit/8084ccdca80e3683b5eecdbb082d2923a3e8f926))
+
 ## [0.1.0-beta.9](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.8...v0.1.0-beta.9) (2026-10-26)
 
 
