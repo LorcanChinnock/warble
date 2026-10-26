@@ -82,7 +82,6 @@ Claude Code loads only this file, so read a feature's note before you change tha
 | [The notch](docs/architecture/notch.md) | changing the panel, its states and cards, hover, displays, toasts, scrolling or the keys it takes |
 | [Accessibility](docs/architecture/accessibility.md) | adding or changing any control or label |
 | [Idle](docs/architecture/idle.md) | changing when the notch goes back to Idle |
-| [Welcome and the demo](docs/architecture/welcome.md) | changing the first launch, the welcome window or the demo |
 | [Idle card](docs/architecture/idle-card.md) | changing what the notch shows while nothing plays, or the last track played |
 | [Motion](docs/architecture/motion.md) | changing how the notch moves between states |
 | [Website](docs/architecture/website.md) | changing `site/` or the user guide |

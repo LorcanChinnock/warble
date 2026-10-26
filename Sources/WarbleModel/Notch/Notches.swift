@@ -1,8 +1,8 @@
 import Foundation
 
 /// The notches, one for each camera housing: what the pointer has done to each, which card each shows, and the display
-/// settings that decide how they draw. What they draw also depends on the other features (what's playing, the Doctor, the
-/// first-run demo), which they read through `SharedState`.
+/// settings that decide how they draw. What they draw also depends on the other features (what's playing and the
+/// Doctor), which they read through `SharedState`.
 public struct Notches: Feature {
     /// One notch for each camera housing, real or virtual, by `NotchHousing.display`.
     public internal(set) var surfaces: [String: Surface] = [:]
@@ -117,9 +117,9 @@ public struct Notches: Feature {
 
     // MARK: Selectors
 
-    /// The state the notch draws. The first-run demo draws over every notch until it ends.
+    /// The state the notch draws.
     func notchState(_ surface: Surface, _ shared: SharedState) -> NotchState {
-        let state = shared.demoState ?? NotchState(
+        let state = NotchState(
             surface.hover.state, isPlaying: shared.showsPlayback, needsAttention: shared.needsAttention
         )
         // A full-screen app has the top of its display to itself.
@@ -128,7 +128,7 @@ public struct Notches: Feature {
 
     /// What the notch holds when Expanded.
     func card(_ surface: Surface, _ shared: SharedState) -> NotchCard {
-        shared.demoCard ?? NotchCard(
+        NotchCard(
             isPlaying: shared.showsPlayback && shared.playback != nil, needsAttention: shared.needsAttention,
             showsDoctor: surface.showsDoctor
         )

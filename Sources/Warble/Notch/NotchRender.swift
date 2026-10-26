@@ -19,7 +19,7 @@ struct NotchRender: Equatable {
         guard let surface = app.surfaces[display], let state = app.notchState(display), let card = app.card(display) else { return nil }
         self.state = state
         self.card = card
-        isPlaying = app.drawsPlayback
+        isPlaying = app.showsPlayback
         isVirtual = surface.isVirtual
         showsTitle = app.titleInNotch(display)
         isAlwaysShown = surface.isAlwaysShown

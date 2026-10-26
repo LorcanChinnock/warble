@@ -30,7 +30,4 @@ struct SharedState: Equatable, Sendable {
     // What the notches draw besides what's playing.
     /// Whether a Doctor check failed, which draws a "!".
     var needsAttention = false
-    /// What the first-run demo draws on every notch, or `nil` when it isn't running.
-    var demoState: NotchState?
-    var demoCard: NotchCard?
 }

@@ -5,8 +5,6 @@ import Foundation
 public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [AppEffect] {
     let old = state
     var effects: [AppEffect] = []
-    // First, so a touch or something playing ends the first-run demo before the action meets the notch it drew over.
-    effects += state.onboarding.reduce(action, shared: state.shared, at: now)
     switch action {
     case .playbackReported(let playback):
         if playback == nil, state.playback != nil {
@@ -65,8 +63,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .stayVisibleChanged(let delay):
         state.idle.delay = delay
         state.idle.advance(to: now)
-    case .launched, .welcomeClosed:
-        break
     case .tick:
         if let hideAt = state.hideAt, hideAt <= now {
             show(nil, in: &state, at: now)

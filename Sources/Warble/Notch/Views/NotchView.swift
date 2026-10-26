@@ -86,11 +86,6 @@ private struct NotchContent: View {
                 .padding(.top, model.notch.height)
         case (.resting, _, let playback?):
             RestingContent(playback: playback, artwork: artwork, notch: model.notch, model: model)
-        case (.hint, _, _):
-            VStack(spacing: 0) {
-                Color.clear.frame(height: model.notch.height)
-                DemoHint()
-            }
         case (.resting, _, nil):
             RestingContent(playback: nil, artwork: nil, notch: model.notch, model: model)
         default:

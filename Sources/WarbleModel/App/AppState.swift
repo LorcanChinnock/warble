@@ -46,8 +46,6 @@ public struct AppState: Equatable, Sendable {
         get { notches.showsVirtualTitle }
         set { notches.showsVirtualTitle = newValue }
     }
-    /// The first-run demo of the notch and the welcome window after it, which happen once, on a first launch.
-    public internal(set) var onboarding = Onboarding()
     /// What the effects last asked for, so each is asked for once per change.
     public internal(set) var watchesClicks: Bool {
         get { notches.watchesClicks }
@@ -79,7 +77,7 @@ public struct AppState: Equatable, Sendable {
     /// Where each part of the state keeps its deadline: a feature that can come due on its own adds one line here. Key paths
     /// rather than the features themselves, so asking for the deadline copies and boxes nothing.
     private static let deadlines: [any KeyPath<AppState, Date?> & Sendable] = [
-        \.hideAt, \.idle.deadline, \.onboarding.deadline,
+        \.hideAt, \.idle.deadline,
         \.last.deadline, \.doctor.deadline, \.notches.deadline,
     ]
 
@@ -108,13 +106,6 @@ public struct AppState: Equatable, Sendable {
         surfaces[display].map { notches.showsTitle($0, shared) } ?? false
     }
 
-    /// When the first-run demo's preview track started while it shows one. The notches draw that track in place of
-    /// `playback`, which stays what the sources said.
-    public var demoTrackStart: Date? { onboarding.trackStart }
-
-    /// Whether the notches draw a playing track: a real one, or the demo's.
-    public var drawsPlayback: Bool { showsPlayback || demoTrackStart != nil }
-
     func card(_ surface: Surface) -> NotchCard {
         notches.card(surface, shared)
     }
@@ -122,8 +113,7 @@ public struct AppState: Equatable, Sendable {
     /// What the features may read of this state.
     var shared: SharedState {
         SharedState(
-            playback: playback, showsPlayback: showsPlayback, hideAt: hideAt, needsAttention: needsAttention,
-            demoState: onboarding.notchState, demoCard: onboarding.card
+            playback: playback, showsPlayback: showsPlayback, hideAt: hideAt, needsAttention: needsAttention
         )
     }
 

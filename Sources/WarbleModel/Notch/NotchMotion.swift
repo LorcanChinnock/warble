@@ -28,11 +28,6 @@ public enum NotchMotion {
     /// How long the bars take to drop as the content leaves, all together.
     public static let barDrop: TimeInterval = 0.14
 
-    /// How long each step of the first-run demo shows: resting, then open, then Idle with its hint.
-    public static let demoResting: TimeInterval = 2.5
-    public static let demoExpanded: TimeInterval = 4
-    public static let demoHint: TimeInterval = 8
-
     /// A title too long for a virtual notch waits this long after it appears, then scrolls to its end at this many
     /// points a second, holds there and snaps back. It does this once for a track and never loops.
     public static let titleScrollWait: TimeInterval = 1.5

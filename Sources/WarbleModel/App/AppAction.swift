@@ -50,10 +50,6 @@ public enum AppAction: Equatable, Sendable {
     /// Settings changed.
     case stayVisibleChanged(TimeInterval)
     case virtualTitleChanged(Bool)
-    /// Warble opened, with whether it's the first time. Dispatched once, by `AppDelegate`.
-    case launched(firstRun: Bool)
-    /// The welcome window closed.
-    case welcomeClosed
     /// `AppState.deadline` came due.
     case tick
 }

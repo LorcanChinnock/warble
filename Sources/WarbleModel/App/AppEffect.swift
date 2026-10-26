@@ -27,8 +27,6 @@ public enum AppEffect: Equatable, Sendable {
     case saveLastPlayed(LastPlayed)
     /// Gather the Doctor's facts, then answer `.factsGathered` with `pass`.
     case gatherFacts(Doctor.Adapter, pass: Int)
-    /// Open the welcome window, which `.welcomeClosed` answers.
-    case showWelcome
     /// Watch Music and Spotify open and quit (true), or stop.
     case followPlayers(Bool)
 }

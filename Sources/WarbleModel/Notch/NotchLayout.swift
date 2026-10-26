@@ -13,8 +13,6 @@ public enum NotchState: String, CaseIterable, Sendable {
     case idle
     /// Something is playing, or a Doctor check failed, and the pointer is elsewhere: the notch widened by a wing on each side.
     case resting
-    /// Idle, with a hint in a strip below, during the first-run demo.
-    case hint
     /// Hovered or clicked: the full card with the art and room for the controls.
     case expanded
 
@@ -74,8 +72,6 @@ public enum NotchLayout {
     public static let doctorDrop: CGFloat = 240
     /// How far the idle card reaches: the art beside three short lines, with no controls below.
     public static let idleDrop: CGFloat = 76
-    /// How far the first-run demo's hint reaches below the camera housing: one line.
-    public static let hintDrop: CGFloat = 30
     /// Room either side of the notch once expanded, for the art beside the text. Measured from the notch, so the card
     /// keeps its proportion to each Mac's camera housing.
     public static let expandedWing: CGFloat = 70
@@ -106,8 +102,6 @@ public enum NotchLayout {
             notch
         case .resting:
             CGRect(x: notch.minX - wing(notch: notch), y: notch.minY, width: notch.width + 2 * wing(notch: notch), height: notch.height)
-        case .hint:
-            CGRect(x: notch.minX - expandedWing, y: notch.minY - hintDrop, width: notch.width + 2 * expandedWing, height: notch.height + hintDrop)
         case .expanded:
             CGRect(x: notch.minX - expandedWing, y: notch.minY - drop(card), width: notch.width + 2 * expandedWing, height: notch.height + drop(card))
         }
@@ -132,7 +126,7 @@ public enum NotchLayout {
     /// resting, so a pointer crossing the wings or the menu bar on its way elsewhere doesn't open it, and the whole panel once it's open.
     public static func hoverArea(_ state: NotchState, notch: CGRect, card: NotchCard = .player) -> CGRect? {
         switch state {
-        case .idle, .resting, .hint: notch
+        case .idle, .resting: notch
         case .hidden, .expanded: frame(state, notch: notch, card: card)
         }
     }

@@ -22,7 +22,7 @@ enum Native {
     /// Bottom corner radius of the notch over `notch`: the camera housing's own at rest, `expandedRadius` once open.
     static func radius(_ state: NotchState, notch: CGRect) -> CGFloat {
         switch state {
-        case .hidden, .idle, .resting, .hint: NotchLayout.cornerRadius(notch: notch)
+        case .hidden, .idle, .resting: NotchLayout.cornerRadius(notch: notch)
         case .expanded: expandedRadius
         }
     }

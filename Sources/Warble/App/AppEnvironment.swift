@@ -22,7 +22,6 @@ final class AppEnvironment {
     let hotkeys: HotkeyCenter
     let navigation: SettingsNavigation
     let settingsWindow: SettingsWindow
-    let welcomeWindow: WelcomeWindow
 
     /// `lastPlayed` is where the last track played is kept, which the preview keeps only in memory..
     init(lastPlayed: any LastPlayedStore) {
@@ -56,11 +55,7 @@ final class AppEnvironment {
         runner.logError = { message in Logger.warble("notch").error("\(message, privacy: .public)") }
         navigation = SettingsNavigation()
         settingsWindow = SettingsWindow(navigation: navigation)
-        welcomeWindow = WelcomeWindow(dispatch: dispatch)
         settingsWindow.environment = self
-        welcomeWindow.environment = self
-        let welcomeWindow = welcomeWindow
-        platform.showWelcome = { [weak welcomeWindow] in welcomeWindow?.show() }
     }
 }
 

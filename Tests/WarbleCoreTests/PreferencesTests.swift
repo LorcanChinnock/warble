@@ -19,12 +19,6 @@ import Testing
     #expect(Preferences(store: suite.store).showMenuBarIcon)
 }
 
-@Test func onlyWarblesOwnKeysCountAsSavedSettings() {
-    #expect(Preferences.hasSavedSettings([PreferenceKey.showMenuBarIcon]))
-    #expect(Preferences.hasSavedSettings(["hotkey.play-pause"]))
-    #expect(!Preferences.hasSavedSettings(["NSWindow Frame Settings", "SUHasLaunchedBefore"]))
-}
-
 @Test func textIsStandardSizeByDefault() throws {
     let suite = try TestDefaults()
     defer { suite.remove() }
@@ -74,10 +68,3 @@ import Testing
     #expect(Preferences(store: suite.store).stayVisibleAfterPausing == 0)
 }
 
-@Test func onlyAnEmptyDomainIsAFirstLaunch() {
-    #expect(Preferences.isFirstLaunch(saved: [:]))
-    #expect(Preferences.isFirstLaunch(saved: ["SUHasLaunchedBefore": true]))
-    #expect(!Preferences.isFirstLaunch(saved: [PreferenceKey.showMenuBarIcon: true]))
-    #expect(!Preferences.isFirstLaunch(saved: [PreferenceKey.hasSeenWelcome: true]))
-    #expect(Preferences.isFirstLaunch(saved: [PreferenceKey.hasSeenWelcome: false]))
-}

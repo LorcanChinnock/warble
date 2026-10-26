@@ -13,8 +13,6 @@ public enum PreferenceKey {
     public static let virtualTitle = "virtualTitle"
 
 
-    /// Whether the welcome window has been seen, or didn't need to be because Warble was in use before it existed.
-    public static let hasSeenWelcome = "hasSeenWelcome"
 }
 
 /// Typed read access to settings; `@Setting` in views uses the same keys and `Preferences.defaults`.
@@ -26,7 +24,6 @@ public struct Preferences {
             PreferenceKey.virtualNotch: [String: String](),
             PreferenceKey.stayVisibleAfterPausing: IdleAfterPause.defaultDelay,
             PreferenceKey.virtualTitle: true,
-            PreferenceKey.hasSeenWelcome: false,
         ]
     }
 
@@ -41,26 +38,11 @@ public struct Preferences {
         store.register(defaults: defaults)
     }
 
-    /// Whether `keys`, the keys saved in Warble's defaults domain, hold any of Warble's own, so Warble was used before.
-    /// Takes the saved keys rather than reading `UserDefaults`, which also answers with registered defaults.
-    public static func hasSavedSettings(_ keys: some Sequence<String>) -> Bool {
-        let own = Set(defaults.keys)
-        return keys.contains { own.contains($0) || $0.hasPrefix("hotkey.") }
-    }
-
     /// Removes every stored value so the registered defaults apply again.
     public static func resetAll(in store: UserDefaults = .standard) {
         for key in defaults.keys {
             store.removeObject(forKey: key)
         }
-    }
-
-    /// Whether this launch is the first, so the welcome window opens. `saved` is Warble's saved defaults domain, which a
-    /// Warble in use before the window existed has settings in; `UserDefaults` itself also answers with registered
-    /// defaults, so it can't tell.
-    public static func isFirstLaunch(saved: [String: Any]) -> Bool {
-        guard saved[PreferenceKey.hasSeenWelcome] as? Bool != true else { return false }
-        return !hasSavedSettings(saved.keys.filter { $0 != PreferenceKey.hasSeenWelcome })
     }
 
     public var showMenuBarIcon: Bool {

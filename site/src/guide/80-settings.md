@@ -19,7 +19,7 @@ Settings is always dark, like the notch, whatever your Mac's appearance. Every c
 
 - **Open at login.** Off at first. Turn it on, and Warble opens each time you log in, so it's there after a restart. It's the same switch as Warble's entry in System Settings › General › Login Items. If you turn Warble off there, turn it back on there.
 - **Show icon in the menu bar.** Turn it off to keep the menu bar tidy. Right-click the notch for the same menu, or open Warble from Applications to get the icon back.
-- **Text size.** Makes the notch's own words larger, such as the times and the hints: **Standard**, **Large** or **Larger**. Song titles and artists stay the size they are.
+- **Text size.** Makes the notch's own words larger, such as the times: **Standard**, **Large** or **Larger**. Song titles and artists stay the size they are.
 - **Stay visible after pausing.** How long a paused song stays in the notch before Warble hides behind the camera again, from 5 seconds to 5 minutes.
 - **Displays.** For each display without a notch, choose whether Warble draws one there, and whether it shows the song's title in the middle. See [External displays](/docs/external-displays/).
 
