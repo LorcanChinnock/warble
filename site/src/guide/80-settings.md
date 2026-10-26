@@ -1,6 +1,6 @@
 ---
 title: Settings
-summary: Open Warble at login, change the text size, how long a paused song stays, what a hover shows, whether a new song shows its title, how displays without a notch behave, turn on skipping by seconds in podcasts, and set keyboard shortcuts, including one that opens the notch.
+summary: Open Warble at login, change the text size, how long a paused song stays, whether a new song shows its title, how displays without a notch behave, turn on skipping by seconds in podcasts, and set keyboard shortcuts, including one that opens the notch.
 group: Reference
 ---
 
