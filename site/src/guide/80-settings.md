@@ -34,7 +34,6 @@ Click **More options** at the bottom of General to show these. They're all off a
 - **Drag the album art out of the player.** You can drag the art from the open player into another app: a folder gets the picture as a file, and a message or a note gets the picture. A click on the art still opens the app. See [Use gestures](/docs/use-gestures/#drag-the-album-art-out).
 - **Skip by seconds in podcasts.** A podcast or an audiobook has back 15 seconds and forward 30 in place of previous and next. Songs keep previous and next. See [Listen to podcasts](/docs/listen-to-podcasts/).
 - **Reopen browser tracks from the idle card.** When a song or video starts in a browser, Warble notes the page in the front tab, so the play button on the idle card can open it again in the same browser. macOS asks once for each browser. See [Pick up where you left off](/docs/pick-up-where-you-left-off/).
-- **Hide from screen sharing and recordings.** Warble stays out of what others see when you share your screen in a call, and out of your screen recordings and screenshots. You still see the notch and can use it as usual.
 
 > [!NOTE]
 > Warble's animations follow **Reduce motion** in System Settings › Accessibility › Display.

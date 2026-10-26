@@ -69,10 +69,6 @@ final class NotchSurface {
             model.skipsBySeconds = value.skipsBySeconds
             model.artDrag = value.artDrag
             panel.ignoresMouseEvents = value.ignoresMouseEvents
-            // Set only on a change, since this runs on every dispatch, hovers included.
-            if panel.sharingType != value.sharingType {
-                panel.sharingType = value.sharingType
-            }
         }
         if let last {
             draw(last, animated: animated)

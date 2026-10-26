@@ -67,7 +67,6 @@ public enum AppAction: Equatable, Sendable {
     case swipeToSkipChanged(Bool)
     case podcastSkipsChanged(Bool)
     case dragArtOutChanged(Bool)
-    case hidesFromCaptureChanged(Bool)
     case virtualTitleChanged(Bool)
     /// Warble opened, with whether it's the first time. Dispatched once, by `AppDelegate`.
     case launched(firstRun: Bool)

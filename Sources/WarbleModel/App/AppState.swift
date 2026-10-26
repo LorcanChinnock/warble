@@ -64,11 +64,6 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var podcastSkips: Bool
     /// Whether the art can be dragged out of the player's card, which Settings turns on.
     public internal(set) var dragArtOut: Bool
-    /// Whether every notch is left out of screen sharing, recordings and screenshots, which Settings turns on.
-    public internal(set) var hidesFromCapture: Bool {
-        get { notches.hidesFromCapture }
-        set { notches.hidesFromCapture = newValue }
-    }
     /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns off.
     public internal(set) var showsVirtualTitle: Bool {
         get { notches.showsVirtualTitle }
@@ -94,12 +89,12 @@ public struct AppState: Equatable, Sendable {
     public init(
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
         showsTrackToast: Bool = false, toastsInFullScreen: Bool = false, swipeToSkip: Bool = false, podcastSkips: Bool = false,
-        dragArtOut: Bool = false, hidesFromCapture: Bool = false, showsVirtualTitle: Bool = true,
+        dragArtOut: Bool = false, showsVirtualTitle: Bool = true,
         checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
         doctor = DoctorState(checks: checks)
-        notches = Notches(idleHover: idleHover, hidesFromCapture: hidesFromCapture, showsVirtualTitle: showsVirtualTitle)
+        notches = Notches(idleHover: idleHover, showsVirtualTitle: showsVirtualTitle)
         toast = ToastState(isOn: showsTrackToast, inFullScreen: toastsInFullScreen)
         scroll = ScrollState(swipeToSkip: swipeToSkip)
         self.podcastSkips = podcastSkips

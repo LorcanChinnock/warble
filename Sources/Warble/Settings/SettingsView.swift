@@ -193,7 +193,6 @@ private struct MoreOptions: View {
     @Setting(PreferenceKey.dragArtOut) private var dragArtOut: Bool
     @Setting(PreferenceKey.podcastSkips) private var podcastSkips: Bool
     @Setting(PreferenceKey.resumeBrowserTabs) private var resumeBrowserTabs: Bool
-    @Setting(PreferenceKey.hideFromCapture) private var hideFromCapture: Bool
 
     var body: some View {
         SettingsDisclosure(title: Text("More options")) {
@@ -222,11 +221,6 @@ private struct MoreOptions: View {
                 title: Text("Reopen browser tracks from the idle card"),
                 detail: Text("Remember the page a track played on, so the play button can open it again. macOS asks once for each browser."),
                 isOn: $resumeBrowserTabs
-            )
-            SettingsToggleRow(
-                title: Text("Hide from screen sharing and recordings"),
-                detail: Text("You still see the notch. People watching your screen don't."),
-                isOn: $hideFromCapture
             )
         }
     }

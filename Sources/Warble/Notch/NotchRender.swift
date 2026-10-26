@@ -16,8 +16,6 @@ struct NotchRender: Equatable {
     var showsDoctor: Bool
     /// A toast over a full-screen app lets clicks through to the app, since it takes no hover or click.
     var ignoresMouseEvents: Bool
-    /// The window server leaves the panel out of every capture, ScreenCaptureKit's included, and still draws it.
-    var sharingType: NSWindow.SharingType
 
     /// `nil` when the display has no surface or the store has no state for it, so the last render stands.
     init?(_ app: AppState, display: String) {
@@ -33,7 +31,6 @@ struct NotchRender: Equatable {
         isAlwaysShown = surface.isAlwaysShown
         showsDoctor = surface.showsDoctor
         ignoresMouseEvents = surface.isFullScreen
-        sharingType = app.hidesFromCapture ? .none : .readOnly
     }
 
     /// The toast only while its state is the one showing it.

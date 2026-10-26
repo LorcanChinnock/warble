@@ -10,9 +10,6 @@ public struct Notches: Feature {
     public internal(set) var fullScreen: Set<String> = []
     /// What a hover on the housing does while Idle.
     public internal(set) var idleHover: IdleHover
-    /// Whether every notch is left out of screen sharing, recordings and screenshots, which Settings turns on. The
-    /// window server does it, so nothing here watches for a capture and the notch draws the same either way.
-    public internal(set) var hidesFromCapture: Bool
     /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns off.
     public internal(set) var showsVirtualTitle: Bool
 
@@ -21,9 +18,8 @@ public struct Notches: Feature {
     public internal(set) var takesEscape = false
     public internal(set) var followsVolume = false
 
-    public init(idleHover: IdleHover = .lastPlayed, hidesFromCapture: Bool = false, showsVirtualTitle: Bool = true) {
+    public init(idleHover: IdleHover = .lastPlayed, showsVirtualTitle: Bool = true) {
         self.idleHover = idleHover
-        self.hidesFromCapture = hidesFromCapture
         self.showsVirtualTitle = showsVirtualTitle
     }
 
@@ -72,8 +68,6 @@ public struct Notches: Feature {
             dismiss(except: except, shared, at: now)
         case .idleHoverChanged(let idleHover):
             self.idleHover = idleHover
-        case .hidesFromCaptureChanged(let on):
-            hidesFromCapture = on
         case .virtualTitleChanged(let on):
             showsVirtualTitle = on
         case .tick:
