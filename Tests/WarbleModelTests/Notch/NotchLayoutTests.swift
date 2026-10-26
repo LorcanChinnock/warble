@@ -88,14 +88,14 @@ private let notch = CGRect(x: 856, y: 1205.5, width: 208, height: 37.5)
 }
 
 @Test func onlyARestingNotchWithSomethingPlayingShowsAToast() {
-    #expect(NotchState(.resting, isPlaying: true, needsAttention: false, idleHover: .lastPlayed, showsToast: true) == .toast)
-    #expect(NotchState(.resting, isPlaying: true, needsAttention: false, idleHover: .lastPlayed, showsToast: false) == .resting)
+    #expect(NotchState(.resting, isPlaying: true, needsAttention: false, showsToast: true) == .toast)
+    #expect(NotchState(.resting, isPlaying: true, needsAttention: false, showsToast: false) == .resting)
     // An open notch already shows the track, so it skips the toast.
-    #expect(NotchState(.expanded, isPlaying: true, needsAttention: false, idleHover: .lastPlayed, showsToast: true) == .expanded)
-    #expect(NotchState(.pinned, isPlaying: true, needsAttention: false, idleHover: .lastPlayed, showsToast: true) == .expanded)
+    #expect(NotchState(.expanded, isPlaying: true, needsAttention: false, showsToast: true) == .expanded)
+    #expect(NotchState(.pinned, isPlaying: true, needsAttention: false, showsToast: true) == .expanded)
     // The "!" with nothing playing, and Idle, have no track to show.
-    #expect(NotchState(.resting, isPlaying: false, needsAttention: true, idleHover: .lastPlayed, showsToast: true) == .resting)
-    #expect(NotchState(.resting, isPlaying: false, needsAttention: false, idleHover: .lastPlayed, showsToast: true) == .idle)
+    #expect(NotchState(.resting, isPlaying: false, needsAttention: true, showsToast: true) == .resting)
+    #expect(NotchState(.resting, isPlaying: false, needsAttention: false, showsToast: true) == .idle)
 }
 
 @Test func theDoctorsCardReachesFurtherDownThanThePlayerAtTheSameWidth() throws {

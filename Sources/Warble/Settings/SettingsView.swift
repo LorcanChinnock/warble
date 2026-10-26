@@ -75,7 +75,6 @@ private struct GeneralSettings: View {
     @Setting(PreferenceKey.showMenuBarIcon) private var showMenuBarIcon: Bool
     @Setting(PreferenceKey.textSize) private var textSize: TextSize
     @Setting(PreferenceKey.stayVisibleAfterPausing) private var stayVisible: Double
-    @Setting(PreferenceKey.idleHover) private var idleHover: IdleHover
     @Setting(PreferenceKey.trackChangeToast) private var trackChangeToast: Bool
     @Setting(PreferenceKey.podcastSkips) private var podcastSkips: Bool
     @Environment(LoginItem.self) private var loginItem
@@ -121,14 +120,6 @@ private struct GeneralSettings: View {
                     options: IdleAfterPause.choices(including: stayVisible).map { seconds in
                         WarbleOption(value: seconds, title: Text(verbatim: Duration.seconds(seconds).formatted(.units(allowed: [.minutes, .seconds], width: .wide))))
                     }
-                )
-                SettingsMenuRow(
-                    title: Text("When nothing is playing, hover shows"),
-                    selection: $idleHover,
-                    options: [
-                        WarbleOption(value: .lastPlayed, title: Text("Last Played")),
-                        WarbleOption(value: .nothing, title: Text("Nothing")),
-                    ]
                 )
                 SettingsToggleRow(
                     title: Text("Show a message when the song changes"),

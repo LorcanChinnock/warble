@@ -8,8 +8,6 @@ public struct Notches: Feature {
     public internal(set) var surfaces: [String: Surface] = [:]
     /// The displays that show a full-screen app, by `NotchDisplay.id`, whose notches draw nothing.
     public internal(set) var fullScreen: Set<String> = []
-    /// What a hover on the housing does while Idle.
-    public internal(set) var idleHover: IdleHover
     /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns off.
     public internal(set) var showsVirtualTitle: Bool
 
@@ -18,8 +16,7 @@ public struct Notches: Feature {
     public internal(set) var takesEscape = false
     public internal(set) var followsVolume = false
 
-    public init(idleHover: IdleHover = .lastPlayed, showsVirtualTitle: Bool = true) {
-        self.idleHover = idleHover
+    public init(showsVirtualTitle: Bool = true) {
         self.showsVirtualTitle = showsVirtualTitle
     }
 
@@ -63,8 +60,6 @@ public struct Notches: Feature {
             surfaces[display]?.showsDoctor = show
         case .dismiss(let except):
             dismiss(except: except, shared, at: now)
-        case .idleHoverChanged(let idleHover):
-            self.idleHover = idleHover
         case .virtualTitleChanged(let on):
             showsVirtualTitle = on
         case .tick:
@@ -125,8 +120,8 @@ public struct Notches: Feature {
     /// The state the notch draws. The first-run demo draws over every notch until it ends.
     func notchState(_ surface: Surface, _ shared: SharedState) -> NotchState {
         let state = shared.demoState ?? NotchState(
-            surface.hover.state, isPlaying: shared.showsPlayback, needsAttention: shared.needsAttention, idleHover: idleHover,
-            isAlwaysShown: surface.isAlwaysShown, showsToast: shared.hasToast && !showsTitle(surface, shared)
+            surface.hover.state, isPlaying: shared.showsPlayback, needsAttention: shared.needsAttention,
+            showsToast: shared.hasToast && !showsTitle(surface, shared)
         )
         // A full-screen app has the top of its display to itself.
         return surface.isFullScreen ? .hidden : state
@@ -151,7 +146,7 @@ public struct Notches: Feature {
     func answersPointer(_ surface: Surface, _ shared: SharedState) -> Bool {
         guard !surface.isFullScreen else { return false }
         let state = notchState(surface, shared)
-        return state != .hidden && !(state == .idle && idleHover == .nothing)
+        return state != .hidden
     }
 
     /// Whether any notch is open.

@@ -31,11 +31,6 @@ public struct AppState: Equatable, Sendable {
         get { notches.fullScreen }
         set { notches.fullScreen = newValue }
     }
-    /// What a hover on the housing does while Idle.
-    public internal(set) var idleHover: IdleHover {
-        get { notches.idleHover }
-        set { notches.idleHover = newValue }
-    }
     /// The Doctor's checks behind the "!".
     public internal(set) var doctor: DoctorState
     /// Whether a Doctor check failed, which draws a resting notch with a "!" even when nothing is playing.
@@ -81,13 +76,13 @@ public struct AppState: Equatable, Sendable {
 
     /// `checks` are what the Doctor finds before it has asked macOS anything: what it finds while the adapter works.
     public init(
-        stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay, idleHover: IdleHover = .lastPlayed,
+        stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay,
         showsTrackToast: Bool = false, podcastSkips: Bool = false, showsVirtualTitle: Bool = true,
         checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
         doctor = DoctorState(checks: checks)
-        notches = Notches(idleHover: idleHover, showsVirtualTitle: showsVirtualTitle)
+        notches = Notches(showsVirtualTitle: showsVirtualTitle)
         toast = ToastState(isOn: showsTrackToast)
         self.podcastSkips = podcastSkips
     }

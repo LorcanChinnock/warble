@@ -99,7 +99,7 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         effects += state.last.reduce(action, shared: state.shared, at: now)
     case .adapterChanged, .factsGathered, .playersChanged, .automationDenied, .fallbackReported, .notNow:
         effects += state.doctor.reduce(action, shared: state.shared, at: now)
-    case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .showDoctor, .dismiss, .idleHoverChanged,
+    case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .showDoctor, .dismiss,
         .virtualTitleChanged:
         effects += state.notches.reduce(action, shared: state.shared, at: now)
     case .stayVisibleChanged(let delay):

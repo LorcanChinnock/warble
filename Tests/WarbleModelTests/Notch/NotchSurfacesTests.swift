@@ -13,8 +13,7 @@ private struct Run {
     var effects: [AppEffect] = []
     var now = start
 
-    init(playing: PlaybackState? = song, idleHover: IdleHover = .lastPlayed) {
-        state = AppState(idleHover: idleHover)
+    init(playing: PlaybackState? = song) {
         send(.housingsChanged([builtIn, external]))
         if let playing {
             send(.sourceReported(bundleIdentifier: "app", playing))
@@ -119,16 +118,6 @@ private struct Run {
     #expect(run.state.card("built-in") == .player)
 }
 
-@Test func withIdleHoverOffNothingShowsAndHoveringDoesNothing() {
-    var run = Run(playing: nil, idleHover: .nothing)
-    #expect(run.state.notchState("built-in") == .hidden)
-    run.hover("built-in")
-    run.send(.hover(display: "built-in", .click))
-    #expect(run.state.notchState("built-in") == .hidden)
-    #expect(run.effects.isEmpty)
-    #expect(run.state.deadline == nil)
-}
-
 @Test func withNothingPlayingAndNothingOpenNothingIsDueOrWatched() {
     let run = Run(playing: nil)
     #expect(run.state.notchState("built-in") == .idle)
@@ -138,10 +127,9 @@ private struct Run {
 }
 
 @Test func aNotchThatStopsAnsweringForgetsThePointer() {
-    var run = Run(idleHover: .nothing)
+    var run = Run()
     run.send(.pointer(display: "built-in", inside: true))
-    run.send(.sourceReported(bundleIdentifier: "app", nil))
-    run.wait(AppState.hideDelay)
+    run.send(.fullScreenChanged(["built-in"]))
     #expect(run.state.notchState("built-in") == .hidden)
     #expect(run.state.surfaces["built-in"]?.pointerInside == false)
     #expect(run.state.deadline == nil)
