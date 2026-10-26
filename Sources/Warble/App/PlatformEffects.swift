@@ -34,13 +34,8 @@ final class PlatformEffects {
                     perform(.openApp(bundleIdentifier: player.bundleIdentifier))
                 }
             }
-        case .openLink(let url, let bundleIdentifier):
-            // The browser the track played in, if it's still installed, otherwise whatever handles the link.
-            if let bundleIdentifier, let app = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) {
-                NSWorkspace.shared.open([url], withApplicationAt: app, configuration: NSWorkspace.OpenConfiguration())
-            } else {
-                NSWorkspace.shared.open(url)
-            }
+        case .openLink(let url):
+            NSWorkspace.shared.open(url)
         case .haptic:
             NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .now)
         case .gatherFacts(let adapter, let pass):

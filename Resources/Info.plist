@@ -43,9 +43,9 @@
 	<true/>
 	<key>NSHighResolutionCapable</key>
 	<true/>
-	<!-- Asked the first time Warble scripts Music or Spotify, which it does only when it can't read what's playing otherwise, or a browser, which it does only when Settings turns on reopening browser tracks. -->
+	<!-- Asked the first time Warble scripts Music or Spotify, which it does only when it can't read what's playing otherwise. -->
 	<key>NSAppleEventsUsageDescription</key>
-	<string>Warble shows what Music and Spotify are playing and lets you control them from the notch. If you turn it on, it also notes the page a browser is playing so it can reopen it.</string>
+	<string>Warble shows what Music and Spotify are playing and lets you control them from the notch.</string>
 	<key>SUFeedURL</key>
 	<string>https://github.com/LorcanChinnock/warble/releases/latest/download/appcast.xml</string>
 	<!-- Sparkle's generate_keys --account warble: CONTRIBUTING.md › Release secrets. -->

@@ -22,9 +22,6 @@ public enum PreferenceKey {
     /// Whether a virtual notch shows the title of what's playing in its middle.
     public static let virtualTitle = "virtualTitle"
 
-    /// Whether Warble reads the front tab of a browser when a track starts there, so the idle card can reopen it. Off,
-    /// Warble never scripts a browser, and macOS never asks for permission to.
-    public static let resumeBrowserTabs = "resumeBrowserTabs"
 
     /// Whether the welcome window has been seen, or didn't need to be because Warble was in use before it existed.
     public static let hasSeenWelcome = "hasSeenWelcome"
@@ -46,7 +43,6 @@ public struct Preferences {
             PreferenceKey.podcastSkips: false,
             PreferenceKey.dragArtOut: false,
             PreferenceKey.virtualTitle: true,
-            PreferenceKey.resumeBrowserTabs: false,
             PreferenceKey.hasSeenWelcome: false,
         ]
         for action in WarbleAction.allCases {
@@ -125,10 +121,6 @@ public struct Preferences {
 
     public var dragArtOut: Bool {
         store.bool(forKey: PreferenceKey.dragArtOut)
-    }
-
-    public var resumeBrowserTabs: Bool {
-        store.bool(forKey: PreferenceKey.resumeBrowserTabs)
     }
 
     public var virtualTitle: Bool {

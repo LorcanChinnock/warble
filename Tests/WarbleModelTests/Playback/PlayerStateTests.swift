@@ -97,14 +97,6 @@ private struct Run {
     #expect(spotify.effects == [.openLink(URL(string: "spotify:track:abc123")!)])
 }
 
-@Test func resumingATabOpensItsAddressInTheBrowserItPlayedIn() {
-    var run = Run(playing: nil)
-    let address = URL(string: "https://www.youtube.com/watch?v=abc")!
-    run.send(.lastPlayedLoaded(LastPlayed(bundleIdentifier: "com.google.Chrome", title: "Video", link: address)))
-    run.send(.resumeLastPlayed)
-    #expect(run.effects == [.openLink(address, in: "com.google.Chrome")])
-}
-
 @Test func resumingSpotifyAfterItQuitLaunchesItAndPlaysWhenThereIsNoLink() {
     var run = Run(playing: nil)
     run.send(.lastPlayedLoaded(LastPlayed(bundleIdentifier: "com.spotify.client", title: "Song")))
@@ -260,23 +252,6 @@ private struct Run {
     runner.perform(.remember(song, pass: 3))
     await runner.finish()
     #expect(dispatched == [.remembered(LastPlayed(bundleIdentifier: song.bundleIdentifier, appName: "Music", title: "Song", artist: "Artist"), pass: 3)])
-}
-
-@MainActor
-@Test func aTrackThatStartedInABrowserIsRememberedWithItsTabAndNoOtherIs() async {
-    let runner = makeRunner()
-    var dispatched: [AppAction] = []
-    runner.dispatch = { dispatched.append($0) }
-    runner.tabLink = { _, title in URL(string: "https://example.com/\(title)") }
-    let tab = PlaybackState(bundleIdentifier: "com.google.Chrome", title: "Video", elapsedTimestamp: start, rate: 1)
-    runner.perform(.remember(tab, pass: 1))
-    runner.perform(.remember(song, pass: 2))
-    await runner.finish()
-    let links = dispatched.compactMap { action -> URL?? in
-        if case .remembered(let track, _) = action { .some(track.link) } else { nil }
-    }
-    #expect(links.contains { $0 == URL(string: "https://example.com/Video") })
-    #expect(links.filter { $0 == nil }.count == 1)
 }
 
 @MainActor

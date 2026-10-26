@@ -13,13 +13,7 @@ When a song starts, the notch slides out from behind the camera to show the albu
 1. Hover over the notch, or click it. A short card drops down with the last song you played and the app that played it.
 2. Click the play button on the right to carry on from where you stopped.
 
-If the app is still open, the song carries on from where you paused it. If you've quit the app or restarted your Mac, Spotify opens and carries on, and any other app opens for you to press play there.
-
-### Songs and videos in a browser
-
-A browser can't carry on once you've closed the tab, so Warble can note the page instead. Open **Settings…**, click **More options** and turn on **Reopen browser tracks from the idle card**. Then the play button opens that page again in the same browser. It works with Safari, Chrome, Brave, Edge, Arc and Vivaldi.
-
-macOS asks once for each browser whether Warble may control it. Warble only looks at the front tab when a track starts, and only keeps the page if its title names the track. Without the setting, or in another browser, the button opens the browser and you find the page yourself.
+If the app is still open, the song carries on from where you paused it. If you've quit the app or restarted your Mac, Spotify opens and carries on, and any other app, a browser included, opens for you to press play there.
 
 The card grows into the full player as the song starts, with all the controls.
 
