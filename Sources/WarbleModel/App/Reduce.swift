@@ -81,8 +81,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         }
     case .setVolume(let volume):
         effects.append(.setVolume(volume))
-    case .scrolled, .swipeToSkipChanged:
-        effects += state.scroll.reduce(action, shared: state.shared, at: now)
+    case .scrolled(let delta, let precise, let inverted, let volume, let isMuted):
+        effects += VolumeScroll.effects(delta, precise: precise, inverted: inverted, volume: volume, isMuted: isMuted)
     case .volumeKey(let delta, let volume, let isMuted):
         if let volume {
             effects.append(.setVolume(NotchKey.volume(changing: isMuted ? 0 : volume, by: delta)))
@@ -109,8 +109,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         effects += state.toast.reduce(action, shared: state.shared, at: now)
     case .podcastSkipsChanged(let on):
         state.podcastSkips = on
-    case .dragArtOutChanged(let on):
-        state.dragArtOut = on
     case .launched, .welcomeClosed:
         break
     case .tick:

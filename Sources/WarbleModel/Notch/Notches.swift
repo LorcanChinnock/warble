@@ -54,9 +54,6 @@ public struct Notches: Feature {
             if event == .click || event == .keyboard {
                 dismiss(except: display, shared, at: now)
             }
-            if case .dragging(let dragging) = event {
-                surfaces[display]?.isDragging = dragging
-            }
             handle(event, on: display, shared, at: now)
         case .menu(let display, let open):
             surfaces[display]?.showsMenu = open
@@ -89,7 +86,6 @@ public struct Notches: Feature {
                 // Start over, so a pointer still on the notch when it's drawn again is reported as entering again.
                 surfaces[display]?.hover = HoverIntent()
                 surfaces[display]?.pointerInside = false
-                surfaces[display]?.isDragging = false
             }
             if old.notchState(before, oldShared) == .expanded, notchState(surface, shared) != .expanded {
                 // The checks show until the notch closes; the next open shows the player again.
@@ -110,7 +106,7 @@ public struct Notches: Feature {
             self.watchesClicks = watchesClicks
             effects.append(.watchClicksOutside(watchesClicks))
         }
-        let takesEscape = open.contains(where: \.pointerInside) && !surfaces.values.contains { $0.showsMenu || $0.isDragging }
+        let takesEscape = open.contains(where: \.pointerInside) && !surfaces.values.contains(where: \.showsMenu)
         if takesEscape != self.takesEscape {
             self.takesEscape = takesEscape
             effects.append(.takeEscape(takesEscape))
@@ -197,8 +193,6 @@ public struct Notches: Feature {
         public internal(set) var showsDoctor = false
         /// Whether a menu from this notch is open, which takes Escape for itself.
         public internal(set) var showsMenu = false
-        /// Whether the art is being dragged out of this notch's card, which lets go of Escape so the key cancels the drag.
-        public internal(set) var isDragging = false
 
         init(_ housing: NotchHousing) {
             isVirtual = housing.isVirtual

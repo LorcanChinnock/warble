@@ -1313,59 +1313,6 @@
         }
       }
     },
-    "Drag the album art out of the player" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Albumcover aus dem Player ziehen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Arrastrar la carátula fuera del reproductor"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Faire glisser la pochette hors du lecteur"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trascina la copertina fuori dal player"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "プレーヤーからアルバムアートをドラッグ"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "플레이어에서 앨범 아트 끌어내기"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Arraste a capa do álbum para fora do player"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "将专辑封面拖出播放器"
-          }
-        }
-      }
-    },
-    "Drop it in a message, a note or a folder to share the song." : {},
     "Every display connected now has a notch." : {
       "localizations" : {
         "de" : {
@@ -1731,7 +1678,6 @@
         }
       }
     },
-    "Hidden" : {},
     "Hide the \"!\" until Warble opens again" : {
       "localizations" : {
         "de" : {
@@ -2304,7 +2250,6 @@
         }
       }
     },
-    "More options" : {},
     "Needs fixing" : {
       "localizations" : {
         "de" : {
@@ -5381,7 +5326,6 @@
         }
       }
     },
-    "Shown" : {},
     "Shuffle" : {
       "localizations" : {
         "de" : {
@@ -5638,59 +5582,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "支持。"
-          }
-        }
-      }
-    },
-    "Swipe left with two fingers for the next song, or right to go back. Needs a trackpad or a Magic Mouse." : {},
-    "Swipe over the notch to skip" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Über die Notch wischen, um zu springen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deslizar sobre el notch para saltar"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Balayer sur le notch pour passer au suivant"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scorri sul notch per saltare"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ノッチの上でスワイプしてスキップ"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "노치 위에서 쓸어넘겨 건너뛰기"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deslize sobre o notch para pular"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在刘海上轻扫以切歌"
           }
         }
       }

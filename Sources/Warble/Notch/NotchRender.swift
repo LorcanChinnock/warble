@@ -9,7 +9,6 @@ struct NotchRender: Equatable {
     var isPlaying: Bool
     var toast: TrackToast?
     var skipsBySeconds: Bool
-    var artDrag: ArtDrag?
     var isVirtual: Bool
     var showsTitle: Bool
     var isAlwaysShown: Bool
@@ -25,7 +24,6 @@ struct NotchRender: Equatable {
         isPlaying = app.drawsPlayback
         toast = app.toasts.current?.content
         skipsBySeconds = app.skipsBySeconds
-        artDrag = app.artDrag
         isVirtual = surface.isVirtual
         showsTitle = app.titleInNotch(display)
         isAlwaysShown = surface.isAlwaysShown

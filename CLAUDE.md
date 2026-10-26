@@ -6,7 +6,7 @@ Warble is a macOS 15+ app that shows what's playing in the notch and controls it
 
 ## Mantra
 
-By default, Warble is calm: a small, fast notch that shows what's playing and stays out of the way. Extra gestures are built in, but they start off.
+By default, Warble is calm: a small, fast notch that shows what's playing and stays out of the way. Extras are built in, but they start off.
 
 - Nothing may slow the hover → expand path or a click on play/pause.
 - When nothing is playing, Warble draws nothing and uses no CPU: no timers, no polling.
@@ -80,7 +80,7 @@ Claude Code loads only this file, so read a feature's note before you change tha
 | [Settings](docs/architecture/settings.md) | adding or changing a setting, the Settings window, shortcuts or Open at login |
 | [Design](docs/architecture/design.md) | changing how anything looks, or adding a colour, font or control |
 | [Doctor](docs/architecture/doctor.md) | changing the checks, their fixes or the "!" on the notch |
-| [The notch](docs/architecture/notch.md) | changing the panel, its states and cards, hover, displays, toasts, gestures, shortcuts or the keyboard |
+| [The notch](docs/architecture/notch.md) | changing the panel, its states and cards, hover, displays, toasts, scrolling, shortcuts or the keyboard |
 | [Accessibility](docs/architecture/accessibility.md) | adding or changing any control or label |
 | [Idle](docs/architecture/idle.md) | changing when the notch goes back to Idle |
 | [Welcome and the demo](docs/architecture/welcome.md) | changing the first launch, the welcome window or the demo |

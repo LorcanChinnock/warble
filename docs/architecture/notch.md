@@ -1,6 +1,6 @@
 # The notch
 
-Read this before changing the panel, its states and cards, hover, displays, toasts, gestures, shortcuts or the keyboard. Back to the [architecture index](../../CLAUDE.md#architecture).
+Read this before changing the panel, its states and cards, hover, displays, toasts, scrolling, shortcuts or the keyboard. Back to the [architecture index](../../CLAUDE.md#architecture).
 
 ## Surfaces and displays
 
@@ -26,13 +26,9 @@ macOS reports the housing to the half point, so its edges and height can fall on
 
 Between states the shape morphs on one spring while the content cross-fades; with Reduce Motion the shape changes at once and only the content fades. The panel grows before a morph and shrinks after it, so nothing is clipped.
 
-## Expanded: controls, volume and swipe
+## Expanded: controls and volume
 
-Expanded holds the playback controls. They dispatch `.command`, and `reduce` shows play/pause, a seek and the shuffle and repeat modes at once (`PlaybackState.playing(_:at:)`, `seeked(to:at:)`) and asks for `.send`; the app's next report replaces that guess. A podcast or audiobook, which `SpokenWord` (WarbleModel) tells from `PlaybackState.mediaType` or the app, has back 15 and forward 30 seconds in place of previous and next while `AppState.skipsBySeconds` says so: only with `PreferenceKey.podcastSkips` on (it starts off), and never for a live stream. They dispatch `.skip(by:)`, which `reduce` turns into a seek from the position now, kept within the track. Warble has no speed control: the adapter can't set a chosen speed (its `speed` only steps the app's own list), and #143 was dropped. `SystemVolume` (WarbleCore) reads and sets the default output's volume through Core Audio. `reduce` asks for `.followVolume`, which listens for its changes, only while Expanded shows the player's card, and scrolling over the panel in any state dispatches `.scrolled` with the volume read just before, as `VolumeScroll` (WarbleModel) works out. Each scroll also carries its horizontal delta and its trackpad gesture's phase (`Swipe.Phase`, `nil` for a wheel). With `PreferenceKey.swipeToSkip` on (it starts off), `Swipe` (WarbleModel, `Gestures/`) in `AppState.swipe` decides each gesture's way from its first `Swipe.lockDistance` points: up and down goes to the volume, including what it held back, and sideways skips once at `Swipe.skipDistance` with `.send` and `.haptic`, by the fingers' direction whatever natural scrolling says. The coast after a sideways swipe does nothing, a wheel only scrolls, and with nothing playing a swipe sends nothing. It waits on events, so it has no deadline.
-
-## Dragging the art out
-
-With `PreferenceKey.dragArtOut` on (it starts off), `AppState.artDrag` gives what dragging the art out of the player's card carries, `ArtDrag` (WarbleModel, `Gestures/`): the image, named for the track, and `PlaybackState.link` where the source gives one. Only `ScriptSource` does, from Spotify's `spotify url` turned into an open.spotify.com link; the adapter reports none. `ArtDragArea` (`Artwork.swift`) lies over the art's button: a click still dispatches `.openApp`, and once the pointer moves 4 points it starts AppKit's own drag with one item, `ArtPromise`, a file promise for Finder that also carries the image data, the link and its text, so each app takes the form it uses. The drag dispatches `.hover(_, .dragging(true))` and `false`, so `HoverIntent` holds the card open, as for a menu, and `reduce` lets go of Escape so the key cancels the drag.
+Expanded holds the playback controls. They dispatch `.command`, and `reduce` shows play/pause, a seek and the shuffle and repeat modes at once (`PlaybackState.playing(_:at:)`, `seeked(to:at:)`) and asks for `.send`; the app's next report replaces that guess. A podcast or audiobook, which `SpokenWord` (WarbleModel) tells from `PlaybackState.mediaType` or the app, has back 15 and forward 30 seconds in place of previous and next while `AppState.skipsBySeconds` says so: only with `PreferenceKey.podcastSkips` on (it starts off), and never for a live stream. They dispatch `.skip(by:)`, which `reduce` turns into a seek from the position now, kept within the track. Warble has no speed control: the adapter can't set a chosen speed (its `speed` only steps the app's own list), and #143 was dropped. `SystemVolume` (WarbleCore) reads and sets the default output's volume through Core Audio. `reduce` asks for `.followVolume`, which listens for its changes, only while Expanded shows the player's card, and scrolling over the panel in any state dispatches `.scrolled` with the volume read just before, as `VolumeScroll` (WarbleModel) works out.
 
 ## Previews
 
