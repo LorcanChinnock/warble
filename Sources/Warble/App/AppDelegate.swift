@@ -7,7 +7,7 @@ private let log = Logger.warble("app")
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Built with the delegate, before the menu bar scene reads it.
-    let environment = AppEnvironment(lastPlayed: AppDelegate.lastPlayedStore())
+    let environment = AppEnvironment()
     private var notch: NotchController?
     private var source: AdapterSource?
     private var fallback: ScriptSource?
@@ -15,19 +15,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         // To see the notch without playing anything, launch with
         // `open build/WarbleDev.app --args -notchPreviewState resting` and hover or click it to open it; the argument
-        // lasts only for that launch. `idle` shows the idle card with a preview track as the last played, and adding
-        // `-notchPreviewLastPlayed NO` shows it with nothing played yet. Neither reads nor saves the real last track.
+        // lasts only for that launch.
         let store = environment.store
         let runner = environment.runner
-        let arguments = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
         let preview = Self.preview
         let notch = NotchController(environment: environment)
-        runner.loadLastPlayed()
-        if preview == .idle {
-            if (arguments["notchPreviewLastPlayed"] as? String).map({ NSString(string: $0).boolValue }) ?? true {
-                store.dispatch(.lastPlayedLoaded(LastPlayed(bundleIdentifier: "com.apple.Music", appName: "Music", title: "Preview track with a title long enough to scroll", artist: "Preview artist")))
-            }
-        } else if preview == .resting {
+        if preview == .resting {
             let source = PreviewSource { [weak store] in store?.state.playback }
             runner.source = source
             Task {
@@ -63,15 +56,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private static var preview: NotchState? {
         let arguments = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
         return (arguments["notchPreviewState"] as? String).flatMap(NotchState.init(rawValue:))
-    }
-
-    /// Where the last track played is kept across launches, or only in memory for the preview, which neither reads nor
-    /// saves the real one.
-    private static func lastPlayedStore() -> any LastPlayedStore {
-        guard preview != .resting, preview != .idle, let file = Bundle.main.bundleIdentifier.flatMap(LastPlayedFile.standard) else {
-            return LastPlayedInMemory()
-        }
-        return file
     }
 
     func applicationWillTerminate(_ notification: Notification) {

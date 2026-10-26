@@ -1,6 +1,6 @@
 # The notch
 
-Read this before changing the panel, its states and cards, hover, displays, scrolling or the keys it takes. Back to the [architecture index](../../CLAUDE.md#architecture).
+Read this before changing the panel, its states, hover, displays, scrolling or the keys it takes. Back to the [architecture index](../../CLAUDE.md#architecture).
 
 ## Surfaces and displays
 
@@ -16,7 +16,7 @@ macOS reports the housing to the half point, so its edges and height can fall on
 
 ## Hover and dismissal
 
-`HoverIntent` (WarbleModel) decides when the pointer opens a notch into Expanded, after `expandDelay` or at once on a click, and closes it again: it takes timestamped events and returns the next deadline instead of running timers. Each notch's lives in `AppState.surfaces`, which is `Notches` (WarbleModel, `Notch/`), a `Feature` like the rest: it handles the actions about the notches themselves, reads the other features' parts through `SharedState`, and works out `notchState`, `card` and `answersPointer` from them, so its deadline joins the store's one timer. It also settles itself (`Notches.settle` starts a hover over when a notch stops answering and shows the player again after one closes) and asks for the click, Escape and volume effects once each when their reason changes (`Notches.follow`); the settle pass in `reduce` keeps only what couples features, such as the pointer holding off Idle. A surface dispatches `.pointer` from a tracking area over only the camera housing while resting and the whole panel once open, and `.hover(_, .click)` for a click on the panel, which also closes any other open notch. Only while a notch is open does `reduce` ask for `.watchClicksOutside` (a global click monitor in `PlatformEffects`) and, with the pointer on it, `.takeEscape` (a temporary `HotkeyCenter` key through the `HotkeyRegistrar` port, so no permission is needed); both dispatch `.dismiss`.
+`HoverIntent` (WarbleModel) decides when the pointer opens a notch into Expanded, after `expandDelay` or at once on a click, and closes it again: it takes timestamped events and returns the next deadline instead of running timers. Each notch's lives in `AppState.surfaces`, which is `Notches` (WarbleModel, `Notch/`), a `Feature` like the rest: it handles the actions about the notches themselves, reads the other features' parts through `SharedState`, and works out `notchState` and `answersPointer` from them, so its deadline joins the store's one timer. It also settles itself (`Notches.settle` starts a hover over when a notch stops answering) and asks for the click, Escape and volume effects once each when their reason changes (`Notches.follow`); the settle pass in `reduce` keeps only what couples features, such as the pointer holding off Idle. A surface dispatches `.pointer` from a tracking area over only the camera housing while resting and the whole panel once open, and `.hover(_, .click)` for a click on the panel, which also closes any other open notch. Only while a notch is open does `reduce` ask for `.watchClicksOutside` (a global click monitor in `PlatformEffects`) and, with the pointer on it, `.takeEscape` (a temporary `HotkeyCenter` key through the `HotkeyRegistrar` port, so no permission is needed); both dispatch `.dismiss`.
 
 ## Morphing between states
 
@@ -24,7 +24,7 @@ Between states the shape morphs on one spring while the content cross-fades; wit
 
 ## Expanded: controls and volume
 
-Expanded holds the playback controls. They dispatch `.command`, and `reduce` shows play/pause, a seek and the shuffle and repeat modes at once (`PlaybackState.playing(_:at:)`, `seeked(to:at:)`) and asks for `.send`; the app's next report replaces that guess. Warble has no speed control: the adapter can't set a chosen speed (its `speed` only steps the app's own list), and #143 was dropped. `SystemVolume` (WarbleCore) reads and sets the default output's volume through Core Audio. `reduce` asks for `.followVolume`, which listens for its changes, only while Expanded shows the player's card, and scrolling over the panel in any state dispatches `.scrolled` with the volume read just before, as `VolumeScroll` (WarbleModel) works out.
+Expanded holds the playback controls. They dispatch `.command`, and `reduce` shows play/pause, a seek and the shuffle and repeat modes at once (`PlaybackState.playing(_:at:)`, `seeked(to:at:)`) and asks for `.send`; the app's next report replaces that guess. Warble has no speed control: the adapter can't set a chosen speed (its `speed` only steps the app's own list), and #143 was dropped. `SystemVolume` (WarbleCore) reads and sets the default output's volume through Core Audio. `reduce` asks for `.followVolume`, which listens for its changes, only while a notch is open, and scrolling over the panel in any state dispatches `.scrolled` with the volume read just before, as `VolumeScroll` (WarbleModel) works out.
 
 ## Previews
 
@@ -32,7 +32,7 @@ To see the notch without playing anything, launch with `open build/WarbleDev.app
 
 ## The context menu
 
-A right-click or Control-click on any notch, in any state, opens `NotchMenu`: the app it follows, Settings, updates and Quit, so Warble can be reached with its menu bar icon off. `NotchPanel.sendEvent` takes the click before SwiftUI, and while the menu is open `HoverIntent` keeps a resting notch resting and `reduce` lets go of Escape, so the key closes the menu.
+A right-click or Control-click on a notch that's showing opens `NotchMenu`: the app it follows, Settings, updates and Quit, so Warble can be reached with its menu bar icon off. `NotchPanel.sendEvent` takes the click before SwiftUI, and while the menu is open `HoverIntent` keeps a resting notch resting and `reduce` lets go of Escape, so the key closes the menu.
 
 ## Keys
 

@@ -19,11 +19,8 @@ public enum AppAction: Equatable, Sendable {
     case dismiss(except: String?)
     /// A command from a notch button or a key in an open notch, which shows what it will do at once.
     case command(PlaybackCommand)
-    /// Bring the app that's playing to the front, or while Idle the one that played last.
+    /// Bring the app that's playing to the front.
     case openApp
-    /// Play the last track again from the idle card: resume the session if the app still has one, otherwise open the
-    /// track, or the app that played it.
-    case resumeLastPlayed
     /// Volume from the slider or a scroll over a notch. A scroll carries the volume read just before, since the card that follows it may not be open.
     case setVolume(Double)
     /// A scroll over a notch: `delta` up and down, as `NSEvent.scrollingDeltaY` reports it.
@@ -31,9 +28,6 @@ public enum AppAction: Equatable, Sendable {
     case volumeRead(Double?, isMuted: Bool)
     case selectOutput(UInt32)
     case outputsRead([AudioOutput], current: UInt32?)
-    /// The last track played, read from disk at launch or shrunk for the idle card after `.remember`.
-    case lastPlayedLoaded(LastPlayed?)
-    case remembered(LastPlayed, pass: Int)
     /// Settings changed.
     case stayVisibleChanged(TimeInterval)
     /// `AppState.deadline` came due.

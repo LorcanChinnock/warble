@@ -124,12 +124,6 @@ public final class ScriptSource: NowPlayingSource {
         !NSRunningApplication.runningApplications(withBundleIdentifier: player.bundleIdentifier).isEmpty
     }
 
-    /// Opens `player` if it has quit and plays. Returns false when the script fails, such as when the user turned off
-    /// Automation for Warble.
-    public nonisolated static func launchAndPlay(_ player: ScriptedPlayer) async -> Bool {
-        await execute(player.launchAndPlayScript) { _ in true }.result ?? false
-    }
-
     /// The items of the list `source` returns, or `nil` when it fails.
     private func run(_ source: String) async -> [ScriptValue]? {
         await Self.execute(source) { result in

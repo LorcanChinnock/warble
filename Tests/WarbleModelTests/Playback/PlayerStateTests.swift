@@ -64,44 +64,13 @@ private struct Run {
     #expect(run.effects == [.send(.togglePlayPause)])
 }
 
-@Test func openAppOpensTheOneThatsPlayingOrElseTheLastPlayed() {
+@Test func openAppOpensTheOneThatsPlaying() {
     var run = Run()
     run.send(.openApp)
     #expect(run.effects == [.openApp(bundleIdentifier: "com.apple.Music")])
     var idle = Run(playing: nil)
     idle.send(.openApp)
     #expect(idle.effects.isEmpty)
-    idle.send(.lastPlayedLoaded(LastPlayed(bundleIdentifier: "com.spotify.client", title: "Old")))
-    idle.send(.openApp)
-    #expect(idle.effects == [.openApp(bundleIdentifier: "com.spotify.client")])
-}
-
-@Test func resumingTheLastTrackPlaysTheSessionWhileTheAppStillHasOne() {
-    var run = Run()
-    run.send(.lastPlayedLoaded(LastPlayed(bundleIdentifier: "com.apple.Music", title: "Old")))
-    run.send(.resumeLastPlayed)
-    #expect(run.effects == [.send(.play)])
-}
-
-@Test func resumingTheLastTrackWithNoSessionOpensItsLinkOrElseItsApp() {
-    var run = Run(playing: nil)
-    run.send(.resumeLastPlayed)
-    #expect(run.effects.isEmpty)
-    run.send(.lastPlayedLoaded(LastPlayed(bundleIdentifier: "com.google.Chrome", title: "Video")))
-    run.send(.resumeLastPlayed)
-    #expect(run.effects == [.openApp(bundleIdentifier: "com.google.Chrome")])
-    var spotify = Run(playing: nil)
-    let link = URL(string: "https://open.spotify.com/track/abc123")
-    spotify.send(.lastPlayedLoaded(LastPlayed(bundleIdentifier: "com.spotify.client", title: "Song", link: link)))
-    spotify.send(.resumeLastPlayed)
-    #expect(spotify.effects == [.openLink(URL(string: "spotify:track:abc123")!)])
-}
-
-@Test func resumingSpotifyAfterItQuitLaunchesItAndPlaysWhenThereIsNoLink() {
-    var run = Run(playing: nil)
-    run.send(.lastPlayedLoaded(LastPlayed(bundleIdentifier: "com.spotify.client", title: "Song")))
-    run.send(.resumeLastPlayed)
-    #expect(run.effects == [.launchAndPlay(.spotify)])
 }
 
 // MARK: Volume and outputs
@@ -178,96 +147,4 @@ private struct Run {
     runner.perform(.selectOutput(2))
     #expect(volume.volume == 0.2)
     #expect(dispatched == [.volumeRead(0.2, isMuted: false), .outputsRead(outputs.all, current: 2)])
-}
-
-// MARK: Last played
-
-@Test func aNewTrackOrNewArtIsRememberedButAPauseOrSeekIsnt() {
-    var run = Run(playing: nil)
-    run.send(.playbackReported(song))
-    #expect(run.effects == [.remember(song, pass: 1)])
-    run.send(.playbackReported(song.playing(false, at: start + 5)))
-    run.send(.playbackReported(song.seeked(to: 50, at: start + 6)))
-    #expect(run.effects.count == 1)
-    var withArt = song
-    withArt.artwork = Data([1, 2, 3])
-    run.send(.playbackReported(withArt))
-    #expect(run.effects.last == .remember(withArt, pass: 2))
-}
-
-@Test func aRememberedTrackIsShownAndSavedUnlessANewerOneHasBegun() {
-    var run = Run(playing: nil)
-    run.send(.playbackReported(song))
-    var next = song
-    next.title = "Next"
-    run.send(.playbackReported(next))
-    run.effects = []
-    // The first track's art finished shrinking after the next began.
-    run.send(.remembered(LastPlayed(bundleIdentifier: song.bundleIdentifier, title: "Song"), pass: 1))
-    #expect(run.state.lastPlayed == nil)
-    #expect(run.effects.isEmpty)
-    let latest = LastPlayed(bundleIdentifier: song.bundleIdentifier, title: "Next")
-    run.send(.remembered(latest, pass: 2))
-    #expect(run.state.lastPlayed == latest)
-    #expect(run.effects == [.saveLastPlayed(latest)])
-}
-
-@Test func artArrivingKeepsTheAddressFoundWhenTheTabStarted() {
-    let found = URL(string: "https://example.com/watch?v=1")
-    let tab = PlaybackState(bundleIdentifier: "com.google.Chrome", title: "Video", elapsedTimestamp: start, rate: 1)
-    var run = Run(playing: nil)
-    run.send(.playbackReported(tab))
-    run.send(.remembered(LastPlayed(bundleIdentifier: tab.bundleIdentifier, title: "Video", link: found), pass: 1))
-    var withArt = tab
-    withArt.artwork = Data([1])
-    run.send(.playbackReported(withArt))
-    // The tab's title no longer names the track by then, so the second look finds no address.
-    run.send(.remembered(LastPlayed(bundleIdentifier: tab.bundleIdentifier, title: "Video", artwork: Data([1])), pass: 2))
-    #expect(run.state.lastPlayed?.link == found)
-    #expect(run.state.lastPlayed?.artwork == Data([1]))
-}
-
-@Test func theSavedTrackLoadsOnlyIfNothingHasPlayedSince() {
-    let saved = LastPlayed(bundleIdentifier: "com.apple.Music", title: "Saved")
-    var fresh = Run(playing: nil)
-    fresh.send(.lastPlayedLoaded(saved))
-    #expect(fresh.state.lastPlayed == saved)
-    var played = Run()
-    played.send(.lastPlayedLoaded(saved))
-    #expect(played.state.lastPlayed == nil)
-}
-
-@MainActor
-@Test func theRunnerShrinksTheArtAndAnswersWithItsPass() async {
-    let runner = makeRunner()
-    var dispatched: [AppAction] = []
-    runner.dispatch = { dispatched.append($0) }
-    runner.appName = { _ in "Music" }
-    runner.perform(.remember(song, pass: 3))
-    await runner.finish()
-    #expect(dispatched == [.remembered(LastPlayed(bundleIdentifier: song.bundleIdentifier, appName: "Music", title: "Song", artist: "Artist"), pass: 3)])
-}
-
-@MainActor
-@Test func theLatestSaveWins() async {
-    let store = FakeLastPlayed()
-    let runner = makeRunner(lastPlayed: store)
-    let first = LastPlayed(bundleIdentifier: "com.apple.Music", title: "First")
-    let second = LastPlayed(bundleIdentifier: "com.apple.Music", title: "Second")
-    runner.perform(.saveLastPlayed(first))
-    runner.perform(.saveLastPlayed(second))
-    await runner.finish()
-    #expect(store.saved == [first, second])
-}
-
-@MainActor
-@Test func theRunnerLoadsTheSavedTrack() async {
-    let store = FakeLastPlayed()
-    store.stored = LastPlayed(bundleIdentifier: "com.apple.Music", title: "Saved")
-    let runner = makeRunner(lastPlayed: store)
-    var dispatched: [AppAction] = []
-    runner.dispatch = { dispatched.append($0) }
-    runner.loadLastPlayed()
-    await runner.finish()
-    #expect(dispatched == [.lastPlayedLoaded(store.stored)])
 }

@@ -8,15 +8,6 @@ import WarbleCore
 @MainActor
 @Observable
 final class PlayerModel {
-    /// The last track played, which the idle card shows. It outlasts what's playing, and Warble too.
-    var lastPlayed: LastPlayed? {
-        didSet {
-            if lastPlayed?.artwork != oldValue?.artwork {
-                lastPlayedArtwork = lastPlayed?.artwork.flatMap(NSImage.init(data:))
-            }
-        }
-    }
-    private(set) var lastPlayedArtwork: NSImage?
     var playback: PlaybackState? {
         didSet {
             let artworkChanged = playback?.artwork != oldValue?.artwork
@@ -56,14 +47,9 @@ final class PlayerModel {
         dispatch(.command(command))
     }
 
-    /// Brings the app that's playing to the front, or while Idle the one that played last.
+    /// Brings the app that's playing to the front.
     func openApp() {
         dispatch(.openApp)
-    }
-
-    /// Plays the last track again from the idle card.
-    func resumeLastPlayed() {
-        dispatch(.resumeLastPlayed)
     }
 
     func setVolume(_ volume: Double) {

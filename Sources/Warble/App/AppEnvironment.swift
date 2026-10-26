@@ -21,8 +21,7 @@ final class AppEnvironment {
     let navigation: SettingsNavigation
     let settingsWindow: SettingsWindow
 
-    /// `lastPlayed` is where the last track played is kept, which the preview keeps only in memory..
-    init(lastPlayed: any LastPlayedStore) {
+    init() {
         // Before anything reads a setting, so every read falls back to the registered default.
         Preferences.registerDefaults()
         settings = SettingsStore()
@@ -41,13 +40,11 @@ final class AppEnvironment {
         let dispatch: (AppAction) -> Void = { [weak store] in store?.dispatch($0) }
         volume = SystemVolume()
         let outputs = CoreAudioOutputs()
-        runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, lastPlayed: lastPlayed, remember: LastPlayedFile.remembering)
+        runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs)
         platform = PlatformEffects(dispatch: dispatch)
         store.perform = { [weak runner] in runner?.perform($0) }
         runner.dispatch = dispatch
         runner.platform = { [weak platform] in platform?.perform($0) }
-        runner.appName = { NSRunningApplication.runningApplications(withBundleIdentifier: $0).first?.localizedName }
-        runner.logError = { message in Logger.warble("notch").error("\(message, privacy: .public)") }
         navigation = SettingsNavigation()
         settingsWindow = SettingsWindow(navigation: navigation)
         settingsWindow.environment = self

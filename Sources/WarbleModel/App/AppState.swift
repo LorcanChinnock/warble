@@ -27,9 +27,6 @@ public struct AppState: Equatable, Sendable {
         get { notches.fullScreen }
         set { notches.fullScreen = newValue }
     }
-    /// The last track played, which the idle card shows. It outlasts what's playing, and Warble too.
-    public internal(set) var last = LastPlayedState()
-    public var lastPlayed: LastPlayed? { last.lastPlayed }
     /// The output's volume from 0 to 1, read while the player's card is open; `nil` when it can't be changed.
     public internal(set) var volume: Double?
     public internal(set) var isMuted = false
@@ -61,7 +58,7 @@ public struct AppState: Equatable, Sendable {
     /// Where each part of the state keeps its deadline: a feature that can come due on its own adds one line here. Key paths
     /// rather than the features themselves, so asking for the deadline copies and boxes nothing.
     private static let deadlines: [any KeyPath<AppState, Date?> & Sendable] = [
-        \.hideAt, \.idle.deadline, \.last.deadline, \.notches.deadline,
+        \.hideAt, \.idle.deadline, \.notches.deadline,
     ]
 
     /// The earliest time something changes if nothing else happens, or `nil` when nothing is due, so `Store` runs one
@@ -75,17 +72,8 @@ public struct AppState: Equatable, Sendable {
         surfaces[display].map(notchState)
     }
 
-    /// What the notch over `display` holds when Expanded.
-    public func card(_ display: String) -> NotchCard? {
-        surfaces[display].map(card)
-    }
-
     func notchState(_ surface: Surface) -> NotchState {
         notches.notchState(surface, shared)
-    }
-
-    func card(_ surface: Surface) -> NotchCard {
-        notches.card(surface, shared)
     }
 
     /// What the features may read of this state.

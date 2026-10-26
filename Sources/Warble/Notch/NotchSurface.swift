@@ -13,8 +13,6 @@ final class NotchSurface {
     let display: String
     /// The camera housing the panel is drawn over.
     var housing: CGRect
-    /// Whether the housing is one Warble draws on a display without a notch.
-    var isVirtual: Bool { model.isVirtual }
     /// What the store last decided for this notch, which `render` draws.
     private var last: NotchRender?
     var state: NotchState { last?.state ?? .hidden }
@@ -52,7 +50,6 @@ final class NotchSurface {
     func render(_ app: AppState, animated: Bool) {
         if let value = NotchRender(app, display: display) {
             last = value
-            model.isVirtual = value.isVirtual
             panel.ignoresMouseEvents = value.ignoresMouseEvents
         }
         if let last {
@@ -94,9 +91,8 @@ final class NotchSurface {
     private func draw(_ value: NotchRender, animated: Bool) {
         let state = value.state
         let notch = housing
-        let card = value.card
         let isPlaying = value.isPlaying
-        guard let frame = NotchLayout.frame(state, notch: notch, card: card) else {
+        guard let frame = NotchLayout.frame(state, notch: notch) else {
             guard shown != nil else { return }
             shown = nil
             morphs += 1
@@ -116,7 +112,7 @@ final class NotchSurface {
             }
             return
         }
-        guard shown?.state != state || shown?.frame != frame || model.card != card || model.isPlaying != isPlaying
+        guard shown?.state != state || shown?.frame != frame || model.isPlaying != isPlaying
         else { return }
         let previous = shown
         shown = (state, frame)
@@ -132,9 +128,8 @@ final class NotchSurface {
         }
         model.notch = notch
         if animated, let panelFrame {
-            // Grow the panel before the shape does, so nothing is clipped, and shrink it once the shape has. The card and
-            // what's playing change in the same animation as the state, so resuming from the idle card, or playback
-            // stopping under the full card, morphs from one card to the other and cross-fades their content.
+            // Grow the panel before the shape does, so nothing is clipped, and shrink it once the shape has. What's playing
+            // changes in the same animation as the state, so playback starting or stopping cross-fades the content.
             let union = panelFrame.union(frame)
             if union != panelFrame {
                 show(in: union)
@@ -142,7 +137,6 @@ final class NotchSurface {
             let reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
             withAnimation(reduceMotion ? Native.fade : Native.morph, completionCriteria: .removed) {
                 model.state = state
-                model.card = card
                 model.isPlaying = isPlaying
             } completion: { [weak self] in
                 guard let self, morph == self.morphs, self.panelFrame != frame else { return }
@@ -150,11 +144,10 @@ final class NotchSurface {
             }
         } else {
             model.state = state
-            model.card = card
             model.isPlaying = isPlaying
             show(in: frame)
         }
-        panel.track(NotchLayout.hoverArea(state, notch: notch, card: card) ?? .zero)
+        panel.track(NotchLayout.hoverArea(state, notch: notch) ?? .zero)
         log.notice("Notch \(state.rawValue, privacy: .public) at \(NSStringFromRect(frame), privacy: .public) over \(NSStringFromRect(notch), privacy: .public)")
     }
 

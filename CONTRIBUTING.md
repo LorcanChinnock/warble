@@ -66,7 +66,7 @@ The submodule is pinned to a tagged commit. Dependabot checks it weekly, but it 
 
 ```
 Sources/WarbleModel/    Pure logic that needs only Foundation, tested on Linux: the app's state and reduce (App/), and each feature's rules
-Sources/WarbleCore/     Logic that needs Apple frameworks but no window: preferences, the sources, Core Audio, the last track's file
+Sources/WarbleCore/     Logic that needs Apple frameworks but no window: preferences, the sources, Core Audio
 Sources/Warble/         The app: the composition root (App/), the notch, Settings, the menu bar menu and updates
 Tests/WarbleModelTests/ WarbleModel's Swift Testing suite, in the same folders, with the ports' fakes in App/Fakes.swift
 Tests/WarbleCoreTests/  WarbleCore's Swift Testing suite

@@ -42,29 +42,8 @@ private let notch = CGRect(x: 856, y: 1205.5, width: 208, height: 37.5)
     #expect(expanded.contains(resting))
 }
 
-@Test func idleCoversTheHousingExactly() {
-    // Same frame as the housing, so nothing shows beyond it.
-    #expect(NotchLayout.frame(.idle, notch: notch) == notch)
-    #expect(NotchLayout.frame(.idle, notch: notch, card: .idle) == notch)
-}
-
-@Test func theIdleCardIsAsWideAsExpandedAndShorter() throws {
-    let player = try #require(NotchLayout.frame(.expanded, notch: notch))
-    let idle = try #require(NotchLayout.frame(.expanded, notch: notch, card: .idle))
-    #expect(idle == CGRect(x: 786, y: 1129.5, width: 348, height: 113.5))
-    #expect(idle.width == player.width)
-    #expect(idle.midX == notch.midX)
-    #expect(idle.maxY == notch.maxY)
-    #expect(idle.height == notch.height + NotchLayout.idleDrop)
-    #expect(idle.height < player.height)
-    #expect(idle.contains(notch))
-    // The card answers the pointer anywhere on it, so moving onto it from the housing keeps it open.
-    #expect(NotchLayout.hoverArea(.expanded, notch: notch, card: .idle) == idle)
-}
-
-@Test func onlyTheHousingCountsAsOnTheNotchWhileIdleOrResting() throws {
+@Test func onlyTheHousingCountsAsOnTheNotchWhileResting() throws {
     #expect(NotchLayout.hoverArea(.hidden, notch: notch) == nil)
-    #expect(NotchLayout.hoverArea(.idle, notch: notch) == notch)
     #expect(NotchLayout.hoverArea(.resting, notch: notch) == notch)
     #expect(NotchLayout.hoverArea(.expanded, notch: notch) == NotchLayout.frame(.expanded, notch: notch))
 }
@@ -75,11 +54,11 @@ private let notch = CGRect(x: 856, y: 1205.5, width: 208, height: 37.5)
     #expect(NotchState(.pinned) == .expanded)
 }
 
-@Test func aRestingNotchOnlyDrawsWingsWithSomethingPlaying() {
+@Test func aNotchOnlyDrawsWithSomethingPlaying() {
     #expect(NotchState(.resting, isPlaying: true) == .resting)
     #expect(NotchState(.expanded, isPlaying: true) == .expanded)
     #expect(NotchState(.pinned, isPlaying: true) == .expanded)
-    #expect(NotchState(.resting, isPlaying: false) == .idle)
+    #expect(NotchState(.resting, isPlaying: false) == .hidden)
 }
 
 @Test(arguments: fifteenInchAir)

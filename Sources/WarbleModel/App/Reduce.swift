@@ -25,20 +25,7 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         }
         effects.append(.send(command))
     case .openApp:
-        if let bundleIdentifier = state.playback?.bundleIdentifier ?? state.lastPlayed?.bundleIdentifier {
-            effects.append(.openApp(bundleIdentifier: bundleIdentifier))
-        }
-    case .resumeLastPlayed:
-        // Idle with a session still reporting means a paused track, which the app can resume. With no session, a play
-        // command would go nowhere, so open the track if it has a link. Spotify reopens on the track it had, so launch it
-        // and play. Anything else just opens its app.
-        if state.playback != nil {
-            return reduce(&state, .command(.play), now: now)
-        } else if let url = state.lastPlayed?.resumeURL {
-            effects.append(.openLink(url))
-        } else if let player = state.lastPlayed.flatMap({ ScriptedPlayer(rawValue: $0.bundleIdentifier) }), player == .spotify {
-            effects.append(.launchAndPlay(player))
-        } else if let bundleIdentifier = state.lastPlayed?.bundleIdentifier {
+        if let bundleIdentifier = state.playback?.bundleIdentifier {
             effects.append(.openApp(bundleIdentifier: bundleIdentifier))
         }
     case .setVolume(let volume):
@@ -53,8 +40,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .outputsRead(let outputs, let current):
         state.outputs = outputs
         state.currentOutput = current
-    case .lastPlayedLoaded, .remembered:
-        effects += state.last.reduce(action, shared: state.shared, at: now)
     case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .dismiss:
         effects += state.notches.reduce(action, shared: state.shared, at: now)
     case .stayVisibleChanged(let delay):
@@ -68,7 +53,6 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         effects += state.notches.reduce(action, shared: state.shared, at: now)
     }
     effects += settle(&state, from: old, at: now)
-    effects += state.last.follow(state.shared, at: now)
     return effects
 }
 

@@ -23,15 +23,6 @@ final class PlatformEffects {
             // Brings the app to the front, opening it if it's quit.
             guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) else { return }
             NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
-        case .launchAndPlay(let player):
-            Task {
-                // A refused script (Automation turned off) still leaves the app open, which is the old behaviour.
-                if await !ScriptSource.launchAndPlay(player) {
-                    perform(.openApp(bundleIdentifier: player.bundleIdentifier))
-                }
-            }
-        case .openLink(let url):
-            NSWorkspace.shared.open(url)
         case .haptic:
             NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .now)
         default:

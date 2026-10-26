@@ -91,8 +91,8 @@ public struct Notches: Feature {
             self.takesEscape = takesEscape
             effects.append(.takeEscape(takesEscape))
         }
-        // Only the player's card has a slider and an output menu.
-        let followsVolume = open.contains { card($0, shared) == .player }
+        // Only an open notch has a slider and an output menu.
+        let followsVolume = !open.isEmpty
         if followsVolume != self.followsVolume {
             self.followsVolume = followsVolume
             effects.append(.followVolume(followsVolume))
@@ -104,20 +104,12 @@ public struct Notches: Feature {
 
     /// The state the notch draws.
     func notchState(_ surface: Surface, _ shared: SharedState) -> NotchState {
-        let state = NotchState(
-            surface.hover.state, isPlaying: shared.showsPlayback
-        )
+        let state = NotchState(surface.hover.state, isPlaying: shared.showsPlayback)
         // A full-screen app has the top of its display to itself.
         return surface.isFullScreen ? .hidden : state
     }
 
-    /// What the notch holds when Expanded.
-    func card(_ surface: Surface, _ shared: SharedState) -> NotchCard {
-        NotchCard(isPlaying: shared.showsPlayback && shared.playback != nil)
-    }
-
-    /// Without anything playing, a "!" or a card to open while Idle, a notch draws nothing, or only a blank notch, and
-    /// takes no hover or click. Nor does one over a full-screen app.
+    /// With nothing playing a notch draws nothing and takes no hover or click. Nor does one over a full-screen app.
     func answersPointer(_ surface: Surface, _ shared: SharedState) -> Bool {
         guard !surface.isFullScreen else { return false }
         let state = notchState(surface, shared)

@@ -84,21 +84,18 @@ final class NotchController {
         ) { [weak self] in self?.scroll($0) }
         surface.makeMenu = { [weak self] in
             guard let self else { return nil }
-            return NotchMenu.make(source: self.playback?.bundleIdentifier ?? self.player.lastPlayed?.bundleIdentifier, updater: self.environment.updater, settingsWindow: self.environment.settingsWindow) { [weak self] in
+            return NotchMenu.make(source: self.playback?.bundleIdentifier, updater: self.environment.updater, settingsWindow: self.environment.settingsWindow) { [weak self] in
                 self?.store.dispatch(.openApp)
             }
         }
         return surface
     }
 
-    /// Draws what `Store` decided: the track, the last one played, the volume and outputs, and each
+    /// Draws what `Store` decided: the track, the volume and outputs, and each
     /// notch's state.
     private func stateChanged(from old: AppState, to new: AppState, by action: AppAction) {
         if new.playback != old.playback {
             player.playback = new.playback
-        }
-        if new.lastPlayed != old.lastPlayed {
-            player.lastPlayed = new.lastPlayed
         }
         if new.volume != old.volume || new.isMuted != old.isMuted {
             player.volume = new.volume
@@ -134,7 +131,7 @@ final class NotchController {
 
     private func isPlayPause(_ action: AppAction) -> Bool {
         switch action {
-        case .command(.togglePlayPause), .command(.play), .command(.pause), .resumeLastPlayed: true
+        case .command(.togglePlayPause), .command(.play), .command(.pause): true
         default: false
         }
     }

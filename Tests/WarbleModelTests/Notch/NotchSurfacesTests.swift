@@ -100,16 +100,16 @@ private struct Run {
     #expect(run.effects == [.takeEscape(false), .watchClicksOutside(false), .followVolume(false)])
 }
 
-@Test func onlyThePlayersCardFollowsTheVolume() {
+@Test func withNothingPlayingAClickOpensNothingAndFollowsNoVolume() {
     var run = Run(playing: nil)
     run.send(.hover(display: "built-in", .click))
-    #expect(run.state.card("built-in") == .idle)
+    #expect(run.state.notchState("built-in") == .hidden)
     #expect(!run.effects.contains(.followVolume(true)))
 }
 
 @Test func withNothingPlayingAndNothingOpenNothingIsDueOrWatched() {
     let run = Run(playing: nil)
-    #expect(run.state.notchState("built-in") == .idle)
+    #expect(run.state.notchState("built-in") == .hidden)
     #expect(run.state.deadline == nil)
     #expect(!run.state.watchesClicks)
     #expect(!run.state.takesEscape)

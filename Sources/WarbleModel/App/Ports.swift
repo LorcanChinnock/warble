@@ -63,38 +63,3 @@ public protocol AudioOutputs: AnyObject {
     func startListening(_ onChange: @escaping () -> Void)
     func stopListening()
 }
-
-/// Where the last track played is kept across launches.
-public protocol LastPlayedStore: Sendable {
-    func load() -> LastPlayed?
-    func save(_ lastPlayed: LastPlayed) throws
-}
-
-/// Keeps the last track played only while Warble runs, so the preview neither reads nor saves the real one, and a test
-/// can see what was saved. Open so a test can slow a save down.
-open class LastPlayedInMemory: LastPlayedStore, @unchecked Sendable {
-    private let lock = NSLock()
-    private var _saved: [LastPlayed] = []
-    private var _stored: LastPlayed?
-
-    /// What `load` returns. Saving doesn't change it, since the preview starts from what it's given.
-    public var stored: LastPlayed? {
-        get { lock.withLock { _stored } }
-        set { lock.withLock { _stored = newValue } }
-    }
-
-    /// Every track saved, in the order the saves landed.
-    public var saved: [LastPlayed] {
-        lock.withLock { _saved }
-    }
-
-    public init() {}
-
-    public func load() -> LastPlayed? {
-        stored
-    }
-
-    open func save(_ lastPlayed: LastPlayed) throws {
-        lock.withLock { _saved.append(lastPlayed) }
-    }
-}

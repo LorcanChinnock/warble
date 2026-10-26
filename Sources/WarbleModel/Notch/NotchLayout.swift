@@ -5,12 +5,8 @@ import Foundation
 
 /// What the notch panel shows.
 public enum NotchState: String, CaseIterable, Sendable {
-    /// Nothing is playing, and the housing doesn't answer a hover: nothing is drawn.
+    /// Nothing is playing, or the display shows a full-screen app: nothing is drawn, and the housing takes no hover.
     case hidden
-    /// Nothing is playing: the panel covers the camera housing exactly and shows
-    /// nothing, black on a real housing and on a virtual one set to Always, and clear on any other virtual one, so a
-    /// hover can open the idle card.
-    case idle
     /// Something is playing and the pointer is elsewhere: the notch widened by a wing on each side.
     case resting
     /// Hovered or clicked: the full card with the art and room for the controls.
@@ -24,26 +20,14 @@ public enum NotchState: String, CaseIterable, Sendable {
         }
     }
 
-    /// How far `hover` has opened the notch, given whether anything is playing.
+    /// How far `hover` has opened the notch, given whether anything is playing. With nothing playing there's nothing to
+    /// open, so an open notch closes behind the housing.
     public init(_ hover: HoverState, isPlaying: Bool) {
         if isPlaying {
             self.init(hover)
         } else {
-            self = hover == .resting ? .idle : .expanded
+            self = .hidden
         }
-    }
-}
-
-/// What Expanded holds, which sets how far it reaches down.
-public enum NotchCard: Sendable {
-    /// What's playing and its controls.
-    case player
-    /// While Idle: the last track played and a button to resume it, or a line saying nothing has played yet.
-    case idle
-
-    /// What Expanded holds: what's playing, and otherwise the idle card.
-    public init(isPlaying: Bool) {
-        self = isPlaying ? .player : .idle
     }
 }
 
@@ -59,13 +43,11 @@ public enum NotchLayout {
     /// How far Expanded reaches below the camera housing: the art beside three lines of text, then the position, the
     /// controls and the volume.
     public static let expandedDrop: CGFloat = 160
-    /// How far the idle card reaches: the art beside three short lines, with no controls below.
-    public static let idleDrop: CGFloat = 76
     /// Room either side of the notch once expanded, for the art beside the text. Measured from the notch, so the card
     /// keeps its proportion to each Mac's camera housing.
     public static let expandedWing: CGFloat = 70
 
-    /// The radius of the housing's bottom corners, which Hidden, Idle and Resting draw too.
+    /// The radius of the housing's bottom corners, which Hidden and Resting draw too.
     public static func cornerRadius(notch: CGRect) -> CGFloat {
         notch.height * cornerRatio
     }
@@ -81,18 +63,15 @@ public enum NotchLayout {
         notch.height
     }
 
-    /// The panel's frame in `state` over `notch`, the camera housing, or `nil` when nothing is drawn. `card` is what
-    /// Expanded holds.
-    public static func frame(_ state: NotchState, notch: CGRect, card: NotchCard = .player) -> CGRect? {
+    /// The panel's frame in `state` over `notch`, the camera housing, or `nil` when nothing is drawn.
+    public static func frame(_ state: NotchState, notch: CGRect) -> CGRect? {
         switch state {
         case .hidden:
             nil
-        case .idle:
-            notch
         case .resting:
             CGRect(x: notch.minX - wing(notch: notch), y: notch.minY, width: notch.width + 2 * wing(notch: notch), height: notch.height)
         case .expanded:
-            CGRect(x: notch.minX - expandedWing, y: notch.minY - drop(card), width: notch.width + 2 * expandedWing, height: notch.height + drop(card))
+            CGRect(x: notch.minX - expandedWing, y: notch.minY - expandedDrop, width: notch.width + 2 * expandedWing, height: notch.height + expandedDrop)
         }
     }
 
@@ -103,19 +82,12 @@ public enum NotchLayout {
         frame.integral
     }
 
-    private static func drop(_ card: NotchCard) -> CGFloat {
-        switch card {
-        case .player: expandedDrop
-        case .idle: idleDrop
-        }
-    }
-
-    /// Where the pointer counts as on the notch in `state`, for `HoverIntent`: only the camera housing while Idle,
-    /// resting, so a pointer crossing the wings or the menu bar on its way elsewhere doesn't open it, and the whole panel once it's open.
-    public static func hoverArea(_ state: NotchState, notch: CGRect, card: NotchCard = .player) -> CGRect? {
+    /// Where the pointer counts as on the notch in `state`, for `HoverIntent`: only the camera housing while resting, so a
+    /// pointer crossing the wings or the menu bar on its way elsewhere doesn't open it, and the whole panel once it's open.
+    public static func hoverArea(_ state: NotchState, notch: CGRect) -> CGRect? {
         switch state {
-        case .idle, .resting: notch
-        case .hidden, .expanded: frame(state, notch: notch, card: card)
+        case .resting: notch
+        case .hidden, .expanded: frame(state, notch: notch)
         }
     }
 }
