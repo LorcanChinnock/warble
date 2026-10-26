@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.0-beta.9](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.8...v0.1.0-beta.9) (2026-10-26)
+
+
+### Features
+
+* **activities:** the activities model and notch drawing ([#230](https://github.com/LorcanChinnock/warble/issues/230)) ([394154c](https://github.com/LorcanChinnock/warble/commit/394154c49270680ca26cfb2660da3d464290e165))
+* **activities:** the activities socket, Settings and guide ([#236](https://github.com/LorcanChinnock/warble/issues/236)) ([6129a2c](https://github.com/LorcanChinnock/warble/commit/6129a2cc30ab003bbbf8ba74f942813a6246f61f))
+* **settings:** lean up the Settings window and restyle it to match the notch ([#240](https://github.com/LorcanChinnock/warble/issues/240)) ([ed8fbe9](https://github.com/LorcanChinnock/warble/commit/ed8fbe9ba351f5eacc3559f548fef77fe588657b))
+
+
+### Performance Improvements
+
+* make perf-app take a minute ([#222](https://github.com/LorcanChinnock/warble/issues/222)) ([#223](https://github.com/LorcanChinnock/warble/issues/223)) ([8399c2e](https://github.com/LorcanChinnock/warble/commit/8399c2edc34aeed8051905ef393fe89a71f3d3fe))
+
 ## [0.1.0-beta.8](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.7...v0.1.0-beta.8) (2026-10-25)
 
 
