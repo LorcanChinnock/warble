@@ -51,13 +51,6 @@ The first public beta: what's playing in the notch, playback and volume controls
 - [#188](https://github.com/LorcanChinnock/warble/issues/188) feat(player): resume the last track after its app has quit, on a normal install
 - [#185](https://github.com/LorcanChinnock/warble/issues/185) fix(player): the last-played card's play button does nothing once the app's session has gone
 
-## [0.2: podcasts and virtual notch titles](https://github.com/LorcanChinnock/warble/issues/33)
-
-Podcast skips, off until you turn them on, and the title in the middle of a virtual notch.
-
-- [#37](https://github.com/LorcanChinnock/warble/issues/37) feat(player): skip 15 seconds and change speed for podcasts
-- [#113](https://github.com/LorcanChinnock/warble/issues/113) feat(notch): show the title in the middle of a virtual notch
-
 ## [0.4: extras](https://github.com/LorcanChinnock/warble/issues/44)
 
 Source chips, plus research into replacing the volume overlay.

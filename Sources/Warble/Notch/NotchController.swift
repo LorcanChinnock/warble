@@ -42,9 +42,6 @@ final class NotchController {
                 if preferences.trackChangeToast != state.showsTrackToast {
                     self.store.dispatch(.trackToastChanged(preferences.trackChangeToast))
                 }
-                if preferences.podcastSkips != state.podcastSkips {
-                    self.store.dispatch(.podcastSkipsChanged(preferences.podcastSkips))
-                }
                 if preferences.virtualTitle != state.showsVirtualTitle {
                     self.store.dispatch(.virtualTitleChanged(preferences.virtualTitle))
                 }

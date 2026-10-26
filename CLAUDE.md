@@ -17,7 +17,6 @@ By default, Warble is calm: a small, fast notch that shows what's playing and st
 Design and write for the first person on this list; the later ones opt in to more.
 
 - **The listener.** Wants play/pause, skip and to see what's on. Never opens Settings. Every default is set for them.
-- **The podcast and audiobook listener.** Skips 15 seconds and changes the speed.
 - **The music fan.** Switches speakers.
 - **The multi-display user.** Uses the virtual notch on external displays and Macs without a notch, and sets rules per display.
 

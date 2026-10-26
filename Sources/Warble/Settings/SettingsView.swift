@@ -74,7 +74,6 @@ private struct GeneralSettings: View {
     @Setting(PreferenceKey.textSize) private var textSize: TextSize
     @Setting(PreferenceKey.stayVisibleAfterPausing) private var stayVisible: Double
     @Setting(PreferenceKey.trackChangeToast) private var trackChangeToast: Bool
-    @Setting(PreferenceKey.podcastSkips) private var podcastSkips: Bool
     @Environment(LoginItem.self) private var loginItem
 
     var body: some View {
@@ -123,11 +122,6 @@ private struct GeneralSettings: View {
                     title: Text("Show a message when the song changes"),
                     detail: Text("The new song's title and artist slide out of the notch for two seconds."),
                     isOn: $trackChangeToast
-                )
-                SettingsToggleRow(
-                    title: Text("Skip by seconds in podcasts"),
-                    detail: Text("Go back 15 seconds or forward 30 in a podcast or audiobook, in place of previous and next."),
-                    isOn: $podcastSkips
                 )
             }
             DisplaysGroup()

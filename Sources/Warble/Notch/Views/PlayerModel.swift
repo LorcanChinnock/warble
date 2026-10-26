@@ -56,11 +56,6 @@ final class PlayerModel {
         dispatch(.command(command))
     }
 
-    /// Back or forward by `seconds` through a podcast or audiobook.
-    func skip(by seconds: TimeInterval) {
-        dispatch(.skip(by: seconds))
-    }
-
     /// Brings the app that's playing to the front, or while Idle the one that played last.
     func openApp() {
         dispatch(.openApp)

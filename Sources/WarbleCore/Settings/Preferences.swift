@@ -11,8 +11,6 @@ public enum PreferenceKey {
     public static let stayVisibleAfterPausing = "stayVisibleAfterPausing"
     /// Whether the new track's title and artist slide out of the notch for a moment when the track changes.
     public static let trackChangeToast = "trackChangeToast"
-    /// Whether a podcast or audiobook has back 15 and forward 30 seconds in place of previous and next.
-    public static let podcastSkips = "podcastSkips"
     /// Whether a virtual notch shows the title of what's playing in its middle.
     public static let virtualTitle = "virtualTitle"
 
@@ -30,7 +28,6 @@ public struct Preferences {
             PreferenceKey.virtualNotch: [String: String](),
             PreferenceKey.stayVisibleAfterPausing: IdleAfterPause.defaultDelay,
             PreferenceKey.trackChangeToast: false,
-            PreferenceKey.podcastSkips: false,
             PreferenceKey.virtualTitle: true,
             PreferenceKey.hasSeenWelcome: false,
         ]
@@ -90,10 +87,6 @@ public struct Preferences {
 
     public var trackChangeToast: Bool {
         store.bool(forKey: PreferenceKey.trackChangeToast)
-    }
-
-    public var podcastSkips: Bool {
-        store.bool(forKey: PreferenceKey.podcastSkips)
     }
 
     public var virtualTitle: Bool {

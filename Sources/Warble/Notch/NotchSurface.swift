@@ -57,7 +57,6 @@ final class NotchSurface {
             model.showsTitle = value.showsTitle
             model.isAlwaysShown = value.isAlwaysShown
             model.showsDoctor = value.showsDoctor
-            model.skipsBySeconds = value.skipsBySeconds
             panel.ignoresMouseEvents = value.ignoresMouseEvents
         }
         if let last {

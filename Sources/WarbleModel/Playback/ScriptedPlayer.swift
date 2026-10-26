@@ -159,9 +159,7 @@ extension PlaybackState {
             rate: state == "playing" ? 1 : 0,
             shuffle: text(6).flatMap(ShuffleMode.init(rawValue:)),
             repeatMode: text(7).flatMap(RepeatMode.init(rawValue:)),
-            link: text(9).flatMap(Self.link(spotifyURI:)),
-            // Spotify plays podcasts too, and names an episode `spotify:episode:<id>`.
-            mediaType: text(9).map { $0.hasPrefix("spotify:episode:") ? .podcast : .music }
+            link: text(9).flatMap(Self.link(spotifyURI:))
         )
     }
 

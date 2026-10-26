@@ -16,8 +16,6 @@ final class NotchModel {
     let doctor: DoctorModel
     /// Whether the open card shows the Doctor's checks rather than the player.
     var showsDoctor = false
-    /// Whether a podcast or audiobook is playing, so the player's card skips by seconds rather than by track.
-    var skipsBySeconds = false
     /// What Expanded holds. `NotchSurface` sets it with `state`, inside the same animation, so a change of card morphs.
     var card = NotchCard.player
     /// Whether the notch shows what's playing, rather than Idle. While Idle, `player` may still hold the paused track.

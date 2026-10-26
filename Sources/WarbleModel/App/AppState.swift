@@ -47,8 +47,6 @@ public struct AppState: Equatable, Sendable {
         get { toast.isOn }
         set { toast.isOn = newValue }
     }
-    /// Whether a podcast or audiobook skips by seconds rather than by track, which Settings turns on.
-    public internal(set) var podcastSkips: Bool
     /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns off.
     public internal(set) var showsVirtualTitle: Bool {
         get { notches.showsVirtualTitle }
@@ -73,14 +71,13 @@ public struct AppState: Equatable, Sendable {
     /// `checks` are what the Doctor finds before it has asked macOS anything: what it finds while the adapter works.
     public init(
         stayVisibleAfterPausing: TimeInterval = IdleAfterPause.defaultDelay,
-        showsTrackToast: Bool = false, podcastSkips: Bool = false, showsVirtualTitle: Bool = true,
+        showsTrackToast: Bool = false, showsVirtualTitle: Bool = true,
         checks: [Doctor.Check] = []
     ) {
         idle = IdleAfterPause(delay: stayVisibleAfterPausing)
         doctor = DoctorState(checks: checks)
         notches = Notches(showsVirtualTitle: showsVirtualTitle)
         toast = ToastState(isOn: showsTrackToast)
-        self.podcastSkips = podcastSkips
     }
 
     /// Whether the notches draw what's playing: something is, and it isn't Idle.
@@ -127,13 +124,6 @@ public struct AppState: Equatable, Sendable {
 
     func card(_ surface: Surface) -> NotchCard {
         notches.card(surface, shared)
-    }
-
-    /// Whether the player's card skips back and forward by seconds rather than by track: Settings turns it on, and a
-    /// podcast or audiobook is playing, with a length to move through.
-    public var skipsBySeconds: Bool {
-        guard podcastSkips, showsPlayback, let playback, playback.duration != nil else { return false }
-        return SpokenWord.contains(playback)
     }
 
     /// What the features may read of this state.

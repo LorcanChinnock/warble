@@ -371,58 +371,6 @@
         }
       }
     },
-    "Back 15 seconds" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "15 Sekunden zurück"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Retroceder 15 segundos"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reculer de 15 secondes"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Indietro di 15 secondi"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "15秒戻る"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "15초 뒤로"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Voltar 15 segundos"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "后退 15 秒"
-          }
-        }
-      }
-    },
     "Back to what's playing" : {
       "localizations" : {
         "de" : {
@@ -1099,58 +1047,6 @@
         }
       }
     },
-    "Forward 30 seconds" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "30 Sekunden vor"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Avanzar 30 segundos"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Avancer de 30 secondes"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Avanti di 30 secondi"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "30秒進む"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "30초 앞으로"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Avançar 30 segundos"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "快进 30 秒"
-          }
-        }
-      }
-    },
     "From %@" : {
       "localizations" : {
         "de" : {
@@ -1255,7 +1151,6 @@
         }
       }
     },
-    "Go back 15 seconds or forward 30 in a podcast or audiobook, in place of previous and next." : {},
     "Help and user guide" : {
       "localizations" : {
         "de" : {
@@ -4484,58 +4379,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "随机播放"
-          }
-        }
-      }
-    },
-    "Skip by seconds in podcasts" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "In Podcasts sekundenweise springen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Saltar por segundos en pódcasts"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sauter quelques secondes dans les podcasts"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Salta di qualche secondo nei podcast"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Podcastで秒数スキップ"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "팟캐스트에서 초 단위로 건너뛰기"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pular por segundos em podcasts"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在播客中按秒跳转"
           }
         }
       }

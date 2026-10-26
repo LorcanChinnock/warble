@@ -39,7 +39,6 @@ final class AppEnvironment {
             state: AppState(
                 stayVisibleAfterPausing: preferences.stayVisibleAfterPausing,
                 showsTrackToast: preferences.trackChangeToast,
-                podcastSkips: preferences.podcastSkips,
                 showsVirtualTitle: preferences.virtualTitle,
                 checks: Doctor.checks(Doctor.Facts(adapter: .working, macOS: .running))
             ),

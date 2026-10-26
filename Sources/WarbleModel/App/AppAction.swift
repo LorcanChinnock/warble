@@ -21,8 +21,6 @@ public enum AppAction: Equatable, Sendable {
     case dismiss(except: String?)
     /// A command from a notch button or a key in an open notch, which shows what it will do at once.
     case command(PlaybackCommand)
-    /// Back or forward through a podcast or audiobook by `by` seconds from where it is, from the player's card.
-    case skip(by: TimeInterval)
     /// Bring the app that's playing to the front, or while Idle the one that played last.
     case openApp
     /// Play the last track again from the idle card: resume the session if the app still has one, otherwise open the
@@ -52,7 +50,6 @@ public enum AppAction: Equatable, Sendable {
     /// Settings changed.
     case stayVisibleChanged(TimeInterval)
     case trackToastChanged(Bool)
-    case podcastSkipsChanged(Bool)
     case virtualTitleChanged(Bool)
     /// Warble opened, with whether it's the first time. Dispatched once, by `AppDelegate`.
     case launched(firstRun: Bool)
