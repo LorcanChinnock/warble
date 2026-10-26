@@ -9,8 +9,6 @@ public enum PreferenceKey {
     public static let virtualNotch = "virtualNotch"
     /// How many seconds a paused track stays in the notch before it goes Idle.
     public static let stayVisibleAfterPausing = "stayVisibleAfterPausing"
-    /// What the camera housing does on a hover while nothing is playing, an `IdleHover`.
-    public static let idleHover = "idleHover"
     /// Whether the new track's title and artist slide out of the notch for a moment when the track changes.
     public static let trackChangeToast = "trackChangeToast"
     /// Whether a podcast or audiobook has back 15 and forward 30 seconds in place of previous and next.
@@ -33,7 +31,6 @@ public struct Preferences {
             PreferenceKey.textSize: TextSize.standard.rawValue,
             PreferenceKey.virtualNotch: [String: String](),
             PreferenceKey.stayVisibleAfterPausing: IdleAfterPause.defaultDelay,
-            PreferenceKey.idleHover: IdleHover.lastPlayed.rawValue,
             PreferenceKey.trackChangeToast: false,
             PreferenceKey.podcastSkips: false,
             PreferenceKey.virtualTitle: true,
@@ -95,10 +92,6 @@ public struct Preferences {
     /// Never negative, so a stray value goes Idle at once rather than never.
     public var stayVisibleAfterPausing: TimeInterval {
         max(store.double(forKey: PreferenceKey.stayVisibleAfterPausing), 0)
-    }
-
-    public var idleHover: IdleHover {
-        IdleHover(rawValue: store.string(forKey: PreferenceKey.idleHover) ?? "") ?? .lastPlayed
     }
 
     public var trackChangeToast: Bool {

@@ -38,7 +38,7 @@ final class AppEnvironment {
         let preferences = Preferences()
         store = Store(
             state: AppState(
-                stayVisibleAfterPausing: preferences.stayVisibleAfterPausing, idleHover: preferences.idleHover,
+                stayVisibleAfterPausing: preferences.stayVisibleAfterPausing,
                 showsTrackToast: preferences.trackChangeToast,
                 podcastSkips: preferences.podcastSkips,
                 showsVirtualTitle: preferences.virtualTitle,

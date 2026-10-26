@@ -40,9 +40,6 @@ final class NotchController {
                 if preferences.stayVisibleAfterPausing != state.idle.delay {
                     self.store.dispatch(.stayVisibleChanged(preferences.stayVisibleAfterPausing))
                 }
-                if preferences.idleHover != state.idleHover {
-                    self.store.dispatch(.idleHoverChanged(preferences.idleHover))
-                }
                 if preferences.trackChangeToast != state.showsTrackToast {
                     self.store.dispatch(.trackToastChanged(preferences.trackChangeToast))
                 }

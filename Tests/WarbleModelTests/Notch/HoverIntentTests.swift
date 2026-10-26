@@ -197,8 +197,8 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
 }
 
 /// What a notch shows for `intent` with nothing playing and nothing wrong.
-private func idleState(_ intent: HoverIntent, idleHover: IdleHover = .lastPlayed) -> NotchState {
-    NotchState(intent.state, isPlaying: false, needsAttention: false, idleHover: idleHover)
+private func idleState(_ intent: HoverIntent) -> NotchState {
+    NotchState(intent.state, isPlaying: false, needsAttention: false)
 }
 
 @Test func theIdleNotchRestsBehindTheHousing() {
@@ -231,39 +231,18 @@ private func idleState(_ intent: HoverIntent, idleHover: IdleHover = .lastPlayed
     #expect(idleState(leaving) == .idle)
 }
 
-@Test func withIdleHoverOffTheIdleHousingDrawsNothingAndNeverOpens() {
-    var hovering = intent((.pointerEntered, 0), (.click, 0.1))
-    hovering.advance(to: entered + 5)
-    #expect(idleState(HoverIntent(), idleHover: .nothing) == .hidden)
-    #expect(idleState(hovering, idleHover: .nothing) == .hidden)
-}
-
 @Test func playbackStoppingUnderAnOpenCardLeavesTheIdleCardOpen() {
     let open = intent((.pointerEntered, 0), (.click, 0.1))
-    #expect(NotchState(open.state, isPlaying: true, needsAttention: false, idleHover: .lastPlayed) == .expanded)
+    #expect(NotchState(open.state, isPlaying: true, needsAttention: false) == .expanded)
     #expect(idleState(open) == .expanded)
     #expect(NotchCard(isPlaying: true, needsAttention: false, showsDoctor: false) == .player)
 }
 
 @Test func withACheckFailedTheIdleNotchRestsWithTheExclamationAndOpensOnTheChecks() {
-    for idleHover in IdleHover.allCases {
-        #expect(NotchState(HoverIntent().state, isPlaying: false, needsAttention: true, idleHover: idleHover) == .resting)
-    }
+    #expect(NotchState(HoverIntent().state, isPlaying: false, needsAttention: true) == .resting)
     #expect(NotchCard(isPlaying: false, needsAttention: true, showsDoctor: false) == .doctor)
     #expect(NotchCard(isPlaying: true, needsAttention: true, showsDoctor: false) == .player)
     #expect(NotchCard(isPlaying: true, needsAttention: true, showsDoctor: true) == .doctor)
-}
-
-@Test func aDisplaySetToAlwaysKeepsItsBlankNotchWhileIdleAndOpensTheIdleCardOnAHover() {
-    let open = intent((.pointerEntered, 0), (.click, 0.1))
-    #expect(NotchState(HoverIntent().state, isPlaying: false, needsAttention: false, idleHover: .lastPlayed, isAlwaysShown: true) == .idle)
-    #expect(NotchState(open.state, isPlaying: false, needsAttention: false, idleHover: .lastPlayed, isAlwaysShown: true) == .expanded)
-}
-
-@Test func withIdleHoverOffADisplaySetToAlwaysKeepsItsBlankNotchAndNeverOpens() {
-    let open = intent((.pointerEntered, 0), (.click, 0.1))
-    #expect(NotchState(HoverIntent().state, isPlaying: false, needsAttention: false, idleHover: .nothing, isAlwaysShown: true) == .idle)
-    #expect(NotchState(open.state, isPlaying: false, needsAttention: false, idleHover: .nothing, isAlwaysShown: true) == .idle)
 }
 
 @Test func theKeyboardShortcutOpensTheNotchAndKeepsItOpenWhereverThePointerGoes() {

@@ -57,7 +57,6 @@ public enum AppAction: Equatable, Sendable {
     case notNow
     /// Settings changed.
     case stayVisibleChanged(TimeInterval)
-    case idleHoverChanged(IdleHover)
     case trackToastChanged(Bool)
     case podcastSkipsChanged(Bool)
     case virtualTitleChanged(Bool)

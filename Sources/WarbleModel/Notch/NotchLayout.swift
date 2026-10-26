@@ -28,32 +28,20 @@ public enum NotchState: String, CaseIterable, Sendable {
         }
     }
 
-    /// How far `hover` has opened the notch, given whether anything is playing, whether a Doctor check failed, what
-    /// the housing does on a hover while Idle, whether it stays drawn then (`NotchHousing.isAlwaysShown`), and whether a
-    /// track-change toast is showing, which only a resting notch with something playing draws.
+    /// How far `hover` has opened the notch, given whether anything is playing, and whether a track-change
+    /// toast is showing, which only a resting notch with something playing draws.
     public init(
-        _ hover: HoverState, isPlaying: Bool, needsAttention: Bool, idleHover: IdleHover, isAlwaysShown: Bool = false,
-        showsToast: Bool = false
+        _ hover: HoverState, isPlaying: Bool, needsAttention: Bool, showsToast: Bool = false
     ) {
         if isPlaying || needsAttention {
             self.init(hover)
             if self == .resting, isPlaying, showsToast {
                 self = .toast
             }
-        } else if idleHover == .nothing {
-            self = isAlwaysShown ? .idle : .hidden
         } else {
             self = hover == .resting ? .idle : .expanded
         }
     }
-}
-
-/// What the camera housing does when the pointer rests on it while nothing is playing, from Settings › Notch.
-public enum IdleHover: String, CaseIterable, Sendable {
-    /// Opens the idle card: the last track played and a button to resume it.
-    case lastPlayed
-    /// Nothing: Warble stays out of sight until something plays.
-    case nothing
 }
 
 /// What Expanded holds, which sets how far it reaches down.
