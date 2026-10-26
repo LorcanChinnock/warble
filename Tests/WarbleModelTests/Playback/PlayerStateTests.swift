@@ -140,12 +140,6 @@ private struct Run {
     #expect(run.effects.first == .setVolume(VolumeScroll.wheelStep))
 }
 
-@Test func theArrowKeysChangeTheVolume() {
-    var run = Run()
-    run.send(.volumeKey(delta: 0.1, volume: 0.5, isMuted: false))
-    #expect(run.effects == [.setVolume(NotchKey.volume(changing: 0.5, by: 0.1))])
-}
-
 @Test func theSliderAndOutputMenuAskForTheirChanges() {
     var run = Run()
     run.send(.setVolume(0.3))

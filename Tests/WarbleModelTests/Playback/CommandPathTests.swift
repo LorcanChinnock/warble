@@ -11,28 +11,6 @@ private func playing() -> AppState {
     return state
 }
 
-@Test func aShortcutDoesWhatTheSameButtonDoes() {
-    var shortcut = playing()
-    var button = playing()
-    let fromShortcut = reduce(&shortcut, .perform(.playPause), now: start + 1)
-    let fromButton = reduce(&button, .command(.togglePlayPause), now: start + 1)
-    #expect(shortcut == button)
-    #expect(fromShortcut == fromButton)
-    #expect(fromShortcut == [.send(.togglePlayPause)])
-}
-
-@Test func everyActionWithACommandSendsIt() {
-    for action in WarbleAction.allCases {
-        var state = playing()
-        let effects = reduce(&state, .perform(action), now: start)
-        if let command = action.command {
-            #expect(effects == [.send(command)])
-        } else {
-            #expect(effects == [.toggleKeyboard])
-        }
-    }
-}
-
 @MainActor
 @Test func theRunnerSendsCommandsToTheSource() async {
     let source = FakeSource()
@@ -46,11 +24,3 @@ private func playing() -> AppState {
     #expect(await source.sent == [.nextTrack])
 }
 
-@MainActor
-@Test func theRunnerHandsTheKeyboardToThePlatform() {
-    let runner = makeRunner()
-    var handed: [AppEffect] = []
-    runner.platform = { handed.append($0) }
-    runner.perform(.toggleKeyboard)
-    #expect(handed == [.toggleKeyboard])
-}

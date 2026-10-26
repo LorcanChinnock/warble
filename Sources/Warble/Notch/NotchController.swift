@@ -29,7 +29,6 @@ final class NotchController {
         let store = environment.store
         player = PlayerModel { [weak store] in store?.dispatch($0) }
         store.onChange = { [weak self] old, new, action in self?.stateChanged(from: old, to: new, by: action) }
-        environment.platform.toggleKeyboard = { [weak self] in self?.toggleKeyboard() }
         environment.displays.onChange = { [weak self] in self?.layOut() }
         // Any write to Warble's defaults; only a change of rule lays the notches out again.
         observers.append(NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: UserDefaults.standard, queue: .main) { [weak self] _ in
@@ -98,7 +97,6 @@ final class NotchController {
             display: housing.display, housing: housing.frame, player: player, doctor: doctor, settings: environment.settings,
             dispatch: { [weak store] in store?.dispatch($0) }
         ) { [weak self] in self?.scroll($0) }
-        surface.onKey = { [weak self] event in self?.key(event) ?? false }
         surface.makeMenu = { [weak self] in
             guard let self else { return nil }
             return NotchMenu.make(source: self.playback?.bundleIdentifier ?? self.player.lastPlayed?.bundleIdentifier, updater: self.environment.updater, settingsWindow: self.environment.settingsWindow) { [weak self] in
@@ -137,8 +135,7 @@ final class NotchController {
         }
         doctor.apply(new.doctor)
         if isPlayPause(action), old.hideAt == nil, old.playback != nil {
-            // Timed from the click or key to the first frame that shows the new state. The click's own window is the
-            // notch it was on; a shortcut has none.
+            // Timed from the click or key to the first frame that shows the new state.
             let input = Perf.input
             Perf.untilNextFrame("Play/pause", on: NSApp.currentEvent?.window?.screen ?? NSScreen.main, cause: input?.cause ?? "shortcut", since: input?.timestamp)
         }
@@ -151,8 +148,6 @@ final class NotchController {
             switch action {
             case .hover(_, .click):
                 surface.measureExpand(cause: "click", since: Perf.input?.timestamp)
-            case .hover(_, .keyboard):
-                surface.measureExpand(cause: "shortcut", since: nil)
             case .tick:
                 // From when the hover delay ended, so a timer that fires late counts against the budget too.
                 let due = store.tickDeadline.map { ProcessInfo.processInfo.systemUptime + $0.timeIntervalSinceNow }
@@ -165,40 +160,9 @@ final class NotchController {
 
     private func isPlayPause(_ action: AppAction) -> Bool {
         switch action {
-        case .command(.togglePlayPause), .command(.play), .command(.pause), .perform(.playPause), .resumeLastPlayed: true
+        case .command(.togglePlayPause), .command(.play), .command(.pause), .resumeLastPlayed: true
         default: false
         }
-    }
-
-    /// Opens the notch on the display the pointer is on, or else the built-in one, with the keyboard in it, or closes it
-    /// again. Any other notch that's open closes, as for a click.
-    private func toggleKeyboard() {
-        let pointer = NSEvent.mouseLocation
-        let screen = NSScreen.screens.first { NSMouseInRect(pointer, $0.frame, false) }
-        let onScreen = surfaces.values.first { surface in screen.map { $0.frame.intersects(surface.housing) } ?? false }
-        guard let surface = onScreen ?? surfaces.values.first(where: { !$0.isVirtual }) ?? surfaces.values.first else { return }
-        let handback = surfaces.values.lazy.filter { $0 !== surface }.compactMap { $0.takeKeyboardHandback() }.first
-        surface.toggleKeyboard(handback: handback)
-    }
-
-    /// Does what a key means while a notch has the keyboard (`NotchKey`), and says whether it meant anything.
-    private func key(_ event: NSEvent) -> Bool {
-        let flags = event.modifierFlags.intersection([.command, .shift, .option, .control])
-        let combo = KeyCombo(keyCode: UInt32(event.keyCode), eventFlags: CGEventFlags(rawValue: UInt64(flags.rawValue)))
-        guard let key = NotchKey(keyCode: combo.keyCode, modifiers: combo.modifiers) else { return false }
-        switch key {
-        case .command(let command):
-            store.dispatch(.command(command))
-        case .seek(let delta):
-            if let playback, let position = NotchKey.position(seeking: delta, in: playback, at: .now) {
-                store.dispatch(.command(.seek(to: position)))
-            }
-        case .volume(let delta):
-            store.dispatch(.volumeKey(delta: delta, volume: volume.volume, isMuted: volume.isMuted))
-        case .close:
-            store.dispatch(.dismiss(except: nil))
-        }
-        return true
     }
 
     /// Scrolling over a notch changes the volume, from the volume now, since the card with the slider may not be open.

@@ -77,10 +77,10 @@ Claude Code loads only this file, so read a feature's note before you change tha
 | --- | --- |
 | [The store](docs/architecture/store.md) | changing `AppState`, `AppAction`, `reduce`, effects, ports or the timer |
 | [Now playing](docs/architecture/now-playing.md) | touching the adapter, `ScriptSource`, `SourcePriority` or how a report becomes a `PlaybackState` |
-| [Settings](docs/architecture/settings.md) | adding or changing a setting, the Settings window, shortcuts or Open at login |
+| [Settings](docs/architecture/settings.md) | adding or changing a setting, the Settings window or Open at login |
 | [Design](docs/architecture/design.md) | changing how anything looks, or adding a colour, font or control |
 | [Doctor](docs/architecture/doctor.md) | changing the checks, their fixes or the "!" on the notch |
-| [The notch](docs/architecture/notch.md) | changing the panel, its states and cards, hover, displays, toasts, scrolling, shortcuts or the keyboard |
+| [The notch](docs/architecture/notch.md) | changing the panel, its states and cards, hover, displays, toasts, scrolling or the keys it takes |
 | [Accessibility](docs/architecture/accessibility.md) | adding or changing any control or label |
 | [Idle](docs/architecture/idle.md) | changing when the notch goes back to Idle |
 | [Welcome and the demo](docs/architecture/welcome.md) | changing the first launch, the welcome window or the demo |

@@ -9,7 +9,6 @@ private let log = Logger.warble("app")
 final class PlatformEffects {
     private let dispatch: (AppAction) -> Void
     /// Opens or closes the notch with the keyboard. The notch sets it, since it knows which notch the pointer is on.
-    var toggleKeyboard: () -> Void = {}
     /// Opens the welcome window, which `AppEnvironment` sets once it's built.
     var showWelcome: () -> Void = {}
     private var clickMonitor: Any?
@@ -45,8 +44,6 @@ final class PlatformEffects {
             }
         case .followPlayers(let follow):
             followPlayers(follow)
-        case .toggleKeyboard:
-            toggleKeyboard()
         case .showWelcome:
             showWelcome()
         default:

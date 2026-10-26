@@ -21,7 +21,7 @@ import Testing
 
 @Test func onlyWarblesOwnKeysCountAsSavedSettings() {
     #expect(Preferences.hasSavedSettings([PreferenceKey.showMenuBarIcon]))
-    #expect(Preferences.hasSavedSettings([PreferenceKey.hotkey(.playPause)]))
+    #expect(Preferences.hasSavedSettings(["hotkey.play-pause"]))
     #expect(!Preferences.hasSavedSettings(["NSWindow Frame Settings", "SUHasLaunchedBefore"]))
 }
 
@@ -32,19 +32,6 @@ import Testing
     #expect(Preferences(store: suite.store).textSize == .standard)
     suite.store.set("huge", forKey: PreferenceKey.textSize)
     #expect(Preferences(store: suite.store).textSize == .standard)
-}
-
-@Test func shortcutsStartClearedAndResetClearsACustomOne() throws {
-    let suite = try TestDefaults()
-    defer { suite.remove() }
-    Preferences.registerDefaults(in: suite.store)
-    let prefs = Preferences(store: suite.store)
-    #expect(WarbleAction.allCases.allSatisfy { prefs.hotkey(for: $0) == nil })
-    let custom = KeyCombo(keyCode: 49, modifiers: KeyCombo.control | KeyCombo.option)
-    suite.store.set(custom.encoded, forKey: PreferenceKey.hotkey(.playPause))
-    #expect(prefs.hotkey(for: .playPause) == custom)
-    Preferences.resetAll(in: suite.store)
-    #expect(prefs.hotkey(for: .playPause) == nil)
 }
 
 /// `@Setting(key)` with no default of its own takes the one `Preferences` registers, so every key a view declares that way

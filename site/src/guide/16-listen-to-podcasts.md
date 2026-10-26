@@ -32,6 +32,3 @@ A live radio show has no end to move through, so it keeps previous and next.
 
 > [!NOTE]
 > Warble doesn't change a podcast's speed. Change it in the app that's playing; Warble's bar keeps up with whatever speed you pick.
-
-> [!TIP]
-> With the keyboard in the notch, <kbd>←</kbd> and <kbd>→</kbd> move 10 seconds back and forward in anything that's playing. See [Accessibility](/docs/accessibility/).

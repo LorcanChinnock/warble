@@ -4,14 +4,13 @@ import WarbleCore
 
 /// The Settings window's pages, in tab order. Players arrives with its feature.
 enum SettingsSection: String, CaseIterable, Identifiable {
-    case general, shortcuts, about
+    case general, about
 
     var id: String { rawValue }
 
     var title: Text {
         switch self {
         case .general: Text("General")
-        case .shortcuts: Text("Shortcuts")
         case .about: Text("About")
         }
     }
@@ -41,7 +40,6 @@ struct SettingsView: View {
             Group {
                 switch navigation.section {
                 case .general: GeneralSettings()
-                case .shortcuts: ShortcutsSettings()
                 case .about: AboutSettings()
                 }
             }
@@ -178,22 +176,6 @@ private struct VirtualNotchRow: View {
                 label: Text(verbatim: name)
             )
         }
-    }
-}
-
-private struct ShortcutsSettings: View {
-    @Environment(ShortcutRecorder.self) private var recorder
-
-    var body: some View {
-        SectionPage {
-            SettingsGroup(footer: Text("The media keys on your keyboard already work. These are for when you want another key.")) {
-                ForEach(WarbleAction.allCases, id: \.self) { action in
-                    ShortcutRow(action: action, recorder: recorder)
-                }
-            }
-        }
-        // Switching pages or closing the window stops a recording, so no key stays caught.
-        .onDisappear { recorder.reset() }
     }
 }
 

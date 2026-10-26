@@ -11,8 +11,6 @@ public enum AppEffect: Equatable, Sendable {
     case followVolume(Bool)
     /// Send a command to the app that's playing.
     case send(PlaybackCommand)
-    /// Open the notch the pointer is on with the keyboard in it, or close it again.
-    case toggleKeyboard
     case openApp(bundleIdentifier: String)
     /// Open a player that has quit and tell it to play, so it resumes the track it had. Only on a click, which is when
     /// macOS asks for Automation permission.
