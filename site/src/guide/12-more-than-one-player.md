@@ -16,4 +16,4 @@ Warble shows one app at a time. When more than one app has something to play, su
 
 ## Choosing an app yourself
 
-You can't yet keep the notch on one app, or tell it to leave an app out, such as a video call. Both are still being built, and the [roadmap](https://github.com/LorcanChinnock/warble/blob/main/docs/roadmap.md) lists them for version 0.1.
+You can't yet keep the notch on one app, or tell it to leave an app out, such as a video call. Both are still being built.

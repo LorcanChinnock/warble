@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Warble is a macOS 15+ app that shows what's playing in the notch and controls it. It's a SwiftPM package (Swift 6 language mode, strict concurrency) whose only Swift dependency is Sparkle; it also bundles mediaremote-adapter, a git submodule built with CMake. Its repository layout, tooling and release pipeline come from Shot (`LorcanChinnock/shot`); when you need a pattern this repo doesn't have yet, look there first. `docs/roadmap.md` lists the planned work, one GitHub issue per change.
+Warble is a macOS 15+ app that shows what's playing in the notch and controls it. It's a SwiftPM package (Swift 6 language mode, strict concurrency) whose only Swift dependency is Sparkle; it also bundles mediaremote-adapter, a git submodule built with CMake. Its repository layout, tooling and release pipeline come from Shot (`LorcanChinnock/shot`); when you need a pattern this repo doesn't have yet, look there first.
 
 ## Mantra
 
@@ -109,6 +109,6 @@ The repository is public, so GitHub's runners are free, but the free plan runs o
 - PR titles use Conventional Commits (`feat(notch): …`, `fix(player): …`). PRs are squash-merged and release-please generates versions and `CHANGELOG.md`, so never edit the version or tags by hand.
 - Website changes use the `site:` type, with no scope (`site: rework the guide home`). release-please ignores it, so it makes no changelog entry or app version. `exclude-paths` already skips commits that touch only `site/`, but a PR that also touches app files counts unless it's `site:`. If a change also alters the app's behaviour, split it so the app part has its own `fix:` or `feat:` PR.
 - Every PR links an issue or sub-issue: put `Closes #N` (or `Part of #N` when it doesn't finish the issue) in the PR body. Create the issue before starting any work, as a sub-issue of its release's umbrella issue.
-- Any substantial change or new feature keeps docs in line in the same PR: the user guide in `site/src/guide/`, `README.md`, the landing page `site/src/pages/index.astro`, and `docs/roadmap.md` if it changes the plan. `CHANGELOG.md` is generated, so don't edit it.
+- Any substantial change or new feature keeps docs in line in the same PR: the user guide in `site/src/guide/`, `README.md` and the landing page `site/src/pages/index.astro`. `CHANGELOG.md` is generated, so don't edit it.
 - Only `make dist` builds `Warble.app` with the Sparkle feed. Every other build is `WarbleDev.app` (bundle ID `dev.lorcan.Warble.dev`, executable `WarbleDev`, no feed), so dev builds never self-update or replace the installed release. `scripts/bundle.sh` does the renaming.
 - For recordings that need a real player, `docs/demo/` is a made-up one with invented tracks and generated art (`docs/demo/README.md`). It's a separate package, outside every Make target and CI.
