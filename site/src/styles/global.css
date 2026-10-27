@@ -206,6 +206,10 @@ section { padding-block: clamp(48px, 8vw, 96px); }
 .prose code { font-size: 0.86em; padding: 0.1em 0.35em; background: var(--fill); border-radius: 5px; }
 .prose pre { padding: 16px; overflow-x: auto; border: 1px solid var(--hairline); border-radius: 10px; background: var(--surface) !important; }
 .prose pre code { padding: 0; background: none; }
+/* Shiki writes both themes; dark mode swaps to the dark one. */
+@media (prefers-color-scheme: dark) {
+  .prose .astro-code, .prose .astro-code span { color: var(--shiki-dark) !important; }
+}
 .prose table { width: 100%; border-collapse: collapse; font-size: 15px; margin: 16px 0; display: block; overflow-x: auto; }
 .prose th, .prose td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--hairline); vertical-align: top; }
 .prose th { border-bottom-color: var(--hairline-strong); font-weight: 600; }
