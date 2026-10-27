@@ -8,8 +8,10 @@ import { Content } from '../../../../CHANGELOG.md';
 </Prose>
 
 <style is:global>
-  .changelog h2 { font-size: 24px; }
+  .changelog h2 { font-size: 30px; margin: 56px 0 4px; }
   .changelog h2 a { font-weight: inherit; text-decoration: none; }
-  .changelog h3 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 20px; }
-  .changelog li { font-size: 15px; }
+  .changelog h2 a:hover { text-decoration: underline; text-decoration-color: var(--pink); }
+  /* Features, Bug Fixes and the rest, as small yellow labels. */
+  .changelog h3 { display: inline-block; margin: 24px 0 6px; padding: 3px 12px; font: 800 12px/1.5 var(--font); letter-spacing: 0.08em; text-transform: uppercase; color: var(--on-accent); background: var(--yellow); border-radius: 999px; }
+  .changelog li { font-size: 16px; line-height: 1.5; }
 </style>

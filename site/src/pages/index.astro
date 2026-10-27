@@ -1,133 +1,156 @@
 ---
 import Copy from '../components/Copy.astro';
 import ForMacs from '../components/ForMacs.astro';
-import Loop from '../components/Loop.astro';
 import NotchDemo from '../components/NotchDemo.astro';
 import Base from '../layouts/Base.astro';
 import { latestRelease } from '../lib/release';
 
 const release = await latestRelease();
 const brew = 'brew install lorcanchinnock/tap/warble';
+
+const points = [
+  { title: 'Any player', color: 'pink', text: 'Apple Music, Spotify, podcast apps, and video in Safari, Chrome or any other browser.', icon: 'M9 18V6l10-2v12M6.5 15.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM16.5 13.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z' },
+  { title: 'Switch speakers', color: 'sky', text: 'Pick where the sound plays, such as your Mac, headphones or AirPods, from the open notch.', icon: 'M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13' },
+  {
+    title: 'Calm by default', color: 'yellow',
+    text: "When nothing's playing, Warble uses no CPU, and pointing at the notch opens a small note that says so. A hover opens the player in a quarter of a second, and a click opens it at once.",
+    icon: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2',
+  },
+  { title: 'Every Mac', color: 'pink', text: 'On a Mac without a notch, or an external display with the menu bar, Warble draws a notch of its own at the top of the screen.', icon: 'M3 5h18v11H3zM8 20h8M12 16v4' },
+  {
+    title: 'Private', color: 'sky',
+    text: "No account, no cloud, no analytics. Warble goes online to check for updates, which it asks about first, and to find the album cover for a song playing in your browser, which sends only its title and artist to Apple's iTunes Search. A click on the artist asks Spotify or YouTube for their page.",
+    icon: 'M5 11h14v9H5zM8 11V8a4 4 0 0 1 8 0v3',
+  },
+  { title: 'Free', color: 'yellow', text: 'Free and open source, with no ads.', icon: 'M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6-8 11-8 11z', sponsor: true },
+];
 ---
 
 <Base>
   <section class="hero">
     <div class="wrap">
-      <NotchDemo />
-      <h1>Your music, in the notch</h1>
+      <h1>Your music, in the <span class="squig">notch<svg aria-hidden="true" viewBox="0 0 300 24" preserveAspectRatio="none"><path d="M4 14C40 2 70 22 110 12S190 4 230 14 280 8 296 12" fill="none" stroke="var(--pink)" stroke-width="8" stroke-linecap="round" pathLength="1" /></svg></span>.</h1>
       <p class="lede">Warble shows what's playing in your Mac's notch. Hover over it to see the song, then play, pause, skip or switch speakers. When nothing's playing, it stays out of sight.</p>
       <div class="cta">
-        <a class="button big" href="/download">Download Warble</a>
+        <a class="button big" href="/download">Download for Mac</a>
         <Copy command={brew} />
       </div>
       <ForMacs />
-      <p class="meta">Free and open source. Beta {release.version}, for macOS 15 or later, on Apple silicon or Intel. <a href="#install">How to install</a></p>
+      <p class="meta">Free and open source · Beta {release.version} · macOS 15 or later · Apple silicon and Intel · <a href="#install">How to install</a></p>
     </div>
   </section>
 
-  <section class="clips" aria-labelledby="clips">
-    <div class="wrap">
-      <h2 id="clips" class="visually-hidden">Warble in use</h2>
-      <ul class="grid">
-        <li class="card">
-          <Loop name="rest" label="The notch at rest, with the album art on one side and a few moving bars on the other" />
-          <p>At rest, the album art and a few moving bars.</p>
-        </li>
-        <li class="card">
-          <Loop name="hover" label="Hovering over the notch, which opens to the song, a progress bar and the controls" />
-          <p>Hover over it to see the song.</p>
-        </li>
-        <li class="card">
-          <Loop name="skip" label="Clicking skip in the open notch, which changes to the next song" />
-          <p>Skip a song without leaving what you're doing.</p>
-        </li>
-      </ul>
-    </div>
+  <section class="screen-section" aria-label="Warble in the notch">
+    <div class="wrap"><NotchDemo /></div>
   </section>
 
   <section class="points" aria-labelledby="points">
     <div class="wrap">
       <h2 id="points" class="visually-hidden">What Warble does</h2>
       <ul class="grid">
-        <li class="card">
-          <h3>Calm by default</h3>
-          <p>When nothing's playing, Warble uses no CPU, and pointing at the notch opens a small note that says so. A paused song stays for 10 seconds unless you choose longer, then the notch is just a notch again.</p>
-        </li>
-        <li class="card">
-          <h3>Quick</h3>
-          <p>A hover opens the player in a quarter of a second, and a click opens it at once. Play and pause change the moment you click, without waiting for the app to catch up.</p>
-        </li>
-        <li class="card">
-          <h3>Any player</h3>
-          <p>Apple Music, Spotify, podcast apps, and video in Safari, Chrome or any other browser.</p>
-        </li>
-        <li class="card">
-          <h3>Every Mac</h3>
-          <p>On a Mac without a notch, or an external display with the menu bar, Warble draws a notch of its own at the top of the screen.</p>
-        </li>
-        <li class="card">
-          <h3>Private</h3>
-          <p>No account, no cloud, no analytics. Warble goes online to check for updates, which it asks about first, and to find the album cover for a song playing in your browser, which sends only its title and artist to Apple's iTunes Search. A click on the artist asks Spotify or YouTube for their page.</p>
-        </li>
-        <li class="card">
-          <h3>Free</h3>
-          <p>Free and open source, with no ads. The <a href="https://github.com/LorcanChinnock/warble">code is on GitHub</a>. If you like it, you can <a href="/sponsor">sponsor it</a>, which helps pay to have Apple notarize it.</p>
-        </li>
+        {points.map((point) => (
+          <li class="card point">
+            <span class={`icon ${point.color}`}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={point.icon} /></svg></span>
+            <h3>{point.title}</h3>
+            <p>{point.text}{point.sponsor && <> The <a href="https://github.com/LorcanChinnock/warble">code is on GitHub</a>. If you like it, you can <a href="/sponsor">sponsor it</a>, which helps pay to have Apple notarize it.</>}</p>
+          </li>
+        ))}
       </ul>
     </div>
   </section>
 
-  <section class="install" id="install" aria-labelledby="install-title">
-    <div class="wrap narrow-text">
-      <h2 id="install-title">Install</h2>
-      <Copy command={brew} />
-      <p>Or <a href="/download">download the zip</a> and drag Warble into Applications.</p>
-      <ForMacs />
-      <p>Warble isn't notarized by Apple yet, so macOS blocks it the first time you open it:</p>
-      <ol class="steps">
-        <li>Open Warble from Applications. macOS says it can't check Warble. Click <b>Done</b>.</li>
-        <li>Open <b>System Settings</b>, choose <b>Privacy &amp; Security</b> and scroll down to <b>Security</b>.</li>
-        <li>Click <b>Open Anyway</b> next to the message about Warble, then confirm.</li>
-        <li>Play something. The notch slides out to show it.</li>
-      </ol>
-      <p>Warble is a beta, still being built, so expect changes between versions. The <a href="/docs/get-started/">guide</a> covers the rest, and the <a href="https://github.com/LorcanChinnock/warble/blob/main/docs/roadmap.md">roadmap</a> lists what's coming.</p>
+  <section class="install-section" id="install" aria-labelledby="install-title">
+    <div class="wrap">
+      <div class="panel">
+        <div class="left">
+          <h2 id="install-title">Get Warble.</h2>
+          <p class="blurb">Install it with Homebrew, or download the zip and drag Warble into Applications.</p>
+          <Copy command={brew} />
+          <div class="actions">
+            <a class="button big dark" href="/download">Download the zip</a>
+            <a class="button big quiet" href="https://github.com/LorcanChinnock/warble">GitHub</a>
+          </div>
+          <ForMacs />
+        </div>
+        <div class="right">
+          <p class="label">The first time you open it</p>
+          <p class="gate">Warble isn't notarized by Apple yet, so macOS blocks it the first time you open it:</p>
+          <ol class="steps">
+            <li><span>Open Warble from Applications. macOS says it can't check Warble. Click <b>Done</b>.</span></li>
+            <li><span>Open <b>System Settings</b>, choose <b>Privacy &amp; Security</b> and scroll down to <b>Security</b>.</span></li>
+            <li><span>Click <b>Open Anyway</b> next to the message about Warble, then confirm.</span></li>
+            <li><span>Play something. The notch slides out to show it.</span></li>
+          </ol>
+          <p class="beta">Warble is a beta, still being built, so expect changes between versions. The <a href="/docs/get-started/">guide</a> covers the rest, and the <a href="https://github.com/LorcanChinnock/warble/blob/main/docs/roadmap.md">roadmap</a> lists what's coming.</p>
+        </div>
+      </div>
     </div>
   </section>
 </Base>
 
 <style>
-  .hero { padding-top: clamp(24px, 4vw, 48px); }
-  .hero .wrap { justify-items: center; text-align: center; }
-  .hero :global(.screen) { margin-bottom: clamp(4px, 2vw, 16px); }
-  .hero h1 { font-size: clamp(40px, 6.5vw, 72px); margin: 0; }
-  .lede { font-size: clamp(18px, 2.1vw, 21px); margin: 0; max-width: 32em; }
-  .cta { display: flex; flex-wrap: wrap; gap: 12px 16px; justify-content: center; align-items: center; width: 100%; }
-  .cta :global(.copy) { flex: 0 1 480px; min-width: 0; text-align: start; }
-  .button.big { min-height: 50px; padding: 12px 24px; font-size: 17px; }
-  .meta { margin: 0; font-size: 15px; color: var(--secondary); max-width: 32em; }
+  section { padding-block: clamp(32px, 5vw, 64px); }
+  .hero { padding-top: clamp(24px, 5vw, 64px); }
+  .hero .wrap { display: grid; justify-items: center; text-align: center; gap: 0; }
+  h1 { max-width: 15ch; font-size: clamp(46px, 9vw, 120px); line-height: 0.98; letter-spacing: -0.035em; }
+  .squig { position: relative; display: inline-block; }
+  .squig svg { position: absolute; left: -2%; bottom: -0.12em; width: 104%; height: 0.2em; overflow: visible; }
+  .squig path { stroke-dasharray: 1; stroke-dashoffset: 0; animation: draw 1.2s 0.5s ease-out backwards; }
+  @keyframes draw { from { stroke-dashoffset: 1; } }
+  .lede { margin: 26px 0 0; max-width: 34em; font-size: clamp(18px, 2vw, 23px); line-height: 1.45; color: var(--secondary); }
+  .cta { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; align-items: center; width: 100%; margin-top: 32px; }
+  .cta :global(.copy) { flex: 0 1 460px; min-width: 0; text-align: start; }
+  .hero :global(.for-macs) { justify-content: center; margin-top: 18px; }
+  .meta { margin: 18px 0 0; font-size: 15px; font-weight: 600; color: var(--secondary); max-width: 40em; }
   .meta a { color: var(--fg); }
-  .hero :global(.for-macs) { justify-content: center; }
 
-  section { padding-block: clamp(28px, 4vw, 48px); }
-  .wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .screen-section { padding-top: clamp(20px, 4vw, 48px); }
 
-  .clips .grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
-  .clips .card { padding: 6px 6px 16px; display: grid; gap: 12px; overflow: hidden; }
-  .clips p { margin: 0; padding-inline: 18px; color: var(--secondary); }
-  .clips :global(video) { width: 100%; height: auto; border-radius: calc(var(--radius) - 6px); display: block; }
+  .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
+  .point { margin: 0; padding: 28px 28px 30px; display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 4px 16px; align-items: start; align-content: start; }
+  .point h3 { font-size: 26px; padding-top: 10px; }
+  .point p { grid-column: 2; margin: 0; color: var(--secondary); font-size: 17px; line-height: 1.5; }
+  .point a { color: var(--fg); font-weight: 700; }
+  @media (max-width: 560px) { .point p { grid-column: 1 / -1; margin-top: 4px; } }
+  .icon { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 18px; color: var(--on-accent); background: var(--yellow); }
+  .icon.pink { background: var(--pink); }
+  .icon.sky { background: var(--sky); }
+  .icon svg { width: 26px; height: 26px; }
 
-  .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
-  .grid .card { padding: 22px 24px; display: grid; gap: 8px; align-content: start; }
-  .grid h3 { font-size: 20px; letter-spacing: -0.015em; }
-  .grid p { margin: 0; color: var(--secondary); }
-  .grid a { color: var(--fg); }
-
-  .narrow-text { max-width: 640px; }
-  .install h2 { font-size: clamp(30px, 4.5vw, 44px); }
-  .install p { margin: 0; }
-  .install a { color: var(--fg); }
-  .steps { margin: 0; padding-left: 1.4em; display: grid; gap: 6px; }
-  .steps li::marker { color: var(--secondary); }
+  .panel {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 40px 56px;
+    padding: clamp(28px, 6vw, 80px); border-radius: clamp(28px, 5vw, 56px);
+    background: var(--yellow); color: var(--on-accent);
+  }
+  .panel h2 { font-size: clamp(44px, 7vw, 96px); line-height: 0.95; }
+  .blurb { margin: 20px 0 24px; max-width: 24em; font-size: clamp(18px, 2vw, 21px); line-height: 1.45; }
+  .panel :global(.copy) { max-width: 460px; color: var(--fg); }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+  .panel :global(.for-macs) { margin-top: 18px; }
+  .panel .button.quiet { background: #fffbf2; color: #2b2118; }
+  .label { margin: 0 0 8px; font: 800 12px/1.4 var(--font); letter-spacing: 0.1em; text-transform: uppercase; }
+  .gate { margin: 0 0 16px; }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; counter-reset: step; }
+  .steps li {
+    counter-increment: step; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; align-items: center;
+    padding: 14px 18px 14px 14px; border-radius: 22px; background: rgb(255 251 242 / 0.85); color: #2b2118;
+  }
+  .steps li::before {
+    content: counter(step); display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+    font: 700 20px/1 var(--display); font-variation-settings: 'SOFT' 100; color: var(--yellow); background: var(--notch);
+  }
+  .beta { margin: 20px 0 0; font-size: 15px; font-weight: 600; max-width: 34em; }
+  .panel a:not(.button) { color: inherit; text-decoration-color: var(--on-accent); }
 
   .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  /* Sections rise in as they scroll into view, where the browser can tie an animation to scrolling. */
+  @supports (animation-timeline: view()) {
+    .point, .panel { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
+    @keyframes rise { from { opacity: 0; transform: translateY(30px); } }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .squig path { animation: none; }
+    .point, .panel { animation: none; }
+  }
 </style>

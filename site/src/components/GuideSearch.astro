@@ -11,24 +11,25 @@
 <style>
   .guide-search[hidden] { display: none; }
   input {
-    width: 100%; min-height: 40px; padding: 6px 12px;
-    font: 400 16px/1.3 var(--font); color: var(--fg);
+    width: 100%; min-height: 46px; padding: 6px 18px;
+    font: 500 16px/1.3 var(--font); color: var(--fg);
     background: var(--surface);
-    border: 1px solid var(--hairline-strong); border-radius: 10px;
+    border: 0; border-radius: 999px; box-shadow: 0 0 0 1px var(--hairline), 0 3px 0 var(--hairline);
   }
   input::placeholder { color: var(--secondary); }
-  input:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
-  .status { margin: 8px 2px 0; font-size: 14px; color: var(--secondary); }
+  input:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; border-radius: 999px; }
+  .status { margin: 10px 4px 0; font-size: 14px; font-weight: 600; color: var(--secondary); }
   .status:empty { display: none; }
   .results { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
-  .results:not(:empty) { margin-top: 10px; }
-  .results :global(li) { margin: 0; }
-  .results :global(a) { display: block; padding: 6px 8px; border-radius: 8px; text-decoration: none; font-size: 15px; line-height: 1.35; }
+  .results:not(:empty) { margin-top: 12px; }
+  .results :global(li) { margin: 0; padding: 0; }
+  .results :global(li::before) { display: none; }
+  .results :global(a) { display: block; padding: 8px 12px; border-radius: 14px; text-decoration: none; font-size: 15px; line-height: 1.35; font-weight: 500; }
   .results :global(a:hover), .results :global(a:focus-visible) { background: var(--fill); }
-  .results :global(.page) { display: block; font: 600 12px/1.4 var(--font); letter-spacing: 0.04em; text-transform: uppercase; color: var(--secondary); }
-  .results :global(.title) { display: block; font-weight: 600; }
+  .results :global(.page) { display: block; font: 800 11px/1.4 var(--font); letter-spacing: 0.1em; text-transform: uppercase; color: var(--secondary); }
+  .results :global(.title) { display: block; font-weight: 800; }
   .results :global(.excerpt) { display: block; margin-top: 2px; font-size: 14px; color: var(--secondary); }
-  .results :global(mark) { background: var(--fill-strong); color: var(--fg); font-weight: 600; border-radius: 3px; padding-inline: 1px; }
+  .results :global(mark) { background: var(--yellow); color: var(--on-accent); font-weight: 700; border-radius: 4px; padding-inline: 2px; }
 </style>
 
 <script>

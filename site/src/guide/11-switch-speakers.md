@@ -12,6 +12,8 @@ Warble can move your Mac's sound to another speaker without opening Control Cent
 2. Click the speaker symbol at the right end of the volume slider. It shows the speaker that's playing now, such as a laptop for your Mac's own speakers or AirPods.
 3. Choose a speaker from the list. The one that's playing has a tick.
 
+![The speaker list opened from the symbol at the end of the volume bar, with a tick beside the speaker that's playing](../../../docs/media/speakers.png)
+
 Everything your Mac plays moves to that speaker, not just the app in the notch. Each speaker remembers its own volume, so the slider jumps to the new speaker's level.
 
 > [!TIP]

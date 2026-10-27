@@ -32,6 +32,8 @@ A small icon of three bars appears in the menu bar, and the notch looks just as 
 2. The notch slides out a little. The album art sits on its left, and on its right a few bars move while it plays.
 3. Hover over the notch, or click it. It opens into the player, with the song, how far through it you are, and the controls.
 
+![The open notch, with the album art, the song, how far through it you are and the controls](../../../docs/media/player.png)
+
 Move the pointer away and the notch closes again. [Control playback](/docs/control-playback/) covers everything the player does.
 
 When you pause, the song stays in the notch for 10 seconds, then Warble hides behind the camera. You can make that a minute, or until something else plays, in Settings. When nothing is playing, Warble shows nothing and does nothing until a song starts. If you point at the notch then, a small note says "Nothing playing" and goes when you move away.
