@@ -66,14 +66,13 @@ public enum VirtualNotch {
     }
 
     /// The housings to draw over, in the order of `displays`: the real one where there is one, and a virtual one on the
-    /// main display while no display has a real one, because a MacBook's lid is closed or the Mac has no notch.
+    /// main display when it has none, even beside a MacBook with its lid open.
     public static func housings(_ displays: [NotchDisplay]) -> [NotchHousing] {
-        let noNotch = !displays.contains { $0.notch != nil }
-        return displays.compactMap { display in
+        displays.compactMap { display in
             if let notch = display.notch {
                 return NotchHousing(display: display.id, frame: notch, isVirtual: false)
             }
-            guard noNotch, display.isMain else { return nil }
+            guard display.isMain else { return nil }
             return NotchHousing(display: display.id, frame: housing(in: display.frame, menuBarHeight: display.menuBarHeight), isVirtual: true)
         }
     }
