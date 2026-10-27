@@ -67,7 +67,7 @@ private struct Run {
 @Test func openAppOpensTheOneThatsPlaying() {
     var run = Run()
     run.send(.openApp)
-    #expect(run.effects == [.openApp(bundleIdentifier: "com.apple.Music")])
+    #expect(run.effects == [.openApp(bundleIdentifier: "com.apple.Music", title: "Song")])
     var idle = Run(playing: nil)
     idle.send(.openApp)
     #expect(idle.effects.isEmpty)

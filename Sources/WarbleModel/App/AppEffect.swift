@@ -11,7 +11,8 @@ public enum AppEffect: Equatable, Sendable {
     case followVolume(Bool)
     /// Send a command to the app that's playing.
     case send(PlaybackCommand)
-    case openApp(bundleIdentifier: String)
+    /// Bring the playing app to the front, and in a browser the tab, which is the one titled `title`.
+    case openApp(bundleIdentifier: String, title: String)
     case setVolume(Double)
     /// A light tick on a Force Touch trackpad.
     case haptic
