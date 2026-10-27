@@ -2253,6 +2253,9 @@
           }
         }
       }
+    },
+    "macOS kept the sound on %@. Switch in System Settings › Sound instead." : {
+
     }
   },
   "version" : "1.0"
