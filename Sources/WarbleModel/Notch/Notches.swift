@@ -11,6 +11,9 @@ public struct Notches: Feature {
     /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns on.
     public internal(set) var showsVirtualTitle = false
 
+    /// When a virtual notch is there, which Settings chooses.
+    public internal(set) var virtualVisibility = VirtualNotchVisibility.standard
+
     /// What the effects last asked for, so each is asked for once per change.
     public internal(set) var watchesClicks = false
     public internal(set) var takesEscape = false
@@ -56,6 +59,8 @@ public struct Notches: Feature {
             dismiss(except: except, shared, at: now)
         case .virtualTitleChanged(let on):
             showsVirtualTitle = on
+        case .virtualVisibilityChanged(let visibility):
+            virtualVisibility = visibility
         case .tick:
             for display in surfaces.keys {
                 surfaces[display]?.hover.advance(to: now)
@@ -111,7 +116,13 @@ public struct Notches: Feature {
     func notchState(_ surface: Surface, _ shared: SharedState) -> NotchState {
         let state = NotchState(surface.hover.state, isPlaying: shared.showsPlayback)
         // A full-screen app has the top of its display to itself.
-        return surface.isFullScreen ? .hidden : state
+        guard !surface.isFullScreen else { return .hidden }
+        guard surface.isVirtual else { return state }
+        return switch virtualVisibility {
+        case .whenPlaying: state
+        case .always: shared.showsPlayback ? state : .empty
+        case .off: .hidden
+        }
     }
 
     /// Whether the notch draws the title in its middle. Only a virtual notch has room, since a real one's middle is the
@@ -121,11 +132,12 @@ public struct Notches: Feature {
             && shared.playback?.title.isEmpty == false
     }
 
-    /// With nothing playing a notch draws nothing and takes no hover or click. Nor does one over a full-screen app.
+    /// With nothing playing a notch draws nothing, or only its empty shape, and takes no hover or click. Nor does one over
+    /// a full-screen app.
     func answersPointer(_ surface: Surface, _ shared: SharedState) -> Bool {
         guard !surface.isFullScreen else { return false }
         let state = notchState(surface, shared)
-        return state != .hidden
+        return state != .hidden && state != .empty
     }
 
     /// Whether any notch is open.

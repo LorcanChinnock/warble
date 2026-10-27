@@ -44,7 +44,7 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.showsGlow = on
     case .pauseDelayChanged(let delay):
         state.idle.pauseDelay = delay
-    case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .dismiss, .virtualTitleChanged:
+    case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .dismiss, .virtualTitleChanged, .virtualVisibilityChanged:
         effects += state.notches.reduce(action, shared: state.shared, at: now)
     case .tick:
         if let hideAt = state.hideAt, hideAt <= now {

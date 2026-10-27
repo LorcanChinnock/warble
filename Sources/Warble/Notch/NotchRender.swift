@@ -17,6 +17,6 @@ struct NotchRender: Equatable {
         self.state = state
         isPlaying = app.showsPlayback
         showsTitle = app.titleInNotch(display)
-        ignoresMouseEvents = surface.isFullScreen
+        ignoresMouseEvents = surface.isFullScreen || state == .empty
     }
 }

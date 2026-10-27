@@ -759,6 +759,9 @@
     "Notch" : {
 
     },
+    "Notch on external displays" : {
+
+    },
     "Notch preview" : {
 
     },
@@ -976,6 +979,9 @@
         }
       }
     },
+    "On a display without a notch, or with the lid closed, when Warble draws a notch of its own." : {
+
+    },
     "On a display without a notch, the middle of the notch shows the song's title and artist." : {
 
     },
@@ -1030,6 +1036,9 @@
           }
         }
       }
+    },
+    "Only when playing" : {
+
     },
     "Open" : {
 

@@ -5,13 +5,14 @@ import WarbleModel
 private let log = Logger.warble("settings")
 
 /// What Settings chooses about the notch: whether a virtual notch shows the title in its middle, which starts off, how
-/// long a paused song stays, and whether the open card glows, which starts on. Each is kept in Warble's own preferences and handed to the store, which decides what
+/// long a paused song stays, when a virtual notch is there, and whether the open card glows, which starts on. Each is kept in Warble's own preferences and handed to the store, which decides what
 /// follows.
 @MainActor
 @Observable
 final class NotchSettings {
     private static let key = "virtualTitle"
     private static let pauseDelayKey = "pauseDelay"
+    private static let visibilityKey = "virtualNotch"
     private static let glowKey = "albumArtGlow"
 
     private let defaults: UserDefaults
@@ -35,6 +36,15 @@ final class NotchSettings {
         }
     }
 
+    var virtualVisibility: VirtualNotchVisibility {
+        didSet {
+            guard virtualVisibility != oldValue else { return }
+            defaults.set(virtualVisibility.rawValue, forKey: Self.visibilityKey)
+            log.notice("Virtual notch \(self.virtualVisibility.rawValue, privacy: .public)")
+            dispatch(.virtualVisibilityChanged(virtualVisibility))
+        }
+    }
+
     var showsGlow: Bool {
         didSet {
             guard showsGlow != oldValue else { return }
@@ -48,6 +58,7 @@ final class NotchSettings {
         self.defaults = defaults
         self.dispatch = dispatch
         showsVirtualTitle = defaults.bool(forKey: Self.key)
+        virtualVisibility = defaults.string(forKey: Self.visibilityKey).flatMap(VirtualNotchVisibility.init) ?? .standard
         showsGlow = defaults.object(forKey: Self.glowKey) as? Bool ?? true
         pauseDelay = defaults.string(forKey: Self.pauseDelayKey).flatMap(PauseDelay.init) ?? .standard
     }
@@ -56,6 +67,9 @@ final class NotchSettings {
     func start() {
         if showsVirtualTitle {
             dispatch(.virtualTitleChanged(true))
+        }
+        if virtualVisibility != .standard {
+            dispatch(.virtualVisibilityChanged(virtualVisibility))
         }
         if !showsGlow {
             dispatch(.glowChanged(false))
