@@ -37,9 +37,19 @@ private func main(_ display: NotchDisplay) -> NotchDisplay {
     #expect(VirtualNotch.housing(in: external.frame, menuBarHeight: 0).height == 24)
 }
 
-@Test func onlyTheRealNotchShowsWithTheLidOpen() throws {
+@Test func onlyTheRealNotchShowsWhileTheBuiltInDisplayIsMain() throws {
     let notch = try #require(builtIn.notch)
     #expect(VirtualNotch.housings([builtIn, external]) == [NotchHousing(display: "built-in", frame: notch, isVirtual: false)])
+}
+
+@Test func anExternalMainDisplayDrawsOneBesideAnOpenLid() throws {
+    var laptop = builtIn
+    laptop.isMain = false
+    let notch = try #require(laptop.notch)
+    #expect(VirtualNotch.housings([laptop, main(external)]) == [
+        NotchHousing(display: "built-in", frame: notch, isVirtual: false),
+        NotchHousing(display: "external", frame: CGRect(x: 2712, y: 1416, width: 160, height: 24), isVirtual: true),
+    ])
 }
 
 @Test func theMainDisplayTakesOverWhenTheLidCloses() {

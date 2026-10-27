@@ -1,6 +1,6 @@
 ---
 title: External displays
-summary: Where the notch shows when your Mac has no notch, or the lid is closed.
+summary: Where the notch shows when your Mac has no notch, or you use an external display.
 group: Displays
 ---
 
@@ -8,7 +8,7 @@ Some Macs and most displays have no notch, so Warble can draw one of its own at 
 
 ## Where it shows
 
-- **On a MacBook with a notch,** Warble uses the notch while the lid is open. When you close the lid and use an external display, the notch moves to the display that has the menu bar.
+- **On a MacBook with a notch,** Warble always uses its notch while the lid is open. If the menu bar is on an external display, Warble draws a notch there too. When you close the lid, the notch moves to the display that has the menu bar.
 - **On a Mac without a notch,** such as a Mac mini or an older MacBook Air, Warble draws one on the display that has the menu bar.
 
 Other displays don't show a notch. Drag the menu bar to another display in System Settings › Displays and the notch follows it.
