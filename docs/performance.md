@@ -6,7 +6,7 @@ Warble sits on screen the whole time something plays, so its cost is paid all da
 
 `Tests/WarbleCoreTests/PerfTests.swift` times the paths between a player reporting a change and the notch showing it, with `ContinuousClock`. After one warm-up run, it keeps the fastest of at least 15 runs spread over at least half a second. A busy runner can only add time, so the fastest run is the closest to what the work costs, and a slow spell would have to last the whole half second to fail a test. `make test` skips the suite. `make perf` and CI's **Perf** step run it alone, one test at a time, so other tests don't skew the timings.
 
-CI runs it on the release pull request, which makes it part of the release gate, and on any pull request labelled `performance`. Label a pull request before you push when it changes `AdapterStream` or `ArtworkColours`, or anything else on these paths, and run `make perf` yourself.
+CI runs it on the release pull request, which makes it part of the release gate, and on any pull request labelled `performance`. The Perf step writes each path's fastest run beside its budget to the job summary (`scripts/ci-test.sh` collects them from the file `WARBLE_PERF_RESULTS` names), so drift shows before a budget fails. Label a pull request before you push when it changes `AdapterStream` or `ArtworkColours`, or anything else on these paths, and run `make perf` yourself.
 
 Each budget is 2× the baseline measured on the CI runner, which is slower than the reference Mac. The baseline is the slowest of three CI runs. That leaves room for a noisy runner but still fails a change that does the work again on every call: decoding the art again on every line makes a pause about 7× slower.
 
