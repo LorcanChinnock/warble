@@ -18,18 +18,15 @@ npm run preview   # build, then serve dist/ with wrangler, _redirects and _heade
 
 ## Deploying
 
-Cloudflare builds and deploys the site itself, with [Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/), on every push to `main`. There is no GitHub workflow for it. A merged site change is live in a minute or two, and the guide and changelog describe `main`, which can be ahead of the version people can install, so write about a feature only once it is in `main`.
+Cloudflare Workers Builds builds and deploys the site from the GitHub repo on every push to `main`, so it uses no GitHub Actions minutes. The `warble-site` Worker is connected to the repo with:
 
-Set it up once in the Cloudflare dashboard, under Workers & Pages › `warble-site` › Settings › Builds:
+- Root directory: `site` (the build also reads `../docs/media`, `../CHANGELOG.md` and `../.release-please-manifest.json`)
+- Build command: `npm run build`; deploy command: `npx wrangler deploy` (Cloudflare's build provides wrangler, so it isn't a dependency)
+- Production branch `main`; build watch paths `site/*`, `docs/*`, `CHANGELOG.md`
+- Build variable `GITHUB_TOKEN`: a read-only token, so `src/lib/release.ts` doesn't hit GitHub's anonymous rate limit on shared build IPs
 
-- Connect the `LorcanChinnock/warble` repository and choose the `main` branch.
-- Root directory: `site`
-- Build command: `npm ci && npm run build`
-- Deploy command: `npx wrangler deploy`
-- Optional build variable `GITHUB_TOKEN`: a read-only token for public repositories. `src/lib/release.ts` reads the latest release from GitHub at build time, and without a token Cloudflare's shared addresses can hit GitHub's anonymous rate limit. It then falls back to `.release-please-manifest.json`.
+A merged site change is live in a minute or two, so the guide and changelog describe `main`, which can be ahead of the version people can install. Write about a feature once it is in `main`.
 
-`site/.node-version` pins the Node version the build uses. `lorcanchinnock.com` must be a zone on the same Cloudflare account. The first deploy creates the `warble-site` Worker, the `warble` custom domain and its DNS record.
+`release.yml` POSTs to a deploy hook (Settings › Builds › Deploy Hooks, branch `main`) after publishing a release, so the download button moves to the new zip. Its URL is the `release` environment's secret `SITE_DEPLOY_HOOK`.
 
-The download button and `/download` point at the latest published release as of the last build. A release's zip is attached a few minutes after its tag, so the build that follows the release PR's merge can still see the previous release. Until the next push to `main`, or a retry from the dashboard (Deployments › Retry build), `/download` then serves the previous zip.
-
-To deploy from your Mac instead: `npx wrangler login`, then `npm run deploy`. That deploys your working copy.
+`lorcanchinnock.com` must be a zone on the same Cloudflare account; the first deploy creates the `warble` custom domain and its DNS record. To deploy by hand: `npx wrangler login`, then `npm run deploy`, which deploys your working copy.
