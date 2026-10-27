@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0-beta.13](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.12...v0.1.0-beta.13) (2026-10-27)
+
+
+### Bug Fixes
+
+* **notch:** loop the play-state bars at 20 fps so they don't look choppy ([#310](https://github.com/LorcanChinnock/warble/issues/310)) ([488aa3a](https://github.com/LorcanChinnock/warble/commit/488aa3af8877f67433da6825d1f2dcb7f3c9e824))
+
 ## [0.1.0-beta.12](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.11...v0.1.0-beta.12) (2026-10-27)
 
 
