@@ -19,7 +19,7 @@ make run                   # build, install to /Applications/WarbleDev.app, and 
 
 macOS ties permissions such as Automation to the app's code signature. An ad-hoc signature changes on every build, so those permissions would reset each time. `make-dev-cert.sh` creates a self-signed certificate named `Warble Dev` in your login keychain, and the build signs with it. Keychain Access shows it as "not trusted"; that's expected and signing still works. To sign with another identity, set `WARBLE_SIGN_IDENTITY`.
 
-Only `make dist` builds `Warble.app` with the update feed. Every other build is `WarbleDev.app`: a separate app with its own bundle ID (`dev.lorcan.Warble.dev`), settings, permissions and `warble-dev://` URL scheme, and no update feed. It installs beside a released Warble rather than over it, and Sparkle never replaces it. Quit a running release first (`pkill -x Warble`), or both draw in the notch.
+Only `make dist` builds `Warble.app` with the update feed. Every other build is `WarbleDev.app`: a separate app with its own bundle ID (`dev.lorcan.Warble.dev`), settings and permissions, and no update feed. It installs beside a released Warble rather than over it, and Sparkle never replaces it. Quit a running release first (`pkill -x Warble`), or both draw in the notch.
 
 ### Make targets
 
@@ -125,6 +125,7 @@ Warble logs to the unified log under its bundle identifier. File paths are redac
 - Run `make lint` and `make test`, then run the app and try your change. CI runs the same checks on macOS, and the `WarbleModel` tests on Linux too, but running them first saves a round trip.
 - If your change could slow the notch opening, play/pause, a track change, or wake Warble while nothing is playing, run `make perf`, and label the pull request `performance` so CI runs the budgets too. [docs/performance.md](docs/performance.md) has the budgets and what each one measures.
 - Use a [Conventional Commits](https://www.conventionalcommits.org) title for the pull request, such as `fix(notch): …` or `feat(player): …`. Pull requests are squash-merged, so the title becomes the commit on `main`, and release notes are generated from it.
+- Use `site: …` for website changes (the Astro site and the user guide in `site/`). release-please ignores that type, so it makes no changelog entry and no new app version. If the same change also alters what the app does, split it, and give the app change its own `fix:` or `feat:` title.
 
 Everyone taking part in the project follows the [Code of Conduct](CODE_OF_CONDUCT.md).
 
