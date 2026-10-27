@@ -19,10 +19,13 @@ final class PlatformEffects {
         switch effect {
         case .watchClicksOutside(let watch):
             watchClicksOutside(watch)
-        case .openApp(let bundleIdentifier):
-            // Brings the app to the front, opening it if it's quit.
-            guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) else { return }
-            NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
+        case .openApp(let bundleIdentifier, let title):
+            Task {
+                // In a browser, the tab that's playing; otherwise, or if that fails, the app, opened if it's quit.
+                if await BrowserTabs.focus(bundleIdentifier: bundleIdentifier, title: title) { return }
+                guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) else { return }
+                _ = try? await NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
+            }
         case .haptic:
             NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .now)
         default:

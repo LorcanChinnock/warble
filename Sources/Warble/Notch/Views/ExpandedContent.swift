@@ -30,6 +30,10 @@ struct ExpandedContent: View {
                     .foregroundStyle(Native.secondary)
                 }
                 .lineLimit(1)
+                // A click on the text opens the app too, as the art does; the art's button is the one VoiceOver and the
+                // keyboard reach.
+                .contentShape(Rectangle())
+                .onTapGesture { model.player.openApp() }
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(nowPlaying(playback))
                 .accessibilityAddTraits(.isStaticText)
