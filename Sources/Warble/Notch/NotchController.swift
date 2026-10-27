@@ -26,6 +26,7 @@ final class NotchController {
         self.environment = environment
         let store = environment.store
         player = PlayerModel { [weak store] in store?.dispatch($0) }
+        player.showsGlow = store.state.showsGlow
         store.onChange = { [weak self] old, new, action in self?.stateChanged(from: old, to: new, by: action) }
         environment.displays.onChange = { [weak self] in self?.layOut() }
         // Going full screen, or back, switches Space; only then can a display start or stop showing a full-screen app.
@@ -85,6 +86,9 @@ final class NotchController {
     private func stateChanged(from old: AppState, to new: AppState, by action: AppAction) {
         if new.playback != old.playback {
             player.playback = new.playback
+        }
+        if new.showsGlow != old.showsGlow {
+            player.showsGlow = new.showsGlow
         }
         if new.volume != old.volume || new.isMuted != old.isMuted {
             player.volume = new.volume

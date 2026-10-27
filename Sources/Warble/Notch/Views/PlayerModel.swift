@@ -26,6 +26,13 @@ final class PlayerModel {
     private(set) var artwork: NSImage?
     /// The glow's colours, from the artwork or, without it, the app's icon.
     private(set) var colours: ArtworkColours?
+    /// Whether the open card glows, which Settings can turn off. Off, no colours are picked unless Increase Contrast needs
+    /// them for its border.
+    var showsGlow = true {
+        didSet {
+            if showsGlow != oldValue { pickColours() }
+        }
+    }
     /// Bumped by every pick, so a pick that finishes after the track has changed again is dropped.
     @ObservationIgnored private var colourPicks = 0
     /// The name of the app that's playing, for VoiceOver.
@@ -39,8 +46,16 @@ final class PlayerModel {
     /// Where the controls send what the user does, the one way in for every command.
     @ObservationIgnored private let dispatch: (AppAction) -> Void
 
+    /// Picks the colours again when Increase Contrast changes, since the border it draws needs them even with the glow off.
+    @ObservationIgnored private var contrastObserver: NSObjectProtocol?
+
     init(dispatch: @escaping (AppAction) -> Void) {
         self.dispatch = dispatch
+        contrastObserver = NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated { self?.pickColours() }
+        }
     }
 
     func send(_ command: PlaybackCommand) {
@@ -64,7 +79,7 @@ final class PlayerModel {
     private func pickColours() {
         colourPicks += 1
         let pick = colourPicks
-        guard let playback else {
+        guard let playback, showsGlow || NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast else {
             colours = nil
             return
         }

@@ -30,6 +30,8 @@ public enum AppAction: Equatable, Sendable {
     case outputsRead([AudioOutput], current: UInt32?)
     /// Settings turned the title in a virtual notch on or off.
     case virtualTitleChanged(Bool)
+    /// Settings turned the open card's album-art glow on or off.
+    case glowChanged(Bool)
     /// Settings chose how long a paused song stays in the notch.
     case pauseDelayChanged(PauseDelay)
     /// `AppState.deadline` came due.
