@@ -25,25 +25,25 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
     #expect(crossing.state == .resting)
 }
 
-@Test func stayingOnTheNotchExpandsAfter250Milliseconds() {
+@Test func stayingOnTheNotchExpandsAfter150Milliseconds() {
     var hovering = intent((.pointerEntered, 0))
-    #expect(hovering.deadline == entered + 0.25)
-    hovering.advance(to: entered + 0.249)
+    #expect(hovering.deadline == entered + 0.15)
+    hovering.advance(to: entered + 0.149)
     #expect(hovering.state == .resting)
-    hovering.advance(to: entered + 0.25)
+    hovering.advance(to: entered + 0.15)
     #expect(hovering.state == .expanded)
     #expect(hovering.deadline == nil)
 }
 
 @Test func aPointerThatLeavesJustBeforeTheDelayNeverOpensTheNotch() {
-    var crossing = intent((.pointerEntered, 0), (.pointerLeft, 0.2))
+    var crossing = intent((.pointerEntered, 0), (.pointerLeft, 0.1))
     #expect(crossing.deadline == nil)
     crossing.advance(to: entered + 5)
     #expect(crossing.state == .resting)
 }
 
 @Test func comingBackToTheNotchWaitsTheFullDelayAgain() {
-    var back = intent((.pointerEntered, 0), (.pointerLeft, 0.2), (.pointerEntered, 0.3))
+    var back = intent((.pointerEntered, 0), (.pointerLeft, 0.1), (.pointerEntered, 0.4))
     #expect(back.deadline == entered + 0.55)
     back.advance(to: entered + 0.549)
     #expect(back.state == .resting)
@@ -64,13 +64,13 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
     #expect(clicked.deadline == nil)
 }
 
-@Test func leavingTheExpandedNotchClosesIt400MillisecondsLater() {
+@Test func leavingTheExpandedNotchClosesIt250MillisecondsLater() {
     var leaving = intent((.pointerEntered, 0), (.click, 0.1), (.pointerLeft, 2))
     #expect(leaving.state == .expanded)
-    #expect(leaving.deadline == entered + 2.4)
-    leaving.advance(to: entered + 2.399)
+    #expect(leaving.deadline == entered + 2.25)
+    leaving.advance(to: entered + 2.249)
     #expect(leaving.state == .expanded)
-    leaving.advance(to: entered + 2.4)
+    leaving.advance(to: entered + 2.25)
     #expect(leaving.state == .resting)
     #expect(leaving.deadline == nil)
 }
@@ -85,7 +85,7 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
 @Test func aLateTimerAfterLeavingTheHoveredNotchClosesItAgain() {
     var leaving = intent((.pointerEntered, 0), (.pointerLeft, 1))
     #expect(leaving.state == .expanded)
-    #expect(leaving.deadline == entered + 1.4)
+    #expect(leaving.deadline == entered + 1.25)
     leaving.advance(to: entered + 5)
     #expect(leaving.state == .resting)
     #expect(leaving.deadline == nil)
@@ -111,11 +111,11 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
     #expect(pinned.deadline == nil)
 }
 
-@Test func unpinningWithThePointerAwayClosesIt400MillisecondsLater() {
+@Test func unpinningWithThePointerAwayClosesIt250MillisecondsLater() {
     var unpinned = intent((.pointerEntered, 0), (.click, 0.1), (.pinButton, 1), (.pointerLeft, 2), (.pinButton, 10))
     #expect(unpinned.state == .expanded)
-    #expect(unpinned.deadline == entered + 10.4)
-    unpinned.advance(to: entered + 10.4)
+    #expect(unpinned.deadline == entered + 10.25)
+    unpinned.advance(to: entered + 10.25)
     #expect(unpinned.state == .resting)
 }
 
@@ -131,7 +131,7 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
     #expect(dismissed.state == .resting)
     dismissed.handle(.pointerLeft, at: entered + 6)
     dismissed.handle(.pointerEntered, at: entered + 7)
-    #expect(dismissed.deadline == entered + 7.25)
+    #expect(dismissed.deadline == entered + 7.15)
 }
 
 @Test func aClickAfterDismissingStillClosesWhenThePointerLeaves() {
@@ -139,8 +139,8 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
     #expect(reopened.state == .expanded)
     #expect(reopened.deadline == nil)
     reopened.handle(.pointerLeft, at: entered + 3)
-    #expect(reopened.deadline == entered + 3.4)
-    reopened.advance(to: entered + 3.4)
+    #expect(reopened.deadline == entered + 3.25)
+    reopened.advance(to: entered + 3.25)
     #expect(reopened.state == .resting)
 }
 
@@ -164,8 +164,8 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
 
 @Test func theCardClosesAfterTheMenuWithThePointerAway() {
     var closing = intent((.pointerEntered, 0), (.menuOpened, 1), (.pointerLeft, 1.1), (.menuClosed, 5))
-    #expect(closing.deadline == entered + 5.4)
-    closing.advance(to: entered + 5.4)
+    #expect(closing.deadline == entered + 5.25)
+    closing.advance(to: entered + 5.25)
     #expect(closing.state == .resting)
 }
 
@@ -191,8 +191,8 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
 
 @Test func aRestingNotchOpensAgainOnceThePointerComesBackAfterItsMenu() {
     var back = intent((.pointerEntered, 0), (.menuOpened, 0.1), (.menuClosed, 3), (.pointerLeft, 4), (.pointerEntered, 5))
-    #expect(back.deadline == entered + 5.25)
-    back.advance(to: entered + 5.25)
+    #expect(back.deadline == entered + 5.15)
+    back.advance(to: entered + 5.15)
     #expect(back.state == .expanded)
 }
 
@@ -218,8 +218,8 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
 
 @Test func aCardKeptOpenStillClosesAfterTheDelayOncePastItsTime() {
     var open = intent((.pointerEntered, 0), (.keepOpen(until: entered + 2), 1), (.pointerLeft, 5))
-    #expect(open.deadline == entered + 5.4)
-    open.advance(to: entered + 5.4)
+    #expect(open.deadline == entered + 5.25)
+    open.advance(to: entered + 5.25)
     #expect(open.state == .resting)
 }
 
