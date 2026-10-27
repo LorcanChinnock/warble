@@ -54,6 +54,7 @@ Local builds are `WarbleDev.app`. A real installed version is `/Applications/War
    rm -rf /Applications/WarbleDev.app build/WarbleDev.app   # or $INSTALL_DIR/WarbleDev.app if you set it
    open /Applications/Warble.app
    ```
+   Leave WarbleDev's settings (`dev.lorcan.Warble.dev`) and any Automation permission it has in place, so the next run doesn't ask for the permission again.
 
 ## Architecture
 
@@ -98,13 +99,16 @@ The repository is public, so GitHub's runners are free, but the free plan runs o
 - Every PR runs two required checks. `test` is Linux: `scripts/lint.sh` and WarbleModel's tests, which keeps WarbleModel portable. `macos` builds the app, checks the strings catalog, compiles for Intel, and runs every test except `PerfTests`, which it runs only on the release PR and on PRs labelled `performance`. On push to `main`, `warm-cache.yml` only builds, to save the Linux build cache PRs restore.
 - release-please opens its release PR as the repository's GitHub App (`release.yml`), so its runs start without approval. The repository has auto-merge turned off: an admin merges the release PR by hand once its checks pass.
 - `release.yml` runs `make test` on the tagged commit before it signs anything, because a `docs:`, `test:` or `ci:` commit merged after the release PR's checks can change what's released.
+- release-please updates the release PR only for commits that change the changelog, so after a `test:`, `ci:` or `docs:` fix to a failed gate, run `gh pr update-branch <release PR>` to gate it again.
+- Every release PR update runs the perf budgets, and every release builds and tests again, so let the release PR collect several merges rather than releasing after each one.
 - Run `make lint` and `make test` before every push, plus `make test-linux` when you change WarbleModel, and push once per PR where you can, so CI is a check rather than a debugger.
 
 ## Conventions
 
 - UI strings go through `Resources/Localizable.xcstrings` (CONTRIBUTING.md › Strings and translations). Pass literals to localizing APIs: SwiftUI views, or `String(localized:)` for AppKit titles and `String` properties. WarbleModel can't (no `String(localized:)` on Linux), so its labels live in WarbleCore. Logs and text that scripts read stay English. After adding strings, run `make strings` and commit the catalog; `make lint` and CI fail while it's stale.
 - PR titles use Conventional Commits (`feat(notch): …`, `fix(player): …`). PRs are squash-merged and release-please generates versions and `CHANGELOG.md`, so never edit the version or tags by hand.
+- Website changes use the `site:` type, with no scope (`site: rework the guide home`). release-please ignores it, so it makes no changelog entry or app version. `exclude-paths` already skips commits that touch only `site/`, but a PR that also touches app files counts unless it's `site:`. If a change also alters the app's behaviour, split it so the app part has its own `fix:` or `feat:` PR.
 - Every PR links an issue or sub-issue: put `Closes #N` (or `Part of #N` when it doesn't finish the issue) in the PR body. Create the issue before starting any work, as a sub-issue of its release's umbrella issue.
 - Any substantial change or new feature keeps docs in line in the same PR: the user guide in `site/src/guide/`, `README.md`, the landing page `site/src/pages/index.astro`, and `docs/roadmap.md` if it changes the plan. `CHANGELOG.md` is generated, so don't edit it.
-- Only `make dist` builds `Warble.app` with the Sparkle feed. Every other build is `WarbleDev.app` (bundle ID `dev.lorcan.Warble.dev`, executable `WarbleDev`, scheme `warble-dev://`, no feed), so dev builds never self-update or replace the installed release. `scripts/bundle.sh` does the renaming.
+- Only `make dist` builds `Warble.app` with the Sparkle feed. Every other build is `WarbleDev.app` (bundle ID `dev.lorcan.Warble.dev`, executable `WarbleDev`, no feed), so dev builds never self-update or replace the installed release. `scripts/bundle.sh` does the renaming.
 - For recordings that need a real player, `docs/demo/` is a made-up one with invented tracks and generated art (`docs/demo/README.md`). It's a separate package, outside every Make target and CI.
