@@ -36,6 +36,7 @@ function redirects() {
           `/github ${repo} 302`,
           '/sponsor https://github.com/sponsors/LorcanChinnock 302',
           `/releases ${repo}/releases 302`,
+          '/docs /docs/get-started/ 301',
           // A renamed guide page lists its old address in `aliases`.
           ...readGuide().flatMap(({ slug, aliases }) => aliases.map((alias) => `/docs/${alias}/ /docs/${slug}/ 301`)),
         ];
@@ -62,6 +63,8 @@ function search() {
 }
 
 export default defineConfig({
+  // The guide's pages carry their own contents and search, so there's no separate home.
+  redirects: { '/docs': '/docs/get-started/' },
   site: 'https://warble.lorcanchinnock.com',
   trailingSlash: 'ignore',
   integrations: [redirects(), search()],
