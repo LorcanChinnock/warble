@@ -26,6 +26,9 @@ struct NotchPreview: View {
     /// Whether the resting notch draws the title, which the Settings switch turns on.
     let showsTitle: Bool
     @State private var isOpen = false
+    /// Whether the pointer is on the preview, which opens it. A click then does nothing, so it can't close the card
+    /// under the pointer; a press from the keyboard or VoiceOver, which have no pointer, toggles it.
+    @State private var isHovering = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private static let housing = CGRect(x: 0, y: 0, width: VirtualNotch.width, height: 24)
@@ -40,21 +43,30 @@ struct NotchPreview: View {
         ZStack(alignment: .top) {
             LinearGradient(colors: [Color(hex: 0x2B3342), Color(hex: 0x1A1F29)], startPoint: .top, endPoint: .bottom)
             Rectangle().fill(.black.opacity(0.3)).frame(height: housing.height).frame(maxHeight: .infinity, alignment: .top)
-            Button { isOpen.toggle() } label: {
+            Button {
+                guard !isHovering else { return }
+                isOpen.toggle()
+            } label: {
                 ZStack(alignment: .top) {
                     shape.fill(Native.panel)
+                    // With Reduce Motion only the content fades; the shape changes at once, as the notch's does.
                     cardContent(expanded)
                         .opacity(isOpen ? 1 : 0)
+                        .animation(Native.fade, value: isOpen)
                     restingContent(housing)
                         .opacity(isOpen ? 0 : 1)
+                        .animation(Native.fade, value: isOpen)
                 }
                 .frame(width: size.width, height: size.height, alignment: .top)
                 .mask(alignment: .top) { shape.frame(width: size.width, height: size.height) }
+                .animation(reduceMotion ? nil : Native.morph, value: isOpen)
                 .contentShape(shape)
             }
             .buttonStyle(.notch)
-            .onHover { isOpen = $0 }
-            .animation(reduceMotion ? Native.fade : Native.morph, value: isOpen)
+            .onHover {
+                isHovering = $0
+                isOpen = $0
+            }
             .accessibilityLabel(Text("Notch preview"))
             .accessibilityValue(isOpen ? Text("Open") : Text("Closed"))
             .accessibilityHint(Text("Shows how the notch looks, with a made-up song."))
