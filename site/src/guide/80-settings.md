@@ -11,13 +11,15 @@ Warble works without changing anything. The things you may want to set are wheth
 1. Click the Warble icon in the menu bar, or right-click the notch. You can also Control-click it.
 2. Choose **Settings…**.
 
-The right-click menu also opens the app that's playing, checks for updates and quits Warble. Settings is always dark, like the notch, whatever your Mac's appearance.
+The right-click menu also opens the app that's playing, checks for updates and quits Warble. Settings is always dark, like the notch, whatever your Mac's appearance, and its background glows in the colours of the notch's own glow.
 
 ## What's in Settings
 
+At the top, under the version, is a small preview of the notch with a made-up song. Point at it to open it. It isn't what's playing, so it looks the same when nothing plays, and it changes as you turn the title switch on and off.
+
 - **Open at login.** Off at first. Turn it on, and Warble opens each time you log in, so it's there after a restart. It's the same switch as Warble's entry in System Settings › General › Login Items. If you turn Warble off there, turn it back on there.
 - **Show the title in a virtual notch.** Off at first. On a display without a notch, which Warble draws a notch for, the middle of the notch shows the title and artist of what's playing. See [External displays](/docs/external-displays/).
-- **Check for updates automatically.** Warble only goes online to check for updates. Click **Check for Updates…** to check right away, and the version you have is shown above it.
+- **Check for updates automatically.** Warble only goes online to check for updates. Click **Check for Updates…** to check right away, and the version you have is shown beside it.
 - **Help and user guide** opens this guide in your browser.
 
 > [!NOTE]

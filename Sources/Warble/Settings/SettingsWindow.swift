@@ -9,7 +9,7 @@ final class SettingsWindow {
     private var closeObserver: NSObjectProtocol?
     /// What the window's views read. `AppEnvironment` sets it once it's built, which holds this window.
     weak var environment: AppEnvironment?
-    static let size = NSSize(width: 560, height: 500)
+    static let size = NSSize(width: 560, height: 720)
 
     func show() {
         guard let environment else { return }

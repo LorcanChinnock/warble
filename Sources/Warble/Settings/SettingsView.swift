@@ -7,29 +7,46 @@ struct SettingsView: View {
     @Environment(Updater.self) private var updater
     @Environment(LoginItem.self) private var loginItem
     @Environment(NotchSettings.self) private var notchSettings
+    @Environment(\.colorSchemeContrast) private var contrast
     private static let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
     private static let guide = URL(string: "https://warble.lorcanchinnock.com/docs/")!
 
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                VStack(spacing: 4) {
+                HStack(spacing: 16) {
                     Image(nsImage: NSApp.applicationIconImage)
                         .resizable()
                         .frame(width: 72, height: 72)
                         .accessibilityHidden(true)
-                    Text(verbatim: "Warble")
-                        .font(.title2.bold())
-                    Text("Version \(Self.version)")
-                        .foregroundStyle(Native.secondary)
-                        .textSelection(.enabled)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(verbatim: "Warble")
+                            .font(.title2.bold())
+                        Text("Version \(Self.version)")
+                            .foregroundStyle(Native.secondary)
+                            .textSelection(.enabled)
+                    }
+                    Spacer(minLength: 0)
                     Button("Check for Updates…") { updater.checkForUpdates() }
                         .buttonStyle(.warble)
                         .disabled(!updater.canCheckForUpdates)
-                        .padding(.top, 6)
                 }
                 // Clear of the title bar's buttons, which the content runs under.
                 .padding(.top, 44)
+                VStack(alignment: .leading, spacing: 8) {
+                    NotchPreview(showsTitle: notchSettings.showsVirtualTitle)
+                    Text("How the notch looks, with a made-up song. Point at it to open it.")
+                        .font(.footnote)
+                        .foregroundStyle(Native.secondary)
+                        .padding(.horizontal, 14)
+                }
+                SettingsGroup(title: Text("Notch")) {
+                    SettingsToggleRow(
+                        title: Text("Show the title in a virtual notch"),
+                        detail: Text("On a display without a notch, the middle of the notch shows the song's title and artist."),
+                        isOn: Binding { notchSettings.showsVirtualTitle } set: { notchSettings.showsVirtualTitle = $0 }
+                    )
+                }
                 SettingsGroup {
                     SettingsToggleRow(
                         title: Text("Open at login"),
@@ -44,11 +61,6 @@ struct SettingsView: View {
                                 .buttonStyle(.warble)
                         }
                     }
-                    SettingsToggleRow(
-                        title: Text("Show the title in a virtual notch"),
-                        detail: Text("On a display without a notch, the middle of the notch shows the song's title and artist."),
-                        isOn: Binding { notchSettings.showsVirtualTitle } set: { notchSettings.showsVirtualTitle = $0 }
-                    )
                     SettingsToggleRow(
                         title: Text("Check for updates automatically"),
                         isOn: automaticallyChecks
@@ -77,7 +89,7 @@ struct SettingsView: View {
             .frame(maxWidth: .infinity)
         }
         .frame(minWidth: SettingsWindow.size.width, minHeight: SettingsWindow.size.height)
-        .background(Native.panel)
+        .background { SettingsBackground(showsGlow: contrast != .increased) }
         .foregroundStyle(.white)
         .tint(.white)
         .preferredColorScheme(.dark)
@@ -86,5 +98,21 @@ struct SettingsView: View {
     /// Off and greyed out in a build with no update feed, where the updater never runs.
     private var automaticallyChecks: Binding<Bool> {
         Binding { updater.isEnabled && updater.automaticallyChecks } set: { updater.automaticallyChecks = $0 }
+    }
+}
+
+/// Black, with the glow the open notch has: the song's colours rising from both bottom corners. It is softer than the
+/// card's so the text stays readable, and it is left out with Increase Contrast, where the card draws a border instead.
+private struct SettingsBackground: View {
+    let showsGlow: Bool
+
+    var body: some View {
+        ZStack {
+            Native.panel
+            if showsGlow {
+                Glow(colours: NotchDemo.colours).opacity(0.7)
+            }
+        }
+        .ignoresSafeArea()
     }
 }

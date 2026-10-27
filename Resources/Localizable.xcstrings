@@ -319,6 +319,9 @@
         }
       }
     },
+    "Closed" : {
+
+    },
     "Couldn't relaunch Warble" : {
       "localizations" : {
         "de" : {
@@ -474,6 +477,9 @@
           }
         }
       }
+    },
+    "How the notch looks, with a made-up song. Point at it to open it." : {
+
     },
     "It was installed while Warble was running. Relaunch to use it." : {
       "localizations" : {
@@ -734,6 +740,12 @@
           }
         }
       }
+    },
+    "Notch" : {
+
+    },
+    "Notch preview" : {
+
     },
     "Now playing: %@" : {
       "localizations" : {
@@ -1003,6 +1015,9 @@
           }
         }
       }
+    },
+    "Open" : {
+
     },
     "Open %@" : {
       "localizations" : {
@@ -1837,6 +1852,9 @@
       }
     },
     "Show the title in a virtual notch" : {
+
+    },
+    "Shows how the notch looks, with a made-up song." : {
 
     },
     "Shuffle" : {
