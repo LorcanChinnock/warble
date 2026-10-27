@@ -33,6 +33,8 @@ The keyboard's play/pause, next and previous keys work as they always have.
 
 The volume is your Mac's own, so it changes everything you hear, not just the app in the notch. The speaker symbol at the end of the bar picks where the sound plays. See [Switch speakers](/docs/switch-speakers/).
 
+A title, artist or album that is too long for the card waits a moment after the notch opens and then scrolls slowly past in a loop while the song plays. With **Reduce motion** on, it ends in "…" instead.
+
 > [!TIP]
 > Click the album art or the title to bring the app that's playing to the front. For a song playing in Safari, Chrome, Brave, Edge, Arc or Vivaldi, Warble picks the tab it's playing in. The first time, macOS asks whether Warble may control that browser; if you say no, Warble just brings the browser forward.
 

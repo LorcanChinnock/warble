@@ -11,26 +11,25 @@ struct ExpandedContent: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 12) {
+            HStack(spacing: 10) {
                 Button(action: model.player.openApp) {
                     // A wide thumbnail grows the tile sideways, up to a limit, and the text moves over to make room.
                     Artwork(image: artwork)
                         .frame(width: artwork.map { min(100, max(56, 56 * $0.size.width / max($0.size.height, 1))) } ?? 56, height: 56)
                 }
                 .buttonStyle(.notch)
+                // Without this the button is wider than the art and centres it, leaving a gap on both sides.
+                .fixedSize()
                 .accessibilityLabel(model.player.appName.map { Text("Open \($0)") } ?? Text("Open the app that's playing"))
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(playback.title)
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(.white)
-                    Group {
-                        if let artist = playback.artist { Text(artist) }
-                        if let album = playback.album { Text(album) }
+                    MarqueeLine(text: playback.title, font: .systemFont(ofSize: 15, weight: .semibold), isPlaying: playback.isPlaying)
+                    if let artist = playback.artist {
+                        MarqueeLine(text: artist, font: .systemFont(ofSize: 13), isSecondary: true, isPlaying: playback.isPlaying)
                     }
-                    .font(.system(size: 13))
-                    .foregroundStyle(Native.secondary)
+                    if let album = playback.album {
+                        MarqueeLine(text: album, font: .systemFont(ofSize: 13), isSecondary: true, isPlaying: playback.isPlaying)
+                    }
                 }
-                .lineLimit(1)
                 // A click on the text opens the app too, as the art does; the art's button is the one VoiceOver and the
                 // keyboard reach.
                 .contentShape(Rectangle())
@@ -43,6 +42,8 @@ struct ExpandedContent: View {
                 .accessibilitySortPriority(1)
                 Spacer(minLength: 0)
             }
+            // The art lines up with where a short elapsed time starts, which is right-aligned in a 34 pt column.
+            .padding(.leading, 10)
             Spacer(minLength: 0)
             Scrubber(playback: playback) { model.player.send(.seek(to: $0)) }
             Spacer(minLength: 0)
