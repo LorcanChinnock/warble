@@ -17,6 +17,10 @@ Everything your Mac plays moves to that speaker, not just the app in the notch. 
 > [!TIP]
 > AirPods and other Bluetooth headphones appear in the list once they're connected to your Mac. If yours are missing, put them in your ears or connect them in Control Centre first.
 
+## When AirPods stay on
+
+With AirPods in your ears, macOS can put the sound back on them a moment after you choose another speaker. Warble then says so in place of the volume slider, for a few seconds. Choose the speaker in **System Settings › Sound** instead, which macOS treats as a deliberate change.
+
 ## AirPlay speakers
 
 AirPlay speakers and Apple TVs aren't in Warble's list yet. To play through one, open Control Centre in the menu bar and choose it under **Sound**.

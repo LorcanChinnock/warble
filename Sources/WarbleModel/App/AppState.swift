@@ -35,6 +35,8 @@ public struct AppState: Equatable, Sendable {
     /// The outputs to offer and the one playing, read while the player's card is open.
     public internal(set) var outputs: [AudioOutput] = []
     public internal(set) var currentOutput: UInt32?
+    /// The last switch of output, which explains itself when macOS puts the old output back.
+    public internal(set) var outputSwitch = OutputSwitch()
     /// What the effects last asked for, so each is asked for once per change.
     public internal(set) var watchesClicks: Bool {
         get { notches.watchesClicks }
@@ -60,7 +62,7 @@ public struct AppState: Equatable, Sendable {
     /// Where each part of the state keeps its deadline: a feature that can come due on its own adds one line here. Key paths
     /// rather than the features themselves, so asking for the deadline copies and boxes nothing.
     private static let deadlines: [any KeyPath<AppState, Date?> & Sendable] = [
-        \.hideAt, \.idle.deadline, \.notches.deadline,
+        \.hideAt, \.idle.deadline, \.notches.deadline, \.outputSwitch.deadline,
     ]
 
     /// The earliest time something changes if nothing else happens, or `nil` when nothing is due, so `Store` runs one

@@ -157,6 +157,13 @@ public struct Notches: Feature {
         surfaces[display]?.hover.handle(event, at: now)
     }
 
+    /// Keeps each open card open until `date` after the pointer leaves it.
+    mutating func keepOpen(until date: Date, _ shared: SharedState, at now: Date) {
+        for (display, surface) in surfaces where notchState(surface, shared).isOpen {
+            surfaces[display]?.hover.handle(.keepOpen(until: date), at: now)
+        }
+    }
+
     private mutating func dismiss(except: String?, _ shared: SharedState, at now: Date) {
         for (display, surface) in surfaces where display != except && notchState(surface, shared).isOpen {
             surfaces[display]?.hover.handle(.dismiss, at: now)

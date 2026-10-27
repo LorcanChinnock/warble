@@ -24,6 +24,8 @@ public enum HoverEvent: Equatable, Sendable {
     /// pointer goes and whatever is clicked, and a resting notch stays resting, until `menuClosed`.
     case menuOpened
     case menuClosed
+    /// The card has something to read: it stays open until `date` after the pointer leaves, if it is open.
+    case keepOpen(until: Date)
 }
 
 /// Decides when the notch opens and closes, so moving the pointer past it on the way to a menu bar item never opens
@@ -43,6 +45,8 @@ public struct HoverIntent: Equatable, Sendable {
     private var enteredAt: Date?
     private var leftAt: Date?
     private var menuOpen = false
+    /// Until when the card stays open whatever the pointer does, once it has something to read.
+    private var keptOpenUntil: Date?
     /// Whether a menu holds the notch as it is.
     private var held: Bool { menuOpen }
 
@@ -82,6 +86,9 @@ public struct HoverIntent: Equatable, Sendable {
             if !pointerInside { leftAt = date }
             // A resting notch doesn't open under the pointer the menu leaves on it, until it leaves and comes back.
             if state == .resting { enteredAt = nil }
+        case .keepOpen(let date):
+            guard state == .expanded else { return }
+            keptOpenUntil = date
         }
         deadline = nextDeadline()
     }
@@ -91,7 +98,7 @@ public struct HoverIntent: Equatable, Sendable {
         while let due = deadline, due <= date {
             switch state {
             case .resting: state = .expanded
-            case .expanded: state = .resting; leftAt = nil
+            case .expanded: state = .resting; leftAt = nil; keptOpenUntil = nil
             case .pinned: break
             }
             deadline = nextDeadline()
@@ -101,7 +108,7 @@ public struct HoverIntent: Equatable, Sendable {
     private func nextDeadline() -> Date? {
         switch state {
         case .resting: held ? nil : enteredAt.map { $0 + Self.expandDelay }
-        case .expanded: pointerInside || held ? nil : leftAt.map { $0 + Self.collapseDelay }
+        case .expanded: pointerInside || held ? nil : leftAt.map { max($0 + Self.collapseDelay, keptOpenUntil ?? .distantPast) }
         case .pinned: nil
         }
     }

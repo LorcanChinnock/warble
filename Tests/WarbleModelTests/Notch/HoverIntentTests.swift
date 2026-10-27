@@ -206,3 +206,25 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
     #expect(NotchState(open.state, isPlaying: true) == .expanded)
     #expect(NotchState(open.state, isPlaying: false) == .hidden)
 }
+
+@Test func aCardWithSomethingToReadStaysOpenAfterTheMenuClosesUntilItsTime() {
+    var open = intent((.pointerEntered, 0), (.menuOpened, 1), (.pointerLeft, 1.1), (.menuClosed, 5), (.keepOpen(until: entered + 9), 5.1))
+    #expect(open.deadline == entered + 9)
+    open.advance(to: entered + 8.9)
+    #expect(open.state == .expanded)
+    open.advance(to: entered + 9)
+    #expect(open.state == .resting)
+}
+
+@Test func aCardKeptOpenStillClosesAfterTheDelayOncePastItsTime() {
+    var open = intent((.pointerEntered, 0), (.keepOpen(until: entered + 2), 1), (.pointerLeft, 5))
+    #expect(open.deadline == entered + 5.4)
+    open.advance(to: entered + 5.4)
+    #expect(open.state == .resting)
+}
+
+@Test func aRestingNotchIgnoresBeingKeptOpen() {
+    let resting = intent((.keepOpen(until: entered + 9), 0))
+    #expect(resting.deadline == nil)
+    #expect(resting.state == .resting)
+}

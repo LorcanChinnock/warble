@@ -22,7 +22,7 @@ At the top, under the version, is a small preview of the notch with a made-up so
 - **Open at login.** Off at first. Turn it on, and Warble opens each time you log in, so it's there after a restart. It's the same switch as Warble's entry in System Settings › General › Login Items. If you turn Warble off there, turn it back on there.
 - **Show the title in a virtual notch.** Off at first. On a display without a notch, which Warble draws a notch for, the middle of the notch shows the title and artist of what's playing. See [External displays](/docs/external-displays/).
 - **Album-art glow.** On at first. The open notch glows softly in the colours of the album art. Turn it off for a plain black notch; Warble then doesn't work out the colours at all. With **Increase contrast** on in System Settings › Accessibility › Display, the open notch has a solid border in the art's colour instead of a glow, and keeps it either way. Settings' own background follows the switch too.
-- **Check for updates automatically.** Warble only goes online to check for updates. Click **Check for Updates…** to check right away, and the version you have is shown beside it.
+- **Check for updates automatically.** Warble goes online to check for updates, and to find album covers for songs in your browser. Click **Check for Updates…** to check right away, and the version you have is shown beside it.
 - **Help and user guide** opens this guide in your browser.
 
 > [!NOTE]
