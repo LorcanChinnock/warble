@@ -8,8 +8,8 @@ name: CI
 # There's no run on push to main: PRs are squash-merged, and their merge commit was already tested. warm-cache.yml
 # builds there instead, to save the Linux build cache the pull request check restores.
 # A pull request that changes only the website, the docs or Markdown skips `macos`, which counts as a pass for the
-# required check, so those PRs don't queue for a macOS runner. `changes` decides that, and if it fails for any reason,
-# `macos` runs after all. Release-please's PR always runs it.
+# required check, so those PRs don't queue for a macOS runner. `adapter` skips too, and `adapter-macos-15` with it.
+# `changes` decides that, and if it fails for any reason, `macos` and `adapter` run after all. Release-please's PR always runs it.
 on:
   pull_request:
 
@@ -128,6 +128,8 @@ jobs:
   # stop that working, so this builds both apps as `make bundle` and `make dist` do and runs the adapter's own `test`
   # in each. Releases build on macOS 26, so adapter-macos-15 runs those same builds on the oldest macOS Warble supports.
   adapter:
+    needs: changes
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.app == 'true') }}
     # macOS: builds and signs the app, and the adapter needs MediaRemote.
     runs-on: macos-26
     timeout-minutes: 30
