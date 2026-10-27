@@ -149,11 +149,12 @@ struct PlayStateBars: NSViewRepresentable {
                 animation.values = loop + [loop[0]]
                 animation.calculationMode = .cubic
                 animation.beginTime = loopBegins
-                // Slow enough that 8 frames a second reads as motion rather than steps. Each frame costs the window
-                // server a redraw of the notch: about 1.7% of a core at 8, against about 21% at the display's rate.
+                // 20 frames a second, the scrolling title's rate, reads as motion rather than steps, where 8
+                // looked choppy. Each frame costs the window server a redraw of the notch: about 1.7% of a core at 8,
+                // against about 21% at the display's rate.
                 animation.duration = Double(loop.count) * 0.35
                 animation.repeatCount = .infinity
-                animation.preferredFrameRateRange = CAFrameRateRange(minimum: 6, maximum: 8, preferred: 8)
+                animation.preferredFrameRateRange = CAFrameRateRange(minimum: 15, maximum: 20, preferred: 20)
                 bar.add(animation, forKey: "height")
             }
         }
