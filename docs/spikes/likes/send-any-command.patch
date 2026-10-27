@@ -1,0 +1,37 @@
+--- a/src/adapter/send.m	2026-10-27 17:25:02
++++ b/src/adapter/send.m	2026-10-27 17:26:10
+@@ -37,8 +37,33 @@
+     // does "ban" mean "remove like" here?
+ }
+ 
++#include <dlfcn.h>
++static void dumpSupported(void) {
++    void *h = dlopen("/System/Library/PrivateFrameworks/MediaRemote.framework/MediaRemote", RTLD_NOW);
++    id (*localOrigin)(void) = dlsym(h, "MRMediaRemoteGetLocalOrigin");
++    void (*getSupported)(id, dispatch_queue_t, void (^)(CFArrayRef)) = dlsym(h, "MRMediaRemoteGetSupportedCommandsForOrigin");
++    int (*getCommand)(id) = dlsym(h, "MRMediaRemoteCommandInfoGetCommand");
++    BOOL (*getEnabled)(id) = dlsym(h, "MRMediaRemoteCommandInfoGetEnabled");
++    CFDictionaryRef (*copyOptions)(id) = dlsym(h, "MRMediaRemoteCommandInfoCopyOptions");
++    CFStringRef (*describe)(int) = dlsym(h, "MRMediaRemoteCopyCommandDescription");
++    dispatch_semaphore_t done = dispatch_semaphore_create(0);
++    getSupported(localOrigin(), dispatch_get_global_queue(0, 0), ^(CFArrayRef infos) {
++        for (id info in (__bridge NSArray *)infos) {
++            int c = getCommand(info);
++            NSString *d = describe ? (__bridge_transfer NSString *)describe(c) : @"?";
++            NSDictionary *o = (__bridge_transfer NSDictionary *)copyOptions(info);
++            printf("%d\t%s\tenabled=%d\t%s\n", c, d.UTF8String, getEnabled(info),
++                   [[o description] stringByReplacingOccurrencesOfString:@"\n" withString:@" "].UTF8String);
++        }
++        dispatch_semaphore_signal(done);
++    });
++    dispatch_semaphore_wait(done, dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC));
++    exit(0);
++}
++
+ static MRCommand findCommand(int command, bool *found) {
+-    if ([acceptedCommands containsObject:@(command)]) {
++    if (command == 999) dumpSupported();
++    if (true) {
+         *found = true;
+         return (MRCommand)command;
+     }
