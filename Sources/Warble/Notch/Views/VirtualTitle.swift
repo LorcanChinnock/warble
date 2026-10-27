@@ -1,13 +1,16 @@
 import AppKit
 import SwiftUI
 import WarbleCore
+import WarbleModel
 
 /// What's playing, in the middle of a resting virtual notch, where a real one has the camera. It stays as wide as the
-/// notch. A title that doesn't fit has its end faded and stays where it is; the full title is in the player. It is
-/// drawn once for a track, so nothing animates or waits on a timer.
+/// notch. A title that doesn't fit scrolls slowly in a loop while the song plays (`ScrollingTitle`, in Core Animation);
+/// paused, or with Reduce Motion, it has its end faded and stays where it is. The full title is in the player. Nothing
+/// waits on a timer.
 struct VirtualTitle: View {
     let playback: PlaybackState
     let notch: CGRect
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// Room kept clear of the notch's edges, and the length of the fade at the right one.
     private static let margin: CGFloat = 8
@@ -19,8 +22,19 @@ struct VirtualTitle: View {
         let line = TrackTitle.line(title: playback.title, artist: playback.artist, width: width) {
             ($0 as NSString).size(withAttributes: [.font: font]).width
         }
+        if case .faded(let title) = line, TitleScroll.scrolls(line, isPlaying: playback.isPlaying, reduceMotion: reduceMotion) {
+            ScrollingTitle(title: title, font: font, width: width, height: notch.height)
+                .padding(.horizontal, Self.margin)
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+        } else {
+            still(line, font: font, width: width)
+        }
+    }
+
+    private func still(_ line: TrackTitle.Line, font: NSFont, width: CGFloat) -> some View {
         let titleStyle = playback.isPlaying ? AnyShapeStyle(Color.white) : AnyShapeStyle(Native.secondary)
-        Group {
+        return Group {
             switch line {
             case .titleAndArtist(let title, let artist):
                 Text(verbatim: title).foregroundStyle(titleStyle) + Text(verbatim: "  ") + Text(verbatim: artist).foregroundStyle(Native.secondary)

@@ -16,7 +16,7 @@ macOS reports the housing to the half point, so its edges and height can fall on
 
 ## The title in a virtual notch
 
-With the setting on, a virtual notch draws the title between the art and the bars (`VirtualTitle`, in `RestingContent`). `TrackTitle` (WarbleModel) cuts tags such as "- Remastered 2009" from the title and picks what fits the housing's width from widths the view measures: title and artist, the title alone, or the title with its end faded. Nothing scrolls, so the view animates nothing and sets no timer; a paused track's title turns grey until Idle hides the notch. `NotchRender.showsTitle` carries `AppState.titleInNotch` to the panel.
+With the setting on, a virtual notch draws the title between the art and the bars (`VirtualTitle`, in `RestingContent`). `TrackTitle` (WarbleModel) cuts tags such as "- Remastered 2009" from the title and picks what fits the housing's width from widths the view measures: title and artist, the title alone, or the title with its end faded. A title that doesn't fit scrolls while the song plays: `TitleScroll` (WarbleModel) decides when (cut, playing, Reduce Motion off) and gives the speed (18 points a second) and the loop, and `ScrollingTitle` runs it as one repeating Core Animation translation with both edges faded, at 15 to 20 frames a second, so the app does no work per frame and sets no timer. The animation lives in the view, so it ends when the song pauses, Reduce Motion turns on or the notch leaves Resting. Paused, or with Reduce Motion, the title is still with its end faded, as before, and a paused track's title turns grey until Idle hides the notch. `NotchRender.showsTitle` carries `AppState.titleInNotch` to the panel.
 
 ## Hover and dismissal
 

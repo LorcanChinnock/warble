@@ -19,7 +19,7 @@ A real notch has the camera in the middle. The notch Warble draws is a plain bla
 
 ## Show the title in the middle
 
-A real notch has the camera there, but a notch Warble draws has nothing in the middle. Turn on **Show the title in a virtual notch** in Settings and it shows the title of what's playing, with the artist after it when both fit. A title that's too long fades out at its end and stays still. Point at the notch to see all of it in the player. Tags such as "(Remastered 2009)" or "(feat. …)" are left out so more of the title fits, and a paused song's title turns grey.
+A real notch has the camera there, but a notch Warble draws has nothing in the middle. Turn on **Show the title in a virtual notch** in Settings and it shows the title of what's playing, with the artist after it when both fit. A title that's too long scrolls slowly past in a loop while the song plays, and stops when you pause. With **Reduce motion** on, it stays still and fades out at its end instead. You can also point at the notch to see the title in the player. Tags such as "(Remastered 2009)" or "(feat. …)" are left out so more of the title fits, and a paused song's title turns grey.
 
 It's off at first, and it only applies to a notch Warble draws, never your MacBook's own.
 
