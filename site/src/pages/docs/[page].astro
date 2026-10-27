@@ -17,7 +17,7 @@ const links = pages.map((p) => ({ href: `/docs/${p.slug}/`, title: p.title, curr
   <GuideSearch slot="side" />
   <div data-pagefind-body>
     <header class="page-head">
-      <p class="crumb"><a href="/docs/">User guide</a> <span aria-hidden="true">›</span> <span>{page.group}</span></p>
+      <p class="crumb"><a href="/docs/">User guide</a> <span aria-hidden="true">/</span> <span>{page.group}</span></p>
       <h1>{page.title}</h1>
       <p class="lede">{page.summary}</p>
     </header>
@@ -31,22 +31,21 @@ const links = pages.map((p) => ({ href: `/docs/${p.slug}/`, title: p.title, curr
 
 <style is:global>
   .prose .page-head { margin-bottom: 32px; }
-  .prose [data-pagefind-body] h2 { margin-top: 44px; padding-top: 20px; }
-  .prose .crumb { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; font-size: 15px; color: var(--secondary); }
-  .prose .crumb a { text-decoration: none; }
-  .prose .crumb a:hover { color: var(--fg); }
-  .prose .page-head h1 { margin-bottom: 12px; }
-  .prose .lede { margin: 0; font-size: 20px; line-height: 1.45; color: var(--secondary); max-width: 40em; }
+  .prose .crumb { margin: 0 0 14px; font: 800 13px/1.4 var(--font); letter-spacing: 0.1em; text-transform: uppercase; color: var(--secondary); }
+  .prose .crumb a { font-weight: 800; text-decoration: none; }
+  .prose .crumb a:hover { color: var(--fg); text-decoration: underline; text-decoration-color: var(--pink); }
+  .prose .page-head h1 { margin-bottom: 14px; }
+  .prose .lede { margin: 0; font-size: clamp(19px, 2.1vw, 23px); line-height: 1.45; color: var(--secondary); max-width: 40em; }
   .prose .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 56px; }
   .prose .pager a {
-    display: grid; gap: 2px; padding: 14px 18px; text-decoration: none; font-weight: 600; font-size: 17px;
-    border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--surface);
-    transition: border-color 120ms ease-out;
+    display: grid; gap: 4px; padding: 20px 24px; text-decoration: none; font: 700 24px/1.15 var(--display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.02em;
+    border-radius: var(--radius); background: var(--surface); box-shadow: var(--lift); transition: transform 150ms ease-out;
   }
-  .prose .pager a:hover { border-color: var(--hairline-strong); }
-  .prose .pager span { font-size: 13px; font-weight: 400; color: var(--secondary); }
+  .prose .pager a:hover { transform: translateY(-3px); }
+  .prose .pager span { font: 800 12px/1.4 var(--font); letter-spacing: 0.1em; text-transform: uppercase; color: var(--secondary); }
   .prose .pager .next { text-align: right; }
   @media (max-width: 560px) { .prose .pager { grid-template-columns: 1fr; } .prose .pager .next { text-align: left; } }
+  @media (prefers-reduced-motion: reduce) { .prose .pager a { transition: none; } .prose .pager a:hover { transform: none; } }
 </style>
 
 <script>

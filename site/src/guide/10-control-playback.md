@@ -11,6 +11,8 @@ While something plays, the notch shows the album art and a few moving bars. Open
 1. Hover over the notch for a moment, or click it to open it straight away.
 2. The player shows the album art, the song, the artist and the album, with the controls underneath.
 
+![The open player: album art, song, artist and album, a progress bar, the controls and a volume bar](../../../docs/media/player.png)
+
 To close it, move the pointer away, click anywhere else, or press <kbd>Esc</kbd>.
 
 ## Play, pause and skip
@@ -26,10 +28,14 @@ The keyboard's play/pause, next and previous keys work as they always have.
 1. Find the bar under the song, with the time played on its left and the time left on its right.
 2. Click a point on the bar, or drag along it and let go where you want to be.
 
+![Dragging along the progress bar to move through the song](../../../docs/media/scrub.gif)
+
 ## Change the volume
 
 - Drag along the volume bar at the bottom of the player.
 - Or scroll over the notch with two fingers on a trackpad, or with your mouse's wheel. Scroll up for louder and down for quieter. This works even when the notch is closed, while something plays.
+
+![Dragging along the volume bar](../../../docs/media/volume.gif)
 
 ## Move through the song or skip with a trackpad
 

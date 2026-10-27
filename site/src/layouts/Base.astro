@@ -1,6 +1,5 @@
 ---
 import '../styles/global.css';
-import Bars from '../components/Bars.astro';
 import { latestRelease } from '../lib/release';
 
 interface Props {
@@ -30,8 +29,8 @@ const current = (href: string) => (path === href ? 'page' : undefined);
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="theme-color" content="#f2f2f0" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0b0b0c" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fbf4e4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1c1611" media="(prefers-color-scheme: dark)" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Warble" />
     <meta property="og:title" content={fullTitle} />
@@ -46,13 +45,11 @@ const current = (href: string) => (path === href ? 'page' : undefined);
     <slot name="head" />
   </head>
   <body>
-    <div class="backdrop" aria-hidden="true"></div>
-
     <header class="site-header">
       <div class="bar wrap">
         <a class="brand" href="/" aria-label="Warble home">
-          <Bars />
-          <span>Warble</span><span class="chip">beta</span>
+          <img src="/icon-256.png" alt="" width="38" height="38" />
+          <span>Warble</span>
         </a>
         <nav aria-label="Main">
           <a href="/docs/" aria-current={current('/docs')}>Guide</a>
@@ -72,7 +69,7 @@ const current = (href: string) => (path === href ? 'page' : undefined);
       <div class="bar wrap">
         <div class="top">
           <a class="brand" href="/">
-            <Bars />
+            <img src="/icon-256.png" alt="" width="38" height="38" loading="lazy" />
             <span>Warble</span>
           </a>
           <nav aria-label="Footer">

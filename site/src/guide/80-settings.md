@@ -13,6 +13,8 @@ Warble works without changing anything. The things you may want to set are how l
 
 The right-click menu also opens the app that's playing, checks for updates and quits Warble. Settings is always dark, like the notch, whatever your Mac's appearance, and its background glows in the colours of the notch's own glow.
 
+![The Settings window, with the notch preview at the top and the pause and external-display settings under it](../../../docs/media/settings.png)
+
 ## What's in Settings
 
 At the top, under the version, is a small preview of the notch with a made-up song. Point at it to open it. It isn't what's playing, so it looks the same when nothing plays. Every setting under it changes it. The title and glow switches show at once, and the notch fades out when you choose Off for external displays. When you change **Stay visible after pausing** or **Notch on external displays**, the song pauses and, a moment later, ends as those settings would: the paused song stays, an empty notch is left, or the notch goes. The preview takes the same short moment for 10 seconds and 1 minute. Move the pointer off the preview and the song plays again.
@@ -24,6 +26,8 @@ At the top, under the version, is a small preview of the notch with a made-up so
 - **Album-art glow.** On at first. The open notch glows softly in the colours of the album art. Turn it off for a plain black notch; Warble then doesn't work out the colours at all. With **Increase contrast** on in System Settings › Accessibility › Display, the open notch has a solid border in the art's colour instead of a glow, and keeps it either way. Settings' own background follows the switch too.
 - **Check for updates automatically.** Warble goes online to check for updates, to find album covers for songs in your browser, and to find an artist's page when you click the artist. Click **Check for Updates…** to check right away, and the version you have is shown beside it.
 - **Help and user guide** opens this guide in your browser.
+
+![The rest of Settings: the title and glow switches, Open at login, updates and the user guide](../../../docs/media/settings-more.png)
 
 > [!NOTE]
 > Warble's animations follow **Reduce motion** in System Settings › Accessibility › Display.

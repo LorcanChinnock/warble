@@ -5,15 +5,24 @@ import Base from '../layouts/Base.astro';
 <Base title="Not found">
   <section>
     <div class="narrow lost">
-      <span class="chip">404</span>
+      <div class="notch" aria-hidden="true"><span class="art"></span><span class="bars"><i></i><i></i><i></i><i></i></span></div>
+      <p class="code">404</p>
       <h1>Page not found</h1>
-      <p>Try the <a href="/">home page</a> or the <a href="/docs/">user guide</a>.</p>
+      <p class="sub">Nothing playing here.</p>
+      <p class="links"><a class="button big" href="/">Home page</a> <a class="button big quiet" href="/docs/">User guide</a></p>
     </div>
   </section>
 </Base>
 
 <style>
-  .lost { display: grid; gap: 16px; justify-items: start; }
-  h1 { font-size: clamp(36px, 6vw, 56px); }
-  p { margin: 0; font-size: 18px; }
+  .lost { display: grid; justify-items: center; text-align: center; gap: 0; }
+  /* The notch, with nothing to show: a grey cover and bars that stand still. */
+  .notch { width: 200px; height: 36px; margin: -24px 0 36px; padding-inline: 12px; display: flex; align-items: center; justify-content: space-between; background: var(--notch); border-radius: 0 0 14px 14px; }
+  .art { width: 22px; height: 22px; border-radius: 6px; background: #3a3a3a; }
+  .bars { display: flex; align-items: flex-end; gap: 3px; height: 14px; opacity: 0.35; }
+  .bars i { width: 3px; height: 100%; border-radius: 2px; background: #fff; transform: scaleY(0.5); transform-origin: bottom; }
+  .code { margin: 0 0 10px; font: 800 14px/1.4 var(--font); letter-spacing: 0.1em; text-transform: uppercase; color: var(--secondary); }
+  h1 { font-size: clamp(46px, 8vw, 96px); line-height: 0.98; }
+  .sub { margin: 22px 0 34px; font-size: clamp(19px, 2.1vw, 23px); color: var(--secondary); }
+  .links { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin: 0; }
 </style>
