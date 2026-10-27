@@ -21,9 +21,10 @@ npm run preview   # build, then serve dist/ with wrangler, _redirects and _heade
 Cloudflare builds and deploys the site itself: the `warble-site` Worker has its GitHub integration (Workers Builds) watching `main`, so every push builds `site/` and deploys it, with no GitHub Actions minutes and nothing in the repository. The settings live in the Cloudflare dashboard, under the Worker's Settings › Builds:
 
 - Root directory `site` (the build also reads `../docs/media`, `../CHANGELOG.md` and `../.release-please-manifest.json`), production branch `main`
+- Build watch paths `site/*`, `docs/*` and `CHANGELOG.md`, so a change to the app alone doesn't build the site (a manual build ignores them)
 - Build command `npm run build`, deploy command `npx wrangler deploy`
 - Optional build variable `GITHUB_TOKEN`, a read-only token, so `src/lib/release.ts` doesn't hit GitHub's anonymous rate limit on shared build IPs
 
-A merged site change is live in a minute or two, so the guide and changelog describe `main`, which can be ahead of the version people can install. The download button uses the latest published release as of the last build: the build after a release PR merges can run before the release is published, so retry it from the dashboard (Deployments › Retry build) or push again.
+Each push that builds the site shows a "Workers Builds: warble-site" check on its commit on GitHub, which links to the build log. A merged site change is live in a minute or two, so the guide and changelog describe `main`, which can be ahead of the version people can install. The download button uses the latest published release as of the last build: the build after a release PR merges can run before the release is published, so retry it from the dashboard (Deployments › Retry build) or push again.
 
 `lorcanchinnock.com` must be a zone on the same Cloudflare account; the first deploy creates the `warble` custom domain and its DNS record. To deploy by hand: `npx wrangler login`, then `npm run deploy`, which deploys your working copy.
