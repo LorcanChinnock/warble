@@ -70,9 +70,26 @@ private func fastest(_ body: () throws -> Void) throws -> Duration {
 }
 
 private func check(_ time: Duration, budget: Duration, _ name: String) throws {
-    let style = Duration.UnitsFormatStyle(allowedUnits: [.milliseconds, .microseconds], width: .abbreviated, fractionalPart: .show(length: 2))
-    print("\(name): \(time.formatted(style)), budget \(budget.formatted(style))")
+    print("\(name): \(describe(time)), budget \(describe(budget))")
+    record(name, describe(time), describe(budget))
     #expect(time <= budget, "\(name) took \(time), over its \(budget) budget")
+}
+
+/// One unit, so the table reads at a glance: milliseconds from one up, microseconds below.
+private func describe(_ duration: Duration) -> String {
+    let microseconds = Double(duration.components.seconds) * 1e6 + Double(duration.components.attoseconds) / 1e12
+    return microseconds >= 1000 ? String(format: "%.2f ms", microseconds / 1000) : String(format: "%.2f µs", microseconds)
+}
+
+/// Appends a row to the file `WARBLE_PERF_RESULTS` names, if it's set, for `scripts/ci-test.sh` to turn into the timing
+/// table in the job summary. Tab separated: name, measured, budget.
+private func record(_ name: String, _ measured: String, _ budget: String) {
+    guard let path = ProcessInfo.processInfo.environment["WARBLE_PERF_RESULTS"], let handle = FileHandle(forWritingAtPath: path) else {
+        return
+    }
+    defer { try? handle.close() }
+    _ = try? handle.seekToEnd()
+    try? handle.write(contentsOf: Data("\(name)\t\(measured)\t\(budget)\n".utf8))
 }
 
 /// A 600×600 album cover as a JPEG, the size Music and Spotify usually report: two gradients and a scatter of discs, so

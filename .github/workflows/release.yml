@@ -26,6 +26,7 @@ concurrency:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     # release-please writes with the app's token, so GITHUB_TOKEN needs nothing.
     permissions: {}
     outputs:
@@ -53,6 +54,9 @@ jobs:
     if: needs.release-please.outputs.release_created == 'true'
     # macOS: builds and signs the app bundle, which needs Xcode.
     runs-on: macos-26
+    # A release build takes about 5 minutes. A hung step would otherwise hold the release concurrency group for GitHub's
+    # 6-hour default, and every merge to main would wait behind it.
+    timeout-minutes: 30
     # The `release` environment holds the release secrets and only deploys from main and v* tags. See CONTRIBUTING.md › Release secrets.
     environment: release
     # Uploads and publishes the release's assets with GITHUB_TOKEN; the last two sign the build provenance attestation.
@@ -73,7 +77,8 @@ jobs:
       # PR, so the tagged commit may be one the gate never ran. Test it here, before any secret is in reach, with the
       # same Package.resolved that `make dist` builds against.
       - name: Test
-        run: make test ARGS=--force-resolved-versions
+        timeout-minutes: 15
+        run: scripts/ci-test.sh test --force-resolved-versions
       # Every release signs with the same self-signed certificate, so macOS keeps the
       # permissions it granted, such as Automation, across updates. See CONTRIBUTING.md › Release secrets.
       - name: Import the signing certificate
