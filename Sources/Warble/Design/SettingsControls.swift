@@ -85,6 +85,60 @@ struct SettingsToggleRow: View {
     }
 }
 
+/// A row with a choice of a few options, one line below its title and note: the chosen one is filled, and none is marked
+/// by colour alone. VoiceOver reads it as one picker with the title as its label and the note as its hint.
+struct SettingsChoiceRow<Value: Hashable>: View {
+    let title: Text
+    var detail: Text?
+    @Binding var selection: Value
+    let options: [(value: Value, label: Text)]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 2) {
+                title.foregroundStyle(.white)
+                if let detail {
+                    detail
+                        .font(.callout)
+                        .foregroundStyle(Native.secondary)
+                }
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityHidden(true)
+            HStack(spacing: 4) {
+                ForEach(options.indices, id: \.self) { index in
+                    let option = options[index]
+                    Button {
+                        selection = option.value
+                    } label: {
+                        option.label
+                            .font(.callout)
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity, minHeight: 32)
+                            .background(selection == option.value ? AnyShapeStyle(Native.selection) : AnyShapeStyle(.clear), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                            .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    }
+                    .buttonStyle(.notch)
+                }
+            }
+            .padding(3)
+            .background(Native.group, in: RoundedRectangle(cornerRadius: 11, style: .continuous))
+            .accessibilityRepresentation {
+                Picker(selection: $selection) {
+                    ForEach(options.indices, id: \.self) { index in
+                        options[index].label.tag(options[index].value)
+                    }
+                } label: { title }
+                    .pickerStyle(.segmented)
+                    .accessibilityHint(detail ?? Text(verbatim: ""))
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
 /// A switch that is white when on and grey when off, with the knob on the right when on.
 struct WarbleToggle: View {
     @Binding var isOn: Bool

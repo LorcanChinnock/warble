@@ -40,6 +40,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .outputsRead(let outputs, let current):
         state.outputs = outputs
         state.currentOutput = current
+    case .pauseDelayChanged(let delay):
+        state.idle.pauseDelay = delay
     case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .dismiss, .virtualTitleChanged:
         effects += state.notches.reduce(action, shared: state.shared, at: now)
     case .tick:

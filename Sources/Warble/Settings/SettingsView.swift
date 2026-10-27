@@ -1,6 +1,7 @@
 import ServiceManagement
 import SwiftUI
 import WarbleCore
+import WarbleModel
 
 /// The Settings window's one page, always dark like the notch: what Warble is, whether it opens at login, and updates.
 struct SettingsView: View {
@@ -41,6 +42,16 @@ struct SettingsView: View {
                         .padding(.horizontal, 14)
                 }
                 SettingsGroup(title: Text("Notch")) {
+                    SettingsChoiceRow(
+                        title: Text("Stay visible after pausing"),
+                        detail: Text("How long the notch keeps showing a paused song before it goes quiet."),
+                        selection: Binding { notchSettings.pauseDelay } set: { notchSettings.pauseDelay = $0 },
+                        options: [
+                            (.tenSeconds, Text("10 seconds")),
+                            (.oneMinute, Text("1 minute")),
+                            (.always, Text("Always")),
+                        ]
+                    )
                     SettingsToggleRow(
                         title: Text("Show the title in a virtual notch"),
                         detail: Text("On a display without a notch, the middle of the notch shows the song's title and artist."),

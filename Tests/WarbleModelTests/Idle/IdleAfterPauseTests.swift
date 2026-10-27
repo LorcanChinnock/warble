@@ -123,3 +123,44 @@ private func idle(_ events: (IdleEvent, TimeInterval)...) -> IdleAfterPause {
     late.advance(to: start + 300)
     #expect(late.isIdle)
 }
+
+@Test func theDelayStartsAtTenSeconds() {
+    #expect(IdleAfterPause().pauseDelay == .tenSeconds)
+    #expect(PauseDelay.tenSeconds.seconds == IdleAfterPause.delay)
+}
+
+@Test func aMinuteKeepsAPausedTrackForAMinute() {
+    var paused = idle((.playback(track(playing: true)), 0), (.playback(track(playing: false)), 5))
+    paused.pauseDelay = .oneMinute
+    #expect(paused.deadline == start + 65)
+    paused.advance(to: start + 64.9)
+    #expect(!paused.isIdle)
+    paused.advance(to: start + 65)
+    #expect(paused.isIdle)
+}
+
+@Test func alwaysNeverGoesIdleAfterAPauseAndSchedulesNothing() {
+    var paused = IdleAfterPause()
+    paused.pauseDelay = .always
+    paused.handle(.playback(track(playing: true)), at: start)
+    paused.handle(.playback(track(playing: false)), at: start + 5)
+    #expect(paused.deadline == nil)
+    paused.advance(to: start + 86_400)
+    #expect(!paused.isIdle)
+}
+
+@Test func alwaysStillGoesIdleAtOnceWhenTheSourceStops() {
+    var paused = IdleAfterPause()
+    paused.pauseDelay = .always
+    paused.handle(.playback(track(playing: false)), at: start)
+    paused.handle(.playback(nil), at: start + 1)
+    #expect(paused.isIdle)
+}
+
+@Test func aNewDelayAppliesToATrackThatIsAlreadyPaused() {
+    var paused = idle((.playback(track(playing: true)), 0), (.playback(track(playing: false)), 5))
+    paused.pauseDelay = .always
+    #expect(paused.deadline == nil)
+    paused.pauseDelay = .oneMinute
+    #expect(paused.deadline == start + 65)
+}
