@@ -50,12 +50,15 @@ struct Scrubber: View {
         GeometryReader { geometry in
             let width = geometry.size.width
             let fraction = min(max(fraction, 0), 1)
+            // The knob stays inside the track, so at either end it doesn't hang over the edge.
+            let knob = 9.0
+            let knobX = min(max(width * fraction - knob / 2, 0), max(width - knob, 0))
             ZStack(alignment: .leading) {
                 Capsule().fill(Native.track)
-                Capsule().fill(.white).frame(width: width * fraction)
+                Capsule().fill(.white).frame(width: knobX + knob / 2)
                 Circle().fill(.white)
-                    .frame(width: 9, height: 9)
-                    .offset(x: width * fraction - 4.5)
+                    .frame(width: knob, height: knob)
+                    .offset(x: knobX)
             }
             .frame(height: 4)
             .frame(maxHeight: .infinity)

@@ -16,11 +16,11 @@ public enum BrowserTabs {
     /// The script that selects the tab titled `title`, or `nil` when `bundleIdentifier` isn't a browser Warble can script.
     public static func script(bundleIdentifier: String, title: String) -> String? {
         let quoted = "\"" + title.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"") + "\""
-        let select: String
+        let select: String, property: String
         if bundleIdentifier == safari {
-            select = "set current tab of w to t"
+            (select, property) = ("set current tab of w to t", "name")
         } else if chromium.contains(bundleIdentifier) {
-            select = "set active tab index of w to i"
+            (select, property) = ("set active tab index of w to i", "title")
         } else {
             return nil
         }
@@ -30,7 +30,7 @@ public enum BrowserTabs {
                 set i to 0
                 repeat with t in tabs of w
                     set i to i + 1
-                    if (name of t as text) contains \(quoted) then
+                    if (\(property) of t as text) contains \(quoted) then
                         \(select)
                         set index of w to 1
                         activate
