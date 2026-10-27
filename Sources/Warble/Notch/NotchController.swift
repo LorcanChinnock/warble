@@ -16,6 +16,8 @@ final class NotchController {
     private var store: Store { environment.store }
     private let player: PlayerModel
     private var volume: SystemVolume { environment.volume }
+    private var gesture = ScrollGesture()
+    private var heldVolume = HeldVolume()
     /// One for each housing, by `NotchDisplay.id`.
     private var surfaces: [String: NotchSurface] = [:]
     /// While the displays change, the notches move at once rather than morph.
@@ -132,11 +134,32 @@ final class NotchController {
         }
     }
 
-    /// Scrolling over a notch changes the volume, from the volume now, since the card with the slider may not be open.
+    /// Scrolling over a notch changes the volume, slides through the song or, in a quick flick, skips. The volume is read
+    /// from the volume now, since the card with the slider may not be open, and then followed here while the scroll
+    /// lasts, since a device can report an old volume just after it was set.
     private func scroll(_ event: NSEvent) {
-        store.dispatch(.scrolled(
-            delta: event.scrollingDeltaY, precise: event.hasPreciseScrollingDeltas, inverted: event.isDirectionInvertedFromDevice,
-            volume: volume.volume, isMuted: volume.isMuted
-        ))
+        let phase: ScrollGesture.Phase = if !event.momentumPhase.isEmpty {
+            .momentum
+        } else if event.phase.contains(.began) {
+            .began
+        } else if event.phase.contains(.ended) || event.phase.contains(.cancelled) {
+            .ended
+        } else {
+            .changed
+        }
+        let inverted = event.isDirectionInvertedFromDevice
+        let precise = event.hasPreciseScrollingDeltas
+        switch gesture.handle(dx: event.scrollingDeltaX, dy: event.scrollingDeltaY, precise: precise, inverted: inverted, phase: phase, at: event.timestamp) {
+        case .volume(let delta)?:
+            let isMuted = volume.isMuted
+            let current = heldVolume.start(delta: delta, device: { volume.volume }, isMuted: isMuted, precise: precise, inverted: inverted, at: event.timestamp)
+            store.dispatch(.scrolled(delta: delta, precise: precise, inverted: inverted, volume: current, isMuted: isMuted))
+        case .scrub(let seconds)?:
+            store.dispatch(.scrubbed(by: seconds))
+        case .skip(let next)?:
+            store.dispatch(.flicked(next: next))
+        default:
+            break
+        }
     }
 }

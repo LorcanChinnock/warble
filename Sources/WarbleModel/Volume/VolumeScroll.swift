@@ -1,5 +1,24 @@
 import Foundation
 
+/// The volume a scroll has set, so the next event of the same scroll carries on from it rather than from a device that may
+/// still report the old one.
+public struct HeldVolume: Sendable {
+    /// How long after a scroll event the volume it set still counts.
+    static let window = 0.5
+
+    private var held: (value: Double, at: TimeInterval)?
+
+    public init() {}
+
+    /// The volume a scroll event at `time` starts from: the one the last event set if that was within the window,
+    /// otherwise what `device` reads. It also works out what this event sets, for the next.
+    public mutating func start(delta: Double, device: () -> Double?, isMuted: Bool, precise: Bool, inverted: Bool, at time: TimeInterval) -> Double? {
+        let current = held.flatMap { time - $0.at < Self.window ? $0.value : nil } ?? device()
+        held = current.map { (VolumeScroll.volume(after: delta, from: isMuted ? 0 : $0, precise: precise, inverted: inverted), time) }
+        return current
+    }
+}
+
 /// How scrolling over the notch changes the output volume, from 0 to 1.
 public enum VolumeScroll {
     /// A mouse wheel's click moves the volume as far as a volume key does: a sixteenth.

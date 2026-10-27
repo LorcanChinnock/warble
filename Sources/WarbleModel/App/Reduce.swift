@@ -34,6 +34,16 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         // An empty notch takes the hover for its note but not the volume, which is for what's playing.
         guard state.showsPlayback else { break }
         effects += VolumeScroll.effects(delta, precise: precise, inverted: inverted, volume: volume, isMuted: isMuted)
+    case .scrubbed(let seconds):
+        // Like a click on the scrubber: the bar moves at once, and the app's next report replaces the guess.
+        guard state.showsPlayback, state.hideAt == nil, let current = state.playback, current.duration != nil else { break }
+        let moved = current.seeked(to: current.elapsed(at: now) + seconds, at: now)
+        show(moved, in: &state, at: now)
+        effects.append(.send(.seek(to: moved.elapsed)))
+    case .flicked(let next):
+        // Nothing to skip while nothing plays, and `.command` would still send it to a hidden player.
+        guard state.showsPlayback else { break }
+        effects.append(.send(next ? .nextTrack : .previousTrack))
     case .volumeRead(let volume, let isMuted):
         state.volume = volume
         state.isMuted = isMuted
