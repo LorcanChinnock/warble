@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.1.0-beta.11](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.10...v0.1.0-beta.11) (2026-10-27)
+
+
+### Features
+
+* **idle:** choose how long a paused song stays in the notch ([#271](https://github.com/LorcanChinnock/warble/issues/271)) ([19a1b3c](https://github.com/LorcanChinnock/warble/commit/19a1b3cddc6549e6510788fac4f5da7e03f0e284))
+* **notch:** make the play-state bars look like iOS's now-playing waveform ([#284](https://github.com/LorcanChinnock/warble/issues/284)) ([452f5e0](https://github.com/LorcanChinnock/warble/commit/452f5e00dfdd60b769ee86c15206ff0fbaea712e))
+* **notch:** open a small "Nothing playing" note when the pointer is on an empty notch ([#279](https://github.com/LorcanChinnock/warble/issues/279)) ([10a37b5](https://github.com/LorcanChinnock/warble/commit/10a37b5860152e3ca71bb2d4465e1f85e14dbbed)), closes [#269](https://github.com/LorcanChinnock/warble/issues/269)
+* **notch:** scroll a cut-off title, artist or album on the open card ([#294](https://github.com/LorcanChinnock/warble/issues/294)) ([4e9f5f4](https://github.com/LorcanChinnock/warble/commit/4e9f5f404db6e1400fa4ae0ddc88c9364d755050))
+* **notch:** scroll a virtual notch's long title in a loop while it plays ([#273](https://github.com/LorcanChinnock/warble/issues/273)) ([86211b5](https://github.com/LorcanChinnock/warble/commit/86211b5ab7b346a831e3307d43df81595eee67e7))
+* **notch:** show the title and artist in a virtual notch, as a setting that starts off ([#262](https://github.com/LorcanChinnock/warble/issues/262)) ([81d8960](https://github.com/LorcanChinnock/warble/commit/81d89603e71cb27da02bca54c9c2858184ddaf09))
+* **notch:** slide sideways to scrub and flick to skip, and steadier scrolling for volume ([#289](https://github.com/LorcanChinnock/warble/issues/289)) ([8c52c43](https://github.com/LorcanChinnock/warble/commit/8c52c43e58cb09bf879afc5122b151acca111c0f))
+* **player:** open the playing browser tab from the expanded card's art or title ([#277](https://github.com/LorcanChinnock/warble/issues/277)) ([efb1ac4](https://github.com/LorcanChinnock/warble/commit/efb1ac4e8a54e30953c85a32f924560a721d3d09))
+* **player:** show the album cover, not a video frame, for songs playing in a browser ([#286](https://github.com/LorcanChinnock/warble/issues/286)) ([3cca443](https://github.com/LorcanChinnock/warble/commit/3cca4436c2c63323c505f3e1481271209b868767))
+* **settings:** choose when a virtual notch shows on a display without one ([#274](https://github.com/LorcanChinnock/warble/issues/274)) ([f5831ff](https://github.com/LorcanChinnock/warble/commit/f5831ffb45492dddcea637bda9f7abb7d39b1c31)), closes [#265](https://github.com/LorcanChinnock/warble/issues/265)
+* **settings:** give Settings the notch's glow and a live notch preview ([#270](https://github.com/LorcanChinnock/warble/issues/270)) ([d9c8021](https://github.com/LorcanChinnock/warble/commit/d9c80213646a6ff9a95870546f4992c597aff8d6))
+* **settings:** turn the album-art glow off for a plain black notch ([#272](https://github.com/LorcanChinnock/warble/issues/272)) ([81d1395](https://github.com/LorcanChinnock/warble/commit/81d13957c434696badeb421de4cc5e84f2c2697b)), closes [#267](https://github.com/LorcanChinnock/warble/issues/267)
+
+
+### Bug Fixes
+
+* **notch:** drop the grey bars from a wide thumbnail and let it widen the open card ([#292](https://github.com/LorcanChinnock/warble/issues/292)) ([70b1809](https://github.com/LorcanChinnock/warble/commit/70b1809a1e75b54e974ecc1a0f8b00542b160462))
+* **notch:** keep the track bar's knob inside the bar at either end ([#281](https://github.com/LorcanChinnock/warble/issues/281)) ([c2e6d61](https://github.com/LorcanChinnock/warble/commit/c2e6d612dbaf7111b086c41fceb3ad8ddd9acbd9))
+* **notch:** show the whole thumbnail when artwork isn't square ([#278](https://github.com/LorcanChinnock/warble/issues/278)) ([7b9b738](https://github.com/LorcanChinnock/warble/commit/7b9b738d5f1c2d4f0f230f9a084f32f7b4b8d688))
+* **outputs:** say why the sound stays on in-ear AirPods after a switch ([#290](https://github.com/LorcanChinnock/warble/issues/290)) ([abbe95d](https://github.com/LorcanChinnock/warble/commit/abbe95d84d6961f2da0f45bf8424acf05122b037))
+
 ## [0.1.0-beta.10](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.9...v0.1.0-beta.10) (2026-10-26)
 
 
