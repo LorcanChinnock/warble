@@ -172,15 +172,3 @@ jobs:
           git -C "$tap" diff --cached --quiet || git -C "$tap" commit -m "warble ${TAG#v}"
           git -C "$tap" push
           rm "$RUNNER_TEMP/tap_key"
-
-  # The guide and changelog follow the release, not main, and the download button moves to the new zip, which is why
-  # this waits for the build to publish the release. See site/README.md › Deploying.
-  site:
-    needs: [release-please, build]
-    if: needs.release-please.outputs.release_created == 'true'
-    permissions:
-      contents: read
-    uses: ./.github/workflows/site.yml
-    with:
-      tag: ${{ needs.release-please.outputs.tag_name }}
-    secrets: inherit
