@@ -33,7 +33,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             source.start()
             runner.source = source
             Task {
-                for await state in source.states {
+                for await state in CoverArt.replacing(source.states) {
                     store.dispatch(.playbackReported(state))
                 }
                 // The states end only when the adapter gives up.
