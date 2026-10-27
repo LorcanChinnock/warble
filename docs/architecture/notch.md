@@ -36,6 +36,8 @@ Between states the shape morphs on one spring while the content cross-fades; wit
 
 ## Expanded: controls and volume
 
+A title, artist or album on the expanded card that is wider than its room scrolls too (`MarqueeLine`, which measures it and asks `TitleScroll.scrolls(textWidth:width:…)`): it holds still for `TitleScroll.startDelay` (1.5 seconds) with its start in full, then loops through the same `ScrollingTitle`. The wait is a Core Animation `beginTime`, so nothing is scheduled and the hover → expand path is untouched. It scrolls only while the song plays and Reduce Motion is off; otherwise the line ends in "…". The animation ends when the card closes.
+
 Expanded holds the playback controls. They dispatch `.command`, and `reduce` shows play/pause, a seek and the shuffle and repeat modes at once (`PlaybackState.playing(_:at:)`, `seeked(to:at:)`) and asks for `.send`; the app's next report replaces that guess. Warble has no speed control: the adapter can't set a chosen speed (its `speed` only steps the app's own list), and #143 was dropped. `SystemVolume` (WarbleCore) reads and sets the default output's volume through Core Audio. `reduce` asks for `.followVolume`, which listens for its changes, only while a notch is open, and scrolling over the panel in any state dispatches `.scrolled` with the volume read just before, as `VolumeScroll` (WarbleModel) works out.
 
 ## Previews

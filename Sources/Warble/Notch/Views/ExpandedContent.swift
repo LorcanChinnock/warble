@@ -19,17 +19,14 @@ struct ExpandedContent: View {
                 .buttonStyle(.notch)
                 .accessibilityLabel(model.player.appName.map { Text("Open \($0)") } ?? Text("Open the app that's playing"))
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(playback.title)
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(.white)
-                    Group {
-                        if let artist = playback.artist { Text(artist) }
-                        if let album = playback.album { Text(album) }
+                    MarqueeLine(text: playback.title, font: .systemFont(ofSize: 15, weight: .semibold), isPlaying: playback.isPlaying)
+                    if let artist = playback.artist {
+                        MarqueeLine(text: artist, font: .systemFont(ofSize: 13), isSecondary: true, isPlaying: playback.isPlaying)
                     }
-                    .font(.system(size: 13))
-                    .foregroundStyle(Native.secondary)
+                    if let album = playback.album {
+                        MarqueeLine(text: album, font: .systemFont(ofSize: 13), isSecondary: true, isPlaying: playback.isPlaying)
+                    }
                 }
-                .lineLimit(1)
                 // A click on the text opens the app too, as the art does; the art's button is the one VoiceOver and the
                 // keyboard reach.
                 .contentShape(Rectangle())
