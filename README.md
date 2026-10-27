@@ -26,7 +26,7 @@
   <img src="docs/media/skip.gif" width="480" alt="The notch opening on hover, then skipping to the next track">
 </p>
 
-Warble shows what's playing in the notch at the top of your Mac's screen. Hover over the notch or click it to see the song, then play, pause, skip or switch speakers. When nothing is playing, it stays out of sight.
+Warble shows what's playing in the notch at the top of your Mac's screen. Hover over the notch or click it to see the song, then play, pause, skip or switch speakers. When nothing is playing, it stays out of sight, and pointing at the notch says so.
 
 Warble is in beta: it works, and it's still being built. [docs/roadmap.md](docs/roadmap.md) lists what each release will include.
 
@@ -44,7 +44,7 @@ Or [download the latest release](https://warble.lorcanchinnock.com/download) and
 - **Controls.** Play, pause, skip, move through the song, and turn shuffle and repeat on or off when the app has them. Drag the volume bar, or scroll over the notch to change the volume.
 - **Switch speakers.** Move your Mac's sound to its own speakers, headphones or AirPods from the notch.
 - **Any player.** Apple Music, Spotify, podcast apps and video in your browser.
-- **Calm by default.** A paused song stays for a few seconds, then Warble gets out of the way. When nothing is playing, it hides behind the notch and uses no CPU.
+- **Calm by default.** A paused song stays for a few seconds, then Warble gets out of the way. When nothing is playing, it hides behind the notch and uses no CPU, and pointing at the notch opens a small note that says nothing is playing.
 - **Every Mac.** A Mac without a notch, or a MacBook with its lid closed, gets a notch Warble draws at the top of the main display.
 - **For everyone.** Works with VoiceOver, and follows Increase Contrast and Reduce Motion.
 - **Little to set up.** Open at login, and a switch for the title in a virtual notch. Right-click the notch, or use the menu bar icon, for Settings, updates and Quit.

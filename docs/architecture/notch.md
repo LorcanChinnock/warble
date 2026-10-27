@@ -8,7 +8,11 @@ Read this before changing the panel, its states, hover, displays, scrolling or t
 
 ## When a virtual notch is there
 
-`VirtualNotchVisibility` (WarbleModel) is Settings' choice for a notch Warble draws: only while playing, always, or off. `Notches.notchState` applies it to a virtual surface alone, so a real notch is never affected. Only while playing is the plain `NotchState`, which is Hidden at Idle. Off is Hidden at all times. Always is `NotchState.empty` at Idle: the housing's own shape over the display, with nothing in it. `NotchLayout.frame(.empty)` is the housing, so the wings slide in and the content fades out to it as at Idle, and the panel stays. An empty notch has no hover area and `Notches.answersPointer` is false for it, `NotchRender` sets `ignoresMouseEvents` so clicks reach the app under it, and it sets no timer. A full-screen app still hides it.
+`VirtualNotchVisibility` (WarbleModel) is Settings' choice for a notch Warble draws: only while playing, always, or off. `Notches.notchState` applies it to a virtual surface alone, so a real notch is never affected by it. Off is Hidden at all times. Only while playing is Hidden at Idle. Always is Empty at Idle. A full-screen app still hides every notch.
+
+## The nothing-playing note
+
+At Idle a real notch, and a virtual one that Settings keeps always, is `NotchState.empty`: the housing's own shape over the display, with nothing in it (`NotchLayout.frame(.empty)` is the housing, so the wings slide in and the content fades out to it, and the panel stays). It takes the hover over the housing, and `HoverIntent` opens it after `expandDelay`, as for the player, into `NotchState.note` (`NotchState.isOpen` is true for it and for Expanded). The note is a short card under the housing (`NotchLayout.noteDrop`) that says "Nothing playing" (`NoteContent`, in `NotchView`), with no controls. It closes when the pointer leaves or on a click elsewhere or Escape, since `Notches.follow` watches clicks and takes Escape for any open notch, but it follows no volume, since it has no slider. A song that starts while it is open turns it into the player, because `notchState` goes by whether something plays. Nothing is scheduled until the pointer is on an empty notch, and nothing after it leaves. Scrolling over an empty notch does nothing, since `reduce` ignores `.scrolled` while nothing plays. A virtual notch that isn't kept is Hidden, so it has nothing to point at, and a full-screen app hides all of them.
 
 ## Full-screen apps
 

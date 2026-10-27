@@ -22,7 +22,7 @@ A real notch has the camera in the middle. The notch Warble draws is a plain bla
 In Settings, **Notch on external displays** sets when a notch that Warble draws is there:
 
 - **Only when playing.** The first choice. The notch appears when something plays and goes when the song has been paused for a while.
-- **Always.** After that, an empty black notch stays at the top of the display, with nothing in it. It doesn't react to the pointer, and clicks go through to whatever is under it.
+- **Always.** After that, an empty black notch stays at the top of the display, with nothing in it. Point at it and a small "Nothing playing" note opens, as on a MacBook's own notch, so it never feels broken.
 - **Off.** Warble draws no notch of its own, so a display without a notch shows nothing. Settings is still in the menu bar icon's menu, so you can turn it back on.
 
 This only applies to a notch Warble draws, never your MacBook's own.

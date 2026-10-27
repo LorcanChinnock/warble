@@ -765,6 +765,9 @@
     "Notch preview" : {
 
     },
+    "Nothing playing" : {
+
+    },
     "Now playing: %@" : {
       "localizations" : {
         "de" : {

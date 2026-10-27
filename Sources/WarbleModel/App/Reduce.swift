@@ -31,6 +31,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .setVolume(let volume):
         effects.append(.setVolume(volume))
     case .scrolled(let delta, let precise, let inverted, let volume, let isMuted):
+        // An empty notch takes the hover for its note but not the volume, which is for what's playing.
+        guard state.showsPlayback else { break }
         effects += VolumeScroll.effects(delta, precise: precise, inverted: inverted, volume: volume, isMuted: isMuted)
     case .volumeRead(let volume, let isMuted):
         state.volume = volume

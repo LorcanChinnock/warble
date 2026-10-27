@@ -86,7 +86,7 @@ public struct Notches: Feature {
 
     /// Asks for the effects that follow from which notches are open, each once when its reason changes.
     mutating func follow(_ shared: SharedState, at now: Date) -> [AppEffect] {
-        let open = surfaces.values.filter { notchState($0, shared) == .expanded }
+        let open = surfaces.values.filter { notchState($0, shared).isOpen }
         var effects: [AppEffect] = []
         // A click anywhere else closes an open notch, and so does Escape with the pointer on it. Both stop at rest, so a
         // resting notch watches nothing and never takes Escape from the app in front. Escape is let go while a menu is
@@ -101,8 +101,8 @@ public struct Notches: Feature {
             self.takesEscape = takesEscape
             effects.append(.takeEscape(takesEscape))
         }
-        // Only an open notch has a slider and an output menu.
-        let followsVolume = !open.isEmpty
+        // Only the player has a slider and an output menu, not the note.
+        let followsVolume = surfaces.values.contains { notchState($0, shared) == .expanded }
         if followsVolume != self.followsVolume {
             self.followsVolume = followsVolume
             effects.append(.followVolume(followsVolume))
@@ -117,12 +117,11 @@ public struct Notches: Feature {
         let state = NotchState(surface.hover.state, isPlaying: shared.showsPlayback)
         // A full-screen app has the top of its display to itself.
         guard !surface.isFullScreen else { return .hidden }
-        guard surface.isVirtual else { return state }
-        return switch virtualVisibility {
-        case .whenPlaying: state
-        case .always: shared.showsPlayback ? state : .empty
-        case .off: .hidden
-        }
+        if surface.isVirtual, virtualVisibility == .off { return .hidden }
+        if shared.showsPlayback { return state }
+        // Nothing is playing. A real notch stays, empty, so pointing at it can say so; a virtual one only if Settings keeps it.
+        if surface.isVirtual, virtualVisibility != .always { return .hidden }
+        return surface.hover.state == .resting ? .empty : .note
     }
 
     /// Whether the notch draws the title in its middle. Only a virtual notch has room, since a real one's middle is the
@@ -132,22 +131,21 @@ public struct Notches: Feature {
             && shared.playback?.title.isEmpty == false
     }
 
-    /// With nothing playing a notch draws nothing, or only its empty shape, and takes no hover or click. Nor does one over
-    /// a full-screen app.
+    /// A notch that draws nothing takes no hover or click: a virtual one that isn't kept, or one over a full-screen app.
+    /// An empty notch takes the hover that opens the note.
     func answersPointer(_ surface: Surface, _ shared: SharedState) -> Bool {
         guard !surface.isFullScreen else { return false }
-        let state = notchState(surface, shared)
-        return state != .hidden && state != .empty
+        return notchState(surface, shared) != .hidden
     }
 
     /// Whether any notch is open.
     func isOpen(_ shared: SharedState) -> Bool {
-        surfaces.values.contains { notchState($0, shared) == .expanded }
+        surfaces.values.contains { notchState($0, shared).isOpen }
     }
 
     /// Whether the pointer is on a notch or a card is open, which holds off Idle.
     func isHovered(_ shared: SharedState) -> Bool {
-        surfaces.values.contains { notchState($0, shared) == .expanded || $0.pointerInside }
+        surfaces.values.contains { notchState($0, shared).isOpen || $0.pointerInside }
     }
 
     // MARK: Helpers
@@ -160,7 +158,7 @@ public struct Notches: Feature {
     }
 
     private mutating func dismiss(except: String?, _ shared: SharedState, at now: Date) {
-        for (display, surface) in surfaces where display != except && notchState(surface, shared) == .expanded {
+        for (display, surface) in surfaces where display != except && notchState(surface, shared).isOpen {
             surfaces[display]?.hover.handle(.dismiss, at: now)
         }
     }

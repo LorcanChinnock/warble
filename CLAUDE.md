@@ -9,7 +9,7 @@ Warble is a macOS 15+ app that shows what's playing in the notch and controls it
 By default, Warble is calm: a small, fast notch that shows what's playing and stays out of the way. Extras are built in, but they start off.
 
 - Nothing may slow the hover → expand path or a click on play/pause.
-- When nothing is playing, Warble draws nothing and uses no CPU: no timers, no polling. The one exception is a virtual notch the listener has set to Always, which stays as an empty shape that is still and takes no hover.
+- When nothing is playing, Warble draws nothing and uses no CPU: no timers, no polling. The one exception is the empty notch: a real notch, or a virtual one set to Always, stays as a still, empty shape that takes a hover and opens a one-line note, so it never feels broken.
 - The default is the simplest state, and every extra starts off.
 
 ## Who uses Warble
@@ -80,7 +80,7 @@ Claude Code loads only this file, so read a feature's note before you change tha
 | [Design](docs/architecture/design.md) | changing how anything looks, or adding a colour, font or control |
 | [The notch](docs/architecture/notch.md) | changing the panel, its states and cards, hover, displays, toasts, scrolling or the keys it takes |
 | [Accessibility](docs/architecture/accessibility.md) | adding or changing any control or label |
-| [Idle](docs/architecture/idle.md) | changing when the notch goes back to Idle, which draws nothing |
+| [Idle](docs/architecture/idle.md) | changing when the notch goes back to Idle, which draws an empty notch or nothing |
 | [Motion](docs/architecture/motion.md) | changing how the notch moves between states |
 | [Website](docs/architecture/website.md) | changing `site/` or the user guide |
 | [Performance](docs/architecture/performance.md) | changing anything on the hover, expand or play/pause path, or adding a timer |
