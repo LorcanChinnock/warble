@@ -51,6 +51,7 @@ final class NotchSurface {
         if let value = NotchRender(app, display: display) {
             last = value
             panel.ignoresMouseEvents = value.ignoresMouseEvents
+            model.showsTitle = value.showsTitle
         }
         if let last {
             draw(last, animated: animated)

@@ -28,6 +28,8 @@ public enum AppAction: Equatable, Sendable {
     case volumeRead(Double?, isMuted: Bool)
     case selectOutput(UInt32)
     case outputsRead([AudioOutput], current: UInt32?)
+    /// Settings turned the title in a virtual notch on or off.
+    case virtualTitleChanged(Bool)
     /// `AppState.deadline` came due.
     case tick
 }

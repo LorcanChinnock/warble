@@ -949,6 +949,9 @@
         }
       }
     },
+    "On a display without a notch, the middle of the notch shows the song's title and artist." : {
+
+    },
     "One" : {
       "localizations" : {
         "de" : {
@@ -1832,6 +1835,9 @@
           }
         }
       }
+    },
+    "Show the title in a virtual notch" : {
+
     },
     "Shuffle" : {
       "localizations" : {

@@ -3,8 +3,8 @@ import Carbon.HIToolbox
 import SwiftUI
 import WarbleCore
 
-/// The art in the left wing and the play-state bars in the right, either side of the camera housing, each centred in a
-/// square as tall as the housing.
+/// The art in the left wing and the play-state bars in the right, either side of the camera housing (a virtual one can
+/// have the title between them), each centred in a square as tall as the housing.
 struct RestingContent: View {
     let playback: PlaybackState?
     let artwork: NSImage?
@@ -34,7 +34,11 @@ struct RestingContent: View {
                 }
             }
             .frame(width: wing)
-            Spacer(minLength: 0)
+            if model.showsTitle, let playback {
+                VirtualTitle(playback: playback, notch: notch)
+            } else {
+                Spacer(minLength: 0)
+            }
             Group {
                 if let playback {
                     PlayStateBars(isPlaying: playback.isPlaying, isShown: isIn, reduceMotion: reduceMotion)
