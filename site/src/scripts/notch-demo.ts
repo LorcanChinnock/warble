@@ -9,7 +9,7 @@ const tracks = [
 ];
 const captions: Record<Scene, string> = {
   rest: "The album art on one side, a few moving bars on the other. That's all you see while you work.",
-  open: 'Hover to open it in a quarter of a second: the song, progress and controls. Click and it opens at once.',
+  open: 'Hover to open it in a split second: the song, progress and controls. Click and it opens at once.',
   idle: 'Nothing playing: no timers, no polling, no CPU. Point at it and it tells you so.',
 };
 const trackLength = 222;

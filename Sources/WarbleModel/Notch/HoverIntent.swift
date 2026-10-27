@@ -33,9 +33,9 @@ public enum HoverEvent: Equatable, Sendable {
 /// `advance(to:)` when it fires.
 public struct HoverIntent: Equatable, Sendable {
     /// How long the pointer stays on the notch before it expands.
-    public static let expandDelay: TimeInterval = 0.25
+    public static let expandDelay: TimeInterval = 0.15
     /// How long after the pointer leaves the notch closes, unless pinned.
-    public static let collapseDelay: TimeInterval = 0.4
+    public static let collapseDelay: TimeInterval = 0.25
 
     public private(set) var state = HoverState.resting
     /// When `state` changes next if nothing else happens, or `nil` when nothing is due.
