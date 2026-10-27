@@ -35,7 +35,7 @@ struct SettingsView: View {
                 // Clear of the title bar's buttons, which the content runs under.
                 .padding(.top, 44)
                 VStack(alignment: .leading, spacing: 8) {
-                    NotchPreview(showsTitle: notchSettings.showsVirtualTitle, showsGlow: notchSettings.showsGlow, showsNotch: notchSettings.virtualVisibility != .off)
+                    NotchPreview(showsTitle: notchSettings.showsVirtualTitle, showsGlow: notchSettings.showsGlow, pauseDelay: notchSettings.pauseDelay, visibility: notchSettings.virtualVisibility)
                     Text("How the notch looks, with a made-up song. Point at it to open it.")
                         .font(.footnote)
                         .foregroundStyle(Native.secondary)

@@ -15,7 +15,7 @@ The right-click menu also opens the app that's playing, checks for updates and q
 
 ## What's in Settings
 
-At the top, under the version, is a small preview of the notch with a made-up song. Point at it to open it. It isn't what's playing, so it looks the same when nothing plays, and it changes as you turn the title and glow switches on and off, and the notch fades out when you choose Off for external displays.
+At the top, under the version, is a small preview of the notch with a made-up song. Point at it to open it. It isn't what's playing, so it looks the same when nothing plays. Every setting under it changes it. The title and glow switches show at once, and the notch fades out when you choose Off for external displays. When you change **Stay visible after pausing** or **Notch on external displays**, the song pauses and, a moment later, ends as those settings would: the paused song stays, an empty notch is left, or the notch goes. The preview takes the same short moment for 10 seconds and 1 minute. Move the pointer off the preview and the song plays again.
 
 - **Stay visible after pausing.** 10 seconds at first. When you pause, the song stays in the notch for this long, then Warble hides. Choose **1 minute**, or **Always** to keep it until something else plays or the app stops. If you change it while a song is paused, the new time counts from the pause.
 - **Notch on external displays.** **Only when playing** at first. On a display without a notch, or with the lid closed, Warble draws a notch of its own. Choose **Always** to keep an empty black notch there after the music stops, or **Off** to draw none. Your MacBook's own notch is never affected. See [External displays](/docs/external-displays/).
