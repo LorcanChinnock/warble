@@ -2,7 +2,7 @@
 # Spike tooling for #287. Builds a copy of the adapter whose `send` accepts any MediaRemote command,
 # and `send 999` lists the commands the now playing app supports.
 #
-#   likes.sh rec NAME    record `stream --no-diff` to out/NAME.jsonl in the background
+#   likes.sh rec NAME    record `stream --no-diff --micros` to out/NAME.jsonl in the background, ready to be a fixture
 #   likes.sh cmds NAME   list supported commands to out/NAME-commands.txt and show the like-related ones
 #   likes.sh send ID     send a MediaRemote command
 #   likes.sh stop        stop recording
@@ -33,12 +33,10 @@ mra() { /usr/bin/perl "$adapter/bin/mediaremote-adapter.pl" "$framework" "$@"; }
 
 case "${1:-}" in
     rec)
-        (mra stream --no-diff --no-artwork | while IFS= read -r line; do
-            printf '%s\t%s\n' "$(date +%T)" "$line"
-        done > "$out/$2.jsonl") &
+        mra stream --no-diff --micros --no-artwork > "$out/$2.jsonl" &
         echo "recording to $out/$2.jsonl" ;;
     cmds) mra send 999 | tee "$out/$2-commands.txt" | grep -E '^(2[0-3]|10[6-8])[[:space:]]' || true ;;
     send) mra send "$2" && echo "sent $2" ;;
-    stop) pkill -f 'mediaremote-adapter.pl.*stream' || true; echo stopped ;;
+    stop) pkill -f "$adapter/bin/mediaremote-adapter.pl" || true; echo stopped ;;
     *) sed -n '2,9p' "$0"; exit 1 ;;
 esac
