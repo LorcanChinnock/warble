@@ -6,6 +6,7 @@ import WarbleCore
 struct SettingsView: View {
     @Environment(Updater.self) private var updater
     @Environment(LoginItem.self) private var loginItem
+    @Environment(NotchSettings.self) private var notchSettings
     private static let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
     private static let guide = URL(string: "https://warble.lorcanchinnock.com/docs/")!
 
@@ -43,6 +44,11 @@ struct SettingsView: View {
                                 .buttonStyle(.warble)
                         }
                     }
+                    SettingsToggleRow(
+                        title: Text("Show the title in a virtual notch"),
+                        detail: Text("On a display without a notch, the middle of the notch shows the song's title and artist."),
+                        isOn: Binding { notchSettings.showsVirtualTitle } set: { notchSettings.showsVirtualTitle = $0 }
+                    )
                     SettingsToggleRow(
                         title: Text("Check for updates automatically"),
                         isOn: automaticallyChecks

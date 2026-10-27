@@ -8,6 +8,9 @@ public struct Notches: Feature {
     /// The displays that show a full-screen app, by `NotchDisplay.id`, whose notches draw nothing.
     public internal(set) var fullScreen: Set<String> = []
 
+    /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns on.
+    public internal(set) var showsVirtualTitle = false
+
     /// What the effects last asked for, so each is asked for once per change.
     public internal(set) var watchesClicks = false
     public internal(set) var takesEscape = false
@@ -51,6 +54,8 @@ public struct Notches: Feature {
             handle(open ? .menuOpened : .menuClosed, on: display, shared, at: now)
         case .dismiss(let except):
             dismiss(except: except, shared, at: now)
+        case .virtualTitleChanged(let on):
+            showsVirtualTitle = on
         case .tick:
             for display in surfaces.keys {
                 surfaces[display]?.hover.advance(to: now)
@@ -107,6 +112,13 @@ public struct Notches: Feature {
         let state = NotchState(surface.hover.state, isPlaying: shared.showsPlayback)
         // A full-screen app has the top of its display to itself.
         return surface.isFullScreen ? .hidden : state
+    }
+
+    /// Whether the notch draws the title in its middle. Only a virtual notch has room, since a real one's middle is the
+    /// camera, and only while it shows a track, so with nothing playing it stays blank.
+    func showsTitle(_ surface: Surface, _ shared: SharedState) -> Bool {
+        showsVirtualTitle && surface.isVirtual && !surface.isFullScreen && shared.showsPlayback
+            && shared.playback?.title.isEmpty == false
     }
 
     /// With nothing playing a notch draws nothing and takes no hover or click. Nor does one over a full-screen app.

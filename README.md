@@ -47,7 +47,7 @@ Or [download the latest release](https://warble.lorcanchinnock.com/download) and
 - **Calm by default.** A paused song stays for a few seconds, then Warble gets out of the way. When nothing is playing, it hides behind the notch and uses no CPU.
 - **Every Mac.** A Mac without a notch, or a MacBook with its lid closed, gets a notch Warble draws at the top of the main display.
 - **For everyone.** Works with VoiceOver, and follows Increase Contrast and Reduce Motion.
-- **Little to set up.** One switch, Open at login. Right-click the notch, or use the menu bar icon, for Settings, updates and Quit.
+- **Little to set up.** Open at login, and a switch for the title in a virtual notch. Right-click the notch, or use the menu bar icon, for Settings, updates and Quit.
 
 ## Privacy
 

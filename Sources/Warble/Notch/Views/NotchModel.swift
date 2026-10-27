@@ -15,6 +15,8 @@ final class NotchModel {
     /// Whether the notch shows what's playing, rather than Idle. While Idle, `player` may still hold the paused track.
     /// Set with `state`.
     var isPlaying = false
+    /// Whether the resting notch draws the title between the art and the bars.
+    var showsTitle = false
     @ObservationIgnored var onClick: () -> Void = {}
     /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
     @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }

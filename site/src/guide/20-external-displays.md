@@ -17,6 +17,12 @@ Other displays don't show a notch. Drag the menu bar to another display in Syste
 
 A real notch has the camera in the middle. The notch Warble draws is a plain black shape with the same album art and moving bars either side, and with nothing playing it isn't drawn at all.
 
+## Show the title in the middle
+
+A real notch has the camera there, but a notch Warble draws has nothing in the middle. Turn on **Show the title in a virtual notch** in Settings and it shows the title of what's playing, with the artist after it when both fit. A title that's too long fades out at its end and stays still. Point at the notch to see all of it in the player. Tags such as "(Remastered 2009)" or "(feat. …)" are left out so more of the title fits, and a paused song's title turns grey.
+
+It's off at first, and it only applies to a notch Warble draws, never your MacBook's own.
+
 ## Full-screen apps
 
 When an app is full screen, it has the whole display to itself, so the notch on that display hides until you leave full screen.

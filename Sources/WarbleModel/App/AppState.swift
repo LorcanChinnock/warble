@@ -81,6 +81,11 @@ public struct AppState: Equatable, Sendable {
         SharedState(playback: playback, showsPlayback: showsPlayback, hideAt: hideAt)
     }
 
+    /// Whether the notch over `display` draws the title in its middle.
+    public func titleInNotch(_ display: String) -> Bool {
+        surfaces[display].map { notches.showsTitle($0, shared) } ?? false
+    }
+
     func answersPointer(_ surface: Surface) -> Bool {
         notches.answersPointer(surface, shared)
     }

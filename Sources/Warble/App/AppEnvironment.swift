@@ -16,6 +16,7 @@ final class AppEnvironment {
     let updater: Updater
     let displays: Displays
     let loginItem: LoginItem
+    let notchSettings: NotchSettings
     let hotkeys: HotkeyCenter
     let settingsWindow: SettingsWindow
 
@@ -34,6 +35,8 @@ final class AppEnvironment {
         store.perform = { [weak runner] in runner?.perform($0) }
         runner.dispatch = dispatch
         runner.platform = { [weak platform] in platform?.perform($0) }
+        notchSettings = NotchSettings(dispatch: dispatch)
+        notchSettings.start()
         settingsWindow = SettingsWindow()
         settingsWindow.environment = self
     }
@@ -45,5 +48,6 @@ extension View {
         self
             .environment(environment.updater)
             .environment(environment.loginItem)
+            .environment(environment.notchSettings)
     }
 }

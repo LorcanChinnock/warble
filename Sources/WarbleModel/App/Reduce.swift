@@ -40,7 +40,7 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .outputsRead(let outputs, let current):
         state.outputs = outputs
         state.currentOutput = current
-    case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .dismiss:
+    case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .dismiss, .virtualTitleChanged:
         effects += state.notches.reduce(action, shared: state.shared, at: now)
     case .tick:
         if let hideAt = state.hideAt, hideAt <= now {
