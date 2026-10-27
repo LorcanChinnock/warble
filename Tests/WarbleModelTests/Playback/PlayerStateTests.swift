@@ -73,6 +73,15 @@ private struct Run {
     #expect(idle.effects.isEmpty)
 }
 
+@Test func openArtistLooksUpTheArtistOfTheOneThatsPlaying() {
+    var run = Run()
+    run.send(.openArtist)
+    #expect(run.effects == [.openArtist(bundleIdentifier: "com.apple.Music", title: "Song")])
+    var idle = Run(playing: nil)
+    idle.send(.openArtist)
+    #expect(idle.effects.isEmpty)
+}
+
 // MARK: Volume and outputs
 
 @Test func theVolumeIsFollowedOnlyWhileThePlayersCardIsOpen() {

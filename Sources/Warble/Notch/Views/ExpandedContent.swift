@@ -25,19 +25,22 @@ struct ExpandedContent: View {
                     MarqueeLine(text: playback.title, font: .systemFont(ofSize: 15, weight: .semibold), isPlaying: playback.isPlaying)
                     if let artist = playback.artist {
                         MarqueeLine(text: artist, font: .systemFont(ofSize: 13), isSecondary: true, isPlaying: playback.isPlaying)
+                            .contentShape(Rectangle())
+                            .onTapGesture { model.player.openArtist() }
                     }
                     if let album = playback.album {
                         MarqueeLine(text: album, font: .systemFont(ofSize: 13), isSecondary: true, isPlaying: playback.isPlaying)
                     }
                 }
-                // A click on the text opens the app too, as the art does; the art's button is the one VoiceOver and the
-                // keyboard reach.
+                // A click on the title or album opens the app too, as the art does, and one on the artist their page; the
+                // art's button is the one VoiceOver and the keyboard reach.
                 .contentShape(Rectangle())
                 .onTapGesture { model.player.openApp() }
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(nowPlaying(playback))
                 .accessibilityAddTraits(.isStaticText)
                 .accessibilityValue(playback.album.map { Text("From \($0)") } ?? Text(verbatim: ""))
+                .accessibilityAction(named: Text("Go to the artist"), model.player.openArtist)
                 // VoiceOver starts here when the notch opens from the keyboard, ahead of the art beside it.
                 .accessibilitySortPriority(1)
                 Spacer(minLength: 0)

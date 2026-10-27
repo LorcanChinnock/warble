@@ -172,7 +172,11 @@ private struct Run {
     runner.perform(.watchClicksOutside(true))
     runner.perform(.haptic)
     runner.perform(.openApp(bundleIdentifier: "com.apple.Music", title: "Song"))
-    #expect(handed == [.watchClicksOutside(true), .haptic, .openApp(bundleIdentifier: "com.apple.Music", title: "Song")])
+    runner.perform(.openArtist(bundleIdentifier: "com.apple.Music", title: "Song"))
+    #expect(handed == [
+        .watchClicksOutside(true), .haptic, .openApp(bundleIdentifier: "com.apple.Music", title: "Song"),
+        .openArtist(bundleIdentifier: "com.apple.Music", title: "Song"),
+    ])
 }
 
 @MainActor

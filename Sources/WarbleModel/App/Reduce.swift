@@ -28,6 +28,10 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         if let playback = state.playback {
             effects.append(.openApp(bundleIdentifier: playback.bundleIdentifier, title: playback.title))
         }
+    case .openArtist:
+        if let playback = state.playback {
+            effects.append(.openArtist(bundleIdentifier: playback.bundleIdentifier, title: playback.title))
+        }
     case .setVolume(let volume):
         effects.append(.setVolume(volume))
     case .scrolled(let delta, let precise, let inverted, let volume, let isMuted):
