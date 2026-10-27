@@ -52,6 +52,7 @@ final class NotchSurface {
             last = value
             panel.ignoresMouseEvents = value.ignoresMouseEvents
             model.showsTitle = value.showsTitle
+            model.cardSize = value.cardSize
         }
         if let last {
             draw(last, animated: animated)
@@ -93,7 +94,7 @@ final class NotchSurface {
         let state = value.state
         let notch = housing
         let isPlaying = value.isPlaying
-        guard let frame = NotchLayout.frame(state, notch: notch) else {
+        guard let frame = NotchLayout.frame(state, notch: notch, cardSize: value.cardSize) else {
             guard shown != nil else { return }
             shown = nil
             morphs += 1
@@ -148,7 +149,7 @@ final class NotchSurface {
             model.isPlaying = isPlaying
             show(in: frame)
         }
-        panel.track(NotchLayout.hoverArea(state, notch: notch) ?? .zero)
+        panel.track(NotchLayout.hoverArea(state, notch: notch, cardSize: value.cardSize) ?? .zero)
         log.notice("Notch \(state.rawValue, privacy: .public) at \(NSStringFromRect(frame), privacy: .public) over \(NSStringFromRect(notch), privacy: .public)")
     }
 

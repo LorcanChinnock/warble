@@ -5,7 +5,7 @@ import WarbleModel
 private let log = Logger.warble("settings")
 
 /// What Settings chooses about the notch: whether a virtual notch shows the title in its middle, which starts off, how
-/// long a paused song stays, when a virtual notch is there, and whether the open card glows, which starts on. Each is kept in Warble's own preferences and handed to the store, which decides what
+/// long a paused song stays, when a virtual notch is there, whether the open card glows, which starts on, and how big the open card is. Each is kept in Warble's own preferences and handed to the store, which decides what
 /// follows.
 @MainActor
 @Observable
@@ -14,6 +14,7 @@ final class NotchSettings {
     private static let pauseDelayKey = "pauseDelay"
     private static let visibilityKey = "virtualNotch"
     private static let glowKey = "albumArtGlow"
+    private static let cardSizeKey = "cardSize"
 
     private let defaults: UserDefaults
     private let dispatch: (AppAction) -> Void
@@ -45,6 +46,15 @@ final class NotchSettings {
         }
     }
 
+    var cardSize: CardSize {
+        didSet {
+            guard cardSize != oldValue else { return }
+            defaults.set(cardSize.rawValue, forKey: Self.cardSizeKey)
+            log.notice("Card size \(self.cardSize.rawValue, privacy: .public)")
+            dispatch(.cardSizeChanged(cardSize))
+        }
+    }
+
     var showsGlow: Bool {
         didSet {
             guard showsGlow != oldValue else { return }
@@ -60,6 +70,7 @@ final class NotchSettings {
         showsVirtualTitle = defaults.bool(forKey: Self.key)
         virtualVisibility = defaults.string(forKey: Self.visibilityKey).flatMap(VirtualNotchVisibility.init) ?? .standard
         showsGlow = defaults.object(forKey: Self.glowKey) as? Bool ?? true
+        cardSize = defaults.string(forKey: Self.cardSizeKey).flatMap(CardSize.init) ?? .standard
         pauseDelay = defaults.string(forKey: Self.pauseDelayKey).flatMap(PauseDelay.init) ?? .standard
     }
 
@@ -73,6 +84,9 @@ final class NotchSettings {
         }
         if !showsGlow {
             dispatch(.glowChanged(false))
+        }
+        if cardSize != .standard {
+            dispatch(.cardSizeChanged(cardSize))
         }
         if pauseDelay != .standard {
             dispatch(.pauseDelayChanged(pauseDelay))

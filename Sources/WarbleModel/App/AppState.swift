@@ -13,6 +13,8 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var hideAt: Date?
     /// Whether the open card glows in the artwork's colours, which Settings can turn off for a plain black card.
     public internal(set) var showsGlow = true
+    /// How big the open card is, which Settings chooses.
+    public internal(set) var cardSize = CardSize.standard
     /// Hides a paused track a while after the pause, unless the pointer is on a notch.
     public internal(set) var idle: IdleAfterPause
     /// Whether the pointer is on a notch or a card is open, which holds off Idle.

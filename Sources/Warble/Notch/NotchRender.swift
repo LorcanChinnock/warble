@@ -6,6 +6,8 @@ import WarbleCore
 struct NotchRender: Equatable {
     var state: NotchState
     var isPlaying: Bool
+    /// How big the open card is, which Settings chooses.
+    var cardSize: CardSize
     /// Whether the resting notch draws the title in its middle, which only a virtual notch does.
     var showsTitle: Bool
     /// A notch over a full-screen app lets clicks through to the app, since it draws nothing there.
@@ -16,6 +18,7 @@ struct NotchRender: Equatable {
         guard let surface = app.surfaces[display], let state = app.notchState(display) else { return nil }
         self.state = state
         isPlaying = app.showsPlayback
+        cardSize = app.cardSize
         showsTitle = app.titleInNotch(display)
         ignoresMouseEvents = surface.isFullScreen
     }
