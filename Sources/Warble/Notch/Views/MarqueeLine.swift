@@ -31,6 +31,7 @@ struct MarqueeLine: View {
                     ScrollingTitle(title: text, font: font, width: width, height: height,
                                    color: NSColor(color), delay: TitleScroll.startDelay)
                         .frame(width: width, height: height)
+                        .allowsHitTesting(false)
                 }
             }
             .background {
