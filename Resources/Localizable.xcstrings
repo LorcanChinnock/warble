@@ -117,6 +117,9 @@
         }
       }
     },
+    "Album-art glow" : {
+
+    },
     "All" : {
       "localizations" : {
         "de" : {
@@ -1922,6 +1925,9 @@
       }
     },
     "Stay visible after pausing" : {
+
+    },
+    "The open notch glows in the colours of the album art. Turn it off for a plain black notch." : {
 
     },
     "Turned off in System Settings. Turn Warble on in Login Items to open it at login again." : {

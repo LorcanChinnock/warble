@@ -40,6 +40,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
     case .outputsRead(let outputs, let current):
         state.outputs = outputs
         state.currentOutput = current
+    case .glowChanged(let on):
+        state.showsGlow = on
     case .pauseDelayChanged(let delay):
         state.idle.pauseDelay = delay
     case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .dismiss, .virtualTitleChanged:

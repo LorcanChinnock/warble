@@ -20,7 +20,7 @@ struct NotchView: View {
             // shows is passed in, so content on its way out keeps the track that stopped rather than going blank.
             // Once nothing is playing, the player still holds the paused track, which nothing shows.
             let playback = model.isPlaying ? model.player.playback : nil
-            NotchContent(state: state, playback: playback, artwork: model.player.artwork, colours: model.player.colours, model: model)
+            NotchContent(state: state, playback: playback, artwork: model.player.artwork, colours: model.player.colours, showsGlow: model.player.showsGlow, model: model)
                 .frame(width: size.width, height: size.height, alignment: .top)
                 .id(ContentID(state: state, isPlaying: playback != nil))
                 .transition(ContentTransition())
@@ -64,6 +64,7 @@ private struct NotchContent: View {
     let playback: PlaybackState?
     let artwork: NSImage?
     let colours: ArtworkColours?
+    let showsGlow: Bool
     let model: NotchModel
 
     var body: some View {
@@ -71,7 +72,7 @@ private struct NotchContent: View {
         case (.expanded, let playback?):
             ExpandedContent(playback: playback, artwork: artwork, model: model)
                 .padding(.top, model.notch.height)
-                .background { Glow(colours: colours) }
+                .background { Glow(colours: colours, showsGlow: showsGlow) }
         case (.resting, let playback?):
             RestingContent(playback: playback, artwork: artwork, notch: model.notch, model: model)
         default:

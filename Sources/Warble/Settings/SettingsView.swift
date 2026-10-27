@@ -35,7 +35,7 @@ struct SettingsView: View {
                 // Clear of the title bar's buttons, which the content runs under.
                 .padding(.top, 44)
                 VStack(alignment: .leading, spacing: 8) {
-                    NotchPreview(showsTitle: notchSettings.showsVirtualTitle)
+                    NotchPreview(showsTitle: notchSettings.showsVirtualTitle, showsGlow: notchSettings.showsGlow)
                     Text("How the notch looks, with a made-up song. Point at it to open it.")
                         .font(.footnote)
                         .foregroundStyle(Native.secondary)
@@ -56,6 +56,11 @@ struct SettingsView: View {
                         title: Text("Show the title in a virtual notch"),
                         detail: Text("On a display without a notch, the middle of the notch shows the song's title and artist."),
                         isOn: Binding { notchSettings.showsVirtualTitle } set: { notchSettings.showsVirtualTitle = $0 }
+                    )
+                    SettingsToggleRow(
+                        title: Text("Album-art glow"),
+                        detail: Text("The open notch glows in the colours of the album art. Turn it off for a plain black notch."),
+                        isOn: Binding { notchSettings.showsGlow } set: { notchSettings.showsGlow = $0 }
                     )
                 }
                 SettingsGroup {
@@ -100,7 +105,7 @@ struct SettingsView: View {
             .frame(maxWidth: .infinity)
         }
         .frame(minWidth: SettingsWindow.size.width, minHeight: SettingsWindow.size.height)
-        .background { SettingsBackground(showsGlow: contrast != .increased) }
+        .background { SettingsBackground(showsGlow: contrast != .increased && notchSettings.showsGlow) }
         .foregroundStyle(.white)
         .tint(.white)
         .preferredColorScheme(.dark)

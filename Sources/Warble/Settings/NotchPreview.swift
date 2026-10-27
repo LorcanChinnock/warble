@@ -25,6 +25,8 @@ enum NotchDemo {
 struct NotchPreview: View {
     /// Whether the resting notch draws the title, which the Settings switch turns on.
     let showsTitle: Bool
+    /// Whether the open card glows, which the Settings switch turns off.
+    let showsGlow: Bool
     @State private var isOpen = false
     /// Whether the pointer is on the preview, which opens it. A click then does nothing, so it can't close the card
     /// under the pointer; a press from the keyboard or VoiceOver, which have no pointer, toggles it.
@@ -130,7 +132,7 @@ struct NotchPreview: View {
         .padding(.top, Self.housing.height + 6)
         .padding(.bottom, 12)
         .frame(width: size.width, height: size.height, alignment: .top)
-        .background { Glow(colours: NotchDemo.colours) }
+        .background { Glow(colours: NotchDemo.colours, showsGlow: showsGlow) }
         .accessibilityHidden(true)
     }
 }

@@ -91,3 +91,17 @@ private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
     #expect(state.deadline == nil)
     #expect(state.showsPlayback)
 }
+
+@Test func theAlbumArtGlowStartsOn() {
+    #expect(AppState().showsGlow)
+}
+
+@Test func settingsTurnTheAlbumArtGlowOffAndOn() {
+    var state = AppState()
+    let effects = reduce(&state, .glowChanged(false), now: start)
+    #expect(!state.showsGlow)
+    #expect(effects.isEmpty)
+    #expect(state.deadline == nil)
+    _ = reduce(&state, .glowChanged(true), now: start + 1)
+    #expect(state.showsGlow)
+}
