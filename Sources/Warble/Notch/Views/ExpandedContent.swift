@@ -13,8 +13,9 @@ struct ExpandedContent: View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
                 Button(action: model.player.openApp) {
+                    // A wide thumbnail grows the tile sideways, up to a limit, and the text moves over to make room.
                     Artwork(image: artwork)
-                        .frame(width: 56, height: 56)
+                        .frame(width: artwork.map { min(100, max(56, 56 * $0.size.width / max($0.size.height, 1))) } ?? 56, height: 56)
                 }
                 .buttonStyle(.notch)
                 .accessibilityLabel(model.player.appName.map { Text("Open \($0)") } ?? Text("Open the app that's playing"))
