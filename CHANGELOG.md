@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.0-beta.12](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.11...v0.1.0-beta.12) (2026-10-27)
+
+
+### Features
+
+* **player:** open the artist's page from the expanded card's artist ([#300](https://github.com/LorcanChinnock/warble/issues/300)) ([09c64be](https://github.com/LorcanChinnock/warble/commit/09c64bed710e60e4141bfd254a83c15a092a6616))
+* **settings:** show the pause and external-display settings in the preview ([#301](https://github.com/LorcanChinnock/warble/issues/301)) ([39c12e1](https://github.com/LorcanChinnock/warble/commit/39c12e1854af296f91784f05497dbda46257b3db))
+
+
+### Bug Fixes
+
+* **displays:** draw a virtual notch on an external main display while the lid is open ([#298](https://github.com/LorcanChinnock/warble/issues/298)) ([3112236](https://github.com/LorcanChinnock/warble/commit/31122368a0a8b459979d1d1584235a317f3b94ee))
+
 ## [0.1.0-beta.11](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.10...v0.1.0-beta.11) (2026-10-27)
 
 
