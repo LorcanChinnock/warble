@@ -37,6 +37,19 @@ public struct NotchHousing: Equatable, Sendable {
     }
 }
 
+/// When a notch Warble draws on a display without one is there, which Settings chooses. A real notch is always there.
+public enum VirtualNotchVisibility: String, CaseIterable, Sendable {
+    /// It appears when something plays and goes at Idle.
+    case whenPlaying
+    /// It stays after Idle as an empty black notch.
+    case always
+    /// There is none.
+    case off
+
+    /// The default, and what Warble did before this was a choice.
+    public static let standard = VirtualNotchVisibility.whenPlaying
+}
+
 /// Where Warble draws a notch: over each camera housing, and at the top centre of the main display when none has one.
 public enum VirtualNotch {
     /// A little narrower than a MacBook's housing, about 185 points, so the panel doesn't feel too wide on a display

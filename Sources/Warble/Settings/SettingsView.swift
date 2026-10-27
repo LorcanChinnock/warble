@@ -35,7 +35,7 @@ struct SettingsView: View {
                 // Clear of the title bar's buttons, which the content runs under.
                 .padding(.top, 44)
                 VStack(alignment: .leading, spacing: 8) {
-                    NotchPreview(showsTitle: notchSettings.showsVirtualTitle, showsGlow: notchSettings.showsGlow)
+                    NotchPreview(showsTitle: notchSettings.showsVirtualTitle, showsGlow: notchSettings.showsGlow, showsNotch: notchSettings.virtualVisibility != .off)
                     Text("How the notch looks, with a made-up song. Point at it to open it.")
                         .font(.footnote)
                         .foregroundStyle(Native.secondary)
@@ -50,6 +50,16 @@ struct SettingsView: View {
                             (.tenSeconds, Text("10 seconds")),
                             (.oneMinute, Text("1 minute")),
                             (.always, Text("Always")),
+                        ]
+                    )
+                    SettingsChoiceRow(
+                        title: Text("Notch on external displays"),
+                        detail: Text("On a display without a notch, or with the lid closed, when Warble draws a notch of its own."),
+                        selection: Binding { notchSettings.virtualVisibility } set: { notchSettings.virtualVisibility = $0 },
+                        options: [
+                            (.whenPlaying, Text("Only when playing")),
+                            (.always, Text("Always")),
+                            (.off, Text("Off")),
                         ]
                     )
                     SettingsToggleRow(

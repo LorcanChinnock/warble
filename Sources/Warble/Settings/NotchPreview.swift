@@ -27,6 +27,8 @@ struct NotchPreview: View {
     let showsTitle: Bool
     /// Whether the open card glows, which the Settings switch turns off.
     let showsGlow: Bool
+    /// Whether there is a notch to show: with the virtual notch off there is none, so the screen is bare.
+    let showsNotch: Bool
     @State private var isOpen = false
     /// Whether the pointer is on the preview, which opens it. A click then does nothing, so it can't close the card
     /// under the pointer; a press from the keyboard or VoiceOver, which have no pointer, toggles it.
@@ -72,6 +74,15 @@ struct NotchPreview: View {
             .accessibilityLabel(Text("Notch preview"))
             .accessibilityValue(isOpen ? Text("Open") : Text("Closed"))
             .accessibilityHint(Text("Shows how the notch looks, with a made-up song."))
+            // Faded rather than moved, so nothing animates under Reduce Motion.
+            .opacity(showsNotch ? 1 : 0)
+            .animation(Native.fade, value: showsNotch)
+            .allowsHitTesting(showsNotch)
+            .accessibilityHidden(!showsNotch)
+            .onChange(of: showsNotch) {
+                isOpen = false
+                isHovering = false
+            }
         }
         .frame(height: 200)
         .clipShape(RoundedRectangle(cornerRadius: Native.groupRadius, style: .continuous))

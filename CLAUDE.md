@@ -9,7 +9,7 @@ Warble is a macOS 15+ app that shows what's playing in the notch and controls it
 By default, Warble is calm: a small, fast notch that shows what's playing and stays out of the way. Extras are built in, but they start off.
 
 - Nothing may slow the hover → expand path or a click on play/pause.
-- When nothing is playing, Warble draws nothing and uses no CPU: no timers, no polling.
+- When nothing is playing, Warble draws nothing and uses no CPU: no timers, no polling. The one exception is a virtual notch the listener has set to Always, which stays as an empty shape that is still and takes no hover.
 - The default is the simplest state, and every extra starts off.
 
 ## Who uses Warble

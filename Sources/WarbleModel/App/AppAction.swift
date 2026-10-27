@@ -32,6 +32,8 @@ public enum AppAction: Equatable, Sendable {
     case virtualTitleChanged(Bool)
     /// Settings turned the open card's album-art glow on or off.
     case glowChanged(Bool)
+    /// Settings chose when a virtual notch is there.
+    case virtualVisibilityChanged(VirtualNotchVisibility)
     /// Settings chose how long a paused song stays in the notch.
     case pauseDelayChanged(PauseDelay)
     /// `AppState.deadline` came due.

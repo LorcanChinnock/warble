@@ -7,6 +7,9 @@ import Foundation
 public enum NotchState: String, CaseIterable, Sendable {
     /// Nothing is playing, or the display shows a full-screen app: nothing is drawn, and the housing takes no hover.
     case hidden
+    /// Nothing is playing in a virtual notch that Settings keeps always: the housing's own shape, empty. It takes no hover
+    /// and lets clicks through.
+    case empty
     /// Something is playing and the pointer is elsewhere: the notch widened by a wing on each side.
     case resting
     /// Hovered or clicked: the full card with the art and room for the controls.
@@ -47,7 +50,7 @@ public enum NotchLayout {
     /// keeps its proportion to each Mac's camera housing.
     public static let expandedWing: CGFloat = 70
 
-    /// The radius of the housing's bottom corners, which Hidden and Resting draw too.
+    /// The radius of the housing's bottom corners, which Empty and Resting draw too.
     public static func cornerRadius(notch: CGRect) -> CGFloat {
         notch.height * cornerRatio
     }
@@ -68,6 +71,8 @@ public enum NotchLayout {
         switch state {
         case .hidden:
             nil
+        case .empty:
+            notch
         case .resting:
             CGRect(x: notch.minX - wing(notch: notch), y: notch.minY, width: notch.width + 2 * wing(notch: notch), height: notch.height)
         case .expanded:
@@ -87,7 +92,8 @@ public enum NotchLayout {
     public static func hoverArea(_ state: NotchState, notch: CGRect) -> CGRect? {
         switch state {
         case .resting: notch
-        case .hidden, .expanded: frame(state, notch: notch)
+        case .hidden, .empty: nil
+        case .expanded: frame(state, notch: notch)
         }
     }
 }
