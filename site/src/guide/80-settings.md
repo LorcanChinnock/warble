@@ -1,10 +1,10 @@
 ---
 title: Settings
-summary: Open Warble at login, show the title in a virtual notch, check for updates and see which version you have.
+summary: Choose how long a paused song stays, open Warble at login, show the title in a virtual notch, check for updates and see which version you have.
 group: Reference
 ---
 
-Warble works without changing anything. The things you may want to set are whether it opens when you log in and, on a display without a notch, whether the notch shows the title.
+Warble works without changing anything. The things you may want to set are how long a paused song stays in the notch, whether it opens when you log in and, on a display without a notch, whether the notch shows the title.
 
 ## Open Settings
 
@@ -17,6 +17,7 @@ The right-click menu also opens the app that's playing, checks for updates and q
 
 At the top, under the version, is a small preview of the notch with a made-up song. Point at it to open it. It isn't what's playing, so it looks the same when nothing plays, and it changes as you turn the title switch on and off.
 
+- **Stay visible after pausing.** 10 seconds at first. When you pause, the song stays in the notch for this long, then Warble hides. Choose **1 minute**, or **Always** to keep it until something else plays or the app stops. If you change it while a song is paused, the new time counts from the pause.
 - **Open at login.** Off at first. Turn it on, and Warble opens each time you log in, so it's there after a restart. It's the same switch as Warble's entry in System Settings › General › Login Items. If you turn Warble off there, turn it back on there.
 - **Show the title in a virtual notch.** Off at first. On a display without a notch, which Warble draws a notch for, the middle of the notch shows the title and artist of what's playing. See [External displays](/docs/external-displays/).
 - **Check for updates automatically.** Warble only goes online to check for updates. Click **Check for Updates…** to check right away, and the version you have is shown beside it.

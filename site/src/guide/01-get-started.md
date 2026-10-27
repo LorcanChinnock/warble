@@ -34,7 +34,7 @@ A small icon of three bars appears in the menu bar, and the notch looks just as 
 
 Move the pointer away and the notch closes again. [Control playback](/docs/control-playback/) covers everything the player does.
 
-When you pause, the song stays in the notch for 10 seconds, then Warble hides behind the camera. When nothing is playing, Warble draws nothing and does nothing until a song starts.
+When you pause, the song stays in the notch for 10 seconds, then Warble hides behind the camera. You can make that a minute, or until something else plays, in Settings. When nothing is playing, Warble draws nothing and does nothing until a song starts.
 
 > [!TIP]
 > To have Warble there after you restart your Mac, turn on **Open at login** in **Settings…**, from the menu bar icon.

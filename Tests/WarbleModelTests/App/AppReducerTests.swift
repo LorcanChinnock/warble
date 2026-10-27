@@ -79,3 +79,15 @@ private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
     #expect(!held.hovering)
     #expect(held.deadline == start + 60 + IdleAfterPause.delay)
 }
+
+@Test func settingsChangeHowLongAPausedSongStays() {
+    var state = AppState()
+    _ = reduce(&state, .playbackReported(PlaybackState(bundleIdentifier: "com.apple.Music", title: "Song", elapsedTimestamp: start, rate: 1)), now: start)
+    _ = reduce(&state, .playbackReported(PlaybackState(bundleIdentifier: "com.apple.Music", title: "Song", elapsedTimestamp: start, rate: 0)), now: start + 5)
+    #expect(state.deadline == start + 5 + IdleAfterPause.delay)
+    _ = reduce(&state, .pauseDelayChanged(.oneMinute), now: start + 6)
+    #expect(state.deadline == start + 5 + 60)
+    _ = reduce(&state, .pauseDelayChanged(.always), now: start + 7)
+    #expect(state.deadline == nil)
+    #expect(state.showsPlayback)
+}

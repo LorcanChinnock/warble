@@ -9,19 +9,43 @@ public enum IdleEvent: Sendable {
     case hoverEnded
 }
 
+/// How long a paused track stays on screen before the notch goes Idle, which Settings chooses.
+public enum PauseDelay: String, CaseIterable, Sendable {
+    case tenSeconds
+    case oneMinute
+    /// Until something else plays or the source stops reporting.
+    case always
+
+    /// The default, and what the notch did before this was a choice.
+    public static let standard = PauseDelay.tenSeconds
+
+    /// How long after the pause the notch goes Idle, or `nil` for never.
+    public var seconds: TimeInterval? {
+        switch self {
+        case .tenSeconds: 10
+        case .oneMinute: 60
+        case .always: nil
+        }
+    }
+}
+
 /// Decides when the notch goes back to Idle after the listener pauses, so a paused track doesn't stay on screen for
 /// ever. It holds no timers: after each call the owner schedules one for `deadline`, if any, and calls `advance(to:)`
 /// when it fires. With nothing paused there's no deadline, so no timer runs.
 public struct IdleAfterPause: Equatable, Sendable {
-    /// How long a paused track stays on screen once the pointer is away.
-    public static let delay: TimeInterval = 10
+    /// How long a paused track stays on screen once the pointer is away, unless `pauseDelay` says otherwise.
+    public static let delay: TimeInterval = PauseDelay.standard.seconds ?? 10
+
+    /// How long a paused track stays, which Settings changes. A track that is already paused takes the new delay from
+    /// when its countdown started.
+    public var pauseDelay = PauseDelay.standard
 
     /// Whether the notch is Idle: nothing is playing, or a track was paused for `delay`.
     public private(set) var isIdle = true
     /// When `isIdle` turns true if nothing else happens, or `nil` when nothing is due.
     public var deadline: Date? {
-        guard !isIdle, !held else { return nil }
-        return countdownFrom.map { $0 + Self.delay }
+        guard !isIdle, !held, let seconds = pauseDelay.seconds else { return nil }
+        return countdownFrom.map { $0 + seconds }
     }
 
     private var track: Track?
