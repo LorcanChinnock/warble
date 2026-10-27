@@ -21,3 +21,10 @@ private let cut = TrackTitle.Line.faded("A very long title")
     #expect(TitleScroll.distance(textWidth: 200) == 200 + TitleScroll.gap)
     #expect(TitleScroll.duration(textWidth: 144) == (144 + TitleScroll.gap) / 18)
 }
+
+@Test func aLineWiderThanItsRoomScrollsWhilePlaying() {
+    #expect(TitleScroll.scrolls(textWidth: 300, width: 200, isPlaying: true, reduceMotion: false))
+    #expect(!TitleScroll.scrolls(textWidth: 200, width: 200, isPlaying: true, reduceMotion: false))
+    #expect(!TitleScroll.scrolls(textWidth: 300, width: 200, isPlaying: false, reduceMotion: false))
+    #expect(!TitleScroll.scrolls(textWidth: 300, width: 200, isPlaying: true, reduceMotion: true))
+}
