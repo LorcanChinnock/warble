@@ -4,8 +4,8 @@ import SwiftUI
 import WarbleCore
 import WarbleModel
 
-/// Four bars that rise and fall while something plays and settle when it pauses. They follow the play state, not the
-/// audio. Core Animation runs them in the window server, so the app does no work per frame. They rise one after another
+/// Five thin bars, like iOS's now-playing waveform, that swell and shrink around a centre line while something plays and
+/// settle into a row of dots when it pauses. They follow the play state, not the audio. Core Animation runs them in the window server, so the app does no work per frame. They rise one after another
 /// as the wings slide out, and drop as the content leaves; once the content is gone, so are their animations. With
 /// Reduce Motion they stand still and show at once.
 struct PlayStateBars: NSViewRepresentable {
@@ -28,14 +28,15 @@ struct PlayStateBars: NSViewRepresentable {
         /// Each bar's heights, as fractions of the view's, which it loops through. Different lengths keep the bars from
         /// falling into step.
         private static let heights: [[CGFloat]] = [
-            [0.35, 0.9, 0.5, 1, 0.4],
-            [0.8, 0.3, 1, 0.45],
-            [0.5, 1, 0.3, 0.75, 0.6, 0.95],
-            [0.9, 0.4, 0.7, 0.3],
+            [0.4, 0.85, 0.5, 1, 0.45],
+            [0.75, 0.4, 1, 0.55],
+            [1, 0.5, 0.9, 0.35, 0.8, 0.6],
+            [0.7, 1, 0.4, 0.85],
+            [0.35, 0.7, 0.45, 0.95, 0.5],
         ]
         /// A paused bar, a rounded dot.
-        private static let settled: CGFloat = 3
-        private static let barWidth: CGFloat = 3
+        private static let settled: CGFloat = 2
+        private static let barWidth: CGFloat = 2
         /// The curve each bar rises on, the same as the resting art's (`Native.artIn`).
         private static let rise = CAMediaTimingFunction(controlPoints: 0.2, 0.9, 0.3, 1)
         private let bars = heights.map { _ in CALayer() }
@@ -52,8 +53,8 @@ struct PlayStateBars: NSViewRepresentable {
             for bar in bars {
                 bar.backgroundColor = NSColor.white.cgColor
                 bar.cornerRadius = Self.barWidth / 2
-                // Grows up from its foot.
-                bar.anchorPoint = CGPoint(x: 0.5, y: 0)
+                // Grows out from the centre line, up and down together.
+                bar.anchorPoint = CGPoint(x: 0.5, y: 0.5)
                 layer?.addSublayer(bar)
             }
         }
@@ -66,7 +67,7 @@ struct PlayStateBars: NSViewRepresentable {
             CATransaction.setDisableActions(true)
             let gap = (bounds.width - CGFloat(bars.count) * Self.barWidth) / CGFloat(bars.count - 1)
             for (index, bar) in bars.enumerated() {
-                bar.position = CGPoint(x: CGFloat(index) * (Self.barWidth + gap) + Self.barWidth / 2, y: 0)
+                bar.position = CGPoint(x: CGFloat(index) * (Self.barWidth + gap) + Self.barWidth / 2, y: bounds.midY)
                 bar.bounds.size = CGSize(width: Self.barWidth, height: height(of: index))
             }
             CATransaction.commit()
