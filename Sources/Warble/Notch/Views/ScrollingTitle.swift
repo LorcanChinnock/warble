@@ -57,7 +57,6 @@ struct ScrollingTitle: NSViewRepresentable {
         func show(_ title: String, font: NSFont, width: CGFloat, height: CGFloat) {
             if let shown, shown.title == title, shown.font == font, shown.width == width, shown.height == height { return }
             shown = (title, font, width, height)
-            let scale = window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 2
             let textWidth = ceil((title as NSString).size(withAttributes: [.font: font]).width)
             let distance = TitleScroll.distance(textWidth: textWidth)
             let textHeight = ceil(font.ascender - font.descender)
@@ -69,7 +68,6 @@ struct ScrollingTitle: NSViewRepresentable {
                 text.string = title
                 text.font = font
                 text.fontSize = font.pointSize
-                text.contentsScale = scale
                 text.frame = CGRect(x: CGFloat(index) * distance, y: (height - textHeight) / 2, width: textWidth, height: textHeight)
             }
             edges.frame = CGRect(x: 0, y: 0, width: width, height: height)
@@ -85,6 +83,28 @@ struct ScrollingTitle: NSViewRepresentable {
             loop.timingFunction = CAMediaTimingFunction(name: .linear)
             loop.preferredFrameRateRange = Self.frameRate
             strip.add(loop, forKey: "scroll")
+            matchScreen()
+        }
+
+        override func viewDidMoveToWindow() {
+            super.viewDidMoveToWindow()
+            matchScreen()
+        }
+
+        override func viewDidChangeBackingProperties() {
+            super.viewDidChangeBackingProperties()
+            matchScreen()
+        }
+
+        /// Draws the text at the density of the screen it's on, which is only known once it's in a window and changes if
+        /// the window moves to another display; layers added by hand don't follow it themselves.
+        private func matchScreen() {
+            guard let scale = window?.backingScaleFactor else { return }
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            first.contentsScale = scale
+            second.contentsScale = scale
+            CATransaction.commit()
         }
     }
 }
