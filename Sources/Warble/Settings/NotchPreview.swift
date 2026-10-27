@@ -21,28 +21,36 @@ enum NotchDemo {
 
 /// A small screen with a virtual notch on it, drawn at the real notch's proportions with a made-up song. It rests as a
 /// notch does, with the art, the bars and, when the setting is on, the title, and opens into the card when the pointer is
-/// on it. Nothing in it moves by itself, so it sets no timers.
+/// on it. A change to the pause or external-display setting pauses the song and, a beat later, ends it as those settings
+/// would (`PreviewEnding`); it holds that end until the pointer leaves the preview, or another setting changes, then
+/// plays again. Nothing else in it moves by itself.
 struct NotchPreview: View {
     /// Whether the resting notch draws the title, which the Settings switch turns on.
     let showsTitle: Bool
     /// Whether the open card glows, which the Settings switch turns off.
     let showsGlow: Bool
-    /// Whether there is a notch to show: with the virtual notch off there is none, so the screen is bare.
-    let showsNotch: Bool
+    let pauseDelay: PauseDelay
+    /// With the virtual notch off there is none, so the screen is bare.
+    let visibility: VirtualNotchVisibility
     @State private var isOpen = false
     /// Whether the pointer is on the preview, which opens it. A click then does nothing, so it can't close the card
     /// under the pointer; a press from the keyboard or VoiceOver, which have no pointer, toggles it.
     @State private var isHovering = false
+    @State private var isPaused = false
+    /// How the paused song ended, once the beat has passed.
+    @State private var ending: PreviewEnding?
+    /// Counts the pauses, so each one waits out its own beat.
+    @State private var pauses = 0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private static let housing = CGRect(x: 0, y: 0, width: VirtualNotch.width, height: 24)
 
     var body: some View {
         let housing = Self.housing
-        let resting = NotchLayout.frame(.resting, notch: housing)?.size ?? housing.size
-        let expanded = NotchLayout.frame(.expanded, notch: housing)?.size ?? housing.size
-        let size = isOpen ? expanded : resting
-        let radius = isOpen ? Native.expandedRadius : NotchLayout.cornerRadius(notch: housing)
+        let showsNotch = visibility != .off && ending != .bareScreen
+        let state: NotchState = ending == .emptyNotch ? (isOpen ? .note : .empty) : (isOpen ? .expanded : .resting)
+        let size = NotchLayout.frame(state, notch: housing)?.size ?? housing.size
+        let radius = Native.radius(state, notch: housing)
         let shape = UnevenRoundedRectangle(bottomLeadingRadius: radius, bottomTrailingRadius: radius)
         ZStack(alignment: .top) {
             LinearGradient(colors: [Color(hex: 0x2B3342), Color(hex: 0x1A1F29)], startPoint: .top, endPoint: .bottom)
@@ -54,16 +62,19 @@ struct NotchPreview: View {
                 ZStack(alignment: .top) {
                     shape.fill(Native.panel)
                     // With Reduce Motion only the content fades; the shape changes at once, as the notch's does.
-                    cardContent(expanded)
-                        .opacity(isOpen ? 1 : 0)
-                        .animation(Native.fade, value: isOpen)
+                    cardContent(NotchLayout.frame(.expanded, notch: housing)?.size ?? housing.size)
+                        .opacity(state == .expanded ? 1 : 0)
+                        .animation(Native.fade, value: state)
                     restingContent(housing)
-                        .opacity(isOpen ? 0 : 1)
-                        .animation(Native.fade, value: isOpen)
+                        .opacity(state == .resting ? 1 : 0)
+                        .animation(Native.fade, value: state)
+                    noteContent(NotchLayout.frame(.note, notch: housing)?.size ?? housing.size)
+                        .opacity(state == .note ? 1 : 0)
+                        .animation(Native.fade, value: state)
                 }
                 .frame(width: size.width, height: size.height, alignment: .top)
                 .mask(alignment: .top) { shape.frame(width: size.width, height: size.height) }
-                .animation(reduceMotion ? nil : Native.morph, value: isOpen)
+                .animation(reduceMotion ? nil : Native.morph, value: state)
                 .contentShape(shape)
             }
             .buttonStyle(.notch)
@@ -86,6 +97,31 @@ struct NotchPreview: View {
         }
         .frame(height: 200)
         .clipShape(RoundedRectangle(cornerRadius: Native.groupRadius, style: .continuous))
+        .onHover { inside in
+            if !inside, isPaused { play() }
+        }
+        .onChange(of: pauseDelay) { pause() }
+        .onChange(of: visibility) { pause() }
+        .onChange(of: showsTitle) { play() }
+        .onChange(of: showsGlow) { play() }
+        .task(id: pauses) {
+            guard isPaused, (try? await Task.sleep(for: PreviewEnding.beat)) != nil else { return }
+            ending = PreviewEnding(pauseDelay: pauseDelay, visibility: visibility)
+        }
+    }
+
+    /// Pauses the song, which ends a beat later. With the virtual notch off there's no notch to pause, so it plays.
+    private func pause() {
+        isOpen = false
+        ending = nil
+        isPaused = visibility != .off
+        pauses += 1
+    }
+
+    private func play() {
+        isPaused = false
+        ending = nil
+        pauses += 1
     }
 
     /// The art on the left and the bars on the right, either side of the housing, with the title between them when the
@@ -104,9 +140,10 @@ struct NotchPreview: View {
             }
             HStack(alignment: .center, spacing: 2) {
                 ForEach([0.5, 1, 0.7, 0.4], id: \.self) { height in
-                    Capsule().fill(.white).frame(width: 2, height: art * 0.6 * height)
+                    Capsule().fill(.white).frame(width: 2, height: isPaused ? 2 : art * 0.6 * height)
                 }
             }
+            .animation(Native.fade, value: isPaused)
             .frame(width: wing)
         }
         .frame(width: NotchLayout.frame(.resting, notch: housing)?.width, height: housing.height)
@@ -134,7 +171,7 @@ struct NotchPreview: View {
             Spacer(minLength: 0)
             HStack(spacing: 28) {
                 Image(systemName: "backward.fill")
-                Image(systemName: "pause.fill").font(.title3)
+                Image(systemName: isPaused ? "play.fill" : "pause.fill").font(.title3)
                 Image(systemName: "forward.fill")
             }
             .foregroundStyle(.white)
@@ -145,6 +182,17 @@ struct NotchPreview: View {
         .frame(width: size.width, height: size.height, alignment: .top)
         .background { Glow(colours: NotchDemo.colours, showsGlow: showsGlow) }
         .accessibilityHidden(true)
+    }
+
+    /// What an empty notch says when the pointer is on it, as the real one does.
+    private func noteContent(_ size: CGSize) -> some View {
+        Text("Nothing playing")
+            .font(.system(size: 13, weight: .medium))
+            .foregroundStyle(Native.secondary)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(.top, Self.housing.height)
+            .frame(width: size.width, height: size.height)
+            .accessibilityHidden(true)
     }
 }
 
