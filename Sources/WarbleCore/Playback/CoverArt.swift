@@ -38,7 +38,7 @@ public enum CoverArt {
         cover: @escaping @Sendable (Query) async -> Data? = CoverArt.fetch
     ) -> AsyncStream<PlaybackState?> {
         let (output, continuation) = AsyncStream<PlaybackState?>.makeStream(bufferingPolicy: .bufferingNewest(1))
-        let shared = Mutex(Shared())
+        let shared = Locked()
         let task = Task {
             for await state in states {
                 let (shown, lookup) = shared.withLock { shared in
@@ -69,6 +69,15 @@ public enum CoverArt {
         }
         continuation.onTermination = { _ in task.cancel() }
         return output
+    }
+
+    /// `Shared` behind a lock, in a class so the lookups' tasks can hold it; a `Mutex` itself can't be captured.
+    private final class Locked: Sendable {
+        private let mutex = Mutex(Shared())
+
+        func withLock<R>(_ body: (inout Shared) -> R) -> R {
+            mutex.withLock { body(&$0) }
+        }
     }
 
     private struct Shared {
