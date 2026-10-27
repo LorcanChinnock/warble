@@ -45,7 +45,7 @@ public final class EffectRunner {
         case .send(let command):
             guard let source else { return }
             Task { await source.send(command) }
-        case .watchClicksOutside, .openApp, .haptic:
+        case .watchClicksOutside, .openApp, .openArtist, .haptic:
             platform(effect)
         }
     }

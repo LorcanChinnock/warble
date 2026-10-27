@@ -15,6 +15,23 @@ public enum BrowserTabs {
 
     /// The script that selects the tab titled `title`, or `nil` when `bundleIdentifier` isn't a browser Warble can script.
     public static func script(bundleIdentifier: String, title: String) -> String? {
+        script(bundleIdentifier: bundleIdentifier, title: title, otherwise: "false") { select in
+            """
+            \(select)
+            set index of w to 1
+            activate
+            return true
+            """
+        }
+    }
+
+    /// The script that returns the address of the tab titled `title`, or an empty string when no tab matches.
+    public static func urlScript(bundleIdentifier: String, title: String) -> String? {
+        script(bundleIdentifier: bundleIdentifier, title: title, otherwise: "\"\"") { _ in "return URL of t" }
+    }
+
+    /// Runs `found` with the statement that selects the tab, in the first tab whose title contains `title`.
+    private static func script(bundleIdentifier: String, title: String, otherwise: String, found: (String) -> String) -> String? {
         let quoted = "\"" + title.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"") + "\""
         let select: String, property: String
         if bundleIdentifier == safari {
@@ -25,21 +42,20 @@ public enum BrowserTabs {
             return nil
         }
         return """
-        tell application id "\(bundleIdentifier)"
-            repeat with w in windows
-                set i to 0
-                repeat with t in tabs of w
-                    set i to i + 1
-                    if (\(property) of t as text) contains \(quoted) then
-                        \(select)
-                        set index of w to 1
-                        activate
-                        return true
-                    end if
+        with timeout of 5 seconds
+            tell application id "\(bundleIdentifier)"
+                repeat with w in windows
+                    set i to 0
+                    repeat with t in tabs of w
+                        set i to i + 1
+                        if (\(property) of t as text) contains \(quoted) then
+                            \(found(select).replacingOccurrences(of: "\n", with: "\n                    "))
+                        end if
+                    end repeat
                 end repeat
-            end repeat
-            return false
-        end tell
+                return \(otherwise)
+            end tell
+        end timeout
         """
     }
 
@@ -47,14 +63,25 @@ public enum BrowserTabs {
     /// tab matches, so the caller can open the browser instead.
     public static func focus(bundleIdentifier: String, title: String) async -> Bool {
         guard let source = script(bundleIdentifier: bundleIdentifier, title: title) else { return false }
-        return await withCheckedContinuation { continuation in
+        return await run(source)?.booleanValue ?? false
+    }
+
+    /// The address of the tab titled `title`, or `nil` when the script fails, Automation is off or no tab matches.
+    public static func url(bundleIdentifier: String, title: String) async -> URL? {
+        guard let source = urlScript(bundleIdentifier: bundleIdentifier, title: title) else { return nil }
+        return await run(source)?.stringValue.flatMap { $0.isEmpty ? nil : URL(string: $0) }
+    }
+
+    /// Runs `source` off the main thread, logging a failure.
+    static func run(_ source: String) async -> NSAppleEventDescriptor? {
+        await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async {
                 var error: NSDictionary?
                 let result = NSAppleScript(source: source)?.executeAndReturnError(&error)
                 if let error {
-                    log.error("Tab script failed: \(error[NSAppleScript.errorMessage] as? String ?? "", privacy: .public)")
+                    log.error("Script failed: \(error[NSAppleScript.errorMessage] as? String ?? "", privacy: .public)")
                 }
-                continuation.resume(returning: result?.booleanValue ?? false)
+                continuation.resume(returning: error == nil ? result : nil)
             }
         }
     }

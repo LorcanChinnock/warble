@@ -77,6 +77,11 @@ final class PlayerModel {
         dispatch(.openApp)
     }
 
+    /// Opens the page of the artist that's playing, or the app when there isn't one to open.
+    func openArtist() {
+        dispatch(.openArtist)
+    }
+
     func setVolume(_ volume: Double) {
         dispatch(.setVolume(volume))
     }

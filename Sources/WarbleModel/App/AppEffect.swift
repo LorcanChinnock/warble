@@ -13,6 +13,8 @@ public enum AppEffect: Equatable, Sendable {
     case send(PlaybackCommand)
     /// Bring the playing app to the front, and in a browser the tab, which is the one titled `title`.
     case openApp(bundleIdentifier: String, title: String)
+    /// Open the artist's page for the track titled `title`, or `openApp` when there's no exact one to open.
+    case openArtist(bundleIdentifier: String, title: String)
     case setVolume(Double)
     /// A light tick on a Force Touch trackpad.
     case haptic

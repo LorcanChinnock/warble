@@ -51,7 +51,7 @@ Or [download the latest release](https://warble.lorcanchinnock.com/download) and
 
 ## Privacy
 
-Warble collects nothing. It has no account, no cloud and no analytics, and it goes online only to check for updates, after you agree, and to find the album cover for a song playing in your browser, which sends just its title and artist to Apple's iTunes Search.
+Warble collects nothing. It has no account, no cloud and no analytics, and it goes online only to check for updates, after you agree, and to find the album cover for a song playing in your browser, which sends just its title and artist to Apple's iTunes Search. When you click the artist, it asks Spotify or YouTube for the artist's page.
 
 ## Contributing
 

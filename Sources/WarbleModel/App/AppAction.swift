@@ -21,6 +21,8 @@ public enum AppAction: Equatable, Sendable {
     case command(PlaybackCommand)
     /// Bring the app that's playing to the front.
     case openApp
+    /// Open the page of the artist that's playing, or the app when Warble can't find it.
+    case openArtist
     /// Volume from the slider or a scroll over a notch. A scroll carries the volume read just before, since the card that follows it may not be open.
     case setVolume(Double)
     /// A scroll over a notch: `delta` up and down, as `NSEvent.scrollingDeltaY` reports it.
