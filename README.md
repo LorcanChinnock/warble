@@ -18,7 +18,6 @@
 
 <p align="center">
   <a href="https://warble.lorcanchinnock.com">Website</a> ·
-  <a href="docs/roadmap.md">Roadmap</a> ·
   <a href="CHANGELOG.md">Changelog</a>
 </p>
 
@@ -28,7 +27,7 @@
 
 Warble shows what's playing in the notch at the top of your Mac's screen. Hover over the notch or click it to see the song, then play, pause, skip or switch speakers. When nothing is playing, it stays out of sight, and pointing at the notch says so.
 
-Warble is in beta: it works, and it's still being built. [docs/roadmap.md](docs/roadmap.md) lists what each release will include.
+Warble is in beta: it works, and it's still being built.
 
 ## Install
 
