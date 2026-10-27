@@ -7,13 +7,18 @@ import Foundation
 public enum NotchState: String, CaseIterable, Sendable {
     /// Nothing is playing, or the display shows a full-screen app: nothing is drawn, and the housing takes no hover.
     case hidden
-    /// Nothing is playing in a virtual notch that Settings keeps always: the housing's own shape, empty. It takes no hover
-    /// and lets clicks through.
+    /// Nothing is playing, and the notch is one that stays: a real notch, or a virtual one that Settings keeps always. The
+    /// housing's own shape, empty, which takes a hover so it can open `note`.
     case empty
+    /// The pointer is on an empty notch: a small card that says nothing is playing, with no controls.
+    case note
     /// Something is playing and the pointer is elsewhere: the notch widened by a wing on each side.
     case resting
     /// Hovered or clicked: the full card with the art and room for the controls.
     case expanded
+
+    /// Whether the notch is open, as a card under the housing: the player or the note.
+    public var isOpen: Bool { self == .expanded || self == .note }
 
     /// How far `hover` has opened the notch while something is playing. Pinned draws as Expanded.
     public init(_ hover: HoverState) {
@@ -49,6 +54,8 @@ public enum NotchLayout {
     /// Room either side of the notch once expanded, for the art beside the text. Measured from the notch, so the card
     /// keeps its proportion to each Mac's camera housing.
     public static let expandedWing: CGFloat = 70
+    /// How far the note reaches below the housing: one line of text with room above and below.
+    public static let noteDrop: CGFloat = 36
 
     /// The radius of the housing's bottom corners, which Empty and Resting draw too.
     public static func cornerRadius(notch: CGRect) -> CGFloat {
@@ -73,6 +80,8 @@ public enum NotchLayout {
             nil
         case .empty:
             notch
+        case .note:
+            CGRect(x: notch.minX - wing(notch: notch), y: notch.minY - noteDrop, width: notch.width + 2 * wing(notch: notch), height: notch.height + noteDrop)
         case .resting:
             CGRect(x: notch.minX - wing(notch: notch), y: notch.minY, width: notch.width + 2 * wing(notch: notch), height: notch.height)
         case .expanded:
@@ -87,13 +96,14 @@ public enum NotchLayout {
         frame.integral
     }
 
-    /// Where the pointer counts as on the notch in `state`, for `HoverIntent`: only the camera housing while resting, so a
+    /// Where the pointer counts as on the notch in `state`, for `HoverIntent`: only the camera housing while resting or empty, so a
     /// pointer crossing the wings or the menu bar on its way elsewhere doesn't open it, and the whole panel once it's open.
     public static func hoverArea(_ state: NotchState, notch: CGRect) -> CGRect? {
         switch state {
         case .resting: notch
-        case .hidden, .empty: nil
-        case .expanded: frame(state, notch: notch)
+        case .hidden: nil
+        case .empty: notch
+        case .expanded, .note: frame(state, notch: notch)
         }
     }
 }

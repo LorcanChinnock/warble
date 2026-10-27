@@ -69,6 +69,8 @@ private struct NotchContent: View {
 
     var body: some View {
         switch (state, playback) {
+        case (.note, _):
+            NoteContent(notch: model.notch)
         case (.expanded, let playback?):
             ExpandedContent(playback: playback, artwork: artwork, model: model)
                 .padding(.top, model.notch.height)
@@ -78,5 +80,18 @@ private struct NotchContent: View {
         default:
             Color.clear.accessibilityHidden(true)
         }
+    }
+}
+
+/// What an empty notch says when the pointer is on it: one line under the housing, with no controls.
+private struct NoteContent: View {
+    let notch: CGRect
+
+    var body: some View {
+        Text("Nothing playing")
+            .font(.system(size: 13, weight: .medium))
+            .foregroundStyle(Native.secondary)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(.top, notch.height)
     }
 }

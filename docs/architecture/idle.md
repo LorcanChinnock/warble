@@ -1,7 +1,7 @@
 # Idle
 
-Read this before changing when the notch goes back to Idle, which draws nothing: `NotchState.hidden`, with the wings slid back behind the housing. Back to the [architecture index](../../CLAUDE.md#architecture).
+Read this before changing when the notch goes back to Idle, which draws an empty notch or nothing: `NotchState.empty`, the housing's own shape with the wings slid back behind it, for a real notch and a virtual one that Settings keeps always, and `NotchState.hidden` for a virtual notch that it doesn't. Back to the [architecture index](../../CLAUDE.md#architecture).
 
-With a virtual notch that Settings keeps always, Idle draws `NotchState.empty` instead: the housing's empty shape, which takes no hover or click ([The notch](notch.md#when-a-virtual-notch-is-there)).
+An empty notch takes a hover, which opens the note ([The notch](notch.md#the-nothing-playing-note)); a song that starts turns the note into the player. A hidden one takes none.
 
 After a pause, `IdleAfterPause` (WarbleModel) decides when the notch goes back to Idle: `pauseDelay` after the pause (10 seconds, 1 minute or never, which Settings chooses; `PauseDelay`), a new track or the pointer leaving. While the pointer is on a notch or a card is open it never goes Idle; playing again cancels the countdown, and a source that stops reporting goes Idle at once. Like `HoverIntent`, it takes timestamped events and returns the next deadline, and it's part of `AppState`, so its deadline joins the store's one timer, and there's none while playing or Idle, or paused with the delay set to Always, which stays until something else plays or the source stops. A new delay applies to a track that is already paused, counted from when its countdown started. Before it, `reduce` keeps a report of nothing from hiding the notch for `AppState.hideDelay` (1.5 seconds), longer than the gap a source leaves between tracks, so a skip doesn't close the notch under the pointer.

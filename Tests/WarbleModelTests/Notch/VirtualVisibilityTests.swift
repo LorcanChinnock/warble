@@ -45,22 +45,6 @@ private struct Run {
     #expect(run.state.deadline == nil)
 }
 
-@Test func anEmptyNotchTakesNoPointerAndAClickDoesNotOpenIt() {
-    var run = Run([external], .always)
-    run.send(.pointer(display: "external", inside: true))
-    run.send(.hover(display: "external", .click))
-    #expect(run.state.notchState("external") == .empty)
-    #expect(!run.state.hovering)
-    #expect(run.state.deadline == nil)
-}
-
-@Test func anEmptyNotchOpensNothingWhenPlaybackStartsUnderThePointer() {
-    var run = Run([external], .always)
-    run.send(.pointer(display: "external", inside: true))
-    run.send(.playbackReported(song))
-    #expect(run.state.notchState("external") == .resting)
-}
-
 @Test func anOffVirtualNotchDrawsNothingEvenWhilePlaying() {
     var run = Run([external], .off)
     run.send(.playbackReported(song))
@@ -92,16 +76,16 @@ private struct Run {
 @Test func aRealNotchIgnoresTheChoice() {
     for visibility in VirtualNotchVisibility.allCases {
         var run = Run([builtIn], visibility)
-        #expect(run.state.notchState("built-in") == .hidden)
+        #expect(run.state.notchState("built-in") == .empty)
         run.send(.playbackReported(song))
         #expect(run.state.notchState("built-in") == .resting)
     }
 }
 
-@Test func anEmptyNotchIsTheHousingAndNothingMore() {
+@Test func anEmptyNotchIsTheHousingAndTakesHoverThere() {
     let notch = external.frame
     #expect(NotchLayout.frame(.empty, notch: notch) == notch)
-    #expect(NotchLayout.hoverArea(.empty, notch: notch) == nil)
+    #expect(NotchLayout.hoverArea(.empty, notch: notch) == notch)
 }
 
 @Test func fullScreenHidesAnEmptyNotch() {

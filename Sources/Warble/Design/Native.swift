@@ -18,12 +18,15 @@ enum Native {
     static let groupRadius: CGFloat = 12
     /// Bottom corner radius of the expanded card, rounder than the housing's as the card is larger.
     static let expandedRadius: CGFloat = 24
+    /// Bottom corner radius of the note, which is much shorter than the expanded card.
+    static let noteRadius: CGFloat = 14
 
     /// Bottom corner radius of the notch over `notch`: the camera housing's own at rest, `expandedRadius` once open.
     static func radius(_ state: NotchState, notch: CGRect) -> CGFloat {
         switch state {
         case .hidden, .empty, .resting: NotchLayout.cornerRadius(notch: notch)
         case .expanded: expandedRadius
+        case .note: noteRadius
         }
     }
 
