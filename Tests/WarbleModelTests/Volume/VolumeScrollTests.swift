@@ -40,3 +40,22 @@ import Testing
 @Test func aTenthReadBackSlightlyLowStillCountsAsThatTenth() {
     #expect(!VolumeScroll.crossesTick(from: 0.29999, to: 0.32))
 }
+
+@Test func aScrollWithinHalfASecondCarriesOnFromTheVolumeItSet() {
+    var held = HeldVolume()
+    // The device reads 0.5 and then, late, still 0.5, but the first event set 0.6.
+    #expect(held.start(delta: 40, device: { 0.5 }, isMuted: false, precise: true, inverted: false, at: 0) == 0.5)
+    #expect(held.start(delta: 40, device: { 0.5 }, isMuted: false, precise: true, inverted: false, at: 0.1) == 0.6)
+}
+
+@Test func aScrollAfterAPauseReadsTheDeviceAgain() {
+    var held = HeldVolume()
+    _ = held.start(delta: 40, device: { 0.5 }, isMuted: false, precise: true, inverted: false, at: 0)
+    #expect(held.start(delta: 40, device: { 0.2 }, isMuted: false, precise: true, inverted: false, at: 1) == 0.2)
+}
+
+@Test func aMutedScrollCarriesOnFromSilence() {
+    var held = HeldVolume()
+    _ = held.start(delta: 40, device: { 0.5 }, isMuted: true, precise: true, inverted: false, at: 0)
+    #expect(held.start(delta: 40, device: { 0.5 }, isMuted: true, precise: true, inverted: false, at: 0.1) == 0.1)
+}

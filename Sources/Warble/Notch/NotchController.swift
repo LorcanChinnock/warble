@@ -17,8 +17,7 @@ final class NotchController {
     private let player: PlayerModel
     private var volume: SystemVolume { environment.volume }
     private var gesture = ScrollGesture()
-    /// The volume the last scroll set and when, as a scroll carries on from it.
-    private var heldVolume: (value: Double, at: TimeInterval)?
+    private var heldVolume = HeldVolume()
     /// One for each housing, by `NotchDisplay.id`.
     private var surfaces: [String: NotchSurface] = [:]
     /// While the displays change, the notches move at once rather than morph.
@@ -150,9 +149,8 @@ final class NotchController {
         switch gesture.handle(dx: event.scrollingDeltaX, dy: event.scrollingDeltaY, precise: precise, inverted: inverted, phase: phase, at: event.timestamp) {
         case .volume(let delta)?:
             let isMuted = volume.isMuted
-            let current = heldVolume.flatMap { event.timestamp - $0.at < 0.5 ? $0.value : nil } ?? volume.volume
+            let current = heldVolume.start(delta: delta, device: { volume.volume }, isMuted: isMuted, precise: precise, inverted: inverted, at: event.timestamp)
             store.dispatch(.scrolled(delta: delta, precise: precise, inverted: inverted, volume: current, isMuted: isMuted))
-            heldVolume = current.map { (VolumeScroll.volume(after: delta, from: isMuted ? 0 : $0, precise: precise, inverted: inverted), event.timestamp) }
         case .scrub(let seconds)?:
             store.dispatch(.scrubbed(by: seconds))
         case .skip(let next)? where store.state.showsPlayback:
