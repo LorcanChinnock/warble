@@ -27,6 +27,8 @@ public enum AppAction: Equatable, Sendable {
     case scrolled(delta: Double, precise: Bool, inverted: Bool, volume: Double?, isMuted: Bool)
     /// A slide sideways over a notch: seconds to move through the song, forward when positive.
     case scrubbed(by: TimeInterval)
+    /// A quick flick sideways over a notch, to the next track or back to the previous one.
+    case flicked(next: Bool)
     case volumeRead(Double?, isMuted: Bool)
     case selectOutput(UInt32)
     case outputsRead([AudioOutput], current: UInt32?)

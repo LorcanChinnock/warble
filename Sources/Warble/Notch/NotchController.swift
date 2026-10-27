@@ -153,8 +153,8 @@ final class NotchController {
             store.dispatch(.scrolled(delta: delta, precise: precise, inverted: inverted, volume: current, isMuted: isMuted))
         case .scrub(let seconds)?:
             store.dispatch(.scrubbed(by: seconds))
-        case .skip(let next)? where store.state.showsPlayback:
-            store.dispatch(.command(next ? .nextTrack : .previousTrack))
+        case .skip(let next)?:
+            store.dispatch(.flicked(next: next))
         default:
             break
         }

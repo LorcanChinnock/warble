@@ -40,6 +40,10 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         let moved = current.seeked(to: current.elapsed(at: now) + seconds, at: now)
         show(moved, in: &state, at: now)
         effects.append(.send(.seek(to: moved.elapsed)))
+    case .flicked(let next):
+        // Nothing to skip while nothing plays, and `.command` would still send it to a hidden player.
+        guard state.showsPlayback else { break }
+        effects.append(.send(next ? .nextTrack : .previousTrack))
     case .volumeRead(let volume, let isMuted):
         state.volume = volume
         state.isMuted = isMuted

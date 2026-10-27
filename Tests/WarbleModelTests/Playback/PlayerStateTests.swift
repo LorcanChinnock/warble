@@ -163,3 +163,13 @@ private struct Run {
     run.send(.scrubbed(by: 20))
     #expect(run.effects.isEmpty)
 }
+
+@Test func aFlickSkipsTheTrackAndDoesNothingWithNothingPlaying() {
+    var run = Run()
+    run.send(.flicked(next: true))
+    run.send(.flicked(next: false))
+    #expect(run.effects == [.send(.nextTrack), .send(.previousTrack)])
+    var empty = Run(playing: nil)
+    empty.send(.flicked(next: true))
+    #expect(empty.effects.isEmpty)
+}
