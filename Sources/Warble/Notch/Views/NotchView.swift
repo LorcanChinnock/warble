@@ -67,14 +67,21 @@ private struct NotchContent: View {
     let showsGlow: Bool
     let model: NotchModel
 
+    private var standard: CGSize {
+        NotchLayout.frame(.expanded, notch: model.notch)?.size ?? model.notch.size
+    }
+
     var body: some View {
         switch (state, playback) {
         case (.note, _):
             NoteContent(notch: model.notch)
         case (.expanded, let playback?):
+            // Laid out at the standard size and scaled, so every size has the same card.
             ExpandedContent(playback: playback, artwork: artwork, model: model)
                 .padding(.top, model.notch.height)
                 .background { Glow(colours: colours, showsGlow: showsGlow) }
+                .frame(width: standard.width, height: standard.height, alignment: .top)
+                .scaleEffect(model.cardSize.scale, anchor: .top)
         case (.resting, let playback?):
             RestingContent(playback: playback, artwork: artwork, notch: model.notch, model: model)
         default:

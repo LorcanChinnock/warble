@@ -30,6 +30,8 @@ struct NotchPreview: View {
     /// Whether the open card glows, which the Settings switch turns off.
     let showsGlow: Bool
     let pauseDelay: PauseDelay
+    /// How big the open card is.
+    let cardSize: CardSize
     /// With the virtual notch off there is none, so the screen is bare.
     let visibility: VirtualNotchVisibility
     @State private var isOpen = false
@@ -49,7 +51,7 @@ struct NotchPreview: View {
         let housing = Self.housing
         let showsNotch = visibility != .off && ending != .bareScreen
         let state: NotchState = ending == .emptyNotch ? (isOpen ? .note : .empty) : (isOpen ? .expanded : .resting)
-        let size = NotchLayout.frame(state, notch: housing)?.size ?? housing.size
+        let size = NotchLayout.frame(state, notch: housing, cardSize: cardSize)?.size ?? housing.size
         let radius = Native.radius(state, notch: housing)
         let shape = UnevenRoundedRectangle(bottomLeadingRadius: radius, bottomTrailingRadius: radius)
         ZStack(alignment: .top) {
@@ -63,6 +65,8 @@ struct NotchPreview: View {
                     shape.fill(Native.panel)
                     // With Reduce Motion only the content fades; the shape changes at once, as the notch's does.
                     cardContent(NotchLayout.frame(.expanded, notch: housing)?.size ?? housing.size)
+                        .scaleEffect(cardSize.scale, anchor: .top)
+                        .frame(width: size.width, height: size.height, alignment: .top)
                         .opacity(state == .expanded ? 1 : 0)
                         .animation(Native.fade, value: state)
                     restingContent(housing)
@@ -95,7 +99,7 @@ struct NotchPreview: View {
                 isHovering = false
             }
         }
-        .frame(height: 200)
+        .frame(height: 232)
         .clipShape(RoundedRectangle(cornerRadius: Native.groupRadius, style: .continuous))
         .onHover { inside in
             if !inside, isPaused { play() }

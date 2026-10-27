@@ -106,3 +106,37 @@ func theWindowCoversWholePointsAndStaysCentredOnTheHousing(_ scale: MeasuredScal
     let notch = CGRect(x: 456.5, y: 643, width: 111, height: 20)
     #expect(NotchLayout.window(for: notch) == CGRect(x: 456, y: 643, width: 112, height: 20))
 }
+
+@Test func theCardSizeScalesExpandedAboutTheHousing() throws {
+    let standard = try #require(NotchLayout.frame(.expanded, notch: notch))
+    #expect(NotchLayout.frame(.expanded, notch: notch, cardSize: .standard) == standard)
+    for size in CardSize.allCases {
+        let frame = try #require(NotchLayout.frame(.expanded, notch: notch, cardSize: size))
+        #expect(abs(frame.width - standard.width * size.scale) < 0.001)
+        #expect(abs(frame.height - standard.height * size.scale) < 0.001)
+        #expect(frame.midX == notch.midX)
+        #expect(abs(frame.maxY - notch.maxY) < 0.001)
+    }
+}
+
+@Test func theCardSizeNeverChangesTheClosedStates() {
+    for state in [NotchState.empty, .resting, .hidden] {
+        for size in CardSize.allCases {
+            #expect(NotchLayout.frame(state, notch: notch, cardSize: size) == NotchLayout.frame(state, notch: notch))
+        }
+    }
+}
+
+@Test func everyCardSizeContainsTheRestingNotch() throws {
+    let resting = try #require(NotchLayout.frame(.resting, notch: notch))
+    for size in CardSize.allCases {
+        let expanded = try #require(NotchLayout.frame(.expanded, notch: notch, cardSize: size))
+        #expect(expanded.minX <= resting.minX && expanded.maxX >= resting.maxX)
+        #expect(expanded.minY <= resting.minY && expanded.maxY >= resting.maxY - 0.001)
+    }
+}
+
+@Test func theHoverAreaFollowsTheCardSize() {
+    #expect(NotchLayout.hoverArea(.expanded, notch: notch, cardSize: .large) == NotchLayout.frame(.expanded, notch: notch, cardSize: .large))
+    #expect(NotchLayout.hoverArea(.resting, notch: notch, cardSize: .large) == notch)
+}

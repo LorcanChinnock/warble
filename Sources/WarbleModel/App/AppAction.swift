@@ -42,6 +42,8 @@ public enum AppAction: Equatable, Sendable {
     case virtualVisibilityChanged(VirtualNotchVisibility)
     /// Settings chose how long a paused song stays in the notch.
     case pauseDelayChanged(PauseDelay)
+    /// Settings chose how big the card the notch opens into is.
+    case cardSizeChanged(CardSize)
     /// `AppState.deadline` came due.
     case tick
 }

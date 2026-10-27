@@ -105,3 +105,12 @@ private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
     _ = reduce(&state, .glowChanged(true), now: start + 1)
     #expect(state.showsGlow)
 }
+
+@Test func settingsChooseTheCardSize() {
+    var state = AppState()
+    #expect(state.cardSize == .standard)
+    let effects = reduce(&state, .cardSizeChanged(.large), now: start)
+    #expect(state.cardSize == .large)
+    #expect(effects.isEmpty)
+    #expect(state.deadline == nil)
+}

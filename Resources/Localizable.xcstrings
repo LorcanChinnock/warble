@@ -386,6 +386,9 @@
         }
       }
     },
+    "Default" : {
+
+    },
     "From %@" : {
       "localizations" : {
         "de" : {
@@ -542,6 +545,9 @@
         }
       }
     },
+    "How big the notch is when you open it. The closed notch stays the same size." : {
+
+    },
     "How long the notch keeps showing a paused song before it goes quiet." : {
 
     },
@@ -599,6 +605,9 @@
           }
         }
       }
+    },
+    "Large" : {
+
     },
     "Later" : {
       "localizations" : {
@@ -1306,6 +1315,9 @@
         }
       }
     },
+    "Opened notch size" : {
+
+    },
     "Output" : {
       "localizations" : {
         "de" : {
@@ -1987,6 +1999,9 @@
           }
         }
       }
+    },
+    "Small" : {
+
     },
     "Stay visible after pausing" : {
 

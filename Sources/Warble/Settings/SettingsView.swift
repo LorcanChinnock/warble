@@ -35,7 +35,7 @@ struct SettingsView: View {
                 // Clear of the title bar's buttons, which the content runs under.
                 .padding(.top, 44)
                 VStack(alignment: .leading, spacing: 8) {
-                    NotchPreview(showsTitle: notchSettings.showsVirtualTitle, showsGlow: notchSettings.showsGlow, pauseDelay: notchSettings.pauseDelay, visibility: notchSettings.virtualVisibility)
+                    NotchPreview(showsTitle: notchSettings.showsVirtualTitle, showsGlow: notchSettings.showsGlow, pauseDelay: notchSettings.pauseDelay, cardSize: notchSettings.cardSize, visibility: notchSettings.virtualVisibility)
                     Text("How the notch looks, with a made-up song. Point at it to open it.")
                         .font(.footnote)
                         .foregroundStyle(Native.secondary)
@@ -50,6 +50,16 @@ struct SettingsView: View {
                             (.tenSeconds, Text("10 seconds")),
                             (.oneMinute, Text("1 minute")),
                             (.always, Text("Always")),
+                        ]
+                    )
+                    SettingsChoiceRow(
+                        title: Text("Opened notch size"),
+                        detail: Text("How big the notch is when you open it. The closed notch stays the same size."),
+                        selection: Binding { notchSettings.cardSize } set: { notchSettings.cardSize = $0 },
+                        options: [
+                            (.small, Text("Small")),
+                            (.standard, Text("Default")),
+                            (.large, Text("Large")),
                         ]
                     )
                     SettingsChoiceRow(

@@ -66,6 +66,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         }
     case .glowChanged(let on):
         state.showsGlow = on
+    case .cardSizeChanged(let size):
+        state.cardSize = size
     case .pauseDelayChanged(let delay):
         state.idle.pauseDelay = delay
     case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .dismiss, .virtualTitleChanged, .virtualVisibilityChanged:

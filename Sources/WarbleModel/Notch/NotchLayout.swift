@@ -39,6 +39,23 @@ public enum NotchState: String, CaseIterable, Sendable {
     }
 }
 
+/// How big the card is that the notch opens into, which Settings chooses. Only the open card changes; Empty and Resting
+/// stay the housing's size so they keep matching a real notch.
+public enum CardSize: String, CaseIterable, Sendable {
+    case small
+    case standard
+    case large
+
+    /// How much of its standard size the open card is drawn at.
+    public var scale: CGFloat {
+        switch self {
+        case .small: 0.85
+        case .standard: 1
+        case .large: 1.2
+        }
+    }
+}
+
 /// Where the notch panel sits. All rects are in AppKit space.
 public enum NotchLayout {
     /// The camera housing's bottom corner radius, as a fraction of its height. The hardware's radius and height are both
@@ -73,8 +90,9 @@ public enum NotchLayout {
         notch.height
     }
 
-    /// The panel's frame in `state` over `notch`, the camera housing, or `nil` when nothing is drawn.
-    public static func frame(_ state: NotchState, notch: CGRect) -> CGRect? {
+    /// The panel's frame in `state` over `notch`, the camera housing, or `nil` when nothing is drawn. `cardSize` scales
+    /// Expanded alone, about the housing's bottom centre.
+    public static func frame(_ state: NotchState, notch: CGRect, cardSize: CardSize = .standard) -> CGRect? {
         switch state {
         case .hidden:
             nil
@@ -85,8 +103,15 @@ public enum NotchLayout {
         case .resting:
             CGRect(x: notch.minX - wing(notch: notch), y: notch.minY, width: notch.width + 2 * wing(notch: notch), height: notch.height)
         case .expanded:
-            CGRect(x: notch.minX - expandedWing, y: notch.minY - expandedDrop, width: notch.width + 2 * expandedWing, height: notch.height + expandedDrop)
+            expandedFrame(notch: notch, cardSize: cardSize)
         }
+    }
+
+    /// The open card at its standard size scaled by `cardSize`, hanging from the top of the housing and centred on it.
+    private static func expandedFrame(notch: CGRect, cardSize: CardSize) -> CGRect {
+        let width = (notch.width + 2 * expandedWing) * cardSize.scale
+        let height = (notch.height + expandedDrop) * cardSize.scale
+        return CGRect(x: notch.midX - width / 2, y: notch.maxY - height, width: width, height: height)
     }
 
     /// The window that holds a shape drawn at `frame`, grown out to whole points. AppKit snaps a window to whole points by
@@ -98,12 +123,12 @@ public enum NotchLayout {
 
     /// Where the pointer counts as on the notch in `state`, for `HoverIntent`: only the camera housing while resting or empty, so a
     /// pointer crossing the wings or the menu bar on its way elsewhere doesn't open it, and the whole panel once it's open.
-    public static func hoverArea(_ state: NotchState, notch: CGRect) -> CGRect? {
+    public static func hoverArea(_ state: NotchState, notch: CGRect, cardSize: CardSize = .standard) -> CGRect? {
         switch state {
         case .resting: notch
         case .hidden: nil
         case .empty: notch
-        case .expanded, .note: frame(state, notch: notch)
+        case .expanded, .note: frame(state, notch: notch, cardSize: cardSize)
         }
     }
 }
