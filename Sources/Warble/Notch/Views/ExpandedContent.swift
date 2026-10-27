@@ -11,12 +11,14 @@ struct ExpandedContent: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 12) {
+            HStack(spacing: 10) {
                 Button(action: model.player.openApp) {
                     Artwork(image: artwork)
                         .frame(width: 56, height: 56)
                 }
                 .buttonStyle(.notch)
+                // Without this the button is wider than the art and centres it, leaving a gap on both sides.
+                .fixedSize()
                 .accessibilityLabel(model.player.appName.map { Text("Open \($0)") } ?? Text("Open the app that's playing"))
                 VStack(alignment: .leading, spacing: 2) {
                     MarqueeLine(text: playback.title, font: .systemFont(ofSize: 15, weight: .semibold), isPlaying: playback.isPlaying)
@@ -39,6 +41,8 @@ struct ExpandedContent: View {
                 .accessibilitySortPriority(1)
                 Spacer(minLength: 0)
             }
+            // The art lines up with where a short elapsed time starts, which is right-aligned in a 34 pt column.
+            .padding(.leading, 10)
             Spacer(minLength: 0)
             Scrubber(playback: playback) { model.player.send(.seek(to: $0)) }
             Spacer(minLength: 0)
