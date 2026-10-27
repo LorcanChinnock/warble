@@ -31,6 +31,10 @@ The keyboard's play/pause, next and previous keys work as they always have.
 - Drag along the volume bar at the bottom of the player.
 - Or scroll over the notch with two fingers on a trackpad, or with your mouse's wheel. Scroll up for louder and down for quieter. This works even when the notch is closed, while something plays.
 
+## Move through the song or skip with a trackpad
+
+With two fingers on the notch, slide sideways to move through the song, right to go forward and left to go back, as far as you slide. Flick sideways quickly to skip: a flick to the right plays the next song and a flick to the left plays the previous one. Like scrolling for volume, it works while the notch is closed.
+
 The volume is your Mac's own, so it changes everything you hear, not just the app in the notch. The speaker symbol at the end of the bar picks where the sound plays. See [Switch speakers](/docs/switch-speakers/).
 
 > [!TIP]

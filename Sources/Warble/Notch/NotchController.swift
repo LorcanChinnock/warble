@@ -16,6 +16,9 @@ final class NotchController {
     private var store: Store { environment.store }
     private let player: PlayerModel
     private var volume: SystemVolume { environment.volume }
+    private var gesture = ScrollGesture()
+    /// The volume the last scroll set and when, as a scroll carries on from it.
+    private var heldVolume: (value: Double, at: TimeInterval)?
     /// One for each housing, by `NotchDisplay.id`.
     private var surfaces: [String: NotchSurface] = [:]
     /// While the displays change, the notches move at once rather than morph.
@@ -129,11 +132,33 @@ final class NotchController {
         }
     }
 
-    /// Scrolling over a notch changes the volume, from the volume now, since the card with the slider may not be open.
+    /// Scrolling over a notch changes the volume, slides through the song or, in a quick flick, skips. The volume is read
+    /// from the volume now, since the card with the slider may not be open, and then followed here while the scroll
+    /// lasts, since a device can report an old volume just after it was set.
     private func scroll(_ event: NSEvent) {
-        store.dispatch(.scrolled(
-            delta: event.scrollingDeltaY, precise: event.hasPreciseScrollingDeltas, inverted: event.isDirectionInvertedFromDevice,
-            volume: volume.volume, isMuted: volume.isMuted
-        ))
+        let phase: ScrollGesture.Phase = if !event.momentumPhase.isEmpty {
+            .momentum
+        } else if event.phase.contains(.began) {
+            .began
+        } else if event.phase.contains(.ended) || event.phase.contains(.cancelled) {
+            .ended
+        } else {
+            .changed
+        }
+        let inverted = event.isDirectionInvertedFromDevice
+        let precise = event.hasPreciseScrollingDeltas
+        switch gesture.handle(dx: event.scrollingDeltaX, dy: event.scrollingDeltaY, precise: precise, inverted: inverted, phase: phase, at: event.timestamp) {
+        case .volume(let delta)?:
+            let isMuted = volume.isMuted
+            let current = heldVolume.flatMap { event.timestamp - $0.at < 0.5 ? $0.value : nil } ?? volume.volume
+            store.dispatch(.scrolled(delta: delta, precise: precise, inverted: inverted, volume: current, isMuted: isMuted))
+            heldVolume = current.map { (VolumeScroll.volume(after: delta, from: isMuted ? 0 : $0, precise: precise, inverted: inverted), event.timestamp) }
+        case .scrub(let seconds)?:
+            store.dispatch(.scrubbed(by: seconds))
+        case .skip(let next)? where store.state.showsPlayback:
+            store.dispatch(.command(next ? .nextTrack : .previousTrack))
+        default:
+            break
+        }
     }
 }
