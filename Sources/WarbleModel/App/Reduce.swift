@@ -38,10 +38,18 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.volume = volume
         state.isMuted = isMuted
     case .selectOutput(let id):
+        // Before the effect, so the read it ends with is already watched.
+        state.outputSwitch.select(id, from: state.currentOutput, at: now)
         effects.append(.selectOutput(id))
     case .outputsRead(let outputs, let current):
         state.outputs = outputs
         state.currentOutput = current
+        let hadNote = state.outputSwitch.kept != nil
+        state.outputSwitch.observe(current: current, at: now)
+        if !hadNote, state.outputSwitch.kept != nil {
+            // The menu that was used to switch has closed and, with the pointer over it, the card is closing.
+            state.notches.keepOpen(until: now + OutputSwitch.holdDuration, state.shared, at: now)
+        }
     case .glowChanged(let on):
         state.showsGlow = on
     case .pauseDelayChanged(let delay):
@@ -53,6 +61,7 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
             show(nil, in: &state, at: now)
         }
         state.idle.advance(to: now)
+        state.outputSwitch.advance(to: now)
         effects += state.notches.reduce(action, shared: state.shared, at: now)
     }
     effects += settle(&state, from: old, at: now)

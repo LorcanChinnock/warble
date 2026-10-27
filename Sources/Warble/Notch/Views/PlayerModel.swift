@@ -43,6 +43,16 @@ final class PlayerModel {
     /// The outputs to offer and the one playing, read while Expanded shows.
     var outputs: [AudioOutput] = []
     var currentOutput: UInt32?
+    /// The name of the output macOS kept after a switch away from it, such as in-ear AirPods; `nil` when nothing needs saying.
+    var keptOutput: String? {
+        didSet {
+            guard let keptOutput, keptOutput != oldValue else { return }
+            NSAccessibility.post(
+                element: NSApp as Any, notification: .announcementRequested,
+                userInfo: [.announcement: String(localized: "macOS kept the sound on \(keptOutput). Switch in System Settings › Sound instead.")]
+            )
+        }
+    }
     /// Where the controls send what the user does, the one way in for every command.
     @ObservationIgnored private let dispatch: (AppAction) -> Void
 

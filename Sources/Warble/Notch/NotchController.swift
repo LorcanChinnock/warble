@@ -98,6 +98,9 @@ final class NotchController {
             player.outputs = new.outputs
             player.currentOutput = new.currentOutput
         }
+        if new.outputSwitch != old.outputSwitch || new.outputs != old.outputs {
+            player.keptOutput = new.outputSwitch.kept.flatMap { kept in new.outputs.first { $0.id == kept }?.name }
+        }
         if isPlayPause(action), old.hideAt == nil, old.playback != nil {
             // Timed from the click or key to the first frame that shows the new state.
             let input = Perf.input
