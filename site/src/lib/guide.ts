@@ -61,7 +61,7 @@ function rehypeCopyCommands() {
 
 const processor = await createMarkdownProcessor({
   rehypePlugins: [rehypeRepoLinks, rehypeCallouts, rehypeCopyCommands],
-  shikiConfig: { theme: 'github-light' },
+  shikiConfig: { themes: { light: 'github-light', dark: 'github-dark' } },
 });
 
 const rendered = await Promise.all(
