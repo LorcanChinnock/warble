@@ -22,7 +22,7 @@ Showing the other Mac's track means every Mac runs a small service. The cheapest
 | iCloud (key-value store or CloudKit) | An iCloud entitlement, which needs a provisioning profile for a Developer ID signature | Warble has no Developer ID certificate yet ([#304](https://github.com/LorcanChinnock/warble/issues/304)), and the track would round-trip through Apple's servers |
 | Handoff (`NSUserActivity`) | Continuity between a user's own devices | Built to continue an activity, not to show or control a session |
 
-Whichever route is chosen, the Mac that sends commands would also need to receive them on the playing Mac, so each Mac needs the listener, not only the one being watched. That runs against "no timers, no polling, no network when nothing is playing" in CLAUDE.md, so it would have to start off, and it should open its connection only while the setting is on.
+Whichever route is chosen, the Mac that sends commands would also need to receive them on the playing Mac, so each Mac needs the listener, not only the one being watched. That runs against CLAUDE.md's rule that when nothing is playing Warble "draws nothing and uses no CPU: no timers, no polling", so it would have to start off, and it should open its connection only while the setting is on.
 
 ## Test plan
 
