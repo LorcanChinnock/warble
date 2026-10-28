@@ -1,6 +1,6 @@
 # Spike: liking the current track from the notch
 
-Findings for [#287](https://github.com/LorcanChinnock/warble/issues/287). In progress: Music is partly done, and the other players showed no way to like through MediaRemote. Checked on macOS 27.0.1.
+Findings for [#287](https://github.com/LorcanChinnock/warble/issues/287). Checked on macOS 27.0.1. The recommendation is a heart for Music only, set through AppleScript; streamed catalog tracks and stations are still untested (see [Recommendation](#recommendation)).
 
 ## Tooling
 
@@ -51,6 +51,19 @@ Tested with Spotify, Podcasts, and YouTube in Safari and in Chrome, each playing
 - Spotify's "Add to Liked Songs" wasn't pressed while recording, because Spotify has no AppleScript for it. The stream carried no like keys before that.
 
 So MediaRemote can't read or set a like for any of these players. Only a player's own scripting could, and only Music's AppleScript is confirmed to work.
+
+## Recommendation
+
+**Build a heart for Music only, and nothing for the other players.**
+
+- **Music.** AppleScript reads and sets `favorited` reliably, so the heart can show whether the current track is a favourite and toggle it. Warble would read `favorited` once when the card expands, with no timer, and write it on a click. The setting starts off in Settings, and the heart appears only when Music is the now playing app.
+- **Spotify, Podcasts and YouTube.** None of them lists a like command or reports a like in the stream, and Spotify has no AppleScript property for one. Only page scripting could reach YouTube's 👍, and the browser spike ([#333](https://github.com/LorcanChinnock/warble/issues/333)) ruled that route out as not native. So these players get no heart.
+- **Not covered by the tests.** This account has no Apple Music subscription, so `favorited` was only checked on a library track. Before building, check a streamed catalog track that isn't in the library and a station, and whether a heart should also read as "Play More Like This" there. If `favorited` fails on a streamed track, the heart should hide for that track and not show an error.
+
+### Other actions
+
+- **Dislike.** Music's `disliked` reads and sets the same way, but no other player has a dislike to match, and it changes what Music recommends, which makes a mis-click costly. Leave it out; the heart is the only like action.
+- **Follow and subscribe.** MediaRemote has no follow or subscribe command, and the Podcasts and YouTube streams carried nothing a follow could use. YouTube would need page scripting, which is ruled out above. Leave both out.
 
 ## Test plan
 
