@@ -13,7 +13,7 @@ Warble works without changing anything. The things you may want to set are how l
 
 The right-click menu also opens the app that's playing, checks for updates and quits Warble. Settings follows your Mac's light or dark appearance, and uses the same cream and yellow as this website.
 
-![The Settings window, with the notch preview at the top and the pause and external-display settings under it](../../../docs/media/settings.png)
+![The Settings window: Warble's name and version, the notch preview, and the Notch settings for how long a paused song stays and how big the open notch is](../../../docs/media/settings.png)
 
 ## What's in Settings
 
@@ -28,7 +28,7 @@ At the top, under the version, is a small preview of the notch with a made-up so
 - **Check for updates automatically.** Warble goes online to check for updates, to find album covers for songs in your browser, and to find an artist's page when you click the artist. Click **Check for Updates…** to check right away, and the version you have is shown beside it.
 - **Help and user guide** opens this guide in your browser.
 
-![The rest of Settings: the title and glow switches, Open at login, updates and the user guide](../../../docs/media/settings-more.png)
+![The rest of Settings: the external-display setting and the title and glow switches, then the General card with Open at login, updates and the user guide, and the acknowledgements under it](../../../docs/media/settings-more.png)
 
 > [!NOTE]
 > Warble's animations follow **Reduce motion** in System Settings › Accessibility › Display.
