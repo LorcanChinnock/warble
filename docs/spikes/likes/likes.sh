@@ -3,6 +3,7 @@
 # and `send 999` lists the commands the now playing app supports.
 #
 #   likes.sh rec NAME    record `stream --no-diff --micros` to out/NAME.jsonl in the background, ready to be a fixture
+#                        (artwork is left out; set ARTWORK=1 to keep it)
 #   likes.sh cmds NAME   list supported commands to out/NAME-commands.txt and show the like-related ones
 #   likes.sh send ID     send a MediaRemote command
 #   likes.sh stop        stop recording
@@ -33,10 +34,14 @@ mra() { /usr/bin/perl "$adapter/bin/mediaremote-adapter.pl" "$framework" "$@"; }
 
 case "${1:-}" in
     rec)
-        mra stream --no-diff --micros --no-artwork > "$out/$2.jsonl" &
+        if [ -n "${ARTWORK:-}" ]; then
+            mra stream --no-diff --micros > "$out/$2.jsonl" &
+        else
+            mra stream --no-diff --micros --no-artwork > "$out/$2.jsonl" &
+        fi
         echo "recording to $out/$2.jsonl" ;;
     cmds) mra send 999 | tee "$out/$2-commands.txt" | grep -E '^(2[0-3]|10[6-8])[[:space:]]' || true ;;
     send) mra send "$2" && echo "sent $2" ;;
     stop) pkill -f "$adapter/bin/mediaremote-adapter.pl" || true; echo stopped ;;
-    *) sed -n '2,9p' "$0"; exit 1 ;;
+    *) sed -n '2,10p' "$0"; exit 1 ;;
 esac
