@@ -35,7 +35,8 @@ struct SettingsView: View {
                         .buttonStyle(.warbleQuiet)
                         .disabled(!updater.canCheckForUpdates)
                 }
-                .padding(.top, 8)
+                // Clear of the bar over the title bar.
+                .padding(.top, 44)
                 VStack(alignment: .leading, spacing: 8) {
                     NotchPreview(showsTitle: notchSettings.showsVirtualTitle, showsGlow: notchSettings.showsGlow, pauseDelay: notchSettings.pauseDelay, cardSize: notchSettings.cardSize, visibility: notchSettings.virtualVisibility)
                     Text("How the notch looks, with a made-up song. Point at it to open it.")
@@ -130,13 +131,16 @@ struct SettingsView: View {
         }
         // The content runs under the transparent title bar, so a bar in the window's colour keeps a scrolled card from
         // meeting the window's buttons; it fades out at its foot so the content slides under it rather than being cut.
-        .safeAreaInset(edge: .top, spacing: 0) {
+        // It is an overlay that ignores the title bar's safe area, not a `safeAreaInset`, which would sit below that
+        // area and leave the top of the content showing through the title bar.
+        .overlay(alignment: .top) {
             Rectangle()
                 .fill(Warm.window)
                 .frame(height: 40)
                 .mask {
                     LinearGradient(stops: [.init(color: .black, location: 0), .init(color: .black, location: 0.7), .init(color: .clear, location: 1)], startPoint: .top, endPoint: .bottom)
                 }
+                .ignoresSafeArea(edges: .top)
                 .allowsHitTesting(false)
         }
         .frame(minWidth: SettingsWindow.size.width, minHeight: SettingsWindow.size.height)
