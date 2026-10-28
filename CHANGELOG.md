@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.0-beta.15](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.14...v0.1.0-beta.15) (2026-10-28)
+
+
+### Features
+
+* **notch:** a click on the notch opens the app, and no longer pins it open ([#347](https://github.com/LorcanChinnock/warble/issues/347)) ([e44ea84](https://github.com/LorcanChinnock/warble/commit/e44ea84fd8b9e4ac6d6b0a677c799773417860ee))
+* **notch:** add a subtle hover wash to the notch's controls ([#345](https://github.com/LorcanChinnock/warble/issues/345)) ([5af3ed8](https://github.com/LorcanChinnock/warble/commit/5af3ed810cac53df0a176f90e40738200e5ece7b))
+* **notch:** offer the last played track from the empty notch ([#355](https://github.com/LorcanChinnock/warble/issues/355)) ([421d403](https://github.com/LorcanChinnock/warble/commit/421d40310b862cd2c96c56a8848c8e282c14b672))
+* **settings:** restyle Settings to match the website ([#343](https://github.com/LorcanChinnock/warble/issues/343)) ([3779e7b](https://github.com/LorcanChinnock/warble/commit/3779e7b1ae22ba71fe9697ceac81d2088cafb223))
+
+
+### Bug Fixes
+
+* **settings:** start the title-bar bar at the window's top edge ([#351](https://github.com/LorcanChinnock/warble/issues/351)) ([e7ff8cf](https://github.com/LorcanChinnock/warble/commit/e7ff8cf2a07fa20677cbd16d5654abbdf4c7735f))
+
 ## [0.1.0-beta.14](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.13...v0.1.0-beta.14) (2026-10-28)
 
 
