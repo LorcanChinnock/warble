@@ -26,3 +26,26 @@ extension View {
         }
     }
 }
+
+/// A soft white wash over a view while the pointer is on it, so the notch answers the pointer before a click. It's drawn
+/// over the content rather than behind it, which works on art too, and it eases in and out unless Reduce Motion is on.
+private struct HoverWash<S: Shape>: ViewModifier {
+    let shape: S
+    @State private var hovering = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func body(content: Content) -> some View {
+        content
+            .overlay { shape.fill(.white.opacity(hovering ? 0.14 : 0)).allowsHitTesting(false) }
+            .onHover { inside in
+                withAnimation(reduceMotion ? nil : .easeOut(duration: 0.12)) { hovering = inside }
+            }
+    }
+}
+
+extension View {
+    /// A faint white wash in `shape` while the pointer is over this view.
+    func hoverWash<S: Shape>(_ shape: S) -> some View {
+        modifier(HoverWash(shape: shape))
+    }
+}
