@@ -25,6 +25,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         }
         effects.append(.send(command))
     case .openApp:
+        // An empty notch keeps the paused track in `playback`, but it isn't showing it, so a click there opens nothing.
+        guard state.showsPlayback else { break }
         if let playback = state.playback {
             effects.append(.openApp(bundleIdentifier: playback.bundleIdentifier, title: playback.title))
         }

@@ -64,7 +64,8 @@ private struct Run {
 @Test func anOpenVirtualNotchClosesWhenItIsTurnedOff() {
     var run = Run([external])
     run.send(.playbackReported(song))
-    run.send(.hover(display: "external", .click))
+    run.send(.pointer(display: "external", inside: true))
+    run.send(.tick, after: HoverIntent.expandDelay)
     #expect(run.state.notchState("external") == .expanded)
     run.send(.virtualVisibilityChanged(.off))
     #expect(run.state.notchState("external") == .hidden)

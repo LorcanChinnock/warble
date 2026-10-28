@@ -73,6 +73,16 @@ private struct Run {
     #expect(idle.effects.isEmpty)
 }
 
+@Test func openAppDoesNothingOnceTheNotchIsEmpty() {
+    var run = Run()
+    run.send(.playbackReported(nil))
+    run.send(.tick, after: AppState.hideDelay)
+    #expect(!run.state.showsPlayback)
+    run.effects = []
+    run.send(.openApp)
+    #expect(run.effects.isEmpty)
+}
+
 @Test func openArtistLooksUpTheArtistOfTheOneThatsPlaying() {
     var run = Run()
     run.send(.openArtist)

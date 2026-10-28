@@ -75,9 +75,10 @@ private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
     #expect(held.deadline == nil)
     _ = reduce(&held, .tick, now: start + 60)
     #expect(held.showsPlayback)
-    _ = reduce(&held, .dismiss(except: nil), now: start + 60)
+    _ = reduce(&held, .pointer(display: "built-in", inside: false), now: start + 60)
+    _ = reduce(&held, .tick, now: start + 60 + HoverIntent.collapseDelay)
     #expect(!held.hovering)
-    #expect(held.deadline == start + 60 + IdleAfterPause.delay)
+    #expect(held.deadline == start + 60 + HoverIntent.collapseDelay + IdleAfterPause.delay)
 }
 
 @Test func settingsChangeHowLongAPausedSongStays() {

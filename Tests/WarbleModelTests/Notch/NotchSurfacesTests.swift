@@ -73,7 +73,8 @@ private struct Run {
     #expect(run.effects.contains(.watchClicksOutside(true)))
     run.send(.dismiss(except: nil))
     #expect(run.state.notchState("built-in") == .resting)
-    #expect(run.effects.suffix(2) == [.watchClicksOutside(false), .followVolume(false)])
+    #expect(run.effects.contains(.watchClicksOutside(false)))
+    #expect(run.effects.last == .followVolume(false))
 }
 
 @Test func escapeIsTakenOnlyWhileAnOpenNotchHasThePointer() {

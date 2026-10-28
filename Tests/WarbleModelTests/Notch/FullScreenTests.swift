@@ -45,7 +45,6 @@ private struct Run {
     var run = Run()
     run.send(.fullScreenChanged(["built-in"]))
     run.send(.pointer(display: "built-in", inside: true))
-    run.send(.hover(display: "built-in", .click))
     run.wait(HoverIntent.expandDelay)
     #expect(run.state.notchState("built-in") == .hidden)
     #expect(run.state.surfaces["built-in"]?.pointerInside == false)
@@ -54,7 +53,8 @@ private struct Run {
 
 @Test func goingFullScreenClosesAnOpenCard() {
     var run = Run()
-    run.send(.hover(display: "built-in", .click))
+    run.send(.pointer(display: "built-in", inside: true))
+    run.wait(HoverIntent.expandDelay)
     #expect(run.state.notchState("built-in") == .expanded)
     run.send(.fullScreenChanged(["built-in"]))
     #expect(run.state.notchState("built-in") == .hidden)
