@@ -19,6 +19,7 @@ struct OutputButton: View {
                 .allowsHitTesting(false)
                 .accessibilityHidden(true)
         }
+        .hoverWash(RoundedRectangle(cornerRadius: 6, style: .continuous))
     }
 }
 

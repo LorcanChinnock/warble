@@ -50,6 +50,7 @@ struct PlaybackControls: View {
                             .padding(.bottom, 2)
                     }
                 }
+                .hoverWash(Circle())
                 .contentShape(Rectangle())
         }
         .buttonStyle(.notch)

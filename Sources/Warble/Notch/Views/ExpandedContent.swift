@@ -16,6 +16,7 @@ struct ExpandedContent: View {
                     // A wide thumbnail grows the tile sideways, up to a limit, and the text moves over to make room.
                     Artwork(image: artwork)
                         .frame(width: artwork.map { min(100, max(56, 56 * $0.size.width / max($0.size.height, 1))) } ?? 56, height: 56)
+                        .hoverWash(RoundedRectangle(cornerRadius: 8, style: .continuous))
                 }
                 .buttonStyle(.notch)
                 // Without this the button is wider than the art and centres it, leaving a gap on both sides.
