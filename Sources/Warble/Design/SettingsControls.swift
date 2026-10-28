@@ -1,39 +1,61 @@
 import SwiftUI
 
-/// The controls Settings is built from, in the notch's look: white on black, grey for anything secondary and no accent
-/// colour. What's on is marked by position and fill, never by colour alone.
+/// The controls Settings is built from, in the website's look (`Warm`): cards on a cream page, a serif heading, and
+/// yellow for anything that is on or chosen. What's on is also marked by position and weight, never by colour alone.
 
-/// A rounded panel of rows, told apart by hairlines, with an optional note below it.
+/// A rounded card of rows, told apart by hairlines. With a `symbol` it opens with an icon tile and a serif heading
+/// inside the card; with only a `title` the heading is a small label above it.
 struct SettingsGroup<Content: View>: View {
     var title: Text?
+    /// The SF Symbol on the heading's tile.
+    var symbol: String?
     var footer: Text?
     @ViewBuilder let content: Content
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            if let title {
+            if let title, symbol == nil {
                 title
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(Native.secondary)
+                    .foregroundStyle(Warm.secondary)
                     .padding(.horizontal, 14)
                     .accessibilityAddTraits(.isHeader)
             }
             VStack(spacing: 0) {
+                if let title, let symbol {
+                    HStack(spacing: 12) {
+                        Image(systemName: symbol)
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundStyle(Warm.onAccent)
+                            .frame(width: 40, height: 40)
+                            .background(Warm.yellow, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                            .accessibilityHidden(true)
+                        title
+                            .font(.system(size: 22, weight: .bold, design: .serif))
+                            .foregroundStyle(Warm.ink)
+                            .accessibilityAddTraits(.isHeader)
+                        Spacer(minLength: 0)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 18)
+                    .padding(.bottom, 6)
+                }
                 Group(subviews: content) { rows in
                     ForEach(rows.indices, id: \.self) { index in
                         if index > 0 {
-                            Rectangle().fill(Native.track).frame(height: 1)
+                            Rectangle().fill(Warm.hairline).frame(height: 1).padding(.horizontal, 20)
                         }
                         rows[index]
                     }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Native.group, in: RoundedRectangle(cornerRadius: Native.groupRadius, style: .continuous))
+            .background(Warm.surface, in: RoundedRectangle(cornerRadius: Warm.cardRadius, style: .continuous))
+            .overlay { RoundedRectangle(cornerRadius: Warm.cardRadius, style: .continuous).strokeBorder(Warm.hairline, lineWidth: 1) }
             if let footer {
                 footer
                     .font(.footnote)
-                    .foregroundStyle(Native.secondary)
+                    .foregroundStyle(Warm.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, 14)
             }
@@ -54,11 +76,12 @@ struct SettingsRow<Trailing: View>: View {
         HStack(alignment: .center, spacing: 16) {
             VStack(alignment: .leading, spacing: 2) {
                 title
-                    .foregroundStyle(.white)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(Warm.ink)
                 if let detail {
                     detail
                         .font(.callout)
-                        .foregroundStyle(Native.secondary)
+                        .foregroundStyle(Warm.secondary)
                 }
             }
             .fixedSize(horizontal: false, vertical: true)
@@ -66,9 +89,9 @@ struct SettingsRow<Trailing: View>: View {
             Spacer(minLength: 0)
             trailing
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
     }
 }
 
@@ -85,8 +108,9 @@ struct SettingsToggleRow: View {
     }
 }
 
-/// A row with a choice of a few options, one line below its title and note: the chosen one is filled, and none is marked
-/// by colour alone. VoiceOver reads it as one picker with the title as its label and the note as its hint.
+/// A row with a choice of a few options, one line below its title and note: the chosen one is a yellow button that
+/// stands off the track, in bold, and none is marked by colour alone. VoiceOver reads it as one picker with the title as
+/// its label and the note as its hint.
 struct SettingsChoiceRow<Value: Hashable>: View {
     let title: Text
     var detail: Text?
@@ -96,11 +120,13 @@ struct SettingsChoiceRow<Value: Hashable>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
-                title.foregroundStyle(.white)
+                title
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(Warm.ink)
                 if let detail {
                     detail
                         .font(.callout)
-                        .foregroundStyle(Native.secondary)
+                        .foregroundStyle(Warm.secondary)
                 }
             }
             .fixedSize(horizontal: false, vertical: true)
@@ -108,21 +134,31 @@ struct SettingsChoiceRow<Value: Hashable>: View {
             HStack(spacing: 4) {
                 ForEach(options.indices, id: \.self) { index in
                     let option = options[index]
+                    let isSelected = selection == option.value
                     Button {
                         selection = option.value
                     } label: {
                         option.label
-                            .font(.callout)
-                            .foregroundStyle(.white)
+                            .font(.callout.weight(isSelected ? .bold : .medium))
+                            .foregroundStyle(isSelected ? AnyShapeStyle(Warm.onAccent) : AnyShapeStyle(Warm.secondary))
                             .frame(maxWidth: .infinity, minHeight: 32)
-                            .background(selection == option.value ? AnyShapeStyle(Native.selection) : AnyShapeStyle(.clear), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-                            .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                            .background {
+                                if isSelected {
+                                    ZStack {
+                                        Capsule().fill(Warm.yellowDeep).offset(y: Warm.lipDepth - 1)
+                                        Capsule().fill(Warm.yellow)
+                                    }
+                                }
+                            }
+                            .contentShape(Capsule())
                     }
                     .buttonStyle(.notch)
                 }
             }
-            .padding(3)
-            .background(Native.group, in: RoundedRectangle(cornerRadius: 11, style: .continuous))
+            .padding(.horizontal, 4)
+            .padding(.top, 4)
+            .padding(.bottom, 4 + Warm.lipDepth - 1)
+            .background(Warm.track, in: Capsule())
             .accessibilityRepresentation {
                 Picker(selection: $selection) {
                     ForEach(options.indices, id: \.self) { index in
@@ -133,13 +169,13 @@ struct SettingsChoiceRow<Value: Hashable>: View {
                     .accessibilityHint(detail ?? Text(verbatim: ""))
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 14)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
-/// A switch that is white when on and grey when off, with the knob on the right when on.
+/// A switch that is yellow when on and grey when off, with the knob on the right when on.
 struct WarbleToggle: View {
     @Binding var isOn: Bool
     let label: Text
@@ -152,13 +188,19 @@ struct WarbleToggle: View {
             isOn.toggle()
         } label: {
             ZStack(alignment: isOn ? .trailing : .leading) {
-                Capsule().fill(isOn ? AnyShapeStyle(.white) : AnyShapeStyle(Native.track))
+                if isOn {
+                    Capsule().fill(Warm.yellowDeep).offset(y: 2)
+                    Capsule().fill(Warm.yellow)
+                } else {
+                    Capsule().fill(Warm.off)
+                }
                 Circle()
-                    .fill(isOn ? Color.black : Color.white)
+                    .fill(isOn ? AnyShapeStyle(Warm.onAccent) : AnyShapeStyle(Warm.ink))
                     .padding(3)
             }
-            .frame(width: 40, height: 24)
-            .animation(reduceMotion ? Native.fade : Native.morph, value: isOn)
+            .frame(width: 46, height: 28)
+            .padding(.bottom, 2)
+            .animation(reduceMotion ? Native.fade : .snappy(duration: 0.25), value: isOn)
         }
         .buttonStyle(.notch)
         .opacity(isEnabled ? 1 : 0.4)
@@ -169,25 +211,41 @@ struct WarbleToggle: View {
     }
 }
 
-/// A small pill button, for an action in a row. Space or Return press it while it has the focus ring, as on the notch.
+/// The website's chunky pill button, for an action in Settings: yellow, or quiet (the card's colour) for the less
+/// important one. It stands off the surface on a lip that it sinks into when pressed. Space or Return press it while it
+/// has the focus ring, as on the notch.
 struct WarbleButtonStyle: PrimitiveButtonStyle {
+    var isQuiet = false
+
     func makeBody(configuration: Configuration) -> some View {
         Button(action: configuration.trigger) { configuration.label }
-            .buttonStyle(Pill())
+            .buttonStyle(Pill(isQuiet: isQuiet))
             .pressedByKeyboard(configuration.trigger)
     }
 
     private struct Pill: ButtonStyle {
+        let isQuiet: Bool
         @Environment(\.isEnabled) private var isEnabled
 
         func makeBody(configuration: Configuration) -> some View {
+            let drop = configuration.isPressed ? Warm.lipDepth : 0
             configuration.label
-                .font(.callout)
-                .foregroundStyle(.white)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 5)
-                .background(Native.selection, in: Capsule())
-                .opacity(isEnabled ? (configuration.isPressed ? 0.6 : 1) : 0.4)
+                .font(.callout.weight(.semibold))
+                .foregroundStyle(isQuiet ? AnyShapeStyle(Warm.ink) : AnyShapeStyle(Warm.onAccent))
+                .padding(.horizontal, 16)
+                .padding(.vertical, 6)
+                .offset(y: drop)
+                .background {
+                    ZStack {
+                        Capsule().fill(isQuiet ? AnyShapeStyle(Warm.lip) : AnyShapeStyle(Warm.yellowDeep))
+                            .offset(y: Warm.lipDepth)
+                        Capsule().fill(isQuiet ? AnyShapeStyle(Warm.surface) : AnyShapeStyle(Warm.yellow))
+                            .overlay { if isQuiet { Capsule().strokeBorder(Warm.hairline, lineWidth: 1) } }
+                            .offset(y: drop)
+                    }
+                }
+                .padding(.bottom, Warm.lipDepth)
+                .opacity(isEnabled ? 1 : 0.4)
                 .contentShape(Capsule())
         }
     }
@@ -195,4 +253,5 @@ struct WarbleButtonStyle: PrimitiveButtonStyle {
 
 extension PrimitiveButtonStyle where Self == WarbleButtonStyle {
     static var warble: WarbleButtonStyle { WarbleButtonStyle() }
+    static var warbleQuiet: WarbleButtonStyle { WarbleButtonStyle(isQuiet: true) }
 }

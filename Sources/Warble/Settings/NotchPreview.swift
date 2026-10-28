@@ -55,8 +55,8 @@ struct NotchPreview: View {
         let radius = Native.radius(state, notch: housing)
         let shape = UnevenRoundedRectangle(bottomLeadingRadius: radius, bottomTrailingRadius: radius)
         ZStack(alignment: .top) {
-            LinearGradient(colors: [Color(hex: 0x2B3342), Color(hex: 0x1A1F29)], startPoint: .top, endPoint: .bottom)
-            Rectangle().fill(.black.opacity(0.3)).frame(height: housing.height).frame(maxHeight: .infinity, alignment: .top)
+            Warm.wallpaper
+            Rectangle().fill(.white.opacity(0.3)).frame(height: housing.height).frame(maxHeight: .infinity, alignment: .top)
             Button {
                 guard !isHovering else { return }
                 isOpen.toggle()
@@ -100,7 +100,7 @@ struct NotchPreview: View {
             }
         }
         .frame(height: 232)
-        .clipShape(RoundedRectangle(cornerRadius: Native.groupRadius, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: Warm.cardRadius, style: .continuous))
         .onHover { inside in
             if !inside, isPaused { play() }
         }

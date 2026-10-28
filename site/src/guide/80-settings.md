@@ -11,7 +11,7 @@ Warble works without changing anything. The things you may want to set are how l
 1. Click the Warble icon in the menu bar, or right-click the notch. You can also Control-click it.
 2. Choose **Settings…**.
 
-The right-click menu also opens the app that's playing, checks for updates and quits Warble. Settings is always dark, like the notch, whatever your Mac's appearance, and its background glows in the colours of the notch's own glow.
+The right-click menu also opens the app that's playing, checks for updates and quits Warble. Settings follows your Mac's light or dark appearance, and uses the same cream and yellow as this website.
 
 ![The Settings window, with the notch preview at the top and the pause and external-display settings under it](../../../docs/media/settings.png)
 

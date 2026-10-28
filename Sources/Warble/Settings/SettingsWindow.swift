@@ -39,9 +39,8 @@ final class SettingsWindow {
         window.title = String(localized: "Warble Settings")
         window.titleVisibility = .hidden
         window.titlebarAppearsTransparent = true
-        // Black and dark whatever the system appearance, like the notch.
-        window.appearance = NSAppearance(named: .darkAqua)
-        window.backgroundColor = .black
+        // The website's cream in light and its dark palette in dark, following the system.
+        window.backgroundColor = Warm.windowFill
         window.isReleasedWhenClosed = false
         window.collectionBehavior = [.moveToActiveSpace, .fullScreenNone]
         window.center()
