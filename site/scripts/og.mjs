@@ -1,14 +1,16 @@
-// Renders the 1200×630 social card (public/og.png) in the site's own look. Run after the brand or the hero changes: npm run og
+// Renders the 1200×630 social cards in the site's own look: public/og.png for the site, and public/og/<slug>.png for each guide page.
+// Run after the brand, the hero or a guide page's title changes: npm run og
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { readGuide } from '../src/lib/guide-files.ts';
 
 const chrome = process.env.CHROME ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const url = (path) => new URL(path, import.meta.url).href;
 const font = (pkg, file) => url(`../node_modules/${pkg}/files/${file}`);
 
-const html = `<!doctype html>
+const page = ({ eyebrow, headline, size }) => `<!doctype html>
 <style>
   @font-face { font-family: Fraunces; font-weight: 100 900; src: url(${font('@fontsource-variable/fraunces', 'fraunces-latin-wght-normal.woff2')}); }
   @font-face { font-family: Figtree; font-weight: 300 900; src: url(${font('@fontsource-variable/figtree', 'figtree-latin-wght-normal.woff2')}); }
@@ -16,7 +18,8 @@ const html = `<!doctype html>
   body { width: 1200px; height: 630px; overflow: hidden; background: #fbf4e4; color: #2b2118; font-family: Figtree; position: relative; }
   .brand { position: absolute; left: 80px; top: 72px; display: flex; align-items: center; gap: 16px; font: 700 34px Figtree; }
   .brand img { width: 56px; height: 56px; }
-  h1 { position: absolute; left: 80px; top: 196px; font: 600 104px/1.02 Fraunces; letter-spacing: -0.03em; }
+  .eyebrow { position: absolute; left: 80px; top: 176px; font: 700 26px Figtree; letter-spacing: 0.1em; text-transform: uppercase; color: #6b5b4d; }
+  h1 { position: absolute; left: 80px; top: ${eyebrow ? 226 : 196}px; width: 640px; font: 600 ${size}px/1.04 Fraunces; letter-spacing: -0.03em; }
   .squig { position: relative; display: inline-block; }
   .squig svg { position: absolute; left: 0; right: 0; bottom: -22px; width: 100%; height: 24px; }
   .meta { position: absolute; left: 80px; bottom: 64px; font: 600 28px Figtree; color: #6b5b4d; }
@@ -31,7 +34,8 @@ const html = `<!doctype html>
   .controls svg { fill: #fff; }
 </style>
 <div class="brand"><img src="${url('../public/icon-256.png')}">Warble</div>
-<h1>Your music,<br>in the <span class="squig">notch<svg viewBox="0 0 300 24" preserveAspectRatio="none"><path d="M4 14C40 2 70 22 110 12S190 4 230 14 280 8 296 12" fill="none" stroke="#ff7db4" stroke-width="8" stroke-linecap="round"/></svg></span>.</h1>
+${eyebrow ? `<div class="eyebrow">${eyebrow}</div>` : ''}
+<h1>${headline}</h1>
 <div class="meta">Free and open source · for Mac</div>
 <div class="notch">
   <div class="track"><img src="${url('../public/media/art-moment-apart.webp')}"><div><div class="title">A Moment Apart</div><div class="artist">ODESZA</div></div></div>
@@ -44,10 +48,20 @@ const html = `<!doctype html>
 </div>`;
 
 const dir = mkdtempSync(join(tmpdir(), 'warble-og-'));
-const page = join(dir, 'og.html');
-writeFileSync(page, html);
-execFileSync(chrome, [
-  '--headless=new', '--hide-scrollbars', '--allow-file-access-from-files', '--force-device-scale-factor=1',
-  '--window-size=1200,630', '--virtual-time-budget=3000',
-  `--screenshot=${new URL('../public/og.png', import.meta.url).pathname}`, `file://${page}`,
-], { stdio: 'ignore' });
+const render = (html, out) => {
+  const file = join(dir, 'card.html');
+  writeFileSync(file, html);
+  execFileSync(chrome, [
+    '--headless=new', '--hide-scrollbars', '--allow-file-access-from-files', '--force-device-scale-factor=1',
+    '--window-size=1200,630', '--virtual-time-budget=3000',
+    `--screenshot=${new URL(out, import.meta.url).pathname}`, `file://${file}`,
+  ], { stdio: 'ignore' });
+};
+
+const squiggle = `<span class="squig">notch<svg viewBox="0 0 300 24" preserveAspectRatio="none"><path d="M4 14C40 2 70 22 110 12S190 4 230 14 280 8 296 12" fill="none" stroke="#ff7db4" stroke-width="8" stroke-linecap="round"/></svg></span>`;
+render(page({ headline: `Your music,<br>in the ${squiggle}.`, size: 104 }), '../public/og.png');
+
+mkdirSync(new URL('../public/og/', import.meta.url), { recursive: true });
+for (const { slug, title, group } of readGuide()) {
+  render(page({ eyebrow: `User guide · ${group}`, headline: title, size: title.length > 22 ? 76 : 96 }), `../public/og/${slug}.png`);
+}

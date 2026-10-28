@@ -13,7 +13,7 @@ const { page, previous, next } = Astro.props;
 const links = pages.map((p) => ({ href: `/docs/${p.slug}/`, title: p.title, current: p === page, group: p.group }));
 ---
 
-<Prose title={page.title} description={page.summary} headings={page.headings} pages={links}>
+<Prose title={page.title} description={page.summary} image={`/og/${page.slug}.png`} imageAlt={`Warble user guide: ${page.title}`} headings={page.headings} pages={links}>
   <GuideSearch slot="side" />
   <div data-pagefind-body>
     <header class="page-head">

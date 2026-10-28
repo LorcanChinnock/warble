@@ -5,15 +5,23 @@ import { latestRelease } from '../lib/release';
 interface Props {
   title?: string;
   description?: string;
+  /** A card for this page's link previews, as a path under /; every page without one shares /og.png. */
+  image?: string;
+  imageAlt?: string;
+  /** Keeps the page out of search results. */
+  noindex?: boolean;
 }
 
 const {
   title,
   description = 'Music and media controls in your Mac\'s notch. Free and open source.',
+  image = '/og.png',
+  imageAlt = 'Your music, in the notch. Warble\'s open notch shows A Moment Apart by ODESZA. Free and open source, for Mac.',
+  noindex = false,
 } = Astro.props;
 const fullTitle = title ? `${title} · Warble` : 'Warble for Mac: your music, in the notch';
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogImage = new URL('/og.png', Astro.site);
+const ogImage = new URL(image, Astro.site);
 const release = await latestRelease();
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const current = (href: string) => (path === href ? 'page' : undefined);
@@ -39,8 +47,16 @@ const current = (href: string) => (path === href ? 'page' : undefined);
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Your music, in the notch. Warble's open notch shows A Moment Apart by ODESZA. Free and open source, for Mac." />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={imageAlt} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="alternate" type="application/rss+xml" title="Warble releases" href="/changelog/rss.xml" />
     <link rel="sitemap" href="/sitemap.xml" />
     <slot name="head" />
   </head>
@@ -75,6 +91,7 @@ const current = (href: string) => (path === href ? 'page' : undefined);
           <nav aria-label="Footer">
             <a href="/docs/get-started/">Guide</a>
             <a href="/changelog/">Changelog</a>
+            <a href="/notch-apps/">Other notch apps</a>
             <a href="/privacy/">Privacy</a>
             <a href="https://github.com/LorcanChinnock/warble">Source</a>
             <a href="https://github.com/LorcanChinnock/warble/issues">Report a bug</a>
