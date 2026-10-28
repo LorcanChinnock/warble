@@ -3,12 +3,12 @@ import SwiftUI
 import WarbleCore
 import WarbleModel
 
-/// The Settings window's one page, always dark like the notch: what Warble is, whether it opens at login, and updates.
+/// The Settings window's one page, in the website's look and following the system's light or dark appearance: what Warble
+/// is, the notch and how it looks, whether Warble opens at login, and updates.
 struct SettingsView: View {
     @Environment(Updater.self) private var updater
     @Environment(LoginItem.self) private var loginItem
     @Environment(NotchSettings.self) private var notchSettings
-    @Environment(\.colorSchemeContrast) private var contrast
     private static let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
     private static let guide = URL(string: "https://warble.lorcanchinnock.com/docs/")!
 
@@ -18,30 +18,32 @@ struct SettingsView: View {
                 HStack(spacing: 16) {
                     Image(nsImage: NSApp.applicationIconImage)
                         .resizable()
-                        .frame(width: 72, height: 72)
+                        .frame(width: 64, height: 64)
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(verbatim: "Warble")
-                            .font(.title2.bold())
+                            .font(.system(size: 32, weight: .bold, design: .serif))
+                            .foregroundStyle(Warm.ink)
+                        // Plain, like the website's meta line: yellow is for what is on or chosen.
                         Text("Version \(Self.version)")
-                            .foregroundStyle(Native.secondary)
+                            .font(.callout.weight(.semibold))
+                            .foregroundStyle(Warm.secondary)
                             .textSelection(.enabled)
                     }
                     Spacer(minLength: 0)
                     Button("Check for Updates…") { updater.checkForUpdates() }
-                        .buttonStyle(.warble)
+                        .buttonStyle(.warbleQuiet)
                         .disabled(!updater.canCheckForUpdates)
                 }
-                // Clear of the title bar's buttons, which the content runs under.
-                .padding(.top, 44)
+                .padding(.top, 8)
                 VStack(alignment: .leading, spacing: 8) {
                     NotchPreview(showsTitle: notchSettings.showsVirtualTitle, showsGlow: notchSettings.showsGlow, pauseDelay: notchSettings.pauseDelay, cardSize: notchSettings.cardSize, visibility: notchSettings.virtualVisibility)
                     Text("How the notch looks, with a made-up song. Point at it to open it.")
                         .font(.footnote)
-                        .foregroundStyle(Native.secondary)
+                        .foregroundStyle(Warm.secondary)
                         .padding(.horizontal, 14)
                 }
-                SettingsGroup(title: Text("Notch")) {
+                SettingsGroup(title: Text("Notch"), symbol: "music.note") {
                     SettingsChoiceRow(
                         title: Text("Stay visible after pausing"),
                         detail: Text("How long the notch keeps showing a paused song before it goes quiet."),
@@ -83,7 +85,7 @@ struct SettingsView: View {
                         isOn: Binding { notchSettings.showsGlow } set: { notchSettings.showsGlow = $0 }
                     )
                 }
-                SettingsGroup {
+                SettingsGroup(title: Text("General"), symbol: "gearshape", tint: Warm.sky) {
                     SettingsToggleRow(
                         title: Text("Open at login"),
                         detail: loginItem.needsApproval
@@ -105,18 +107,20 @@ struct SettingsView: View {
                     SettingsRow(title: Text("Help and user guide")) {
                         Link(destination: Self.guide) {
                             Text(verbatim: "warble.lorcanchinnock.com")
+                                .font(.body.weight(.semibold))
+                                .underline(color: Warm.pink)
                         }
                     }
                 }
                 // Login Items can change in System Settings, which tells Warble nothing.
                 .onAppear { loginItem.refresh() }
                 .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in loginItem.refresh() }
-                SettingsGroup(title: Text("Acknowledgements")) {
+                SettingsGroup(title: Text("Acknowledgements"), symbol: "heart", tint: Warm.pink) {
                     SettingsRow(title: Text(verbatim: "mediaremote-adapter")) {
-                        Text("BSD 3-Clause License").foregroundStyle(Native.secondary)
+                        Text("BSD 3-Clause License").foregroundStyle(Warm.secondary)
                     }
                     SettingsRow(title: Text(verbatim: "Sparkle")) {
-                        Text("MIT License").foregroundStyle(Native.secondary)
+                        Text("MIT License").foregroundStyle(Warm.secondary)
                     }
                 }
             }
@@ -124,31 +128,24 @@ struct SettingsView: View {
             .padding(.bottom, 30)
             .frame(maxWidth: .infinity)
         }
+        // The content runs under the transparent title bar, so a bar in the window's colour keeps a scrolled card from
+        // meeting the window's buttons; it fades out at its foot so the content slides under it rather than being cut.
+        .safeAreaInset(edge: .top, spacing: 0) {
+            Rectangle()
+                .fill(Warm.window)
+                .frame(height: 40)
+                .mask {
+                    LinearGradient(stops: [.init(color: .black, location: 0), .init(color: .black, location: 0.7), .init(color: .clear, location: 1)], startPoint: .top, endPoint: .bottom)
+                }
+                .allowsHitTesting(false)
+        }
         .frame(minWidth: SettingsWindow.size.width, minHeight: SettingsWindow.size.height)
-        .background { SettingsBackground(showsGlow: contrast != .increased && notchSettings.showsGlow) }
-        .foregroundStyle(.white)
-        .tint(.white)
-        .preferredColorScheme(.dark)
+        .background { Rectangle().fill(Warm.window).ignoresSafeArea() }
+        .foregroundStyle(Warm.ink)
     }
 
     /// Off and greyed out in a build with no update feed, where the updater never runs.
     private var automaticallyChecks: Binding<Bool> {
         Binding { updater.isEnabled && updater.automaticallyChecks } set: { updater.automaticallyChecks = $0 }
-    }
-}
-
-/// Black, with the glow the open notch has: the song's colours rising from both bottom corners. It is softer than the
-/// card's so the text stays readable, and it is left out with Increase Contrast, where the card draws a border instead.
-private struct SettingsBackground: View {
-    let showsGlow: Bool
-
-    var body: some View {
-        ZStack {
-            Native.panel
-            if showsGlow {
-                Glow(colours: NotchDemo.colours).opacity(0.7)
-            }
-        }
-        .ignoresSafeArea()
     }
 }
