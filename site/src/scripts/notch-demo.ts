@@ -150,11 +150,21 @@ for (const demo of document.querySelectorAll<HTMLElement>('[data-notch-demo]')) 
 
   const enter = () => { endTour(); hover = true; render(); };
   const leave = () => { hover = false; render(); };
-  notch.addEventListener('pointerenter', enter);
-  notch.addEventListener('pointerleave', leave);
-  notch.addEventListener('focusin', enter);
+  // A finger can't hover: a touch fires pointerenter and pointerleave around the tap and focuses the notch, so the card would flash
+  // open and shut. Touch instead opens on a tap and stays open until a tap elsewhere, and ignores hover and focus.
+  let touching = false;
+  notch.addEventListener('pointerdown', (event) => {
+    touching = event.pointerType === 'touch';
+    if (touching && !hover) enter();
+  });
+  document.addEventListener('pointerdown', (event) => {
+    if (event.pointerType === 'touch' && hover && !notch.contains(event.target as Node)) leave();
+  });
+  notch.addEventListener('pointerenter', (event) => { if (event.pointerType !== 'touch') enter(); });
+  notch.addEventListener('pointerleave', (event) => { if (event.pointerType !== 'touch') leave(); });
+  notch.addEventListener('focusin', () => { if (!touching) enter(); });
   notch.addEventListener('focusout', (event) => {
-    if (!notch.contains(event.relatedTarget as Node | null)) leave();
+    if (!touching && !notch.contains(event.relatedTarget as Node | null)) leave();
   });
   notch.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') { hover = false; notch.blur(); render(); }
