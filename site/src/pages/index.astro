@@ -3,6 +3,7 @@ import Copy from '../components/Copy.astro';
 import ForMacs from '../components/ForMacs.astro';
 import NotchDemo from '../components/NotchDemo.astro';
 import Base from '../layouts/Base.astro';
+import player from '../../../docs/media/player.png';
 import { latestRelease } from '../lib/release';
 
 const release = await latestRelease();
@@ -24,9 +25,27 @@ const points = [
   },
   { key: 'heart', title: 'Free', color: 'yellow', text: 'Free and open source, with no ads.', icon: ['M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6-8 11-8 11z'], sponsor: true },
 ];
+const software = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Warble',
+  description: "Shows what's playing in your Mac's notch, with play, pause, skip and speaker controls. Free and open source.",
+  url: 'https://warble.lorcanchinnock.com/',
+  image: 'https://warble.lorcanchinnock.com/icon-256.png',
+  applicationCategory: 'MultimediaApplication',
+  operatingSystem: 'macOS 15 or later',
+  softwareVersion: release.version,
+  downloadUrl: 'https://warble.lorcanchinnock.com/download',
+  license: 'https://github.com/LorcanChinnock/warble/blob/main/LICENSE',
+  isAccessibleForFree: true,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  author: { '@type': 'Person', name: 'Lorcan Chinnock', url: 'https://lorcanchinnock.com' },
+  sameAs: ['https://github.com/LorcanChinnock/warble'],
+};
 ---
 
 <Base>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(software)} />
   <section class="hero">
     <div class="wrap">
       <h1>Your music, in the <span class="squig">notch<svg aria-hidden="true" viewBox="0 0 300 24" preserveAspectRatio="none"><path d="M4 14C40 2 70 22 110 12S190 4 230 14 280 8 296 12" fill="none" stroke="var(--pink)" stroke-width="8" stroke-linecap="round" pathLength="1" /></svg></span>.</h1>
@@ -41,7 +60,9 @@ const points = [
   </section>
 
   <section class="screen-section" aria-label="Warble in the notch">
-    <div class="wrap"><NotchDemo /></div>
+    <div class="wrap"><NotchDemo />
+      <noscript><img class="still" src={player.src} width={player.width} height={player.height} alt="Warble's opened notch showing the song Paper Lanterns by Juniper Hale, with the position bar, previous, pause and next buttons and the volume slider." /></noscript>
+    </div>
   </section>
 
   <section class="points" aria-labelledby="points">
@@ -106,6 +127,7 @@ const points = [
   .meta a { color: var(--fg); }
 
   .screen-section { padding-top: clamp(8px, 2vw, 24px); }
+  .still { display: block; max-width: 100%; height: auto; margin-inline: auto; border-radius: var(--radius); }
 
   .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
   .point { margin: 0; padding: 28px 28px 30px; display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 4px 16px; align-items: start; align-content: start; }
