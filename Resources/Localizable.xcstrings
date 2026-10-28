@@ -612,6 +612,9 @@
     "Large" : {
 
     },
+    "Last played: %@" : {
+
+    },
     "Later" : {
       "localizations" : {
         "de" : {
@@ -1528,6 +1531,9 @@
           }
         }
       }
+    },
+    "Play %@ again" : {
+
     },
     "Playing" : {
       "localizations" : {

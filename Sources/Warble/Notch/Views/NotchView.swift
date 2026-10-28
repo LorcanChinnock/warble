@@ -75,6 +75,8 @@ private struct NotchContent: View {
         switch (state, playback) {
         case (.note, _):
             NoteContent(notch: model.notch)
+        case (.recall, _):
+            RecallContent(notch: model.notch, player: model.player)
         case (.expanded, let playback?):
             // Laid out at the standard size and scaled, so every size has the same card.
             ExpandedContent(playback: playback, artwork: artwork, model: model)
@@ -100,5 +102,49 @@ private struct NoteContent: View {
             .foregroundStyle(Native.secondary)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(.top, notch.height)
+    }
+}
+
+/// What an empty notch offers when it remembers a track and the pointer is on it: the art, dimmed so it reads as past,
+/// the title and artist, and a button that plays it again. The button is there only while the app that played it is running.
+private struct RecallContent: View {
+    let notch: CGRect
+    let player: PlayerModel
+
+    var body: some View {
+        if let track = player.lastPlayed {
+            HStack(spacing: 10) {
+                Artwork(image: player.lastArtwork, radius: 6, symbolSize: 18)
+                    .frame(width: 40, height: 40)
+                    .opacity(Native.dimmed)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(track.title)
+                        .font(.system(size: 13, weight: .semibold))
+                        .lineLimit(1)
+                    if let artist = track.artist {
+                        Text(artist)
+                            .font(.system(size: 12))
+                            .foregroundStyle(Native.secondary)
+                            .lineLimit(1)
+                    }
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(Text("Last played: \(track.title)"))
+                Spacer(minLength: 0)
+                if !NSRunningApplication.runningApplications(withBundleIdentifier: track.bundleIdentifier).isEmpty {
+                    Button(action: player.resume) {
+                        Image(systemName: "play.fill")
+                            .font(.system(size: 14))
+                            .frame(width: 32, height: 32)
+                            .hoverWash(Circle())
+                    }
+                    .buttonStyle(.notch)
+                    .accessibilityLabel(Text("Play \(track.title) again"))
+                }
+            }
+            .padding(.horizontal, 14)
+            .frame(maxHeight: .infinity)
+            .padding(.top, notch.height)
+        }
     }
 }

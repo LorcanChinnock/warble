@@ -24,6 +24,8 @@ struct SharedState: Equatable, Sendable {
     var playback: PlaybackState?
     /// Whether the notches draw what's playing, which is not so while Idle.
     var showsPlayback: Bool
+    /// Whether a track has played since Warble started, which an empty notch offers back.
+    var remembersTrack: Bool
     /// When `playback` goes after a report of nothing, or `nil` when no hide is pending.
     var hideAt: Date?
 }

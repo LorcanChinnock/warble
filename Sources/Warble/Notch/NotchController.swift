@@ -89,6 +89,9 @@ final class NotchController {
         if new.playback != old.playback {
             player.playback = new.playback
         }
+        if new.lastPlayed != old.lastPlayed {
+            player.lastPlayed = new.lastPlayed
+        }
         if new.showsGlow != old.showsGlow {
             player.showsGlow = new.showsGlow
         }

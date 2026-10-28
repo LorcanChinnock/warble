@@ -12,13 +12,15 @@ public enum NotchState: String, CaseIterable, Sendable {
     case empty
     /// The pointer is on an empty notch: a small card that says nothing is playing, with no controls.
     case note
+    /// The pointer is on an empty notch that remembers the last track: a small card with its art and title and a resume button.
+    case recall
     /// Something is playing and the pointer is elsewhere: the notch widened by a wing on each side.
     case resting
     /// Hovered: the full card with the art and room for the controls.
     case expanded
 
-    /// Whether the notch is open, as a card under the housing: the player or the note.
-    public var isOpen: Bool { self == .expanded || self == .note }
+    /// Whether the notch is open, as a card under the housing: the player, the note or the remembered track.
+    public var isOpen: Bool { self == .expanded || self == .note || self == .recall }
 
     /// How far `hover` has opened the notch while something is playing.
     public init(_ hover: HoverState) {
@@ -73,6 +75,8 @@ public enum NotchLayout {
     public static let expandedWing: CGFloat = 70
     /// How far the note reaches below the housing: one line of text with room above and below.
     public static let noteDrop: CGFloat = 36
+    /// How far the remembered track's card reaches below the housing: the art beside two lines, with room around them.
+    public static let recallDrop: CGFloat = 72
 
     /// The radius of the housing's bottom corners, which Empty and Resting draw too.
     public static func cornerRadius(notch: CGRect) -> CGFloat {
@@ -100,6 +104,8 @@ public enum NotchLayout {
             notch
         case .note:
             CGRect(x: notch.minX - wing(notch: notch), y: notch.minY - noteDrop, width: notch.width + 2 * wing(notch: notch), height: notch.height + noteDrop)
+        case .recall:
+            CGRect(x: notch.minX - wing(notch: notch), y: notch.minY - recallDrop, width: notch.width + 2 * wing(notch: notch), height: notch.height + recallDrop)
         case .resting:
             CGRect(x: notch.minX - wing(notch: notch), y: notch.minY, width: notch.width + 2 * wing(notch: notch), height: notch.height)
         case .expanded:
@@ -128,7 +134,7 @@ public enum NotchLayout {
         case .resting: notch
         case .hidden: nil
         case .empty: notch
-        case .expanded, .note: frame(state, notch: notch, cardSize: cardSize)
+        case .expanded, .note, .recall: frame(state, notch: notch, cardSize: cardSize)
         }
     }
 }
