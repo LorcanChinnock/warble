@@ -24,6 +24,11 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
             }
         }
         effects.append(.send(command))
+    case .resumeLast:
+        // Only the Idle notch offers it. The command goes to the app that last reported, which is the one that played it.
+        if !state.showsPlayback, state.lastPlayed != nil {
+            effects.append(.send(.play))
+        }
     case .openApp:
         if let playback = state.playback {
             effects.append(.openApp(bundleIdentifier: playback.bundleIdentifier, title: playback.title))
@@ -108,6 +113,9 @@ extension PlaybackState {
 private func show(_ playback: PlaybackState?, in state: inout AppState, at now: Date) {
     state.hideAt = nil
     state.playback = playback
+    if let playback, !playback.title.isEmpty {
+        state.lastPlayed = playback
+    }
     state.idle.handle(.playback(playback), at: now)
 }
 

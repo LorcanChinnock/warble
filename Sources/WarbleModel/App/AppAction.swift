@@ -19,6 +19,8 @@ public enum AppAction: Equatable, Sendable {
     case dismiss(except: String?)
     /// A command from a notch button or a key in an open notch, which shows what it will do at once.
     case command(PlaybackCommand)
+    /// Play the remembered track again, from the Idle notch's card.
+    case resumeLast
     /// Bring the app that's playing to the front.
     case openApp
     /// A click on the notch itself: bring the playing app to the front, unless the notch is empty or showing its note.

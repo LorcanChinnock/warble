@@ -25,7 +25,7 @@
   <img src="docs/media/skip.gif" width="480" alt="The notch opening on hover, then skipping to the next track">
 </p>
 
-Warble shows what's playing in the notch at the top of your Mac's screen. Hover over the notch to see the song, and click it to open the app playing it, then play, pause, skip or switch speakers. When nothing is playing, it stays out of sight, and pointing at the notch says so.
+Warble shows what's playing in the notch at the top of your Mac's screen. Hover over the notch to see the song, and click it to open the app playing it, then play, pause, skip or switch speakers. When nothing is playing, it stays out of sight, and pointing at the notch brings back the last song so you can play it again.
 
 Warble is in beta: it works, and it's still being built.
 
@@ -43,7 +43,7 @@ Or [download the latest release](https://warble.lorcanchinnock.com/download) and
 - **Controls.** Play, pause, skip, move through the song, and turn shuffle and repeat on or off when the app has them. Drag the volume bar, or scroll over the notch with two fingers: up and down changes the volume, sliding sideways moves through the song and a quick sideways flick skips.
 - **Switch speakers.** Move your Mac's sound to its own speakers, headphones or AirPods from the notch.
 - **Any player.** Apple Music, Spotify, podcast apps and video in your browser.
-- **Calm by default.** A paused song stays for a few seconds, then Warble gets out of the way. When nothing is playing, it hides behind the notch and uses no CPU, and pointing at the notch opens a small note that says nothing is playing.
+- **Calm by default.** A paused song stays for a few seconds, then Warble gets out of the way. When nothing is playing, it hides behind the notch and uses no CPU, and pointing at the notch opens a small card with the last song and a play button, kept in memory only.
 - **Every Mac.** A main display without a notch, on a Mac without one or an external display, gets a notch Warble draws at the top.
 - **For everyone.** Works with VoiceOver, and follows Increase Contrast and Reduce Motion.
 - **Little to set up.** Open at login, and a switch for the title in a virtual notch. Right-click the notch, or use the menu bar icon, for Settings, updates and Quit.

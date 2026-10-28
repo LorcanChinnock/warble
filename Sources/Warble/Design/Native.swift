@@ -20,7 +20,7 @@ enum Native {
         switch state {
         case .hidden, .empty, .resting: NotchLayout.cornerRadius(notch: notch)
         case .expanded: expandedRadius
-        case .note: noteRadius
+        case .note, .recall: noteRadius
         }
     }
 

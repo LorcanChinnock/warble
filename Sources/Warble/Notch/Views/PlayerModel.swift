@@ -24,6 +24,14 @@ final class PlayerModel {
         }
     }
     private(set) var artwork: NSImage?
+    /// The last track that played, which the Idle notch offers again.
+    var lastPlayed: PlaybackState? {
+        didSet {
+            guard lastPlayed?.artwork != oldValue?.artwork else { return }
+            lastArtwork = lastPlayed?.artwork.flatMap(NSImage.init(data:))
+        }
+    }
+    private(set) var lastArtwork: NSImage?
     /// The glow's colours, from the artwork or, without it, the app's icon.
     private(set) var colours: ArtworkColours?
     /// Whether the open card glows, which Settings can turn off. Off, no colours are picked unless Increase Contrast needs
@@ -70,6 +78,11 @@ final class PlayerModel {
 
     func send(_ command: PlaybackCommand) {
         dispatch(.command(command))
+    }
+
+    /// Plays the remembered track again.
+    func resume() {
+        dispatch(.resumeLast)
     }
 
     /// Brings the app that's playing to the front.

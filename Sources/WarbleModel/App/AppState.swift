@@ -9,6 +9,8 @@ public struct AppState: Equatable, Sendable {
 
     /// What's playing as the notch shows it, which outlasts a source's report of nothing by `hideDelay`.
     public internal(set) var playback: PlaybackState?
+    /// The last track that played, kept in memory for the Idle notch to offer again; quitting Warble clears it.
+    public internal(set) var lastPlayed: PlaybackState?
     /// When `playback` goes after a report of nothing, or `nil` when no hide is pending.
     public internal(set) var hideAt: Date?
     /// Whether the open card glows in the artwork's colours, which Settings can turn off for a plain black card.
@@ -84,7 +86,7 @@ public struct AppState: Equatable, Sendable {
 
     /// What the features may read of this state.
     var shared: SharedState {
-        SharedState(playback: playback, showsPlayback: showsPlayback, hideAt: hideAt)
+        SharedState(playback: playback, showsPlayback: showsPlayback, remembersTrack: lastPlayed != nil, hideAt: hideAt)
     }
 
     /// Whether the notch over `display` draws the title in its middle.

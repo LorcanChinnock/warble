@@ -118,7 +118,8 @@ public struct Notches: Feature {
         if shared.showsPlayback { return state }
         // Nothing is playing. A real notch stays, empty, so pointing at it can say so; a virtual one only if Settings keeps it.
         if surface.isVirtual, virtualVisibility != .always { return .hidden }
-        return surface.hover.state == .resting ? .empty : .note
+        if surface.hover.state == .resting { return .empty }
+        return shared.remembersTrack ? .recall : .note
     }
 
     /// Whether the notch draws the title in its middle. Only a virtual notch has room, since a real one's middle is the
