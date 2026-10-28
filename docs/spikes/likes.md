@@ -62,7 +62,7 @@ So MediaRemote can't read or set a like for any of these players. Only a player'
 
 ### Other actions
 
-- **Dislike.** Music's `disliked` reads and sets the same way, but no other player has a dislike to match, and it changes what Music recommends, which makes a mis-click costly. Leave it out; the heart is the only like action.
+- **Dislike.** Music's `disliked` reads and sets the same way, but no other player has a dislike Warble can reach (YouTube's 👎 needs page scripting, which is ruled out above), and it changes what Music recommends, which makes a mis-click costly. Leave it out; the heart is the only like action.
 - **Follow and subscribe.** MediaRemote has no follow or subscribe command, and the Podcasts and YouTube streams carried nothing a follow could use. YouTube would need page scripting, which is ruled out above. Leave both out.
 
 ## Test plan
