@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.0-beta.14](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.13...v0.1.0-beta.14) (2026-10-28)
+
+
+### Features
+
+* **notch:** a size setting for the opened notch ([#315](https://github.com/LorcanChinnock/warble/issues/315)) ([31a0ea5](https://github.com/LorcanChinnock/warble/commit/31a0ea5791f938624df1d7e8297cf852bb266e82))
+* **notch:** shorten the open and close delays ([#325](https://github.com/LorcanChinnock/warble/issues/325)) ([72eb63b](https://github.com/LorcanChinnock/warble/commit/72eb63bd468f29ad4b5221e498418cae226a1922))
+
 ## [0.1.0-beta.13](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.12...v0.1.0-beta.13) (2026-10-27)
 
 
