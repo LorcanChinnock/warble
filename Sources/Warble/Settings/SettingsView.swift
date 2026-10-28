@@ -20,18 +20,14 @@ struct SettingsView: View {
                         .resizable()
                         .frame(width: 64, height: 64)
                         .accessibilityHidden(true)
-                    VStack(alignment: .leading, spacing: 6) {
+                    VStack(alignment: .leading, spacing: 2) {
                         Text(verbatim: "Warble")
                             .font(.system(size: 32, weight: .bold, design: .serif))
                             .foregroundStyle(Warm.ink)
+                        // Plain, like the website's meta line: yellow is for what is on or chosen.
                         Text("Version \(Self.version)")
-                            .font(.system(size: 11, weight: .heavy))
-                            .textCase(.uppercase)
-                            .tracking(0.9)
-                            .foregroundStyle(Warm.onAccent)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 2)
-                            .background(Warm.yellow, in: Capsule())
+                            .font(.callout.weight(.semibold))
+                            .foregroundStyle(Warm.secondary)
                             .textSelection(.enabled)
                     }
                     Spacer(minLength: 0)
@@ -39,8 +35,7 @@ struct SettingsView: View {
                         .buttonStyle(.warbleQuiet)
                         .disabled(!updater.canCheckForUpdates)
                 }
-                // Clear of the title bar's buttons, which the content runs under.
-                .padding(.top, 44)
+                .padding(.top, 8)
                 VStack(alignment: .leading, spacing: 8) {
                     NotchPreview(showsTitle: notchSettings.showsVirtualTitle, showsGlow: notchSettings.showsGlow, pauseDelay: notchSettings.pauseDelay, cardSize: notchSettings.cardSize, visibility: notchSettings.virtualVisibility)
                     Text("How the notch looks, with a made-up song. Point at it to open it.")
@@ -90,7 +85,7 @@ struct SettingsView: View {
                         isOn: Binding { notchSettings.showsGlow } set: { notchSettings.showsGlow = $0 }
                     )
                 }
-                SettingsGroup {
+                SettingsGroup(title: Text("General"), symbol: "gearshape", tint: Warm.sky) {
                     SettingsToggleRow(
                         title: Text("Open at login"),
                         detail: loginItem.needsApproval
@@ -120,7 +115,7 @@ struct SettingsView: View {
                 // Login Items can change in System Settings, which tells Warble nothing.
                 .onAppear { loginItem.refresh() }
                 .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in loginItem.refresh() }
-                SettingsGroup(title: Text("Acknowledgements")) {
+                SettingsGroup(title: Text("Acknowledgements"), symbol: "heart", tint: Warm.pink) {
                     SettingsRow(title: Text(verbatim: "mediaremote-adapter")) {
                         Text("BSD 3-Clause License").foregroundStyle(Warm.secondary)
                     }
@@ -132,6 +127,17 @@ struct SettingsView: View {
             .padding(.horizontal, 30)
             .padding(.bottom, 30)
             .frame(maxWidth: .infinity)
+        }
+        // The content runs under the transparent title bar, so a bar in the window's colour keeps a scrolled card from
+        // meeting the window's buttons; it fades out at its foot so the content slides under it rather than being cut.
+        .safeAreaInset(edge: .top, spacing: 0) {
+            Rectangle()
+                .fill(Warm.window)
+                .frame(height: 40)
+                .mask {
+                    LinearGradient(stops: [.init(color: .black, location: 0), .init(color: .black, location: 0.7), .init(color: .clear, location: 1)], startPoint: .top, endPoint: .bottom)
+                }
+                .allowsHitTesting(false)
         }
         .frame(minWidth: SettingsWindow.size.width, minHeight: SettingsWindow.size.height)
         .background { Rectangle().fill(Warm.window).ignoresSafeArea() }

@@ -39,13 +39,26 @@ enum Warm {
         lightIncreased: Color(hex: 0x2B2118, opacity: 0.4), darkIncreased: Color(hex: 0xFFF4DC, opacity: 0.45)
     )
     /// A track a choice or a switch sits in.
-    static let track = Adaptive(light: Color(hex: 0x2B2118, opacity: 0.07), dark: Color(hex: 0xFFF4DC, opacity: 0.09))
-    /// A switch that is off, a shade darker than `track`.
-    static let off = Adaptive(light: Color(hex: 0x2B2118, opacity: 0.14), dark: Color(hex: 0xFFF4DC, opacity: 0.18))
+    static let track = Adaptive(
+        light: Color(hex: 0x2B2118, opacity: 0.07), dark: Color(hex: 0xFFF4DC, opacity: 0.09),
+        lightIncreased: Color(hex: 0x2B2118, opacity: 0.12), darkIncreased: Color(hex: 0xFFF4DC, opacity: 0.16)
+    )
+    /// A switch that is off, a shade darker than `track`; with Increase Contrast it is 3:1 against the card.
+    static let off = Adaptive(
+        light: Color(hex: 0x2B2118, opacity: 0.14), dark: Color(hex: 0xFFF4DC, opacity: 0.18),
+        lightIncreased: Color(hex: 0x2B2118, opacity: 0.5), darkIncreased: Color(hex: 0xFFF4DC, opacity: 0.38)
+    )
+    /// The edge of anything yellow: a chosen option, an on switch or a button. On the cream page yellow alone is 1.2:1
+    /// against its track, so a thin ink edge gives the chosen state a boundary. In dark it is 9:1 and needs none.
+    static let accentEdge = Adaptive(
+        light: Color(hex: 0x2B2118, opacity: 0.35), dark: Color(hex: 0x2B2118, opacity: 0),
+        lightIncreased: Color(hex: 0x2B2118, opacity: 0.6)
+    )
     /// The hard edge under a quiet button, like the website's.
     static let lip = Adaptive(light: Color(hex: 0x2B2118, opacity: 0.14), dark: Color(hex: 0xFFF4DC, opacity: 0.16))
 
-    /// The accents. Text on any of them is `onAccent`, cocoa in light and dark.
+    /// The accents: yellow for anything on or chosen, and all three for the cards' icon tiles, as on the website. Text
+    /// on any of them is `onAccent`, cocoa in light and dark.
     static let yellow = Color(hex: 0xFFD34E)
     static let yellowDeep = Color(hex: 0xE8B72B)
     static let pink = Color(hex: 0xFF7DB4)

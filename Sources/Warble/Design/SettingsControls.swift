@@ -1,35 +1,33 @@
 import SwiftUI
 
 /// The controls Settings is built from, in the website's look (`Warm`): cards on a cream page, a serif heading, and
-/// yellow for anything that is on or chosen. What's on is also marked by position and weight, never by colour alone.
+/// yellow for anything that is on or chosen. What's on is also marked by position, weight and an edge
+/// (`Warm.accentEdge`), never by colour alone.
 
-/// A rounded card of rows, told apart by hairlines. With a `symbol` it opens with an icon tile and a serif heading
-/// inside the card; with only a `title` the heading is a small label above it.
+/// A rounded card of rows, told apart by hairlines. A `title` opens the card with a serif heading on an icon tile in
+/// one of the website's three accents (`tint`), as its cards are, so every card reads the same way.
 struct SettingsGroup<Content: View>: View {
     var title: Text?
     /// The SF Symbol on the heading's tile.
     var symbol: String?
+    /// The tile's colour: `Warm.yellow`, `Warm.pink` or `Warm.sky`.
+    var tint: Color = Warm.yellow
     var footer: Text?
     @ViewBuilder let content: Content
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            if let title, symbol == nil {
-                title
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(Warm.secondary)
-                    .padding(.horizontal, 14)
-                    .accessibilityAddTraits(.isHeader)
-            }
             VStack(spacing: 0) {
-                if let title, let symbol {
+                if let title {
                     HStack(spacing: 12) {
-                        Image(systemName: symbol)
-                            .font(.system(size: 17, weight: .semibold))
-                            .foregroundStyle(Warm.onAccent)
-                            .frame(width: 40, height: 40)
-                            .background(Warm.yellow, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                            .accessibilityHidden(true)
+                        if let symbol {
+                            Image(systemName: symbol)
+                                .font(.system(size: 17, weight: .semibold))
+                                .foregroundStyle(Warm.onAccent)
+                                .frame(width: 40, height: 40)
+                                .background(tint, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                                .accessibilityHidden(true)
+                        }
                         title
                             .font(.system(size: 22, weight: .bold, design: .serif))
                             .foregroundStyle(Warm.ink)
@@ -109,8 +107,9 @@ struct SettingsToggleRow: View {
 }
 
 /// A row with a choice of a few options, one line below its title and note: the chosen one is a yellow button that
-/// stands off the track, in bold, and none is marked by colour alone. VoiceOver reads it as one picker with the title as
-/// its label and the note as its hint.
+/// stands off the track, in bold, and none is marked by colour alone. A press sinks the chosen one and darkens another,
+/// so every option answers the pointer. VoiceOver reads it as one picker with the title as its label and the note as
+/// its hint.
 struct SettingsChoiceRow<Value: Hashable>: View {
     let title: Text
     var detail: Text?
@@ -134,25 +133,12 @@ struct SettingsChoiceRow<Value: Hashable>: View {
             HStack(spacing: 4) {
                 ForEach(options.indices, id: \.self) { index in
                     let option = options[index]
-                    let isSelected = selection == option.value
                     Button {
                         selection = option.value
                     } label: {
                         option.label
-                            .font(.callout.weight(isSelected ? .bold : .medium))
-                            .foregroundStyle(isSelected ? AnyShapeStyle(Warm.onAccent) : AnyShapeStyle(Warm.secondary))
-                            .frame(maxWidth: .infinity, minHeight: 32)
-                            .background {
-                                if isSelected {
-                                    ZStack {
-                                        Capsule().fill(Warm.yellowDeep).offset(y: Warm.lipDepth - 1)
-                                        Capsule().fill(Warm.yellow)
-                                    }
-                                }
-                            }
-                            .contentShape(Capsule())
                     }
-                    .buttonStyle(.notch)
+                    .buttonStyle(ChoiceOptionStyle(isChosen: selection == option.value))
                 }
             }
             .padding(.horizontal, 4)
@@ -175,6 +161,45 @@ struct SettingsChoiceRow<Value: Hashable>: View {
     }
 }
 
+/// One option in a `SettingsChoiceRow`. The chosen one is a yellow pill on a lip that sinks while pressed; another
+/// darkens while pressed. Space or Return press it while it has the focus ring, as on the notch.
+private struct ChoiceOptionStyle: PrimitiveButtonStyle {
+    let isChosen: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        Button(action: configuration.trigger) { configuration.label }
+            .buttonStyle(Option(isChosen: isChosen))
+            .pressedByKeyboard(configuration.trigger)
+    }
+
+    private struct Option: ButtonStyle {
+        let isChosen: Bool
+
+        func makeBody(configuration: Configuration) -> some View {
+            let lip = Warm.lipDepth - 1
+            let drop = configuration.isPressed && isChosen ? lip : 0
+            configuration.label
+                .font(.callout.weight(isChosen ? .bold : .medium))
+                .foregroundStyle(isChosen ? AnyShapeStyle(Warm.onAccent) : AnyShapeStyle(Warm.secondary))
+                .frame(maxWidth: .infinity, minHeight: 32)
+                .offset(y: drop)
+                .background {
+                    if isChosen {
+                        ZStack {
+                            Capsule().fill(Warm.yellowDeep).offset(y: lip)
+                            Capsule().fill(Warm.yellow)
+                                .overlay { Capsule().strokeBorder(Warm.accentEdge, lineWidth: 1) }
+                                .offset(y: drop)
+                        }
+                    } else if configuration.isPressed {
+                        Capsule().fill(Warm.off)
+                    }
+                }
+                .contentShape(Capsule())
+        }
+    }
+}
+
 /// A switch that is yellow when on and grey when off, with the knob on the right when on.
 struct WarbleToggle: View {
     @Binding var isOn: Bool
@@ -191,8 +216,10 @@ struct WarbleToggle: View {
                 if isOn {
                     Capsule().fill(Warm.yellowDeep).offset(y: 2)
                     Capsule().fill(Warm.yellow)
+                        .overlay { Capsule().strokeBorder(Warm.accentEdge, lineWidth: 1) }
                 } else {
                     Capsule().fill(Warm.off)
+                        .overlay { Capsule().strokeBorder(Warm.hairline, lineWidth: 1) }
                 }
                 Circle()
                     .fill(isOn ? AnyShapeStyle(Warm.onAccent) : AnyShapeStyle(Warm.ink))
@@ -240,7 +267,7 @@ struct WarbleButtonStyle: PrimitiveButtonStyle {
                         Capsule().fill(isQuiet ? AnyShapeStyle(Warm.lip) : AnyShapeStyle(Warm.yellowDeep))
                             .offset(y: Warm.lipDepth)
                         Capsule().fill(isQuiet ? AnyShapeStyle(Warm.surface) : AnyShapeStyle(Warm.yellow))
-                            .overlay { if isQuiet { Capsule().strokeBorder(Warm.hairline, lineWidth: 1) } }
+                            .overlay { Capsule().strokeBorder(isQuiet ? AnyShapeStyle(Warm.hairline) : AnyShapeStyle(Warm.accentEdge), lineWidth: 1) }
                             .offset(y: drop)
                     }
                 }

@@ -441,6 +441,9 @@
         }
       }
     },
+    "General" : {
+
+    },
     "Go to the artist" : {
       "localizations" : {
         "de" : {
