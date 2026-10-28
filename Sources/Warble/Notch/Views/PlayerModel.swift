@@ -77,6 +77,11 @@ final class PlayerModel {
         dispatch(.openApp)
     }
 
+    /// Brings the playing app to the front for a click on the notch, which does nothing while the notch is empty.
+    func notchClicked() {
+        dispatch(.notchClicked)
+    }
+
     /// Opens the page of the artist that's playing, or the app when there isn't one to open.
     func openArtist() {
         dispatch(.openArtist)

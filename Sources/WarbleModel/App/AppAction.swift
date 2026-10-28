@@ -21,6 +21,8 @@ public enum AppAction: Equatable, Sendable {
     case command(PlaybackCommand)
     /// Bring the app that's playing to the front.
     case openApp
+    /// A click on the notch itself: bring the playing app to the front, unless the notch is empty or showing its note.
+    case notchClicked
     /// Open the page of the artist that's playing, or the app when Warble can't find it.
     case openArtist
     /// Volume from the slider or a scroll over a notch. A scroll carries the volume read just before, since the card that follows it may not be open.

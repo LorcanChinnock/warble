@@ -73,14 +73,19 @@ private struct Run {
     #expect(idle.effects.isEmpty)
 }
 
-@Test func openAppDoesNothingOnceTheNotchIsEmpty() {
+@Test func aClickOnTheNotchOpensTheAppOnlyWhileItShowsThePlayback() {
     var run = Run()
-    run.send(.playbackReported(nil))
-    run.send(.tick, after: AppState.hideDelay)
-    #expect(!run.state.showsPlayback)
+    run.send(.notchClicked)
+    #expect(run.effects == [.openApp(bundleIdentifier: "com.apple.Music", title: "Song")])
     run.effects = []
-    run.send(.openApp)
+    run.send(.playbackReported(song.guessing(.togglePlayPause, at: start)))
+    run.send(.tick, after: IdleAfterPause.delay + 1)
+    #expect(!run.state.showsPlayback)
+    #expect(run.state.playback != nil)
+    run.send(.notchClicked)
     #expect(run.effects.isEmpty)
+    run.send(.openApp)
+    #expect(run.effects == [.openApp(bundleIdentifier: "com.apple.Music", title: "Song")])
 }
 
 @Test func openArtistLooksUpTheArtistOfTheOneThatsPlaying() {
