@@ -1,6 +1,6 @@
 # Spike: liking the current track from the notch
 
-Findings for [#287](https://github.com/LorcanChinnock/warble/issues/287). In progress: Music is partly done, the other players are still to test. Checked on macOS 27.0.1.
+Findings for [#287](https://github.com/LorcanChinnock/warble/issues/287). In progress: Music is partly done, and the other players showed no way to like through MediaRemote. Checked on macOS 27.0.1.
 
 ## Tooling
 
@@ -33,7 +33,24 @@ Tested with a local file added to the library, because this account has no Apple
 - AppleScript reads and sets `favorited` and `disliked` reliably. Setting `favorited` doesn't change the stream or `IsActive`, so a favourite and MediaRemote's like aren't the same thing.
 - Reading `loved` fails with error -10001 (descriptor type mismatch). `favorited` has replaced it.
 
-Still open: a streamed catalog track that isn't in the library, and a station, where "Play More Like This" may be enabled.
+Still open for Music: a streamed catalog track that isn't in the library, and a station, where "Play More Like This" may be enabled.
+
+### Spotify, Podcasts and YouTube
+
+Tested with Spotify, Podcasts, and YouTube in Safari and in Chrome, each playing alone.
+
+| Player | Commands 21 and 22 listed | `send 21` and `send 22` | Like keys in the stream |
+| --- | --- | --- | --- |
+| Spotify | No | Report success, change nothing | None |
+| Podcasts | No | Report success, change nothing | None |
+| YouTube in Safari | No | Report success, change nothing | None |
+| YouTube in Chrome | No | Report success, change nothing | None |
+
+- Spotify lists only the playback commands. Podcasts adds skip, playback rate, sleep timer and queue commands. Both YouTube players list play, pause and seek (Chrome also stop), and Safari adds skip.
+- Saving an episode and following the show in Podcasts, and liking, disliking and subscribing on YouTube, added no stream lines that carry a like, dislike or ban key.
+- Spotify's "Add to Liked Songs" wasn't pressed while recording, because Spotify has no AppleScript for it. The stream carried no like keys before that.
+
+So MediaRemote can't read or set a like for any of these players. Only a player's own scripting could, and only Music's AppleScript is confirmed to work.
 
 ## Test plan
 
