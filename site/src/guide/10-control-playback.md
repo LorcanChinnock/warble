@@ -8,7 +8,7 @@ While something plays, the notch shows the album art and a few moving bars. Open
 
 ## Open the player
 
-1. Hover over the notch for a moment, or click it to open it straight away.
+1. Hover over the notch for a moment.
 2. The player shows the album art, the song, the artist and the album, with the controls underneath.
 
 ![The open player: album art, song, artist and album, a progress bar, the controls and a volume bar](../../../docs/media/player.png)
@@ -46,7 +46,7 @@ The volume is your Mac's own, so it changes everything you hear, not just the ap
 A title, artist or album that is too long for the card waits a moment after the notch opens and then scrolls slowly past in a loop while the song plays. With **Reduce motion** on, it ends in "…" instead.
 
 > [!TIP]
-> Click the album art or the title to bring the app that's playing to the front. For a song playing in Safari, Chrome, Brave, Edge, Arc or Vivaldi, Warble picks the tab it's playing in. The first time, macOS asks whether Warble may control that browser; if you say no, Warble just brings the browser forward.
+> Click the album art, the title or anywhere else on the notch's background to bring the app that's playing to the front. For a song playing in Safari, Chrome, Brave, Edge, Arc or Vivaldi, Warble picks the tab it's playing in. The first time, macOS asks whether Warble may control that browser; if you say no, Warble just brings the browser forward.
 >
 > Click the artist to open their page: in Spotify for a Spotify song, and on YouTube for a YouTube video in one of those browsers. For anything else, including Apple Music, Warble can't be sure which artist page is the right one, so the click opens the app instead, as the album art does.
 

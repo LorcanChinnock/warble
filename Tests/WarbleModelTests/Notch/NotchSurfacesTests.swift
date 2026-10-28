@@ -69,19 +69,11 @@ private struct Run {
 
 @Test func aClickOutsideClosesEveryOpenNotchAndStopsWatching() {
     var run = Run()
-    run.send(.hover(display: "built-in", .click))
+    run.hover("built-in")
     #expect(run.effects.contains(.watchClicksOutside(true)))
     run.send(.dismiss(except: nil))
     #expect(run.state.notchState("built-in") == .resting)
     #expect(run.effects.suffix(2) == [.watchClicksOutside(false), .followVolume(false)])
-}
-
-@Test func aClickOnOneNotchClosesTheOther() {
-    var run = Run()
-    run.send(.hover(display: "external", .click))
-    run.send(.hover(display: "built-in", .click))
-    #expect(run.state.notchState("external") == .resting)
-    #expect(run.state.notchState("built-in") == .expanded)
 }
 
 @Test func escapeIsTakenOnlyWhileAnOpenNotchHasThePointer() {
@@ -100,9 +92,9 @@ private struct Run {
     #expect(run.effects == [.takeEscape(false), .watchClicksOutside(false), .followVolume(false)])
 }
 
-@Test func withNothingPlayingAClickOpensTheNoteAndFollowsNoVolume() {
+@Test func withNothingPlayingHoveringOpensTheNoteAndFollowsNoVolume() {
     var run = Run(playing: nil)
-    run.send(.hover(display: "built-in", .click))
+    run.hover("built-in")
     #expect(run.state.notchState("built-in") == .note)
     #expect(run.effects.contains(.watchClicksOutside(true)))
     #expect(!run.effects.contains(.followVolume(true)))
@@ -128,7 +120,7 @@ private struct Run {
 @Test func anOpenNotchHoldsOffIdle() {
     var run = Run()
     run.send(.playbackReported(PlaybackState(bundleIdentifier: "com.apple.Music", title: "Next", elapsedTimestamp: start, rate: 1)))
-    run.send(.hover(display: "built-in", .click))
+    run.hover("built-in")
     #expect(run.state.hovering)
 }
 

@@ -11,7 +11,7 @@ public enum AppAction: Equatable, Sendable {
     case fullScreenChanged(Set<String>)
     /// The pointer entered or left the area of `display`'s notch that keeps it open.
     case pointer(display: String, inside: Bool)
-    /// Something the user did to `display`'s notch. A click also closes any other notch.
+    /// Something the user did to `display`'s notch.
     case hover(display: String, HoverEvent)
     /// A menu from `display`'s notch opened (true) or closed, which keeps an open card open under it.
     case menu(display: String, open: Bool)

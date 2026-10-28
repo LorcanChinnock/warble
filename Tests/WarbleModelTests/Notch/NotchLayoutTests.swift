@@ -51,13 +51,11 @@ private let notch = CGRect(x: 856, y: 1205.5, width: 208, height: 37.5)
 @Test func hoverStatesMapToTheShapesTheyDraw() {
     #expect(NotchState(.resting) == .resting)
     #expect(NotchState(.expanded) == .expanded)
-    #expect(NotchState(.pinned) == .expanded)
 }
 
 @Test func aNotchOnlyDrawsWithSomethingPlaying() {
     #expect(NotchState(.resting, isPlaying: true) == .resting)
     #expect(NotchState(.expanded, isPlaying: true) == .expanded)
-    #expect(NotchState(.pinned, isPlaying: true) == .expanded)
     #expect(NotchState(.resting, isPlaying: false) == .hidden)
 }
 

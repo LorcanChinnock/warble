@@ -86,7 +86,8 @@ private struct Run {
 
 @Test func theVolumeIsFollowedOnlyWhileThePlayersCardIsOpen() {
     var run = Run()
-    run.send(.hover(display: "built-in", .click))
+    run.send(.pointer(display: "built-in", inside: true))
+    run.send(.tick, after: HoverIntent.expandDelay)
     #expect(run.effects.contains(.followVolume(true)))
     run.send(.dismiss(except: nil))
     #expect(run.effects.last == .followVolume(false))

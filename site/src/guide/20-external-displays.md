@@ -4,7 +4,7 @@ summary: Where the notch shows when your Mac has no notch, or you use an externa
 group: Displays
 ---
 
-Some Macs and most displays have no notch, so Warble can draw one of its own at the top centre of the screen. It works the same way as the real one: hover over it or click it to open it.
+Some Macs and most displays have no notch, so Warble can draw one of its own at the top centre of the screen. It works the same way as the real one: hover over it to open it.
 
 ## Where it shows
 

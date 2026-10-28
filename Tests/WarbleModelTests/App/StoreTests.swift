@@ -39,12 +39,13 @@ private func store() -> (Store, FakeClock, FakeScheduler) {
 
 @MainActor
 @Test func theStoreCancelsItsTimerWhenNothingIsDue() {
-    let (store, _, scheduler) = store()
+    let (store, clock, scheduler) = store()
     store.dispatch(.housingsChanged([NotchHousing(display: "built-in", frame: .zero, isVirtual: false)]))
     store.dispatch(.playbackReported(paused))
-    // Pinned open, the notch holds the pause's countdown off.
-    store.dispatch(.hover(display: "built-in", .click))
-    store.dispatch(.hover(display: "built-in", .click))
+    // Open under the pointer, the notch holds the pause's countdown off.
+    store.dispatch(.pointer(display: "built-in", inside: true))
+    clock.now = start + HoverIntent.expandDelay
+    scheduler.run()
     #expect(scheduler.deadline == nil)
 }
 
