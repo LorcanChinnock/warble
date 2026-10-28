@@ -16,7 +16,8 @@ private struct Run {
     init() {
         send(.housingsChanged([notch]))
         send(.playbackReported(song))
-        send(.hover(display: "built-in", .click))
+        send(.pointer(display: "built-in", inside: true))
+        send(.tick, after: HoverIntent.expandDelay)
         send(.outputsRead([], current: airPods))
     }
 

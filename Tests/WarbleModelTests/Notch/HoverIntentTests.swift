@@ -58,14 +58,8 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
     #expect(hovering.deadline == nil)
 }
 
-@Test func aClickExpandsWithoutWaitingForTheDelay() {
-    let clicked = intent((.pointerEntered, 0), (.click, 0.03))
-    #expect(clicked.state == .expanded)
-    #expect(clicked.deadline == nil)
-}
-
 @Test func leavingTheExpandedNotchClosesIt250MillisecondsLater() {
-    var leaving = intent((.pointerEntered, 0), (.click, 0.1), (.pointerLeft, 2))
+    var leaving = intent((.pointerEntered, 0), (.pointerEntered, 0.2), (.pointerLeft, 2))
     #expect(leaving.state == .expanded)
     #expect(leaving.deadline == entered + 2.25)
     leaving.advance(to: entered + 2.249)
@@ -76,7 +70,7 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
 }
 
 @Test func comingBackBeforeItClosesKeepsTheNotchOpen() {
-    var back = intent((.pointerEntered, 0), (.click, 0.1), (.pointerLeft, 2), (.pointerEntered, 2.2))
+    var back = intent((.pointerEntered, 0), (.pointerEntered, 0.2), (.pointerLeft, 2), (.pointerEntered, 2.2))
     #expect(back.deadline == nil)
     back.advance(to: entered + 5)
     #expect(back.state == .expanded)
@@ -91,63 +85,19 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
     #expect(leaving.deadline == nil)
 }
 
-@Test func aClickInsideTheExpandedNotchPinsIt() {
-    var pinned = intent((.pointerEntered, 0), (.click, 0.1), (.click, 1), (.pointerLeft, 2))
-    #expect(pinned.state == .pinned)
-    #expect(pinned.deadline == nil)
-    pinned.advance(to: entered + 60)
-    #expect(pinned.state == .pinned)
-}
-
-@Test func moreClicksLeaveTheNotchPinned() {
-    #expect(intent((.pointerEntered, 0), (.click, 0.1), (.click, 1), (.click, 2)).state == .pinned)
-}
-
-@Test func thePinButtonPinsAndUnpins() {
-    var pinned = intent((.pointerEntered, 0), (.click, 0.1), (.pinButton, 1))
-    #expect(pinned.state == .pinned)
-    pinned.handle(.pinButton, at: entered + 2)
-    #expect(pinned.state == .expanded)
-    #expect(pinned.deadline == nil)
-}
-
-@Test func unpinningWithThePointerAwayClosesIt250MillisecondsLater() {
-    var unpinned = intent((.pointerEntered, 0), (.click, 0.1), (.pinButton, 1), (.pointerLeft, 2), (.pinButton, 10))
-    #expect(unpinned.state == .expanded)
-    #expect(unpinned.deadline == entered + 10.25)
-    unpinned.advance(to: entered + 10.25)
-    #expect(unpinned.state == .resting)
-}
-
-@Test func dismissingClosesTheNotchAtOnceEvenWhenPinned() {
-    let dismissed = intent((.pointerEntered, 0), (.click, 0.1), (.click, 1), (.dismiss, 2))
+@Test func dismissingClosesTheNotchAtOnce() {
+    let dismissed = intent((.pointerEntered, 0), (.dismiss, 2))
     #expect(dismissed.state == .resting)
     #expect(dismissed.deadline == nil)
 }
 
 @Test func afterDismissingThePointerHasToLeaveAndComeBackToOpenTheNotch() {
-    var dismissed = intent((.pointerEntered, 0), (.click, 0.1), (.dismiss, 1))
+    var dismissed = intent((.pointerEntered, 0), (.pointerEntered, 0.2), (.dismiss, 1))
     dismissed.advance(to: entered + 5)
     #expect(dismissed.state == .resting)
     dismissed.handle(.pointerLeft, at: entered + 6)
     dismissed.handle(.pointerEntered, at: entered + 7)
     #expect(dismissed.deadline == entered + 7.15)
-}
-
-@Test func aClickAfterDismissingStillClosesWhenThePointerLeaves() {
-    var reopened = intent((.pointerEntered, 0), (.click, 0.1), (.dismiss, 1), (.click, 2))
-    #expect(reopened.state == .expanded)
-    #expect(reopened.deadline == nil)
-    reopened.handle(.pointerLeft, at: entered + 3)
-    #expect(reopened.deadline == entered + 3.25)
-    reopened.advance(to: entered + 3.25)
-    #expect(reopened.state == .resting)
-}
-
-@Test func unpinningAfterDismissingKnowsThePointerIsStillOnTheNotch() {
-    let unpinned = intent((.pointerEntered, 0), (.click, 0.1), (.dismiss, 1), (.click, 2), (.pinButton, 3), (.pinButton, 4))
-    #expect(unpinned.state == .expanded)
-    #expect(unpinned.deadline == nil)
 }
 
 @Test func anOpenMenuKeepsTheCardOpenWhileThePointerIsOnIt() {
@@ -158,7 +108,7 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
 }
 
 @Test func aClickOutsideWhileAMenuIsOpenLeavesTheCardOpen() {
-    let open = intent((.click, 0), (.menuOpened, 1), (.dismiss, 2))
+    let open = intent((.pointerEntered, 0), (.menuOpened, 1), (.dismiss, 2))
     #expect(open.state == .expanded)
 }
 
@@ -198,11 +148,11 @@ private func intent(_ events: (HoverEvent, TimeInterval)...) -> HoverIntent {
 
 @Test func withNothingPlayingTheNotchIsHiddenWhateverTheHover() {
     #expect(NotchState(HoverIntent().state, isPlaying: false) == .hidden)
-    #expect(NotchState(intent((.pointerEntered, 0), (.click, 0.03)).state, isPlaying: false) == .hidden)
+    #expect(NotchState(intent((.pointerEntered, 0), (.pointerEntered, 0.2)).state, isPlaying: false) == .hidden)
 }
 
 @Test func playbackStoppingUnderAnOpenNotchClosesIt() {
-    let open = intent((.pointerEntered, 0), (.click, 0.1))
+    let open = intent((.pointerEntered, 0), (.pointerEntered, 0.2))
     #expect(NotchState(open.state, isPlaying: true) == .expanded)
     #expect(NotchState(open.state, isPlaying: false) == .hidden)
 }

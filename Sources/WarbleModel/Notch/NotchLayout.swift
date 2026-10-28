@@ -14,17 +14,17 @@ public enum NotchState: String, CaseIterable, Sendable {
     case note
     /// Something is playing and the pointer is elsewhere: the notch widened by a wing on each side.
     case resting
-    /// Hovered or clicked: the full card with the art and room for the controls.
+    /// Hovered: the full card with the art and room for the controls.
     case expanded
 
     /// Whether the notch is open, as a card under the housing: the player or the note.
     public var isOpen: Bool { self == .expanded || self == .note }
 
-    /// How far `hover` has opened the notch while something is playing. Pinned draws as Expanded.
+    /// How far `hover` has opened the notch while something is playing.
     public init(_ hover: HoverState) {
         switch hover {
         case .resting: self = .resting
-        case .expanded, .pinned: self = .expanded
+        case .expanded: self = .expanded
         }
     }
 

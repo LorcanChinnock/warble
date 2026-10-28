@@ -25,7 +25,7 @@
   <img src="docs/media/skip.gif" width="480" alt="The notch opening on hover, then skipping to the next track">
 </p>
 
-Warble shows what's playing in the notch at the top of your Mac's screen. Hover over the notch or click it to see the song, then play, pause, skip or switch speakers. When nothing is playing, it stays out of sight, and pointing at the notch says so.
+Warble shows what's playing in the notch at the top of your Mac's screen. Hover over the notch to see the song, and click it to open the app playing it, then play, pause, skip or switch speakers. When nothing is playing, it stays out of sight, and pointing at the notch says so.
 
 Warble is in beta: it works, and it's still being built.
 

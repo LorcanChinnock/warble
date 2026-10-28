@@ -41,7 +41,6 @@ final class NotchSurface {
         panel.onScroll = onScroll
         panel.onDisplaced = { [weak self] in self?.replace() }
         panel.onMenu = { [weak self] event in self?.showMenu(for: event) }
-        model.onClick = { dispatch(.hover(display: display, .click)) }
         model.onMenu = { [weak self] open in self?.menu(open: open) }
     }
 

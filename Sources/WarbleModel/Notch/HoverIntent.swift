@@ -4,10 +4,8 @@ import Foundation
 public enum HoverState: String, CaseIterable, Sendable {
     /// The pointer is elsewhere, or only passing.
     case resting
-    /// The pointer has stayed on the notch long enough to mean it, or the notch was clicked.
+    /// The pointer has stayed on the notch long enough to mean it.
     case expanded
-    /// Expanded, and stays open when the pointer leaves.
-    case pinned
 }
 
 /// Something the pointer or the user did.
@@ -16,8 +14,6 @@ public enum HoverEvent: Equatable, Sendable {
     /// wings, and the panel once it's open.
     case pointerEntered
     case pointerLeft
-    case click
-    case pinButton
     /// A click outside, or Escape.
     case dismiss
     /// A menu from the notch opened, such as the outputs or the right-click menu: an open card stays open, wherever the
@@ -34,7 +30,7 @@ public enum HoverEvent: Equatable, Sendable {
 public struct HoverIntent: Equatable, Sendable {
     /// How long the pointer stays on the notch before it expands.
     public static let expandDelay: TimeInterval = 0.15
-    /// How long after the pointer leaves the notch closes, unless pinned.
+    /// How long after the pointer leaves the notch closes.
     public static let collapseDelay: TimeInterval = 0.25
 
     public private(set) var state = HoverState.resting
@@ -65,16 +61,10 @@ public struct HoverIntent: Equatable, Sendable {
             pointerInside = false
             enteredAt = nil
             leftAt = date
-        case .click:
-            if state != .pinned { state = state == .expanded ? .pinned : .expanded }
-        case .pinButton:
-            state = state == .pinned ? .expanded : .pinned
-            // Unpinned with the pointer away: the wait to close starts now, not when it left.
-            if !pointerInside { leftAt = date }
         case .dismiss:
             guard !held else { return }
             state = .resting
-            // Resting on the notch doesn't open it again until the pointer leaves and comes back; a click still does.
+            // Resting on the notch doesn't open it again until the pointer leaves and comes back.
             enteredAt = nil
             leftAt = nil
         case .menuOpened:
@@ -99,7 +89,6 @@ public struct HoverIntent: Equatable, Sendable {
             switch state {
             case .resting: state = .expanded
             case .expanded: state = .resting; leftAt = nil; keptOpenUntil = nil
-            case .pinned: break
             }
             deadline = nextDeadline()
         }
@@ -109,7 +98,6 @@ public struct HoverIntent: Equatable, Sendable {
         switch state {
         case .resting: held ? nil : enteredAt.map { $0 + Self.expandDelay }
         case .expanded: pointerInside || held ? nil : leftAt.map { max($0 + Self.collapseDelay, keptOpenUntil ?? .distantPast) }
-        case .pinned: nil
         }
     }
 }

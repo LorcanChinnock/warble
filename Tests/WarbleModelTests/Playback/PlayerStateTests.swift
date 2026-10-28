@@ -73,6 +73,21 @@ private struct Run {
     #expect(idle.effects.isEmpty)
 }
 
+@Test func aClickOnTheNotchOpensTheAppOnlyWhileItShowsThePlayback() {
+    var run = Run()
+    run.send(.notchClicked)
+    #expect(run.effects == [.openApp(bundleIdentifier: "com.apple.Music", title: "Song")])
+    run.effects = []
+    run.send(.playbackReported(song.guessing(.togglePlayPause, at: start)))
+    run.send(.tick, after: IdleAfterPause.delay + 1)
+    #expect(!run.state.showsPlayback)
+    #expect(run.state.playback != nil)
+    run.send(.notchClicked)
+    #expect(run.effects.isEmpty)
+    run.send(.openApp)
+    #expect(run.effects == [.openApp(bundleIdentifier: "com.apple.Music", title: "Song")])
+}
+
 @Test func openArtistLooksUpTheArtistOfTheOneThatsPlaying() {
     var run = Run()
     run.send(.openArtist)
@@ -86,7 +101,8 @@ private struct Run {
 
 @Test func theVolumeIsFollowedOnlyWhileThePlayersCardIsOpen() {
     var run = Run()
-    run.send(.hover(display: "built-in", .click))
+    run.send(.pointer(display: "built-in", inside: true))
+    run.send(.tick, after: HoverIntent.expandDelay)
     #expect(run.effects.contains(.followVolume(true)))
     run.send(.dismiss(except: nil))
     #expect(run.effects.last == .followVolume(false))

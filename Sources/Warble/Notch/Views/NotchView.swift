@@ -31,7 +31,7 @@ struct NotchView: View {
                 .transaction(snapWithReduceMotion)
         }
         .contentShape(shape)
-        .onTapGesture { model.onClick() }
+        .onTapGesture { model.player.notchClicked() }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 

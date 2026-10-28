@@ -75,7 +75,8 @@ private struct Run {
 
 @Test func theNoteHasNoSliderSoFollowsNoVolume() {
     var run = Run([builtIn])
-    run.send(.hover(display: "built-in", .click))
+    run.send(.pointer(display: "built-in", inside: true))
+    run.wait(HoverIntent.expandDelay)
     #expect(run.state.notchState("built-in") == .note)
     #expect(!run.state.followsVolume)
     #expect(!run.effects.contains(.followVolume(true)))
@@ -93,7 +94,8 @@ private struct Run {
 @Test func aSongThatStopsUnderTheOpenPlayerLeavesTheNote() {
     var run = Run([builtIn])
     run.send(.playbackReported(song))
-    run.send(.hover(display: "built-in", .click))
+    run.send(.pointer(display: "built-in", inside: true))
+    run.wait(HoverIntent.expandDelay)
     run.send(.playbackReported(nil))
     run.wait(AppState.hideDelay)
     #expect(run.state.notchState("built-in") == .note)
@@ -104,7 +106,7 @@ private struct Run {
     var run = Run([external])
     #expect(run.state.notchState("external") == .hidden)
     run.send(.pointer(display: "external", inside: true))
-    run.send(.hover(display: "external", .click))
+    run.wait(HoverIntent.expandDelay)
     #expect(run.state.notchState("external") == .hidden)
     #expect(!run.state.hovering)
     #expect(run.state.deadline == nil)
@@ -112,7 +114,8 @@ private struct Run {
 
 @Test func aVirtualNotchSetToOffNeverShowsTheNote() {
     var run = Run([external], .off)
-    run.send(.hover(display: "external", .click))
+    run.send(.pointer(display: "external", inside: true))
+    run.wait(HoverIntent.expandDelay)
     #expect(run.state.notchState("external") == .hidden)
 }
 
@@ -126,7 +129,8 @@ private struct Run {
 @Test func theNoteIsHiddenOverAFullScreenApp() {
     var run = Run([builtIn])
     run.send(.fullScreenChanged(["built-in"]))
-    run.send(.hover(display: "built-in", .click))
+    run.send(.pointer(display: "built-in", inside: true))
+    run.wait(HoverIntent.expandDelay)
     #expect(run.state.notchState("built-in") == .hidden)
 }
 

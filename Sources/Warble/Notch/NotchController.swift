@@ -115,8 +115,6 @@ final class NotchController {
             surface.render(new, animated: !layingOut)
             guard old.notchState(display) != .expanded, new.notchState(display) == .expanded else { continue }
             switch action {
-            case .hover(_, .click):
-                surface.measureExpand(cause: "click", since: Perf.input?.timestamp)
             case .tick:
                 // From when the hover delay ended, so a timer that fires late counts against the budget too.
                 let due = store.tickDeadline.map { ProcessInfo.processInfo.systemUptime + $0.timeIntervalSinceNow }

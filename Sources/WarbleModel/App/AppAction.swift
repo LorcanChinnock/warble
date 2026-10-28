@@ -11,7 +11,7 @@ public enum AppAction: Equatable, Sendable {
     case fullScreenChanged(Set<String>)
     /// The pointer entered or left the area of `display`'s notch that keeps it open.
     case pointer(display: String, inside: Bool)
-    /// Something the user did to `display`'s notch. A click also closes any other notch.
+    /// Something the user did to `display`'s notch.
     case hover(display: String, HoverEvent)
     /// A menu from `display`'s notch opened (true) or closed, which keeps an open card open under it.
     case menu(display: String, open: Bool)
@@ -21,6 +21,8 @@ public enum AppAction: Equatable, Sendable {
     case command(PlaybackCommand)
     /// Bring the app that's playing to the front.
     case openApp
+    /// A click on the notch itself: bring the playing app to the front, unless the notch is empty or showing its note.
+    case notchClicked
     /// Open the page of the artist that's playing, or the app when Warble can't find it.
     case openArtist
     /// Volume from the slider or a scroll over a notch. A scroll carries the volume read just before, since the card that follows it may not be open.

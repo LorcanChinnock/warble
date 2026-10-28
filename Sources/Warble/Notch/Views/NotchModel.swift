@@ -19,7 +19,6 @@ final class NotchModel {
     var showsTitle = false
     /// How big the open card is.
     var cardSize = CardSize.standard
-    @ObservationIgnored var onClick: () -> Void = {}
     /// Called with true when a menu from the card opens, and false when it closes, so the card stays open under it.
     @ObservationIgnored var onMenu: (Bool) -> Void = { _ in }
 

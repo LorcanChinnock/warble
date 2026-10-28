@@ -30,7 +30,7 @@ A small icon of three bars appears in the menu bar, and the notch looks just as 
 
 1. Play something in any app: Music, Spotify, a podcast app, or a video in your browser.
 2. The notch slides out a little. The album art sits on its left, and on its right a few bars move while it plays.
-3. Hover over the notch, or click it. It opens into the player, with the song, how far through it you are, and the controls.
+3. Hover over the notch. It opens into the player, with the song, how far through it you are, and the controls.
 
 ![The open notch, with the album art, the song, how far through it you are and the controls](../../../docs/media/player.png)
 

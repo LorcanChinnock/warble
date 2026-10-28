@@ -69,15 +69,16 @@ private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
 }
 
 @Test func hoverHoldsAPausedTrackAndLeavingStartsTheWaitAgain() {
-    // A click pins the notch open, so only the pause's countdown could be due, and the pointer holds it.
-    var held = state((.playbackReported(track(playing: false)), 0), (.hover(display: "built-in", .click), 2), (.hover(display: "built-in", .click), 2))
+    // The pointer opens the notch, so only the pause's countdown could be due, and the pointer holds it.
+    var held = state((.playbackReported(track(playing: false)), 0), (.pointer(display: "built-in", inside: true), 2), (.tick, 2 + HoverIntent.expandDelay))
     #expect(held.hovering)
     #expect(held.deadline == nil)
     _ = reduce(&held, .tick, now: start + 60)
     #expect(held.showsPlayback)
-    _ = reduce(&held, .dismiss(except: nil), now: start + 60)
+    _ = reduce(&held, .pointer(display: "built-in", inside: false), now: start + 60)
+    _ = reduce(&held, .tick, now: start + 60 + HoverIntent.collapseDelay)
     #expect(!held.hovering)
-    #expect(held.deadline == start + 60 + IdleAfterPause.delay)
+    #expect(held.deadline == start + 60 + HoverIntent.collapseDelay + IdleAfterPause.delay)
 }
 
 @Test func settingsChangeHowLongAPausedSongStays() {

@@ -48,9 +48,6 @@ public struct Notches: Feature {
             surfaces[display]?.pointerInside = inside
             handle(inside ? .pointerEntered : .pointerLeft, on: display, shared, at: now)
         case .hover(let display, let event):
-            if event == .click {
-                dismiss(except: display, shared, at: now)
-            }
             handle(event, on: display, shared, at: now)
         case .menu(let display, let open):
             surfaces[display]?.showsMenu = open
