@@ -9,20 +9,20 @@ const release = await latestRelease();
 const brew = 'brew install lorcanchinnock/tap/warble';
 
 const points = [
-  { title: 'Any player', color: 'pink', text: 'Apple Music, Spotify, podcast apps, and video in Safari, Chrome or any other browser.', icon: 'M9 18V6l10-2v12M6.5 15.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM16.5 13.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z' },
-  { title: 'Switch speakers', color: 'sky', text: 'Pick where the sound plays, such as your Mac, headphones or AirPods, from the open notch.', icon: 'M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13' },
+  { key: 'note', title: 'Any player', color: 'pink', text: 'Apple Music, Spotify, podcast apps, and video in Safari, Chrome or any other browser.', icon: ['M9 18V6l10-2v12M6.5 15.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM16.5 13.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z'] },
+  { key: 'speaker', title: 'Switch speakers', color: 'sky', text: 'Pick where the sound plays, such as your Mac, headphones or AirPods, from the open notch.', icon: ['M11 5 6 9H3v6h3l5 4z', 'M15.5 8.5a5 5 0 0 1 0 7', 'M18.5 5.5a9 9 0 0 1 0 13'] },
   {
-    title: 'Calm by default', color: 'yellow',
+    key: 'clock', title: 'Calm by default', color: 'yellow',
     text: "When nothing's playing, Warble uses no CPU, and pointing at the notch opens a small note that says so. A hover opens the player in a split second, and a click opens it at once.",
-    icon: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2',
+    icon: ['M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z', 'M12 7v5l3 2'],
   },
-  { title: 'Every Mac', color: 'pink', text: 'On a Mac without a notch, or an external display with the menu bar, Warble draws a notch of its own at the top of the screen.', icon: 'M3 5h18v11H3zM8 20h8M12 16v4' },
+  { key: 'mac', title: 'Every Mac', color: 'pink', text: 'On a Mac without a notch, or an external display with the menu bar, Warble draws a notch of its own at the top of the screen.', icon: ['M3 5h18v11H3zM8 20h8M12 16v4', 'M9.5 5h5v2.4h-5z'] },
   {
-    title: 'Private', color: 'sky',
+    key: 'lock', title: 'Private', color: 'sky',
     text: "No account, no cloud, no analytics. Warble goes online to check for updates, which it asks about first, and to find the album cover for a song playing in your browser, which sends only its title and artist to Apple's iTunes Search. A click on the artist asks Spotify or YouTube for their page.",
-    icon: 'M5 11h14v9H5zM8 11V8a4 4 0 0 1 8 0v3',
+    icon: ['M5 11h14v9H5z', 'M8 11V8a4 4 0 0 1 8 0v3'],
   },
-  { title: 'Free', color: 'yellow', text: 'Free and open source, with no ads.', icon: 'M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6-8 11-8 11z', sponsor: true },
+  { key: 'heart', title: 'Free', color: 'yellow', text: 'Free and open source, with no ads.', icon: ['M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6-8 11-8 11z'], sponsor: true },
 ];
 ---
 
@@ -49,8 +49,8 @@ const points = [
       <h2 id="points" class="visually-hidden">What Warble does</h2>
       <ul class="grid">
         {points.map((point) => (
-          <li class="card point">
-            <span class={`icon ${point.color}`}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={point.icon} /></svg></span>
+          <li class={`card point ${point.key}`}>
+            <span class={`icon ${point.color}`}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{point.icon.map((d) => <path d={d} />)}</svg></span>
             <h3>{point.title}</h3>
             <p>{point.text}{point.sponsor && <> The <a href="https://github.com/LorcanChinnock/warble">code is on GitHub</a>. If you like it, you can <a href="/sponsor">sponsor it</a>, which helps pay to have Apple notarize it.</>}</p>
           </li>
@@ -62,6 +62,7 @@ const points = [
   <section class="install-section" id="install" aria-labelledby="install-title">
     <div class="wrap">
       <div class="panel">
+        <span class="panel-notch" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
         <div class="left">
           <h2 id="install-title">Get Warble.</h2>
           <p class="blurb">Install it with Homebrew, or download the zip and drag Warble into Applications.</p>
@@ -90,21 +91,21 @@ const points = [
 
 <style>
   section { padding-block: clamp(32px, 5vw, 64px); }
-  .hero { padding-top: clamp(24px, 5vw, 64px); }
+  .hero { padding-top: clamp(16px, 3vw, 40px); padding-bottom: clamp(16px, 2vw, 24px); }
   .hero .wrap { display: grid; justify-items: center; text-align: center; gap: 0; }
-  h1 { max-width: 15ch; font-size: clamp(46px, 9vw, 120px); line-height: 0.98; letter-spacing: -0.035em; }
+  h1 { max-width: 15ch; font-size: clamp(46px, min(9vw, 13vh), 120px); line-height: 0.98; letter-spacing: -0.035em; }
   .squig { position: relative; display: inline-block; }
   .squig svg { position: absolute; left: -2%; bottom: -0.12em; width: 104%; height: 0.2em; overflow: visible; }
   .squig path { stroke-dasharray: 1; stroke-dashoffset: 0; animation: draw 1.2s 0.5s ease-out backwards; }
   @keyframes draw { from { stroke-dashoffset: 1; } }
-  .lede { margin: 26px 0 0; max-width: 34em; font-size: clamp(18px, 2vw, 23px); line-height: 1.45; color: var(--secondary); }
-  .cta { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; align-items: center; width: 100%; margin-top: 32px; }
+  .lede { margin: 20px 0 0; max-width: 34em; font-size: clamp(18px, 2vw, 23px); line-height: 1.45; color: var(--secondary); }
+  .cta { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; align-items: center; width: 100%; margin-top: 26px; }
   .cta :global(.copy) { flex: 0 1 460px; min-width: 0; text-align: start; }
   .hero :global(.for-macs) { justify-content: center; margin-top: 18px; }
   .meta { margin: 18px 0 0; font-size: 15px; font-weight: 600; color: var(--secondary); max-width: 40em; }
   .meta a { color: var(--fg); }
 
-  .screen-section { padding-top: clamp(20px, 4vw, 48px); }
+  .screen-section { padding-top: clamp(8px, 2vw, 24px); }
 
   .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
   .point { margin: 0; padding: 28px 28px 30px; display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 4px 16px; align-items: start; align-content: start; }
@@ -116,11 +117,47 @@ const points = [
   .icon.pink { background: var(--pink); }
   .icon.sky { background: var(--sky); }
   .icon svg { width: 26px; height: 26px; }
+  .mac .icon path:nth-child(2) { fill: currentColor; stroke-width: 1.6; }
+
+  /* Each card's icon does the thing its card says, once, when you point at the card. */
+  @media (prefers-reduced-motion: no-preference) {
+    .note:hover .icon svg { animation: hop 0.7s ease-in-out; }
+    .speaker:hover .icon path:nth-child(2) { animation: wave 0.9s ease-in-out; }
+    .speaker:hover .icon path:nth-child(3) { animation: wave 0.9s 0.18s ease-in-out; }
+    .clock:hover .icon path:nth-child(2) { animation: sweep 1.1s cubic-bezier(0.5, 0, 0.2, 1); transform-origin: 12px 12px; }
+    .mac:hover .icon path:nth-child(2) { animation: drop 0.6s cubic-bezier(0.3, 1.5, 0.5, 1); }
+    .lock:hover .icon path:nth-child(2) { animation: shackle 0.8s ease-in-out; }
+    .heart:hover .icon svg { animation: beat 0.8s ease-in-out; }
+    @keyframes hop { 30% { transform: translateY(-5px) rotate(-12deg); } 65% { transform: translateY(0) rotate(8deg); } }
+    @keyframes wave { 35% { opacity: 0.1; } 70% { opacity: 1; } }
+    @keyframes sweep { to { transform: rotate(360deg); } }
+    @keyframes drop { from { transform: translateY(-6px); opacity: 0; } }
+    @keyframes shackle { 35% { transform: translateY(-3px); } 70% { transform: translateY(0); } }
+    @keyframes beat { 25% { transform: scale(1.25); } 45% { transform: scale(1); } 65% { transform: scale(1.18); } }
+  }
 
   .panel {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 40px 56px;
     padding: clamp(28px, 6vw, 80px); border-radius: clamp(28px, 5vw, 56px);
     background: var(--yellow); color: var(--on-accent);
+  }
+  .panel { position: relative; padding-top: clamp(56px, 8vw, 104px); }
+
+  /* The notch hangs from the panel's top edge, like the real one. Its bars move as you scroll past, and rest when you stop. */
+  .panel-notch {
+    position: absolute; top: 0; left: 50%; translate: -50% 0; display: flex; align-items: flex-end; justify-content: center; gap: 5px;
+    width: 132px; height: 32px; padding-bottom: 8px; background: var(--notch); border-radius: 0 0 18px 18px;
+  }
+  .panel-notch i { width: 4px; height: 14px; border-radius: 2px; transform-origin: bottom; background: var(--yellow); }
+  .panel-notch i:nth-child(2) { background: var(--pink); }
+  .panel-notch i:nth-child(3) { background: var(--sky); }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .panel-notch i { animation: dance linear both; animation-timeline: view(); animation-range: entry 0% exit 70%; }
+      .panel-notch i:nth-child(even) { animation-name: dance-b; }
+      @keyframes dance { 0% { transform: scaleY(0.3); } 14% { transform: scaleY(1); } 29% { transform: scaleY(0.4); } 43% { transform: scaleY(0.85); } 57% { transform: scaleY(0.3); } 71% { transform: scaleY(1); } 86% { transform: scaleY(0.5); } 100% { transform: scaleY(0.8); } }
+      @keyframes dance-b { 0% { transform: scaleY(0.9); } 14% { transform: scaleY(0.35); } 29% { transform: scaleY(1); } 43% { transform: scaleY(0.4); } 57% { transform: scaleY(0.95); } 71% { transform: scaleY(0.3); } 86% { transform: scaleY(1); } 100% { transform: scaleY(0.6); } }
+    }
   }
   .panel h2 { font-size: clamp(44px, 7vw, 96px); line-height: 0.95; }
   .blurb { margin: 20px 0 24px; max-width: 24em; font-size: clamp(18px, 2vw, 21px); line-height: 1.45; }
