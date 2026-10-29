@@ -23,7 +23,7 @@ struct ExpandedContent: View {
                 .fixedSize()
                 .accessibilityLabel(model.player.appName.map { Text("Open \($0)") } ?? Text("Open the app that's playing"))
                 VStack(alignment: .leading, spacing: 2) {
-                    MarqueeLine(text: playback.title, font: .systemFont(ofSize: 15, weight: .semibold), isPlaying: playback.isPlaying)
+                    MarqueeLine(text: playback.title, font: Native.titleFont(size: 16, weight: .semibold), isPlaying: playback.isPlaying)
                     if let artist = playback.artist {
                         MarqueeLine(text: artist, font: .systemFont(ofSize: 13), isSecondary: true, isPlaying: playback.isPlaying)
                             .contentShape(Rectangle())

@@ -13,12 +13,15 @@ struct PlayStateBars: NSViewRepresentable {
     /// Whether the content around them is in, rather than coming or going.
     let isShown: Bool
     let reduceMotion: Bool
+    /// The artwork's colour, or white without one.
+    var colour: NSColor = .white
 
     func makeNSView(context: Context) -> BarsView {
         BarsView()
     }
 
     func updateNSView(_ view: BarsView, context: Context) {
+        view.tint(colour)
         view.show(isPlaying ? (reduceMotion ? .still : .moving) : .settled, shown: isShown, animated: !reduceMotion)
     }
 
@@ -72,6 +75,16 @@ struct PlayStateBars: NSViewRepresentable {
             }
             CATransaction.commit()
             animate()
+        }
+
+        /// Colours the bars, fading from the last colour so a new track doesn't flash.
+        func tint(_ colour: NSColor) {
+            let cgColour = colour.cgColor
+            guard bars.first?.backgroundColor != cgColour else { return }
+            CATransaction.begin()
+            CATransaction.setAnimationDuration(Native.glowChangeDuration)
+            for bar in bars { bar.backgroundColor = cgColour }
+            CATransaction.commit()
         }
 
         /// Shows `look`, with the bars up when `shown` and gone when not. `animated` staggers their rise and eases their
