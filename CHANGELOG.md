@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0-beta.17](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.16...v0.1.0-beta.17) (2026-10-29)
+
+
+### Features
+
+* **settings:** choose the notch's title font and whether it follows the album colour ([#360](https://github.com/LorcanChinnock/warble/issues/360)) ([58b0e2f](https://github.com/LorcanChinnock/warble/commit/58b0e2f4340a4c56fd97babaa78e0f15d4b0ee51))
+
 ## [0.1.0-beta.16](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.15...v0.1.0-beta.16) (2026-10-29)
 
 
