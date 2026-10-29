@@ -93,7 +93,7 @@ Everything the app decides goes through one store. `AppState` holds it, `AppActi
 6. **Views.** Views draw state and dispatch actions; they decide nothing. A view gets Warble's objects from the SwiftUI environment, never from a shared instance, and `AppEnvironment` builds them once.
 7. **Tests.** Test the feature through `reduce` and, for its effects, `EffectRunner` with fakes. Both run on Linux. Check what it does with nothing playing too.
 
-Anything on the hover, expand or play/pause path adds a budget to `Tests/WarbleCoreTests/PerfTests.swift` and `docs/performance.md`, and its PR gets the `performance` label so CI runs the budgets.
+Anything on the hover, expand or play/pause path that lives in WarbleModel or WarbleCore adds a budget to `Tests/WarbleCoreTests/PerfTests.swift` and `docs/performance.md`, and its PR gets the `performance` label so CI runs the budgets. Changes on those paths in the app target, which `PerfTests` can't reach, are checked with the `Expand` and `Play/pause` signposts instead ([performance note](docs/architecture/performance.md)).
 
 Each feature has a note in [docs/architecture](docs/architecture), listed in CLAUDE.md. Read the one for the feature you change, and update it in the same pull request.
 
