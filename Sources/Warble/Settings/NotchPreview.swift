@@ -108,11 +108,16 @@ struct NotchPreview: View {
                 ZStack(alignment: .top) {
                     shape.fill(Native.panel)
                     // With Reduce Motion only the content fades; the shape changes at once, as the notch's does.
-                    cardContent(song)
-                        .scaleEffect(cardSize.scale, anchor: .top)
-                        .frame(width: size.width, height: size.height, alignment: .top)
-                        .opacity(state == .expanded ? 1 : 0)
-                        .animation(Native.fade, value: state)
+                    // Only while open, so its scrubber's timeline isn't ticking behind a closed notch.
+                    ZStack {
+                        if state == .expanded {
+                            cardContent(song)
+                                .scaleEffect(cardSize.scale, anchor: .top)
+                                .frame(width: size.width, height: size.height, alignment: .top)
+                                .transition(.opacity)
+                        }
+                    }
+                    .animation(Native.fade, value: state)
                     RestingContent(playback: song, artwork: preview.player.artwork, notch: housing, model: preview.model)
                         .frame(width: NotchLayout.frame(.resting, notch: housing)?.width)
                         .allowsHitTesting(false)
@@ -154,6 +159,7 @@ struct NotchPreview: View {
             if !inside, isPaused { play() }
         }
         .onChange(of: Inputs(song: song, state: state, showsTitle: showsTitle, cardSize: cardSize, notchFont: notchFont, volume: live.volume, isMuted: live.isMuted, outputs: live.outputs, currentOutput: live.currentOutput), initial: true) { feed(state: state) }
+        .onChange(of: isOpen) { if isOpen { startedAt = .now } }
         .onChange(of: pauseDelay) { pause() }
         .onChange(of: visibility) { pause() }
         .onChange(of: showsTitle) { play() }
