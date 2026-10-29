@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 import WarbleCore
 import WarbleModel
@@ -29,6 +30,10 @@ struct NotchPreview: View {
     let showsTitle: Bool
     /// Whether the open card glows, which the Settings switch turns off.
     let showsGlow: Bool
+    /// The face of the title, which Settings chooses.
+    let notchFont: NotchFont
+    /// Whether the title and bars take the song's colour.
+    let matchesAlbumColour: Bool
     let pauseDelay: PauseDelay
     /// How big the open card is.
     let cardSize: CardSize
@@ -44,6 +49,13 @@ struct NotchPreview: View {
     /// Counts the pauses, so each one waits out its own beat.
     @State private var pauses = 0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    /// The made-up song's colour for the title and bars while they follow it, lightened as the real notch's are.
+    private var tint: NSColor? {
+        guard matchesAlbumColour else { return nil }
+        let rgb = NotchDemo.colours.text(increasedContrast: NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast)
+        return NSColor(srgbRed: rgb.red, green: rgb.green, blue: rgb.blue, alpha: 1)
+    }
 
     private static let housing = CGRect(x: 0, y: 0, width: VirtualNotch.width, height: 24)
 
@@ -108,6 +120,8 @@ struct NotchPreview: View {
         .onChange(of: visibility) { pause() }
         .onChange(of: showsTitle) { play() }
         .onChange(of: showsGlow) { play() }
+        .onChange(of: notchFont) { play() }
+        .onChange(of: matchesAlbumColour) { play() }
         .task(id: pauses) {
             guard isPaused, (try? await Task.sleep(for: PreviewEnding.beat)) != nil else { return }
             ending = PreviewEnding(pauseDelay: pauseDelay, visibility: visibility)
@@ -138,13 +152,13 @@ struct NotchPreview: View {
                 .frame(width: art, height: art)
                 .frame(width: wing)
             if showsTitle {
-                VirtualTitle(playback: NotchDemo.playback, notch: housing)
+                VirtualTitle(playback: NotchDemo.playback, notch: housing, face: notchFont, tint: tint)
             } else {
                 Spacer(minLength: 0)
             }
             HStack(alignment: .center, spacing: 2) {
                 ForEach([0.5, 1, 0.7, 0.4], id: \.self) { height in
-                    Capsule().fill(.white).frame(width: 2, height: isPaused ? 2 : art * 0.6 * height)
+                    Capsule().fill(tint.map(Color.init(nsColor:)) ?? .white).frame(width: 2, height: isPaused ? 2 : art * 0.6 * height)
                 }
             }
             .animation(Native.fade, value: isPaused)
@@ -161,8 +175,8 @@ struct NotchPreview: View {
                     .frame(width: 56, height: 56)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(verbatim: NotchDemo.playback.title)
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(.white)
+                        .font(Font(Native.titleFont(notchFont, size: 16, weight: .semibold)))
+                        .foregroundStyle(tint.map(Color.init(nsColor:)) ?? .white)
                     Text(verbatim: NotchDemo.playback.artist ?? "")
                         .font(.system(size: 13))
                         .foregroundStyle(Native.secondary)

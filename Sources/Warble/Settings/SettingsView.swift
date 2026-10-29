@@ -38,7 +38,7 @@ struct SettingsView: View {
                 // Clear of the bar over the title bar.
                 .padding(.top, 44)
                 VStack(alignment: .leading, spacing: 8) {
-                    NotchPreview(showsTitle: notchSettings.showsVirtualTitle, showsGlow: notchSettings.showsGlow, pauseDelay: notchSettings.pauseDelay, cardSize: notchSettings.cardSize, visibility: notchSettings.virtualVisibility)
+                    NotchPreview(showsTitle: notchSettings.showsVirtualTitle, showsGlow: notchSettings.showsGlow, notchFont: notchSettings.notchFont, matchesAlbumColour: notchSettings.matchesAlbumColour, pauseDelay: notchSettings.pauseDelay, cardSize: notchSettings.cardSize, visibility: notchSettings.virtualVisibility)
                     Text("How the notch looks, with a made-up song. Point at it to open it.")
                         .font(.footnote)
                         .foregroundStyle(Warm.secondary)
@@ -79,6 +79,22 @@ struct SettingsView: View {
                         title: Text("Show the title in a virtual notch"),
                         detail: Text("On a display without a notch, the middle of the notch shows the song's title and artist."),
                         isOn: Binding { notchSettings.showsVirtualTitle } set: { notchSettings.showsVirtualTitle = $0 }
+                    )
+                    SettingsChoiceRow(
+                        title: Text("Song title font"),
+                        detail: Text("The typeface the notch sets the song's title in."),
+                        selection: Binding { notchSettings.notchFont } set: { notchSettings.notchFont = $0 },
+                        options: [
+                            (.system, Text("Default")),
+                            (.rounded, Text("Rounded")),
+                            (.serif, Text("Serif")),
+                            (.monospaced, Text("Mono")),
+                        ]
+                    )
+                    SettingsToggleRow(
+                        title: Text("Use the album's colour"),
+                        detail: Text("The song's title and the bars take a colour from the album art. Dark covers get a lighter shade so they stay easy to read."),
+                        isOn: Binding { notchSettings.matchesAlbumColour } set: { notchSettings.matchesAlbumColour = $0 }
                     )
                     SettingsToggleRow(
                         title: Text("Album-art glow"),

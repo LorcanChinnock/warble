@@ -10,6 +10,9 @@ import WarbleModel
 struct VirtualTitle: View {
     let playback: PlaybackState
     let notch: CGRect
+    var face = NotchFont.system
+    /// The colour of the title while it plays, or white.
+    var tint: NSColor?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// Room kept clear of the notch's edges, and the length of the fade at the right one.
@@ -17,13 +20,13 @@ struct VirtualTitle: View {
     private static let fade: CGFloat = 14
 
     var body: some View {
-        let font = Native.titleFont(size: min(13, max(11, notch.height * 0.46)), weight: .medium)
+        let font = Native.titleFont(face, size: min(13, max(11, notch.height * 0.46)), weight: .medium)
         let width = notch.width - 2 * Self.margin
         let line = TrackTitle.line(title: playback.title, artist: playback.artist, width: width) {
             ($0 as NSString).size(withAttributes: [.font: font]).width
         }
         if case .faded(let title) = line, TitleScroll.scrolls(line, isPlaying: playback.isPlaying, reduceMotion: reduceMotion) {
-            ScrollingTitle(title: title, font: font, width: width, height: notch.height)
+            ScrollingTitle(title: title, font: font, width: width, height: notch.height, color: tint ?? .white)
                 .padding(.horizontal, Self.margin)
                 .allowsHitTesting(false)
                 .accessibilityHidden(true)
@@ -33,7 +36,7 @@ struct VirtualTitle: View {
     }
 
     private func still(_ line: TrackTitle.Line, font: NSFont, width: CGFloat) -> some View {
-        let titleStyle = playback.isPlaying ? AnyShapeStyle(Color.white) : AnyShapeStyle(Native.secondary)
+        let titleStyle = playback.isPlaying ? AnyShapeStyle(tint.map(Color.init(nsColor:)) ?? .white) : AnyShapeStyle(Native.secondary)
         return Group {
             switch line {
             case .titleAndArtist(let title, let artist):

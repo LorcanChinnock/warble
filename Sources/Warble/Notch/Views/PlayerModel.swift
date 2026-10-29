@@ -35,12 +35,30 @@ final class PlayerModel {
     /// The glow's colours, from the artwork or, without it, the app's icon.
     private(set) var colours: ArtworkColours?
     /// Whether the open card glows, which Settings can turn off. Off, no colours are picked unless Increase Contrast needs
-    /// them for its border.
+    /// them for its border or `matchesAlbumColour` is on.
     var showsGlow = true {
         didSet {
             if showsGlow != oldValue { pickColours() }
         }
     }
+    /// The face of the title, which Settings chooses.
+    var notchFont = NotchFont.system
+    /// Whether the title and the bars take the artwork's colour, which Settings can turn on. The colours are picked for it
+    /// even with the glow off.
+    var matchesAlbumColour = false {
+        didSet {
+            if matchesAlbumColour != oldValue { pickColours() }
+        }
+    }
+    /// The artwork's colour for the title and the bars, or `nil` for white: while Settings has them follow it, and the
+    /// artwork gave one. It is lightened where the cover is too dark to read on the black notch.
+    var tint: NSColor? {
+        guard matchesAlbumColour, let colours else { return nil }
+        let rgb = colours.text(increasedContrast: increasesContrast)
+        return NSColor(srgbRed: rgb.red, green: rgb.green, blue: rgb.blue, alpha: 1)
+    }
+    /// Whether Increase Contrast is on, kept here so a change redraws what depends on it.
+    private var increasesContrast = NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast
     /// Bumped by every pick, so a pick that finishes after the track has changed again is dropped.
     @ObservationIgnored private var colourPicks = 0
     /// The name of the app that's playing, for VoiceOver.
@@ -72,7 +90,10 @@ final class PlayerModel {
         contrastObserver = NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification, object: nil, queue: .main
         ) { [weak self] _ in
-            MainActor.assumeIsolated { self?.pickColours() }
+            MainActor.assumeIsolated {
+                self?.increasesContrast = NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast
+                self?.pickColours()
+            }
         }
     }
 
@@ -112,7 +133,7 @@ final class PlayerModel {
     private func pickColours() {
         colourPicks += 1
         let pick = colourPicks
-        guard let playback, showsGlow || NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast else {
+        guard let playback, showsGlow || matchesAlbumColour || NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast else {
             colours = nil
             return
         }

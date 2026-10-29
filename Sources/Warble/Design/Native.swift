@@ -1,6 +1,7 @@
 import AppKit
 import SwiftUI
 import WarbleCore
+import WarbleModel
 
 /// Warble's look: pure black that merges with the camera housing, the system font, and white marks with grey for
 /// anything secondary. No accent colour. The prototype is the "A · Native" artboard of the Warble notch directions canvas.
@@ -25,12 +26,17 @@ enum Native {
         }
     }
 
-    /// The title's face: the system serif (New York), as Settings' headings use, so the line that names the song reads
-    /// apart from the artist and album in the system sans. It falls back to the system font if there is no serif.
-    static func titleFont(size: CGFloat, weight: NSFont.Weight) -> NSFont {
+    /// The title's face, in the design Settings chose. It falls back to the system font if the design isn't there.
+    static func titleFont(_ font: NotchFont, size: CGFloat, weight: NSFont.Weight) -> NSFont {
         let base = NSFont.systemFont(ofSize: size, weight: weight)
-        guard let serif = base.fontDescriptor.withDesign(.serif) else { return base }
-        return NSFont(descriptor: serif, size: size) ?? base
+        let design: NSFontDescriptor.SystemDesign? = switch font {
+        case .system: nil
+        case .rounded: .rounded
+        case .serif: .serif
+        case .monospaced: .monospaced
+        }
+        guard let design, let descriptor = base.fontDescriptor.withDesign(design) else { return base }
+        return NSFont(descriptor: descriptor, size: size) ?? base
     }
 
     /// The idle card's art, dimmed so the last track reads as past rather than playing.

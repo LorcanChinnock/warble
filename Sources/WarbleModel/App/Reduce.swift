@@ -77,6 +77,10 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.showsGlow = on
     case .cardSizeChanged(let size):
         state.cardSize = size
+    case .fontChanged(let font):
+        state.notchFont = font
+    case .albumColourChanged(let on):
+        state.matchesAlbumColour = on
     case .pauseDelayChanged(let delay):
         state.idle.pauseDelay = delay
     case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .dismiss, .virtualTitleChanged, .virtualVisibilityChanged:

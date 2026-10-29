@@ -89,3 +89,30 @@ private func isClose(_ colour: ArtworkColours.RGB, _ red: Double, _ green: Doubl
     let bright = ArtworkColours.RGB(red: 0.9, green: 0.5, blue: 0.1)
     #expect(ArtworkColours(first: bright, second: bright).border == bright)
 }
+
+private func contrastAgainstBlack(_ colour: ArtworkColours.RGB) -> Double {
+    (colour.luminance + 0.05) / 0.05
+}
+
+@Test func theTextColourOfADarkCoverIsLightenedToReadOnBlack() {
+    for dark in [
+        ArtworkColours.RGB(red: 0.05, green: 0.1, blue: 0.3),
+        ArtworkColours.RGB(red: 0.2, green: 0.02, blue: 0.02),
+        ArtworkColours.RGB(red: 0, green: 0, blue: 0),
+    ] {
+        let colours = ArtworkColours(first: dark, second: dark)
+        #expect(contrastAgainstBlack(colours.text(increasedContrast: false)) >= 4.5 - 0.01)
+        #expect(contrastAgainstBlack(colours.text(increasedContrast: true)) >= 7 - 0.01)
+    }
+}
+
+@Test func theTextColourKeepsTheHueOfADarkCover() {
+    let navy = ArtworkColours.RGB(red: 0.05, green: 0.1, blue: 0.3)
+    let text = ArtworkColours(first: navy, second: navy).text(increasedContrast: false)
+    #expect(text.blue > text.red && text.blue > text.green)
+}
+
+@Test func theTextColourOfABrightCoverIsLeftAlone() {
+    let amber = ArtworkColours.RGB(red: 0.9, green: 0.6, blue: 0.1)
+    #expect(ArtworkColours(first: amber, second: amber).text(increasedContrast: false) == amber)
+}

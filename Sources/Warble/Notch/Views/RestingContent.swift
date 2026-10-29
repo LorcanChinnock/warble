@@ -18,10 +18,6 @@ struct RestingContent: View {
         let wing = NotchLayout.wing(notch: notch)
         let art = wing - 2 * NotchLayout.inset(notch: notch)
         // Content on its way out still reads the model, so the bars drop as the notch leaves Resting.
-        // Increase Contrast keeps the colours picked for the card's border even with the glow off, so check the setting.
-        let barColour = model.player.showsGlow
-            ? model.player.colours.map { NSColor(srgbRed: $0.border.red, green: $0.border.green, blue: $0.border.blue, alpha: 1) } ?? .white
-            : .white
         let isIn = appeared && model.state == .resting
         HStack(spacing: 0) {
             Group {
@@ -39,13 +35,13 @@ struct RestingContent: View {
             }
             .frame(width: wing)
             if model.showsTitle, let playback {
-                VirtualTitle(playback: playback, notch: notch)
+                VirtualTitle(playback: playback, notch: notch, face: model.player.notchFont, tint: model.player.tint)
             } else {
                 Spacer(minLength: 0)
             }
             Group {
                 if let playback {
-                    PlayStateBars(isPlaying: playback.isPlaying, isShown: isIn, reduceMotion: reduceMotion, colour: barColour)
+                    PlayStateBars(isPlaying: playback.isPlaying, isShown: isIn, reduceMotion: reduceMotion, colour: model.player.tint ?? .white)
                         .frame(width: min(18, art), height: art * 0.6)
                         .accessibilityHidden(true)
                 }
