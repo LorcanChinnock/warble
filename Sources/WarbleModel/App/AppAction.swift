@@ -48,6 +48,10 @@ public enum AppAction: Equatable, Sendable {
     case pauseDelayChanged(PauseDelay)
     /// Settings chose how big the card the notch opens into is.
     case cardSizeChanged(CardSize)
+    /// Settings chose the face of the notch's title.
+    case fontChanged(NotchFont)
+    /// Settings turned on or off the title and bars taking the artwork's colour.
+    case albumColourChanged(Bool)
     /// `AppState.deadline` came due.
     case tick
 }

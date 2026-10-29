@@ -119,7 +119,8 @@ private struct RecallContent: View {
                     .opacity(Native.dimmed)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(track.title)
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(Font(Native.titleFont(player.notchFont, size: 13, weight: .semibold)))
+                        .foregroundStyle(player.tint.map(Color.init(nsColor:)) ?? .white)
                         .lineLimit(1)
                     if let artist = track.artist {
                         Text(artist)

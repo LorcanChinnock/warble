@@ -107,6 +107,24 @@ private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
     #expect(state.showsGlow)
 }
 
+@Test func settingsChooseTheNotchFont() {
+    var state = AppState()
+    #expect(state.notchFont == .system)
+    let effects = reduce(&state, .fontChanged(.serif), now: start)
+    #expect(state.notchFont == .serif)
+    #expect(effects.isEmpty)
+    #expect(state.deadline == nil)
+}
+
+@Test func matchingTheAlbumColourStartsOffAndSettingsTurnItOn() {
+    var state = AppState()
+    #expect(!state.matchesAlbumColour)
+    let effects = reduce(&state, .albumColourChanged(true), now: start)
+    #expect(state.matchesAlbumColour)
+    #expect(effects.isEmpty)
+    #expect(state.deadline == nil)
+}
+
 @Test func settingsChooseTheCardSize() {
     var state = AppState()
     #expect(state.cardSize == .standard)

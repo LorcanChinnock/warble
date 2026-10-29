@@ -29,6 +29,8 @@ final class NotchController {
         let store = environment.store
         player = PlayerModel { [weak store] in store?.dispatch($0) }
         player.showsGlow = store.state.showsGlow
+        player.notchFont = store.state.notchFont
+        player.matchesAlbumColour = store.state.matchesAlbumColour
         store.onChange = { [weak self] old, new, action in self?.stateChanged(from: old, to: new, by: action) }
         environment.displays.onChange = { [weak self] in self?.layOut() }
         // Going full screen, or back, switches Space; only then can a display start or stop showing a full-screen app.
@@ -94,6 +96,12 @@ final class NotchController {
         }
         if new.showsGlow != old.showsGlow {
             player.showsGlow = new.showsGlow
+        }
+        if new.notchFont != old.notchFont {
+            player.notchFont = new.notchFont
+        }
+        if new.matchesAlbumColour != old.matchesAlbumColour {
+            player.matchesAlbumColour = new.matchesAlbumColour
         }
         if new.volume != old.volume || new.isMuted != old.isMuted {
             player.volume = new.volume

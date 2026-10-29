@@ -10,6 +10,8 @@ struct MarqueeLine: View {
     let font: NSFont
     /// Greyed, as the artist and album are; otherwise white, as the title is.
     var isSecondary = false
+    /// The colour of a line that isn't secondary, or white.
+    var tint: NSColor?
     let isPlaying: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.self) private var environment
@@ -19,7 +21,7 @@ struct MarqueeLine: View {
         let textWidth = ceil((text as NSString).size(withAttributes: [.font: font]).width)
         let height = ceil(font.ascender - font.descender)
         let scrolls = TitleScroll.scrolls(textWidth: textWidth, width: width, isPlaying: isPlaying, reduceMotion: reduceMotion)
-        let color = isSecondary ? Native.secondary.resolve(in: environment) : Color.white
+        let color = isSecondary ? Native.secondary.resolve(in: environment) : tint.map(Color.init(nsColor:)) ?? Color.white
         Text(verbatim: text)
             .font(Font(font))
             .foregroundStyle(color)
