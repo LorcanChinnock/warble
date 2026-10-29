@@ -17,7 +17,7 @@ struct VirtualTitle: View {
     private static let fade: CGFloat = 14
 
     var body: some View {
-        let font = NSFont.systemFont(ofSize: min(13, max(11, notch.height * 0.46)), weight: .medium)
+        let font = Native.titleFont(size: min(13, max(11, notch.height * 0.46)), weight: .medium)
         let width = notch.width - 2 * Self.margin
         let line = TrackTitle.line(title: playback.title, artist: playback.artist, width: width) {
             ($0 as NSString).size(withAttributes: [.font: font]).width

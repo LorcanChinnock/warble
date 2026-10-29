@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 import WarbleCore
 
@@ -24,6 +25,14 @@ enum Native {
         }
     }
 
+    /// The title's face: the system serif (New York), as Settings' headings use, so the line that names the song reads
+    /// apart from the artist and album in the system sans. It falls back to the system font if there is no serif.
+    static func titleFont(size: CGFloat, weight: NSFont.Weight) -> NSFont {
+        let base = NSFont.systemFont(ofSize: size, weight: weight)
+        guard let serif = base.fontDescriptor.withDesign(.serif) else { return base }
+        return NSFont(descriptor: serif, size: size) ?? base
+    }
+
     /// The idle card's art, dimmed so the last track reads as past rather than playing.
     static let dimmed = 0.55
 
@@ -46,7 +55,8 @@ enum Native {
     /// How far up the card the glow reaches from each bottom corner, as a fraction of the card.
     static let glowReach = 0.8
     /// The glow's change of colour with the track, slow enough not to flash.
-    static let glowChange = Animation.easeInOut(duration: 0.6)
+    static let glowChange = Animation.easeInOut(duration: glowChangeDuration)
+    static let glowChangeDuration = 0.6
     /// The solid border drawn instead of the glow while Increase Contrast is on.
     static let contrastBorder: CGFloat = 2
 }
