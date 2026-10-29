@@ -28,17 +28,15 @@ enum NotchDemo {
 struct NotchPreview: View {
     /// Whether the resting notch draws the title, which the Settings switch turns on.
     let showsTitle: Bool
-    /// Whether the open card glows, which the Settings switch turns off.
-    let showsGlow: Bool
     /// The face of the title, which Settings chooses.
     let notchFont: NotchFont
-    /// Whether the title and bars take the song's colour.
-    let matchesAlbumColour: Bool
     let pauseDelay: PauseDelay
     /// How big the open card is.
     let cardSize: CardSize
     /// With the virtual notch off there is none, so the screen is bare.
     let visibility: VirtualNotchVisibility
+    /// While the page scrolls under the pointer, the preview stays as it is rather than opening mid-scroll.
+    let isScrolling: Bool
     @State private var isOpen = false
     /// Whether the pointer is on the preview, which opens it. A click then does nothing, so it can't close the card
     /// under the pointer; a press from the keyboard or VoiceOver, which have no pointer, toggles it.
@@ -50,10 +48,9 @@ struct NotchPreview: View {
     @State private var pauses = 0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    /// The made-up song's colour for the title and bars while they follow it, lightened as the real notch's are.
+    /// The made-up song's colour for the title and bars, as the real notch's are.
     private var tint: NSColor? {
-        guard matchesAlbumColour else { return nil }
-        let rgb = NotchDemo.colours.text(increasedContrast: NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast)
+        let rgb = NotchDemo.colours.text
         return NSColor(srgbRed: rgb.red, green: rgb.green, blue: rgb.blue, alpha: 1)
     }
 
@@ -95,8 +92,8 @@ struct NotchPreview: View {
             }
             .buttonStyle(.notch)
             .onHover {
-                isHovering = $0
-                isOpen = $0
+                isHovering = $0 && !isScrolling
+                isOpen = $0 && !isScrolling
             }
             .accessibilityLabel(Text("Notch preview"))
             .accessibilityValue(isOpen ? Text("Open") : Text("Closed"))
@@ -119,9 +116,7 @@ struct NotchPreview: View {
         .onChange(of: pauseDelay) { pause() }
         .onChange(of: visibility) { pause() }
         .onChange(of: showsTitle) { play() }
-        .onChange(of: showsGlow) { play() }
         .onChange(of: notchFont) { play() }
-        .onChange(of: matchesAlbumColour) { play() }
         .task(id: pauses) {
             guard isPaused, (try? await Task.sleep(for: PreviewEnding.beat)) != nil else { return }
             ending = PreviewEnding(pauseDelay: pauseDelay, visibility: visibility)
@@ -198,7 +193,7 @@ struct NotchPreview: View {
         .padding(.top, Self.housing.height + 6)
         .padding(.bottom, 12)
         .frame(width: size.width, height: size.height, alignment: .top)
-        .background { Glow(colours: NotchDemo.colours, showsGlow: showsGlow) }
+        .background { Glow(colours: NotchDemo.colours) }
         .accessibilityHidden(true)
     }
 

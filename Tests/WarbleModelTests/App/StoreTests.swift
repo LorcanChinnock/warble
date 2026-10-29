@@ -9,7 +9,7 @@ private let paused = PlaybackState(bundleIdentifier: "com.apple.Music", title: "
 private func store() -> (Store, FakeClock, FakeScheduler) {
     let clock = FakeClock(start)
     let scheduler = FakeScheduler()
-    return (Store(state: AppState(), clock: clock, scheduler: scheduler), clock, scheduler)
+    return (Store(state: AppState.pausingAfterTenSeconds(), clock: clock, scheduler: scheduler), clock, scheduler)
 }
 
 @MainActor

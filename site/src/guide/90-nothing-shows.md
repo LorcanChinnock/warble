@@ -8,7 +8,7 @@ Warble normally shows whatever plays in any app, your browser included. When the
 
 ## Check the basics
 
-- **Is something playing?** A paused song leaves the notch after 10 seconds, or the time you chose in Settings, and with nothing playing the notch is empty. Point at it to see the last song that played, with a play button, or a small "Nothing playing" note if nothing has played since Warble opened.
+- **Is something playing?** A paused song stays in the notch until something else plays, unless you chose 10 seconds or 1 minute in Settings, and with nothing playing the notch is empty. Point at it to see the last song that played, with a play button, or a small "Nothing playing" note if nothing has played since Warble opened.
 - **Is an app full screen?** The notch on that display hides until you leave full screen.
 - **Is Warble running?** Look for its three-bar icon in the menu bar. If it isn't there, open Warble from your Applications folder.
 

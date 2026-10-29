@@ -39,14 +39,14 @@ Or [download the latest release](https://warble.lorcanchinnock.com/download) and
 
 ## Features
 
-- **What's playing, in the notch.** The album art sits on one side, and on the other a few bars move while it plays. Open it to see the song on a soft glow in the album art's colours, or turn the glow off in Settings for a plain black notch. Settings also has a choice of typeface for the title, and a switch to colour the title and bars from the album.
+- **What's playing, in the notch.** The album art sits on one side, and on the other a few bars move while it plays. Open it to see the song on a soft glow in the album art's colours. The title and bars take a touch of the album's colour too, and Settings has a choice of typeface for the title.
 - **Controls.** Play, pause, skip, move through the song, and turn shuffle and repeat on or off when the app has them. Drag the volume bar, or scroll over the notch with two fingers: up and down changes the volume, sliding sideways moves through the song and a quick sideways flick skips.
 - **Switch speakers.** Move your Mac's sound to its own speakers, headphones or AirPods from the notch.
 - **Any player.** Apple Music, Spotify, podcast apps and video in your browser.
-- **Calm by default.** A paused song stays for a few seconds, then Warble gets out of the way. When nothing is playing, it hides behind the notch and uses no CPU, and pointing at the notch opens a small card with the last song and a play button, kept in memory only.
+- **Calm by default.** A paused song stays until something else plays, or for 10 seconds or a minute if you choose that in Settings. When nothing is playing, it hides behind the notch and uses no CPU, and pointing at the notch opens a small card with the last song and a play button, kept in memory only.
 - **Every Mac.** A main display without a notch, on a Mac without one or an external display, gets a notch Warble draws at the top.
 - **For everyone.** Works with VoiceOver, and follows Increase Contrast and Reduce Motion.
-- **Little to set up.** Open at login, and a switch for the title in a virtual notch. Right-click the notch, or use the menu bar icon, for Settings, updates and Quit.
+- **Little to set up.** Open at login, and a switch for the title in a virtual notch, which is on at first. Right-click the notch, or use the menu bar icon, for Settings, updates and Quit.
 
 ## Privacy
 

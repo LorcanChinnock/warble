@@ -9,7 +9,7 @@ private let song = PlaybackState(bundleIdentifier: "com.apple.Music", title: "So
 
 /// A state with both notches and `song` playing, and the effects of everything after it.
 private struct Run {
-    var state = AppState()
+    var state = AppState.pausingAfterTenSeconds()
     var effects: [AppEffect] = []
     var now = start
 

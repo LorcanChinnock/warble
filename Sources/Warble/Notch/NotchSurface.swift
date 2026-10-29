@@ -155,10 +155,13 @@ final class NotchSurface {
     /// Puts the panel back where the layout has it if something else moved it. `draw` skips a layout whose frame hasn't
     /// changed, so without this a panel the window server moved stays where it was left.
     func replace() {
-        guard let panelFrame, panel.frame != NotchLayout.window(for: panelFrame) else { return }
+        guard let panelFrame, panel.frame != NotchLayout.window(for: panelFrame, flare: flare) else { return }
         log.notice("Notch panel moved to \(NSStringFromRect(self.panel.frame), privacy: .public), put back over \(NSStringFromRect(self.housing), privacy: .public)")
         show(in: panelFrame)
     }
+
+    /// How far the shape's top corners reach outside the housing's width, which the panel's window holds.
+    private var flare: CGFloat { NotchLayout.topCornerRadius(notch: housing) }
 
     private func hide() {
         panel.orderOut(nil)
@@ -168,6 +171,6 @@ final class NotchSurface {
 
     private func show(in frame: CGRect) {
         panelFrame = frame
-        panel.show(in: frame)
+        panel.show(in: frame, flare: flare)
     }
 }
