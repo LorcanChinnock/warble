@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0-beta.16](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.15...v0.1.0-beta.16) (2026-10-29)
+
+
+### Features
+
+* **notch:** set titles in the system serif and tint the bars with the artwork ([#357](https://github.com/LorcanChinnock/warble/issues/357)) ([1d860f5](https://github.com/LorcanChinnock/warble/commit/1d860f5006c7263099c681450a02bc8987c9a2e4))
+
 ## [0.1.0-beta.15](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.14...v0.1.0-beta.15) (2026-10-28)
 
 
