@@ -104,9 +104,9 @@ final class NotchController {
             player.currentOutput = new.currentOutput
         }
         if new.outputSwitch != old.outputSwitch || new.outputs != old.outputs {
-            player.keptOutput = new.outputSwitch.kept.flatMap { kept in new.outputs.first { $0.id == kept }?.name }
+            player.keptOutput = new.keptOutputName
         }
-        if isPlayPause(action), old.hideAt == nil, old.playback != nil {
+        if action.isPlayPause, old.hideAt == nil, old.playback != nil {
             // Timed from the click or key to the first frame that shows the new state.
             let input = Perf.input
             Perf.untilNextFrame("Play/pause", on: NSApp.currentEvent?.window?.screen ?? NSScreen.main, cause: input?.cause ?? "shortcut", since: input?.timestamp)
@@ -128,26 +128,14 @@ final class NotchController {
         }
     }
 
-    private func isPlayPause(_ action: AppAction) -> Bool {
-        switch action {
-        case .command(.togglePlayPause), .command(.play), .command(.pause): true
-        default: false
-        }
-    }
-
     /// Scrolling over a notch changes the volume, slides through the song or, in a quick flick, skips. The volume is read
     /// from the volume now, since the card with the slider may not be open, and then followed here while the scroll
     /// lasts, since a device can report an old volume just after it was set.
     private func scroll(_ event: NSEvent) {
-        let phase: ScrollGesture.Phase = if !event.momentumPhase.isEmpty {
-            .momentum
-        } else if event.phase.contains(.began) {
-            .began
-        } else if event.phase.contains(.ended) || event.phase.contains(.cancelled) {
-            .ended
-        } else {
-            .changed
-        }
+        let phase = ScrollGesture.Phase(
+            coasting: !event.momentumPhase.isEmpty, began: event.phase.contains(.began),
+            endedOrCancelled: event.phase.contains(.ended) || event.phase.contains(.cancelled)
+        )
         let inverted = event.isDirectionInvertedFromDevice
         let precise = event.hasPreciseScrollingDeltas
         switch gesture.handle(dx: event.scrollingDeltaX, dy: event.scrollingDeltaY, precise: precise, inverted: inverted, phase: phase, at: event.timestamp) {
