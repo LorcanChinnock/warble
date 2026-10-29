@@ -14,7 +14,7 @@ final class NotchController {
 
     private let environment: AppEnvironment
     private var store: Store { environment.store }
-    private let player: PlayerModel
+    private var player: PlayerModel { environment.player }
     private var volume: SystemVolume { environment.volume }
     private var gesture = ScrollGesture()
     private var heldVolume = HeldVolume()
@@ -27,7 +27,6 @@ final class NotchController {
     init(environment: AppEnvironment) {
         self.environment = environment
         let store = environment.store
-        player = PlayerModel { [weak store] in store?.dispatch($0) }
         player.showsGlow = store.state.showsGlow
         player.notchFont = store.state.notchFont
         player.matchesAlbumColour = store.state.matchesAlbumColour
@@ -120,6 +119,7 @@ final class NotchController {
             Perf.untilNextFrame("Play/pause", on: NSApp.currentEvent?.window?.screen ?? NSScreen.main, cause: input?.cause ?? "shortcut", since: input?.timestamp)
         }
         if new.showsPlayback != old.showsPlayback {
+            player.showsPlayback = new.showsPlayback
             log.notice("Playback \(new.showsPlayback ? "shown" : "idle", privacy: .public)")
         }
         for (display, surface) in surfaces {

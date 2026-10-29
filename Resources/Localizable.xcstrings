@@ -554,7 +554,7 @@
     "How long the notch keeps showing a paused song before it goes quiet." : {
 
     },
-    "How the notch looks, with a made-up song. Point at it to open it." : {
+    "How the notch looks, with the song that's playing. Point at it to open it." : {
 
     },
     "It was installed while Warble was running. Relaunch to use it." : {
@@ -1963,7 +1963,7 @@
     "Show the title in a virtual notch" : {
 
     },
-    "Shows how the notch looks, with a made-up song." : {
+    "Shows how the notch looks." : {
 
     },
     "Shuffle" : {

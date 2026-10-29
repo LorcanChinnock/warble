@@ -93,7 +93,7 @@ private struct NotchContent: View {
 }
 
 /// What an empty notch says when the pointer is on it: one line under the housing, with no controls.
-private struct NoteContent: View {
+struct NoteContent: View {
     let notch: CGRect
 
     var body: some View {
