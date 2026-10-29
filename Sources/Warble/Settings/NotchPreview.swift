@@ -47,24 +47,22 @@ final class PreviewNotch {
 /// A small screen with a virtual notch on it, drawn at the real notch's proportions from the real views
 /// (`RestingContent`, `ExpandedContent`), with the song that's playing or, when nothing is, a made-up one. It rests as a
 /// notch does, with the art, the bars and, when the setting is on, the title, and opens into the card when the pointer is
-/// on it; its controls do nothing. A change to the title font, card size, glow or album colour opens it for a couple of
-/// seconds to show the change, unless Reduce Motion is on. A change to the pause or external-display setting pauses the
-/// song and, a beat later, ends it as those settings would (`PreviewEnding`); it holds that end until the pointer leaves
-/// the preview, or another setting changes, then plays again. Nothing else in it moves by itself.
+/// on it; its controls do nothing. A change to the title font or card size opens it for a couple of seconds to show the
+/// change, unless Reduce Motion is on. A change to the pause or external-display setting pauses the song and, a beat
+/// later, ends it as those settings would (`PreviewEnding`); it holds that end until the pointer leaves the preview, or
+/// another setting changes, then plays again. Nothing else in it moves by itself.
 struct NotchPreview: View {
     /// Whether the resting notch draws the title, which the Settings switch turns on.
     let showsTitle: Bool
-    /// Whether the open card glows, which the Settings switch turns off.
-    let showsGlow: Bool
     /// The face of the title, which Settings chooses.
     let notchFont: NotchFont
-    /// Whether the title and bars take the song's colour.
-    let matchesAlbumColour: Bool
     let pauseDelay: PauseDelay
     /// How big the open card is.
     let cardSize: CardSize
     /// With the virtual notch off there is none, so the screen is bare.
     let visibility: VirtualNotchVisibility
+    /// While the page scrolls under the pointer, the preview stays as it is rather than opening mid-scroll.
+    let isScrolling: Bool
     @Environment(PlayerModel.self) private var live
     @State private var preview = PreviewNotch()
     /// When the made-up song started, which its position runs on from.
@@ -134,8 +132,8 @@ struct NotchPreview: View {
             }
             .buttonStyle(.notch)
             .onHover {
-                isHovering = $0
-                isOpen = $0
+                isHovering = $0 && !isScrolling
+                isOpen = $0 && !isScrolling
             }
             .accessibilityLabel(Text("Notch preview"))
             .accessibilityValue(isOpen ? Text("Open") : Text("Closed"))
@@ -155,13 +153,11 @@ struct NotchPreview: View {
         .onHover { inside in
             if !inside, isPaused { play() }
         }
-        .onChange(of: Inputs(song: song, state: state, showsTitle: showsTitle, cardSize: cardSize, showsGlow: showsGlow, notchFont: notchFont, matchesAlbumColour: matchesAlbumColour, volume: live.volume, isMuted: live.isMuted, outputs: live.outputs, currentOutput: live.currentOutput), initial: true) { feed(state: state) }
+        .onChange(of: Inputs(song: song, state: state, showsTitle: showsTitle, cardSize: cardSize, notchFont: notchFont, volume: live.volume, isMuted: live.isMuted, outputs: live.outputs, currentOutput: live.currentOutput), initial: true) { feed(state: state) }
         .onChange(of: pauseDelay) { pause() }
         .onChange(of: visibility) { pause() }
         .onChange(of: showsTitle) { play() }
-        .onChange(of: showsGlow) { peek() }
         .onChange(of: notchFont) { peek() }
-        .onChange(of: matchesAlbumColour) { peek() }
         .onChange(of: cardSize) { peek() }
         .task(id: pauses) {
             guard isPaused, (try? await Task.sleep(for: PreviewEnding.beat)) != nil else { return }
@@ -182,9 +178,7 @@ struct NotchPreview: View {
         let state: NotchState
         let showsTitle: Bool
         let cardSize: CardSize
-        let showsGlow: Bool
         let notchFont: NotchFont
-        let matchesAlbumColour: Bool
         let volume: Double?
         let isMuted: Bool
         let outputs: [AudioOutput]
@@ -194,9 +188,7 @@ struct NotchPreview: View {
     private func feed(state: NotchState) {
         let player = preview.player
         player.playback = song
-        player.showsGlow = showsGlow
         player.notchFont = notchFont
-        player.matchesAlbumColour = matchesAlbumColour
         player.volume = live.volume ?? 0.6
         player.isMuted = live.isMuted
         player.outputs = live.outputs
@@ -238,7 +230,7 @@ struct NotchPreview: View {
         let standard = NotchLayout.frame(.expanded, notch: Self.housing)?.size ?? Self.housing.size
         return ExpandedContent(playback: song, artwork: preview.player.artwork, model: preview.model)
             .padding(.top, Self.housing.height)
-            .background { Glow(colours: preview.player.colours, showsGlow: showsGlow) }
+            .background { Glow(colours: preview.player.colours) }
             .frame(width: standard.width, height: standard.height, alignment: .top)
             .allowsHitTesting(false)
             .accessibilityHidden(true)

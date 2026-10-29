@@ -4,11 +4,11 @@ import Foundation
 /// a hover opening the notch or a click on play/pause; the content follows it in and leaves ahead of it.
 public enum NotchMotion {
     /// The change of shape between states, on one smooth curve with no bounce.
-    public static let morph: TimeInterval = 0.25
+    public static let morph: TimeInterval = 0.3
     /// Content waits this long before fading in, so the growing shape uncovers it rather than it showing up first.
-    public static let contentDelay: TimeInterval = 0.09
+    public static let contentDelay: TimeInterval = 0.1
     /// How long content takes to fade in once it starts.
-    public static let contentIn: TimeInterval = 0.2
+    public static let contentIn: TimeInterval = 0.22
     /// How long content takes to fade out, well before the shape has closed over it.
     public static let contentOut: TimeInterval = 0.12
 

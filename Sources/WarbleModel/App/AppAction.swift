@@ -40,8 +40,6 @@ public enum AppAction: Equatable, Sendable {
     case outputsRead([AudioOutput], current: UInt32?)
     /// Settings turned the title in a virtual notch on or off.
     case virtualTitleChanged(Bool)
-    /// Settings turned the open card's album-art glow on or off.
-    case glowChanged(Bool)
     /// Settings chose when a virtual notch is there.
     case virtualVisibilityChanged(VirtualNotchVisibility)
     /// Settings chose how long a paused song stays in the notch.
@@ -50,8 +48,6 @@ public enum AppAction: Equatable, Sendable {
     case cardSizeChanged(CardSize)
     /// Settings chose the face of the notch's title.
     case fontChanged(NotchFont)
-    /// Settings turned on or off the title and bars taking the artwork's colour.
-    case albumColourChanged(Bool)
     /// `AppState.deadline` came due.
     case tick
 }

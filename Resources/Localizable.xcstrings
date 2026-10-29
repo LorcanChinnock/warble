@@ -117,9 +117,6 @@
         }
       }
     },
-    "Album-art glow" : {
-
-    },
     "All" : {
       "localizations" : {
         "de" : {
@@ -1905,9 +1902,6 @@
     "Rounded" : {
 
     },
-    "Serif" : {
-
-    },
     "Settings…" : {
       "localizations" : {
         "de" : {
@@ -2027,12 +2021,6 @@
     "Stay visible after pausing" : {
 
     },
-    "The open notch glows in the colours of the album art. Turn it off for a plain black notch." : {
-
-    },
-    "The song's title and the bars take a colour from the album art. Dark covers get a lighter shade so they stay easy to read." : {
-
-    },
     "The typeface the notch sets the song's title in." : {
 
     },
@@ -2139,9 +2127,6 @@
           }
         }
       }
-    },
-    "Use the album's colour" : {
-
     },
     "Version %@" : {
       "localizations" : {

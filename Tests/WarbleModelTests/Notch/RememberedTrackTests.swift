@@ -7,7 +7,7 @@ private let builtIn = NotchHousing(display: "built-in", frame: CGRect(x: 856, y:
 private let song = PlaybackState(bundleIdentifier: "com.apple.Music", title: "Song", artist: "Artist", elapsedTimestamp: start, rate: 1)
 
 private func idleAfterPause() -> (AppState, Date) {
-    var state = AppState()
+    var state = AppState.pausingAfterTenSeconds()
     var now = start
     _ = reduce(&state, .housingsChanged([builtIn]), now: now)
     _ = reduce(&state, .playbackReported(song), now: now)
@@ -20,7 +20,7 @@ private func idleAfterPause() -> (AppState, Date) {
 }
 
 @Test func nothingIsRememberedUntilSomethingPlays() {
-    var state = AppState()
+    var state = AppState.pausingAfterTenSeconds()
     _ = reduce(&state, .housingsChanged([builtIn]), now: start)
     #expect(state.lastPlayed == nil)
     _ = reduce(&state, .pointer(display: "built-in", inside: true), now: start)
@@ -40,7 +40,7 @@ private func idleAfterPause() -> (AppState, Date) {
 }
 
 @Test func theLastTrackSurvivesTheSourceStoppingAndIsReplacedByTheNextOne() {
-    var state = AppState()
+    var state = AppState.pausingAfterTenSeconds()
     _ = reduce(&state, .playbackReported(song), now: start)
     _ = reduce(&state, .playbackReported(nil), now: start)
     _ = reduce(&state, .tick, now: start + AppState.hideDelay)
@@ -57,7 +57,7 @@ private func idleAfterPause() -> (AppState, Date) {
     #expect(reduce(&state, .resumeLast, now: now) == [.send(.play)])
     _ = reduce(&state, .playbackReported(song), now: now)
     #expect(reduce(&state, .resumeLast, now: now).isEmpty)
-    var fresh = AppState()
+    var fresh = AppState.pausingAfterTenSeconds()
     #expect(reduce(&fresh, .resumeLast, now: now).isEmpty)
 }
 

@@ -65,6 +65,9 @@ public enum NotchLayout {
     /// points would round the corners more the larger the text. 12 points on a 15-inch MacBook Air's 37.5-point housing
     /// at More Space.
     public static let cornerRatio: CGFloat = 0.32
+    /// How far the top corners flare outward into the screen's top edge, as a fraction of the housing's height, so it scales
+    /// with the housing as `cornerRatio` does. 6 points on a 15-inch MacBook Air's 37.5-point housing at More Space.
+    public static let topCornerRatio: CGFloat = 0.16
     /// The space around the art and the play-state bars in a resting wing, as a fraction of the housing's height.
     public static let insetRatio: CGFloat = 0.16
     /// How far Expanded reaches below the camera housing: the art beside three lines of text, then the position, the
@@ -81,6 +84,11 @@ public enum NotchLayout {
     /// The radius of the housing's bottom corners, which Empty and Resting draw too.
     public static func cornerRadius(notch: CGRect) -> CGFloat {
         notch.height * cornerRatio
+    }
+
+    /// The radius of the top corners' outward flare, which every state draws.
+    public static func topCornerRadius(notch: CGRect) -> CGFloat {
+        notch.height * topCornerRatio
     }
 
     /// The space around the art and the play-state bars in a resting wing, the same on every side.
@@ -123,8 +131,9 @@ public enum NotchLayout {
     /// The window that holds a shape drawn at `frame`, grown out to whole points. AppKit snaps a window to whole points by
     /// moving its origin down and keeping its width, which would put a housing at a half-point x half a point to the left;
     /// growing both edges keeps the window centred on the housing, so the shape drawn in its middle sits exactly over it.
-    public static func window(for frame: CGRect) -> CGRect {
-        frame.integral
+    /// `flare` is the top corners' reach outside `frame` (`topCornerRadius(notch:)`), which the window holds on both sides.
+    public static func window(for frame: CGRect, flare: CGFloat = 0) -> CGRect {
+        frame.insetBy(dx: -flare, dy: 0).integral
     }
 
     /// Where the pointer counts as on the notch in `state`, for `HoverIntent`: only the camera housing while resting or empty, so a

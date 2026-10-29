@@ -9,15 +9,13 @@ private let song = PlaybackState(bundleIdentifier: "com.apple.Music", title: "So
 private let untitled = PlaybackState(bundleIdentifier: "com.apple.Music", title: "", artist: "Artist", elapsedTimestamp: start, rate: 1)
 
 private struct Run {
-    var state = AppState()
+    var state = AppState.pausingAfterTenSeconds()
     var effects: [AppEffect] = []
     var now = start
 
     init(showsVirtualTitle: Bool = true) {
         send(.housingsChanged([builtIn, external]))
-        if showsVirtualTitle {
-            send(.virtualTitleChanged(true))
-        }
+        send(.virtualTitleChanged(showsVirtualTitle))
         effects = []
     }
 
@@ -29,8 +27,8 @@ private struct Run {
     var titles: [Bool] { [state.titleInNotch("built-in"), state.titleInNotch("external")] }
 }
 
-@Test func theVirtualTitleStartsOff() {
-    #expect(!AppState().notches.showsVirtualTitle)
+@Test func theVirtualTitleStartsOn() {
+    #expect(AppState().notches.showsVirtualTitle)
 }
 
 @Test func aVirtualNotchDrawsTheTitleWhilePlayingAndARealOneNever() {

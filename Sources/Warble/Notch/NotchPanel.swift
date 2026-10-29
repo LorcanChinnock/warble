@@ -44,8 +44,8 @@ final class NotchPanel: NSPanel {
     /// Fills `frame`, the larger of the shapes on screen. A window covers whole points, so over a notch with a half-point
     /// edge it grows outwards by up to a point; the shape keeps to its own height from the top and stays centred, and the
     /// rest stays clear, so the panel ends exactly where the camera housing does.
-    func show(in frame: CGRect) {
-        setFrame(NotchLayout.window(for: frame), display: false)
+    func show(in frame: CGRect, flare: CGFloat) {
+        setFrame(NotchLayout.window(for: frame, flare: flare), display: false)
         // Lay the content out at the new size now, before a morph begins, so the shape stays centred over the housing.
         // Otherwise SwiftUI takes the new size in the same pass as the morph, and the shape slides over from the window's
         // old left edge as it grows.
@@ -81,8 +81,15 @@ final class NotchPanel: NSPanel {
         onPointer?(inside)
     }
 
-    override func mouseEntered(with event: NSEvent) { onPointer?(true) }
-    override func mouseExited(with event: NSEvent) { onPointer?(false) }
+    /// Only the panel's own tracking area counts. The hosting view has tracking areas of its own for its controls, which
+    /// pass what they don't handle up to the panel, and one covering a card that is closing would count as a hover.
+    override func mouseEntered(with event: NSEvent) {
+        if event.trackingArea === trackingArea { onPointer?(true) }
+    }
+
+    override func mouseExited(with event: NSEvent) {
+        if event.trackingArea === trackingArea { onPointer?(false) }
+    }
     override func scrollWheel(with event: NSEvent) { onScroll?(event) }
 
     /// Takes a right-click, or a Control-click, before SwiftUI does, so it never reaches the controls or counts as a click

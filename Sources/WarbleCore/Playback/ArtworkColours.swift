@@ -58,22 +58,9 @@ public struct ArtworkColours: Equatable, Sendable {
             return RGB(red: red * low, green: green * low, blue: blue * low)
         }
 
-        /// The same hue mixed with white until its luminance is at least `luminance`, so a dark colour stays recognisable
-        /// but reads against black. A colour that already clears it is returned as is.
-        func lightened(to luminance: Double) -> RGB {
-            guard self.luminance < luminance else { return self }
-            var low = 0.0
-            var high = 1.0
-            for _ in 0..<20 {
-                let middle = (low + high) / 2
-                let mixed = RGB(red: red + (1 - red) * middle, green: green + (1 - green) * middle, blue: blue + (1 - blue) * middle)
-                if mixed.luminance < luminance {
-                    low = middle
-                } else {
-                    high = middle
-                }
-            }
-            return RGB(red: red + (1 - red) * high, green: green + (1 - green) * high, blue: blue + (1 - blue) * high)
+        /// This colour mixed into white, `amount` of it and the rest white.
+        func mixedIntoWhite(amount: Double) -> RGB {
+            RGB(red: 1 - (1 - red) * amount, green: 1 - (1 - green) * amount, blue: 1 - (1 - blue) * amount)
         }
 
         func distance(to other: RGB) -> Double {
@@ -94,13 +81,12 @@ public struct ArtworkColours: Equatable, Sendable {
     /// The solid border drawn instead of the glow while Increase Contrast is on: `first`, bright enough to stand out.
     public var border: RGB { first.brightened(to: 0.8) }
 
-    /// The artwork's colour for text and the bars on the black notch: `first`, lightened until it has WCAG's 4.5:1
-    /// against black, or 7:1 with Increase Contrast. A dark or muddy cover gives a paler tint of its own hue, and a black
-    /// one gives a plain grey, so it is never harder to read than the white it replaces.
-    public func text(increasedContrast: Bool) -> RGB {
-        // Against black, contrast is (luminance + 0.05) / 0.05.
-        first.lightened(to: (increasedContrast ? 7 : 4.5) * 0.05 - 0.05)
-    }
+    /// How much of `first` the text and the bars take, the rest white.
+    static let textShare = 0.25
+
+    /// The artwork's colour for text and the bars on the black notch: a quarter `first` and three quarters white. White
+    /// on black is 21:1, and a quarter of any colour keeps it above 11:1, so it clears WCAG's 7:1 whatever the cover.
+    public var text: RGB { first.mixedIntoWhite(amount: Self.textShare) }
 
     /// Picks the colours from encoded artwork, or `nil` when it can't be decoded or has no opaque pixels.
     public init?(data: Data) {

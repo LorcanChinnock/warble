@@ -9,7 +9,7 @@ public struct Notches: Feature {
     public internal(set) var fullScreen: Set<String> = []
 
     /// Whether a virtual notch shows the title in its middle while something plays, which Settings turns on.
-    public internal(set) var showsVirtualTitle = false
+    public internal(set) var showsVirtualTitle = true
 
     /// When a virtual notch is there, which Settings chooses.
     public internal(set) var virtualVisibility = VirtualNotchVisibility.standard
@@ -125,7 +125,7 @@ public struct Notches: Feature {
     /// Whether the notch draws the title in its middle. Only a virtual notch has room, since a real one's middle is the
     /// camera, and only while it shows a track, so with nothing playing it stays blank.
     func showsTitle(_ surface: Surface, _ shared: SharedState) -> Bool {
-        showsVirtualTitle && surface.isVirtual && !surface.isFullScreen && shared.showsPlayback
+        showsVirtualTitle && surface.isVirtual && virtualVisibility != .off && !surface.isFullScreen && shared.showsPlayback
             && shared.playback?.title.isEmpty == false
     }
 

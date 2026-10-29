@@ -138,3 +138,8 @@ func theWindowCoversWholePointsAndStaysCentredOnTheHousing(_ scale: MeasuredScal
     #expect(NotchLayout.hoverArea(.expanded, notch: notch, cardSize: .large) == NotchLayout.frame(.expanded, notch: notch, cardSize: .large))
     #expect(NotchLayout.hoverArea(.resting, notch: notch, cardSize: .large) == notch)
 }
+
+@Test func theFlareReachesOutsideTheFrameOnBothSides() {
+    let notch = CGRect(x: 456, y: 643, width: 112, height: 20)
+    #expect(NotchLayout.window(for: notch, flare: 6) == CGRect(x: 450, y: 643, width: 124, height: 20))
+}

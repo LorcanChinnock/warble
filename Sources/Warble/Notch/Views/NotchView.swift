@@ -10,24 +10,25 @@ struct NotchView: View {
     var body: some View {
         let state = model.state
         let size = model.size(state)
-        let shape = UnevenRoundedRectangle(bottomLeadingRadius: Native.radius(state, notch: model.notch), bottomTrailingRadius: Native.radius(state, notch: model.notch))
+        let flare = NotchLayout.topCornerRadius(notch: model.notch)
+        let shape = NotchShape(topRadius: flare, bottomRadius: Native.radius(state, notch: model.notch))
         ZStack(alignment: .top) {
             shape
                 .fill(Native.panel)
-                .frame(width: size.width, height: size.height)
+                .frame(width: size.width + 2 * flare, height: size.height)
                 .transaction(snapWithReduceMotion)
             // Each state's content keeps its own size while the shape morphs, so it fades rather than reflows. What it
             // shows is passed in, so content on its way out keeps the track that stopped rather than going blank.
             // Once nothing is playing, the player still holds the paused track, which nothing shows.
             let playback = model.isPlaying ? model.player.playback : nil
-            NotchContent(state: state, playback: playback, artwork: model.player.artwork, colours: model.player.colours, showsGlow: model.player.showsGlow, model: model)
+            NotchContent(state: state, playback: playback, artwork: model.player.artwork, colours: model.player.colours, model: model)
                 .frame(width: size.width, height: size.height, alignment: .top)
                 .id(ContentID(state: state, isPlaying: playback != nil))
                 .transition(ContentTransition())
         }
         .mask(alignment: .top) {
             shape
-                .frame(width: size.width, height: size.height)
+                .frame(width: size.width + 2 * flare, height: size.height)
                 .transaction(snapWithReduceMotion)
         }
         .contentShape(shape)
@@ -64,7 +65,6 @@ private struct NotchContent: View {
     let playback: PlaybackState?
     let artwork: NSImage?
     let colours: ArtworkColours?
-    let showsGlow: Bool
     let model: NotchModel
 
     private var standard: CGSize {
@@ -81,7 +81,7 @@ private struct NotchContent: View {
             // Laid out at the standard size and scaled, so every size has the same card.
             ExpandedContent(playback: playback, artwork: artwork, model: model)
                 .padding(.top, model.notch.height)
-                .background { Glow(colours: colours, showsGlow: showsGlow) }
+                .background { Glow(colours: colours) }
                 .frame(width: standard.width, height: standard.height, alignment: .top)
                 .scaleEffect(model.cardSize.scale, anchor: .top)
         case (.resting, let playback?):

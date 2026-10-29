@@ -3,6 +3,5 @@
 public enum NotchFont: String, CaseIterable, Sendable {
     case system
     case rounded
-    case serif
     case monospaced
 }
