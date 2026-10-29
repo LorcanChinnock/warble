@@ -9,7 +9,7 @@ private let song = PlaybackState(bundleIdentifier: "com.apple.Music", title: "So
 private let paused = PlaybackState(bundleIdentifier: "com.apple.Music", title: "Song", artist: "Artist", elapsedTimestamp: start, rate: 0)
 
 private struct Run {
-    var state = AppState()
+    var state = AppState.pausingAfterTenSeconds()
     var now = start
 
     init(_ housings: [NotchHousing], _ visibility: VirtualNotchVisibility = .standard) {

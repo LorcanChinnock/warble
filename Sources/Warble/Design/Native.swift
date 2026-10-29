@@ -32,7 +32,6 @@ enum Native {
         let design: NSFontDescriptor.SystemDesign? = switch font {
         case .system: nil
         case .rounded: .rounded
-        case .serif: .serif
         case .monospaced: .monospaced
         }
         guard let design, let descriptor = base.fontDescriptor.withDesign(design) else { return base }

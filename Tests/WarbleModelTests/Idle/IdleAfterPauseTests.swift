@@ -10,6 +10,7 @@ private func track(_ title: String = "Song", playing: Bool) -> PlaybackState {
 
 private func idle(_ events: (IdleEvent, TimeInterval)...) -> IdleAfterPause {
     var idle = IdleAfterPause()
+    idle.pauseDelay = .tenSeconds
     for (event, offset) in events {
         idle.handle(event, at: start + offset)
     }
@@ -124,8 +125,8 @@ private func idle(_ events: (IdleEvent, TimeInterval)...) -> IdleAfterPause {
     #expect(late.isIdle)
 }
 
-@Test func theDelayStartsAtTenSeconds() {
-    #expect(IdleAfterPause().pauseDelay == .tenSeconds)
+@Test func aPausedTrackStaysUntilSettingsSayOtherwise() {
+    #expect(IdleAfterPause().pauseDelay == .always)
     #expect(PauseDelay.tenSeconds.seconds == IdleAfterPause.delay)
 }
 

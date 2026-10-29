@@ -10,7 +10,7 @@ private let speakers: UInt32 = 2
 
 /// A player's card open over AirPods, with the speakers on offer.
 private struct Run {
-    var state = AppState()
+    var state = AppState.pausingAfterTenSeconds()
     var now = start
 
     init() {

@@ -134,3 +134,12 @@ actor FakeSource: NowPlayingSource {
         sent.append(command)
     }
 }
+
+extension AppState {
+    /// A state whose paused track goes Idle after ten seconds, for the tests of the countdown and of Idle itself.
+    static func pausingAfterTenSeconds() -> AppState {
+        var state = AppState()
+        state.idle.pauseDelay = .tenSeconds
+        return state
+    }
+}

@@ -11,7 +11,7 @@ private func track(_ title: String = "Song", playing: Bool = true) -> PlaybackSt
 private let notch = NotchHousing(display: "built-in", frame: CGRect(x: 856, y: 1205.5, width: 208, height: 37.5), isVirtual: false)
 
 private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
-    var state = AppState()
+    var state = AppState.pausingAfterTenSeconds()
     _ = reduce(&state, .housingsChanged([notch]), now: start)
     for (action, offset) in actions {
         _ = reduce(&state, action, now: start + offset)
@@ -82,7 +82,7 @@ private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
 }
 
 @Test func settingsChangeHowLongAPausedSongStays() {
-    var state = AppState()
+    var state = AppState.pausingAfterTenSeconds()
     _ = reduce(&state, .playbackReported(PlaybackState(bundleIdentifier: "com.apple.Music", title: "Song", elapsedTimestamp: start, rate: 1)), now: start)
     _ = reduce(&state, .playbackReported(PlaybackState(bundleIdentifier: "com.apple.Music", title: "Song", elapsedTimestamp: start, rate: 0)), now: start + 5)
     #expect(state.deadline == start + 5 + IdleAfterPause.delay)
@@ -93,40 +93,17 @@ private func state(_ actions: (AppAction, TimeInterval)...) -> AppState {
     #expect(state.showsPlayback)
 }
 
-@Test func theAlbumArtGlowStartsOn() {
-    #expect(AppState().showsGlow)
-}
-
-@Test func settingsTurnTheAlbumArtGlowOffAndOn() {
-    var state = AppState()
-    let effects = reduce(&state, .glowChanged(false), now: start)
-    #expect(!state.showsGlow)
-    #expect(effects.isEmpty)
-    #expect(state.deadline == nil)
-    _ = reduce(&state, .glowChanged(true), now: start + 1)
-    #expect(state.showsGlow)
-}
-
 @Test func settingsChooseTheNotchFont() {
-    var state = AppState()
+    var state = AppState.pausingAfterTenSeconds()
     #expect(state.notchFont == .system)
-    let effects = reduce(&state, .fontChanged(.serif), now: start)
-    #expect(state.notchFont == .serif)
-    #expect(effects.isEmpty)
-    #expect(state.deadline == nil)
-}
-
-@Test func matchingTheAlbumColourStartsOffAndSettingsTurnItOn() {
-    var state = AppState()
-    #expect(!state.matchesAlbumColour)
-    let effects = reduce(&state, .albumColourChanged(true), now: start)
-    #expect(state.matchesAlbumColour)
+    let effects = reduce(&state, .fontChanged(.monospaced), now: start)
+    #expect(state.notchFont == .monospaced)
     #expect(effects.isEmpty)
     #expect(state.deadline == nil)
 }
 
 @Test func settingsChooseTheCardSize() {
-    var state = AppState()
+    var state = AppState.pausingAfterTenSeconds()
     #expect(state.cardSize == .standard)
     let effects = reduce(&state, .cardSizeChanged(.large), now: start)
     #expect(state.cardSize == .large)

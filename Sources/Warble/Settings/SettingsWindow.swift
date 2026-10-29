@@ -9,7 +9,9 @@ final class SettingsWindow {
     private var closeObserver: NSObjectProtocol?
     /// What the window's views read. `AppEnvironment` sets it once it's built, which holds this window.
     weak var environment: AppEnvironment?
-    static let size = NSSize(width: 560, height: 720)
+    /// What the window opens at, and the least it can be made, which keeps the preview and a few rows showing.
+    static let size = NSSize(width: 560, height: 780)
+    static let minimumSize = NSSize(width: 520, height: 640)
 
     func show() {
         guard let environment else { return }
@@ -32,7 +34,7 @@ final class SettingsWindow {
     private func makeWindow() -> NSWindow {
         let window = NSWindow(
             contentRect: NSRect(origin: .zero, size: Self.size),
-            styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
+            styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
             backing: .buffered,
             defer: false
         )
@@ -42,6 +44,7 @@ final class SettingsWindow {
         // The website's cream in light and its dark palette in dark, following the system.
         window.backgroundColor = Warm.windowFill
         window.isReleasedWhenClosed = false
+        window.contentMinSize = Self.minimumSize
         window.collectionBehavior = [.moveToActiveSpace, .fullScreenNone]
         window.center()
         closeObserver = NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: window, queue: .main) { [weak self] _ in

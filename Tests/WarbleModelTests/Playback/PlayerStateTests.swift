@@ -7,7 +7,7 @@ private let notch = NotchHousing(display: "built-in", frame: CGRect(x: 856, y: 1
 private let song = PlaybackState(bundleIdentifier: "com.apple.Music", title: "Song", artist: "Artist", duration: 200, elapsed: 10, elapsedTimestamp: start, rate: 1, shuffle: .off, repeatMode: .off)
 
 private struct Run {
-    var state = AppState()
+    var state = AppState.pausingAfterTenSeconds()
     var effects: [AppEffect] = []
     var now = start
 

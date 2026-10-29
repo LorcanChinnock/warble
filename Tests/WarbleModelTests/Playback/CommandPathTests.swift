@@ -6,7 +6,7 @@ private let start = Date(timeIntervalSinceReferenceDate: 800_000_000)
 private let song = PlaybackState(bundleIdentifier: "com.apple.Music", title: "Song", elapsedTimestamp: start, rate: 1)
 
 private func playing() -> AppState {
-    var state = AppState()
+    var state = AppState.pausingAfterTenSeconds()
     _ = reduce(&state, .playbackReported(song), now: start)
     return state
 }

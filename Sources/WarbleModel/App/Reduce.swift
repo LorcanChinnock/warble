@@ -73,14 +73,10 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
             // The menu that was used to switch has closed and, with the pointer over it, the card is closing.
             state.notches.keepOpen(until: now + OutputSwitch.holdDuration, state.shared, at: now)
         }
-    case .glowChanged(let on):
-        state.showsGlow = on
     case .cardSizeChanged(let size):
         state.cardSize = size
     case .fontChanged(let font):
         state.notchFont = font
-    case .albumColourChanged(let on):
-        state.matchesAlbumColour = on
     case .pauseDelayChanged(let delay):
         state.idle.pauseDelay = delay
     case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .dismiss, .virtualTitleChanged, .virtualVisibilityChanged:

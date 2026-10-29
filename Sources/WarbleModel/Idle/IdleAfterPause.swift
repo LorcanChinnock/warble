@@ -17,7 +17,7 @@ public enum PauseDelay: String, CaseIterable, Sendable {
     case always
 
     /// The default, and what the notch did before this was a choice.
-    public static let standard = PauseDelay.tenSeconds
+    public static let standard = PauseDelay.always
 
     /// How long after the pause the notch goes Idle, or `nil` for never.
     public var seconds: TimeInterval? {
@@ -34,7 +34,7 @@ public enum PauseDelay: String, CaseIterable, Sendable {
 /// when it fires. With nothing paused there's no deadline, so no timer runs.
 public struct IdleAfterPause: Equatable, Sendable {
     /// How long a paused track stays on screen once the pointer is away, unless `pauseDelay` says otherwise.
-    public static let delay: TimeInterval = PauseDelay.standard.seconds ?? 10
+    public static let delay: TimeInterval = PauseDelay.tenSeconds.seconds ?? 10
 
     /// How long a paused track stays, which Settings changes. A track that is already paused takes the new delay from
     /// when its countdown started.
