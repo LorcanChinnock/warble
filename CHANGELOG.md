@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0-beta.20](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.19...v0.1.0-beta.20) (2026-10-30)
+
+
+### Features
+
+* **notch:** drift the open card's glow while a song plays ([#379](https://github.com/LorcanChinnock/warble/issues/379)) ([076d3b9](https://github.com/LorcanChinnock/warble/commit/076d3b97af87bcad5ca25d2d3add71c7018c1d05))
+
 ## [0.1.0-beta.19](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.18...v0.1.0-beta.19) (2026-10-30)
 
 
