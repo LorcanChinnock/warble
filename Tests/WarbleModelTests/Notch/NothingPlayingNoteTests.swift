@@ -98,7 +98,7 @@ private struct Run {
     run.wait(HoverIntent.expandDelay)
     run.send(.playbackReported(nil))
     run.wait(AppState.hideDelay)
-    #expect(run.state.notchState("built-in") == .recall)
+    #expect(run.state.notchState("built-in") == .note)
     #expect(!run.state.followsVolume)
 }
 

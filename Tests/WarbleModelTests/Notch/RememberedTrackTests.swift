@@ -39,13 +39,14 @@ private func idleAfterPause() -> (AppState, Date) {
     #expect(!state.followsVolume)
 }
 
-@Test func theLastTrackSurvivesTheSourceStoppingAndIsReplacedByTheNextOne() {
+@Test func theLastTrackIsForgottenOnceTheSourceStopsReportingAndReplacedByTheNextOne() {
     var state = AppState.pausingAfterTenSeconds()
     _ = reduce(&state, .playbackReported(song), now: start)
     _ = reduce(&state, .playbackReported(nil), now: start)
+    #expect(state.lastPlayed == song)
     _ = reduce(&state, .tick, now: start + AppState.hideDelay)
     #expect(state.playback == nil)
-    #expect(state.lastPlayed == song)
+    #expect(state.lastPlayed == nil)
     var next = song
     next.title = "Next"
     _ = reduce(&state, .playbackReported(next), now: start + 60)
