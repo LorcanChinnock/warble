@@ -236,7 +236,7 @@ struct NotchPreview: View {
         let standard = NotchLayout.frame(.expanded, notch: Self.housing)?.size ?? Self.housing.size
         return ExpandedContent(playback: song, artwork: preview.player.artwork, model: preview.model)
             .padding(.top, Self.housing.height)
-            .background { Glow(colours: preview.player.colours) }
+            .background { Glow(colours: preview.player.colours, isPlaying: song.isPlaying) }
             .frame(width: standard.width, height: standard.height, alignment: .top)
             .allowsHitTesting(false)
             .accessibilityHidden(true)
