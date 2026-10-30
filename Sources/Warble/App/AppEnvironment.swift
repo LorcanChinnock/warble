@@ -17,6 +17,8 @@ final class AppEnvironment {
     let displays: Displays
     let loginItem: LoginItem
     let notchSettings: NotchSettings
+    /// What's playing and its controls, shared by every notch and read by Settings' preview.
+    let player: PlayerModel
     let hotkeys: HotkeyCenter
     let settingsWindow: SettingsWindow
 
@@ -35,6 +37,7 @@ final class AppEnvironment {
         store.perform = { [weak runner] in runner?.perform($0) }
         runner.dispatch = dispatch
         runner.platform = { [weak platform] in platform?.perform($0) }
+        player = PlayerModel(dispatch: dispatch)
         notchSettings = NotchSettings(dispatch: dispatch)
         notchSettings.start()
         settingsWindow = SettingsWindow()
@@ -49,5 +52,6 @@ extension View {
             .environment(environment.updater)
             .environment(environment.loginItem)
             .environment(environment.notchSettings)
+            .environment(environment.player)
     }
 }

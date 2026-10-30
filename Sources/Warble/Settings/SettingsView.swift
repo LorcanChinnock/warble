@@ -189,7 +189,7 @@ struct SettingsView: View {
             .padding(.top, 44)
             VStack(alignment: .leading, spacing: 8) {
                 NotchPreview(showsTitle: notchSettings.showsVirtualTitle, notchFont: notchSettings.notchFont, pauseDelay: notchSettings.pauseDelay, cardSize: notchSettings.cardSize, visibility: notchSettings.virtualVisibility, isScrolling: isScrolling)
-                Text("How the notch looks, with a made-up song. Point at it to open it.")
+                Text("How the notch looks, with the song that's playing. Point at it to open it.")
                     .font(.footnote)
                     .foregroundStyle(Warm.secondary)
                     .padding(.horizontal, 14)

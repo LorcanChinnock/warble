@@ -24,6 +24,8 @@ final class PlayerModel {
         }
     }
     private(set) var artwork: NSImage?
+    /// Whether the notch shows what's playing rather than Idle, when `playback` may still hold the paused track.
+    var showsPlayback = false
     /// The last track that played, which the Idle notch offers again.
     var lastPlayed: PlaybackState? {
         didSet {
