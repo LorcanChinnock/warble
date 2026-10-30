@@ -93,14 +93,21 @@ final class NotchSurface {
         let state = value.state
         let notch = housing
         let isPlaying = value.isPlaying
-        guard let frame = NotchLayout.frame(state, notch: notch, cardSize: value.cardSize) else {
-            guard shown != nil else { return }
+        let frame = NotchLayout.frame(state, notch: notch, cardSize: value.cardSize)
+        let plan = PanelPlan.make(
+            state: state, target: frame, isPlaying: isPlaying, animated: animated,
+            shown: shown, panelFrame: panelFrame, wasPlaying: model.isPlaying
+        )
+        switch plan {
+        case .keep:
+            return
+        case .hide(let animated):
             shown = nil
             morphs += 1
             let morph = morphs
             log.notice("Notch hidden over \(NSStringFromRect(notch), privacy: .public)")
             // The wings slide back behind the housing before the panel goes.
-            guard animated, panelFrame != nil else {
+            guard animated else {
                 hide()
                 return
             }
@@ -111,45 +118,42 @@ final class NotchSurface {
                 guard let self, morph == self.morphs else { return }
                 self.hide()
             }
-            return
-        }
-        guard shown?.state != state || shown?.frame != frame || model.isPlaying != isPlaying
-        else { return }
-        let previous = shown
-        shown = (state, frame)
-        morphs += 1
-        let morph = morphs
-        if animated, previous == nil {
-            // Draw Hidden, the housing's own size, over the housing first, so the wings slide out from behind it. A hide
-            // still sliding in keeps its larger panel until the shape has caught up.
+        case .morph(let plan):
+            guard let frame else { return }
+            shown = (state, frame)
+            morphs += 1
+            let morph = morphs
             model.notch = notch
-            model.state = .hidden
-            show(in: panelFrame.map { $0.union(frame) } ?? frame)
-            panel.displayIfNeeded()
-        }
-        model.notch = notch
-        if animated, let panelFrame {
-            // Grow the panel before the shape does, so nothing is clipped, and shrink it once the shape has. What's playing
-            // changes in the same animation as the state, so playback starting or stopping cross-fades the content.
-            let union = panelFrame.union(frame)
-            if union != panelFrame {
-                show(in: union)
+            if let opening = plan.opening {
+                // Draw Hidden, the housing's own size, over the housing first, so the wings slide out from behind it. A hide
+                // still sliding in keeps its larger panel until the shape has caught up.
+                model.state = .hidden
+                show(in: opening)
+                panel.displayIfNeeded()
             }
-            let reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
-            withAnimation(reduceMotion ? Native.fade : Native.morph, completionCriteria: .removed) {
+            if plan.animated {
+                // Grow the panel before the shape does, so nothing is clipped, and shrink it once the shape has. What's
+                // playing changes in the same animation as the state, so playback starting or stopping cross-fades the
+                // content.
+                if let grow = plan.grow {
+                    show(in: grow)
+                }
+                let reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+                withAnimation(reduceMotion ? Native.fade : Native.morph, completionCriteria: .removed) {
+                    model.state = state
+                    model.isPlaying = isPlaying
+                } completion: { [weak self] in
+                    guard let self, morph == self.morphs, let settle = plan.settle else { return }
+                    self.show(in: settle)
+                }
+            } else {
                 model.state = state
                 model.isPlaying = isPlaying
-            } completion: { [weak self] in
-                guard let self, morph == self.morphs, self.panelFrame != frame else { return }
-                self.show(in: frame)
+                show(in: frame)
             }
-        } else {
-            model.state = state
-            model.isPlaying = isPlaying
-            show(in: frame)
+            panel.track(NotchLayout.hoverArea(state, notch: notch, cardSize: value.cardSize) ?? .zero)
+            log.notice("Notch \(state.rawValue, privacy: .public) at \(NSStringFromRect(frame), privacy: .public) over \(NSStringFromRect(notch), privacy: .public)")
         }
-        panel.track(NotchLayout.hoverArea(state, notch: notch, cardSize: value.cardSize) ?? .zero)
-        log.notice("Notch \(state.rawValue, privacy: .public) at \(NSStringFromRect(frame), privacy: .public) over \(NSStringFromRect(notch), privacy: .public)")
     }
 
     /// Puts the panel back where the layout has it if something else moved it. `draw` skips a layout whose frame hasn't

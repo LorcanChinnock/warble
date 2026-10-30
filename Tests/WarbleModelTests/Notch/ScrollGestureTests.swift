@@ -84,3 +84,13 @@ private func isScrub(_ outcome: ScrollGesture.Outcome) -> Bool {
 @Test func aFlickStopsMovingThroughTheSongOnceItIsFast() {
     #expect(scroll(dx: -30, count: 6, step: 0.01).filter(isScrub).count <= 1)
 }
+
+@Test(arguments: [
+    (true, true, true, ScrollGesture.Phase.momentum),
+    (false, true, true, .began),
+    (false, false, true, .ended),
+    (false, false, false, .changed),
+])
+func anEventsFlagsGiveItsPhase(coasting: Bool, began: Bool, ended: Bool, phase: ScrollGesture.Phase) {
+    #expect(ScrollGesture.Phase(coasting: coasting, began: began, endedOrCancelled: ended) == phase)
+}

@@ -95,8 +95,10 @@ final class NotchPanel: NSPanel {
     /// Takes a right-click, or a Control-click, before SwiftUI does, so it never reaches the controls or counts as a click
     /// that opens the notch.
     override func sendEvent(_ event: NSEvent) {
-        let isMenuClick = event.type == .rightMouseDown
-            || (event.type == .leftMouseDown && event.modifierFlags.intersection(.deviceIndependentFlagsMask).contains(.control))
+        let isMenuClick = NotchClick.opensMenu(
+            isRightButtonDown: event.type == .rightMouseDown, isLeftButtonDown: event.type == .leftMouseDown,
+            control: event.modifierFlags.intersection(.deviceIndependentFlagsMask).contains(.control)
+        )
         if isMenuClick, let onMenu {
             onMenu(event)
         } else {

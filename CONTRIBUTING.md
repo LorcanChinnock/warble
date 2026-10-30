@@ -29,6 +29,7 @@ Only `make dist` builds `Warble.app` with the update feed. Every other build is 
 | `make build` | `swift build`, without making an app |
 | `make test` | Run the `WarbleModel` and `WarbleCore` unit tests |
 | `make test-linux` | Run the `WarbleModel` tests on Linux in Docker, as CI does |
+| `make coverage` | Print line coverage per file for `WarbleModel` and `WarbleCore` ([docs/coverage.md](docs/coverage.md)) |
 | `make perf` | Time the paths with a performance budget ([docs/performance.md](docs/performance.md)) |
 | `make lint` | Check for code patterns that have caused bugs (`scripts/lint.sh`) and, on a Mac, that the string catalog is up to date |
 | `make strings` | Add new strings to `Resources/Localizable.xcstrings` and drop unused ones |
