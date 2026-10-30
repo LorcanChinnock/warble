@@ -41,6 +41,10 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var currentOutput: UInt32?
     /// The last switch of output, which explains itself when macOS puts the old output back.
     public internal(set) var outputSwitch = OutputSwitch()
+    /// The name of the output macOS kept when it undid a switch, while the note shows; `nil` when that output has gone.
+    public var keptOutputName: String? {
+        outputSwitch.kept.flatMap { kept in outputs.first { $0.id == kept }?.name }
+    }
     /// What the effects last asked for, so each is asked for once per change.
     public internal(set) var watchesClicks: Bool {
         get { notches.watchesClicks }

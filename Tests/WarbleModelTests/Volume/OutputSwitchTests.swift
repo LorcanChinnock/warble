@@ -108,3 +108,28 @@ private struct Run {
     run.send(.tick, after: OutputSwitch.holdDuration)
     #expect(run.state.notchState("built-in") == .resting)
 }
+
+@Test func theKeptOutputIsNamedFromTheOutputsOnOffer() {
+    var run = Run()
+    let pods = AudioOutput(id: airPods, name: "AirPods", transport: .bluetooth)
+    run.send(.selectOutput(speakers))
+    run.send(.outputsRead([pods], current: speakers))
+    run.send(.outputsRead([pods], current: airPods), after: 0.06)
+    #expect(run.state.keptOutputName == "AirPods")
+}
+
+@Test func aKeptOutputThatIsNoLongerOnOfferHasNoName() {
+    var run = Run()
+    run.send(.selectOutput(speakers))
+    run.send(.outputsRead([], current: speakers))
+    run.send(.outputsRead([], current: airPods), after: 0.06)
+    #expect(run.state.keptOutputName == nil)
+}
+
+@Test(arguments: [
+    (AppAction.command(.togglePlayPause), true), (AppAction.command(.play), true), (AppAction.command(.pause), true),
+    (AppAction.command(.nextTrack), false), (AppAction.tick, false),
+])
+func onlyPlayAndPauseCommandsArePlayPause(action: AppAction, expected: Bool) {
+    #expect(action.isPlayPause == expected)
+}
