@@ -100,6 +100,8 @@ Each feature has a note in [docs/architecture](docs/architecture), listed in CLA
 
 Nothing may sit between a hover or a click and the panel: dispatch is synchronous, with no `Task` hop, Combine or async/await on that path. A command's guess shows at once; the command itself goes to the player afterwards as an effect.
 
+Anything on the hover, expand or play/pause path adds a budget to `Tests/WarbleCoreTests/PerfTests.swift` and [docs/performance.md](docs/performance.md), and its pull request gets the `performance` label so CI runs it.
+
 ## Strings and translations
 
 Warble's interface is in English, German, Spanish, French, Italian, Japanese, Korean, Brazilian Portuguese and Simplified Chinese. Every string it shows goes through `Resources/Localizable.xcstrings`, so it can be translated. Each build extracts the strings from `Sources/Warble` and `Sources/WarbleCore` (see `Package.swift`), and `make strings` adds the new ones to the catalog. `make lint` and CI fail while the catalog is out of date.
