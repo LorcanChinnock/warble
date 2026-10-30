@@ -81,7 +81,7 @@ private struct NotchContent: View {
             // Laid out at the standard size and scaled, so every size has the same card.
             ExpandedContent(playback: playback, artwork: artwork, model: model)
                 .padding(.top, model.notch.height)
-                .background { Glow(colours: colours) }
+                .background { Glow(colours: colours, isPlaying: playback.isPlaying) }
                 .frame(width: standard.width, height: standard.height, alignment: .top)
                 .scaleEffect(model.cardSize.scale, anchor: .top)
         case (.resting, let playback?):
