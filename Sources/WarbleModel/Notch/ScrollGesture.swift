@@ -8,6 +8,19 @@ public struct ScrollGesture: Sendable {
         case began, changed, ended
         /// The coasting after fingers lift, which nothing acts on.
         case momentum
+        /// The phase an event reports: coasting wins over everything, then a gesture beginning, then it ending or being
+        /// cancelled, and anything else is it moving on. A mouse wheel reports no phase, so it is always `changed`.
+        public init(coasting: Bool, began: Bool, endedOrCancelled: Bool) {
+            self = if coasting {
+                .momentum
+            } else if began {
+                .began
+            } else if endedOrCancelled {
+                .ended
+            } else {
+                .changed
+            }
+        }
     }
 
     public enum Outcome: Equatable, Sendable {

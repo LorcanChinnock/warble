@@ -51,3 +51,13 @@ public enum AppAction: Equatable, Sendable {
     /// `AppState.deadline` came due.
     case tick
 }
+
+extension AppAction {
+    /// Whether this is a click or key on play/pause, which the app times from the input to the next frame.
+    public var isPlayPause: Bool {
+        switch self {
+        case .command(.togglePlayPause), .command(.play), .command(.pause): true
+        default: false
+        }
+    }
+}

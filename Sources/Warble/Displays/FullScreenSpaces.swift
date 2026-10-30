@@ -12,9 +12,6 @@ enum FullScreenSpaces {
     private typealias MainConnection = @convention(c) () -> Int32
     private typealias CopyDisplaySpaces = @convention(c) (Int32) -> Unmanaged<CFArray>?
 
-    /// The window server's type for a full-screen app's Space; a desktop's is 0.
-    private static let fullScreenType = 4
-
     private static let functions: (MainConnection, CopyDisplaySpaces)? = {
         guard let handle = dlopen(nil, RTLD_LAZY),
               let main = dlsym(handle, "CGSMainConnectionID"), let copy = dlsym(handle, "CGSCopyManagedDisplaySpaces")
@@ -25,21 +22,9 @@ enum FullScreenSpaces {
         return (unsafeBitCast(main, to: MainConnection.self), unsafeBitCast(copy, to: CopyDisplaySpaces.self))
     }()
 
-    /// The displays showing a full-screen app, by `NSScreen.uuid`. With Displays have separate Spaces off, every display
-    /// shares one Space, which the window server names "Main".
+    /// The displays showing a full-screen app, by `NSScreen.uuid`.
     static func displays() -> Set<String> {
         guard let (main, copy) = functions, let spaces = copy(main())?.takeRetainedValue() as? [[String: Any]] else { return [] }
-        var displays: Set<String> = []
-        for display in spaces {
-            guard let current = display["Current Space"] as? [String: Any], current["type"] as? Int == fullScreenType,
-                  let id = display["Display Identifier"] as? String
-            else { continue }
-            if id == "Main" {
-                displays.formUnion(NSScreen.screens.map(\.uuid))
-            } else {
-                displays.insert(id)
-            }
-        }
-        return displays
+        return FullScreenDisplays.from(spaces: spaces, allDisplays: NSScreen.screens.map(\.uuid))
     }
 }
