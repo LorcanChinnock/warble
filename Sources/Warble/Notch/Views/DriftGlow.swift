@@ -129,10 +129,12 @@ struct DriftGlow: NSViewRepresentable {
         }
 
         /// A scale loop that starts and ends at the resting scale of 1, swelling to `to` and shrinking to its mirror, so
-        /// starting it never jumps the pool. `duration` is each way, as in `loop`.
+        /// starting it never jumps the pool. It's additive, like the position loops, so it rides on a settle still under
+        /// way instead of overriding it. `duration` is each way, as in `loop`.
         private static func breathe(to: CGFloat, duration: Double) -> CAKeyframeAnimation {
             let animation = CAKeyframeAnimation(keyPath: "transform.scale")
-            animation.values = [1, to, 1, 2 - to, 1]
+            animation.values = [0, to - 1, 0, 1 - to, 0]
+            animation.isAdditive = true
             animation.calculationMode = .cubic
             animation.duration = duration * 4
             animation.repeatCount = .infinity
@@ -144,7 +146,8 @@ struct DriftGlow: NSViewRepresentable {
         private func settle(_ pool: CAGradientLayer) {
             let position = pool.presentation()?.position ?? pool.position
             let scale = pool.presentation()?.value(forKeyPath: "transform.scale") as? CGFloat ?? 1
-            pool.removeAllAnimations()
+            // Only the drift's own, so a colour fade under way carries on.
+            for key in ["x", "y", "scale"] { pool.removeAnimation(forKey: key) }
             for (keyPath, from, to) in [("position.x", position.x, pool.position.x), ("position.y", position.y, pool.position.y), ("transform.scale", scale, 1)] {
                 let animation = CABasicAnimation(keyPath: keyPath)
                 animation.fromValue = from
