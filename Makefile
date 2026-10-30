@@ -13,13 +13,17 @@ INSTALL_DIR ?= /Applications
 # Extra `swift test` flags, e.g. ARGS=--skip-build in CI.
 ARGS ?=
 
-.PHONY: build test test-linux perf lint strings bundle app run dist icon clean
+.PHONY: build test coverage test-linux perf lint strings bundle app run dist icon clean
 
 build:
 	swift build
 
 test:
 	swift test $(TEST_FLAGS) $(ARGS) --skip PerfTests
+
+# Line coverage per file for WarbleModel and WarbleCore, lowest first. Not a gate: it shows where tests are missing.
+coverage:
+	scripts/coverage.sh $(TEST_FLAGS) $(ARGS)
 
 # The performance budgets, alone and one test at a time, so other tests don't skew the timings. Budgets and baselines:
 # docs/performance.md.
