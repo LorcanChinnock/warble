@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.0-beta.18](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.17...v0.1.0-beta.18) (2026-10-30)
+
+
+### Features
+
+* **notch:** scalloped top corners, quicker motion and simpler Settings ([#365](https://github.com/LorcanChinnock/warble/issues/365)) ([1f36001](https://github.com/LorcanChinnock/warble/commit/1f360019f86fddd1541b65195c20c5b00d05e62b))
+* **settings:** draw the preview from the real notch views with what's playing ([#369](https://github.com/LorcanChinnock/warble/issues/369)) ([3b9b8fd](https://github.com/LorcanChinnock/warble/commit/3b9b8fd99360fab5f9317ee3e512675df4627e18))
+
 ## [0.1.0-beta.17](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.16...v0.1.0-beta.17) (2026-10-29)
 
 
