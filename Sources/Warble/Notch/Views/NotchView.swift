@@ -106,45 +106,43 @@ struct NoteContent: View {
 }
 
 /// What an empty notch offers when it remembers a track and the pointer is on it: the art, dimmed so it reads as past,
-/// the title and artist, and a button that plays it again. The button is there only while the app that played it is running.
+/// the title and artist, and a play icon. The whole card plays the track again. It's only offered while the app still
+/// holds the track, since `reduce` forgets it once the source stops reporting.
 private struct RecallContent: View {
     let notch: CGRect
     let player: PlayerModel
 
     var body: some View {
         if let track = player.lastPlayed {
-            HStack(spacing: 10) {
-                Artwork(image: player.lastArtwork, radius: 6, symbolSize: 18)
-                    .frame(width: 40, height: 40)
-                    .opacity(Native.dimmed)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(track.title)
-                        .font(Font(Native.titleFont(player.notchFont, size: 13, weight: .semibold)))
-                        .foregroundStyle(player.tint.map(Color.init(nsColor:)) ?? .white)
-                        .lineLimit(1)
-                    if let artist = track.artist {
-                        Text(artist)
-                            .font(.system(size: 12))
-                            .foregroundStyle(Native.secondary)
+            Button(action: player.resume) {
+                HStack(spacing: 10) {
+                    Artwork(image: player.lastArtwork, radius: 6, symbolSize: 18)
+                        .frame(width: 40, height: 40)
+                        .opacity(Native.dimmed)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(track.title)
+                            .font(Font(Native.titleFont(player.notchFont, size: 13, weight: .semibold)))
+                            .foregroundStyle(player.tint.map(Color.init(nsColor:)) ?? .white)
                             .lineLimit(1)
+                        if let artist = track.artist {
+                            Text(artist)
+                                .font(.system(size: 12))
+                                .foregroundStyle(Native.secondary)
+                                .lineLimit(1)
+                        }
                     }
+                    Spacer(minLength: 0)
+                    Image(systemName: "play.fill")
+                        .font(.system(size: 14))
+                        .frame(width: 32, height: 32)
                 }
-                .accessibilityElement(children: .combine)
-                .accessibilityLabel(Text("Last played: \(track.title)"))
-                Spacer(minLength: 0)
-                if !NSRunningApplication.runningApplications(withBundleIdentifier: track.bundleIdentifier).isEmpty {
-                    Button(action: player.resume) {
-                        Image(systemName: "play.fill")
-                            .font(.system(size: 14))
-                            .frame(width: 32, height: 32)
-                            .hoverWash(Circle())
-                    }
-                    .buttonStyle(.notch)
-                    .accessibilityLabel(Text("Play \(track.title) again"))
-                }
+                .padding(.horizontal, 14)
+                .frame(maxHeight: .infinity)
+                .contentShape(Rectangle())
+                .hoverWash(Rectangle())
             }
-            .padding(.horizontal, 14)
-            .frame(maxHeight: .infinity)
+            .buttonStyle(.notch)
+            .accessibilityLabel(Text("Play \(track.title) again"))
             .padding(.top, notch.height)
         }
     }

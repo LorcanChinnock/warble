@@ -113,8 +113,11 @@ extension PlaybackState {
 private func show(_ playback: PlaybackState?, in state: inout AppState, at now: Date) {
     state.hideAt = nil
     state.playback = playback
-    if let playback, !playback.title.isEmpty {
-        state.lastPlayed = playback
+    if let playback {
+        if !playback.title.isEmpty { state.lastPlayed = playback }
+    } else {
+        // The app no longer holds the track, so there's nothing left to resume.
+        state.lastPlayed = nil
     }
     state.idle.handle(.playback(playback), at: now)
 }
