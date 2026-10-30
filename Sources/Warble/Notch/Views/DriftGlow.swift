@@ -36,6 +36,7 @@ struct DriftGlow: NSViewRepresentable {
         private let trailingPool = CAGradientLayer()
         private var drifting = false
         private var drawn = false
+        private var laidOut = CGSize.zero
 
         init() {
             super.init(frame: .zero)
@@ -59,6 +60,9 @@ struct DriftGlow: NSViewRepresentable {
 
         override func layout() {
             super.layout()
+            // A layout pass at the same size would restart the loops, which jumps the pools.
+            guard bounds.size != laidOut else { return }
+            laidOut = bounds.size
             CATransaction.begin()
             CATransaction.setDisableActions(true)
             // The layer's origin is the bottom left, so each pool is centred on a bottom corner.
@@ -105,7 +109,7 @@ struct DriftGlow: NSViewRepresentable {
             for (pool, wander) in [(leadingPool, Self.leading), (trailingPool, Self.trailing)] {
                 pool.add(Self.loop("position.x", from: 0, to: wander.dx * bounds.width, duration: wander.durations.x, additive: true), forKey: "x")
                 pool.add(Self.loop("position.y", from: 0, to: wander.dy * bounds.height, duration: wander.durations.y, additive: true), forKey: "y")
-                pool.add(Self.loop("transform.scale", from: 2 - wander.scale, to: wander.scale, duration: wander.durations.scale, additive: false), forKey: "scale")
+                pool.add(Self.breathe(to: wander.scale, duration: wander.durations.scale), forKey: "scale")
             }
         }
 
@@ -120,6 +124,18 @@ struct DriftGlow: NSViewRepresentable {
             animation.repeatCount = .infinity
             animation.isAdditive = additive
             animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+            animation.preferredFrameRateRange = CAFrameRateRange(minimum: 15, maximum: 20, preferred: 20)
+            return animation
+        }
+
+        /// A scale loop that starts and ends at the resting scale of 1, swelling to `to` and shrinking to its mirror, so
+        /// starting it never jumps the pool. `duration` is each way, as in `loop`.
+        private static func breathe(to: CGFloat, duration: Double) -> CAKeyframeAnimation {
+            let animation = CAKeyframeAnimation(keyPath: "transform.scale")
+            animation.values = [1, to, 1, 2 - to, 1]
+            animation.calculationMode = .cubic
+            animation.duration = duration * 4
+            animation.repeatCount = .infinity
             animation.preferredFrameRateRange = CAFrameRateRange(minimum: 15, maximum: 20, preferred: 20)
             return animation
         }
