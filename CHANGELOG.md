@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0-beta.19](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.18...v0.1.0-beta.19) (2026-10-30)
+
+
+### Bug Fixes
+
+* **notch:** resume the last played track from the whole card ([#376](https://github.com/LorcanChinnock/warble/issues/376)) ([2312f7c](https://github.com/LorcanChinnock/warble/commit/2312f7c16155a79cec1b4ebef2f647dc9f759a39))
+
 ## [0.1.0-beta.18](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.17...v0.1.0-beta.18) (2026-10-30)
 
 
