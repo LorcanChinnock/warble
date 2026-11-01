@@ -44,7 +44,7 @@ swift test --filter <testName>    # one test, e.g. --filter notchSitsBetweenTheM
 
 ## Running and testing locally
 
-Local builds are `WarbleDev.app`. A real installed version is `/Applications/Warble.app`, usually from Homebrew. Never install over, rename or delete `Warble.app`, or Homebrew loses track of it.
+Local builds are `WarbleDev.app`. A real installed version is `/Applications/Warble.app`, usually from the curl installer on the website. Never install over, rename or delete `Warble.app`; it is the copy the user relies on.
 
 1. **Quit the installed release first:** `pkill -x Warble`. Both apps draw in the notch, so with both running their panels stack. `-x` matches the executable name exactly, so `pkill -x Warble` never kills WarbleDev, and `pkill -x WarbleDev` never kills the release.
 2. **Run the dev build:** `make run` builds, installs `/Applications/WarbleDev.app` and launches it. Confirm the running binary with `pgrep -lf WarbleDev`.

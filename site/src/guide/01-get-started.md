@@ -8,17 +8,17 @@ Warble is in beta. You can use it every day, but it's still being built, so thin
 
 ## Install Warble
 
-With [Homebrew](https://brew.sh), paste this into Terminal:
+Open Terminal (in Applications › Utilities), paste this line and press Return. It downloads the latest release, checks it against the release's checksum, copies Warble into Applications and opens it:
 
 ```sh
-brew install lorcanchinnock/tap/warble
+curl -fsSL https://warble.lorcanchinnock.com/install.sh | bash
 ```
 
-Or [download Warble](/download), open the zip and drag **Warble** into your Applications folder.
+macOS doesn't check apps that Terminal downloads, so Warble opens without a warning.
 
-## Open it the first time
+## If you downloaded the zip instead
 
-Warble isn't notarized by Apple yet, so macOS blocks it the first time you open it. You only do this once.
+[Download Warble](/download), open the zip and drag **Warble** into your Applications folder. Apple hasn't notarized Warble, so macOS blocks a browser download the first time you open it. You only do this once.
 
 1. Open Warble from your Applications folder. macOS says it can't check Warble for malicious software. Click **Done**.
 2. Open **System Settings**, choose **Privacy & Security**, and scroll down to **Security**.

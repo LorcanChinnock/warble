@@ -31,11 +31,13 @@ Warble is in beta: it works, and it's still being built.
 
 ## Install
 
+Paste this into Terminal. It downloads the latest release, checks it against the release's checksum, and copies Warble into Applications:
+
 ```sh
-brew install lorcanchinnock/tap/warble
+curl -fsSL https://warble.lorcanchinnock.com/install.sh | bash
 ```
 
-Or [download the latest release](https://warble.lorcanchinnock.com/download) and drag Warble into Applications. It needs macOS 15 or later, on Apple silicon or Intel. Warble isn't notarized by Apple yet, so macOS blocks it the first time you open it: the [install steps](https://warble.lorcanchinnock.com/#install) show how to open it anyway. The [user guide](https://warble.lorcanchinnock.com/docs/get-started/) covers the rest. Warble follows your Mac's language: English, German, Spanish, French, Italian, Japanese, Korean, Brazilian Portuguese or Simplified Chinese.
+Or [download the latest release](https://warble.lorcanchinnock.com/download) and drag Warble into Applications. Apple hasn't notarized Warble, so macOS blocks a browser download the first time you open it: the [install steps](https://warble.lorcanchinnock.com/#install) show how to open it anyway, and the command above skips this. It needs macOS 15 or later, on Apple silicon or Intel. To remove Warble, run `curl -fsSL https://warble.lorcanchinnock.com/uninstall.sh | bash`. The [user guide](https://warble.lorcanchinnock.com/docs/get-started/) covers the rest. Warble follows your Mac's language: English, German, Spanish, French, Italian, Japanese, Korean, Brazilian Portuguese or Simplified Chinese.
 
 ## Features
 
@@ -60,7 +62,7 @@ Warble shares its repository layout, tooling and release pipeline with [Shot](ht
 
 ## Support
 
-Warble is free, with no ads. [Sponsoring](https://github.com/sponsors/LorcanChinnock) keeps it that way and helps pay to notarize it.
+Warble is free, with no ads. [Sponsoring](https://github.com/sponsors/LorcanChinnock) keeps it that way.
 
 ## License
 

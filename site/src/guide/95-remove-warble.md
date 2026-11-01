@@ -6,7 +6,23 @@ group: Help
 
 Warble keeps very little on your Mac: its settings and a small cache from checking for updates. None of it ever leaves your Mac.
 
-## If you installed it with Homebrew
+## With one command
+
+Paste this into Terminal and press Return. It quits Warble and moves it to the Trash, and leaves your settings and the permission you gave it to control other apps, such as Music, in place, so installing Warble again picks up where you left off:
+
+```sh
+curl -fsSL https://warble.lorcanchinnock.com/uninstall.sh | bash
+```
+
+To delete its settings, that permission and its cache as well, use this line instead:
+
+```sh
+curl -fsSL https://warble.lorcanchinnock.com/uninstall.sh | bash -s -- --everything
+```
+
+If you turned on **Open at login**, also remove Warble in **System Settings › General › Login Items & Extensions**. A command can't do that for you.
+
+## If you installed it with Homebrew in the past
 
 Paste this into Terminal. It quits Warble and deletes it:
 
@@ -20,7 +36,7 @@ To delete its settings and its cache as well, use this instead:
 brew uninstall --cask --zap warble
 ```
 
-## If you downloaded it
+## By hand
 
 1. If you turned on **Open at login**, open **Settings…** from the Warble icon in the menu bar and turn it off.
 2. Click the Warble icon in the menu bar and choose **Quit Warble**. If you've hidden the icon, right-click the notch instead.

@@ -30,6 +30,11 @@ if [ -n "$hits" ]; then
     exit 1
 fi
 
+# The install command pipes this script into bash, so it gets the checks a script people run unread should.
+if command -v shellcheck > /dev/null; then
+    shellcheck site/public/install.sh site/public/uninstall.sh scripts/test-install.sh scripts/test-uninstall.sh
+fi
+
 # SwiftUI holds a single tap until the double-click interval passes, so every click lags by up to half a second.
 hits=$(grep -rnE 'onTapGesture\(count: *[2-9]' Sources || true)
 if [ -n "$hits" ]; then
