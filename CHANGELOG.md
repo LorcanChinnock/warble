@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0-beta.21](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.20...v0.1.0-beta.21) (2026-11-01)
+
+
+### Features
+
+* **release:** install with a curl command, add an uninstall script, drop Homebrew ([#382](https://github.com/LorcanChinnock/warble/issues/382)) ([fe94a1c](https://github.com/LorcanChinnock/warble/commit/fe94a1c5107969bfad36118d152668ed5cefea26))
+
 ## [0.1.0-beta.20](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.19...v0.1.0-beta.20) (2026-10-30)
 
 
