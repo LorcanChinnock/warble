@@ -18,7 +18,7 @@ macOS doesn't check apps that Terminal downloads, so Warble opens without a warn
 
 ## If you downloaded the zip instead
 
-[Download Warble](/download), open the zip and drag **Warble** into your Applications folder. Apple hasn't notarized Warble, so macOS blocks a browser download the first time you open it. You only do this once.
+Download the zip from the [latest release](https://github.com/LorcanChinnock/warble/releases/latest), open it and drag **Warble** into your Applications folder. Apple hasn't notarized Warble, so macOS blocks a browser download the first time you open it. You only do this once.
 
 1. Open Warble from your Applications folder. macOS says it can't check Warble for malicious software. Click **Done**.
 2. Open **System Settings**, choose **Privacy & Security**, and scroll down to **Security**.
