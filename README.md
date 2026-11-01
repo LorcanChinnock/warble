@@ -37,6 +37,8 @@ Paste this into Terminal. It downloads the latest release, checks it against the
 curl -fsSL https://warble.lorcanchinnock.com/install.sh | bash
 ```
 
+It needs macOS 15 or later, on Apple silicon or Intel. To remove Warble, run `curl -fsSL https://warble.lorcanchinnock.com/uninstall.sh | bash`. The [user guide](https://warble.lorcanchinnock.com/docs/get-started/) covers the rest. Warble follows your Mac's language: English, German, Spanish, French, Italian, Japanese, Korean, Brazilian Portuguese or Simplified Chinese.
+
 ## Features
 
 - **What's playing, in the notch.** The album art sits on one side, and on the other a few bars move while it plays. Open it to see the song on a soft glow in the album art's colours. The title and bars take a touch of the album's colour too, and Settings has a choice of typeface for the title.
