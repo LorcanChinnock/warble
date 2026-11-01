@@ -51,7 +51,8 @@ jobs:
           files="$(gh api "repos/$REPO/pulls/$PR/files" --paginate --jq '.[] | .filename, (.previous_filename // empty)')"
           app=false
           while IFS= read -r file; do
-            if ! [[ "$file" =~ ^(site/|docs/|[^/]+\.md$) ]]; then app=true; fi
+            # site/public/install.sh and uninstall.sh are what users run to install and remove Warble, and the macOS job tests them.
+            if ! [[ "$file" =~ ^(site/|docs/|[^/]+\.md$) ]] || [[ "$file" == site/public/install.sh || "$file" == site/public/uninstall.sh ]]; then app=true; fi
           done <<< "$files"
           echo "app=$app" >> "$GITHUB_OUTPUT"
 
@@ -102,6 +103,10 @@ jobs:
       - name: Test on macOS
         timeout-minutes: 10
         run: scripts/ci-test.sh test --skip-build
+      # Runs install.sh and uninstall.sh against local folders; they need macOS for ditto, xattr and sw_vers.
+      - name: Test the installer and uninstaller
+        timeout-minutes: 2
+        run: make test-install test-uninstall
       # On the release PR, which makes it the release gate, and on any PR labelled performance, to keep ordinary PRs'
       # runs short. Adding the label doesn't start a run; the next push does. Alone, so other tests running in parallel
       # don't skew the timings. Budgets: docs/performance.md.

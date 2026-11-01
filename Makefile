@@ -13,13 +13,21 @@ INSTALL_DIR ?= /Applications
 # Extra `swift test` flags, e.g. ARGS=--skip-build in CI.
 ARGS ?=
 
-.PHONY: build test coverage test-linux perf lint strings bundle app run dist icon clean
+.PHONY: build test test-install test-uninstall coverage test-linux perf lint strings bundle app run dist icon clean
 
 build:
 	swift build
 
 test:
 	swift test $(TEST_FLAGS) $(ARGS) --skip PerfTests
+
+# Runs site/public/install.sh against a local folder standing in for the GitHub release.
+test-install:
+	scripts/test-install.sh
+
+# Runs site/public/uninstall.sh against a fake home folder.
+test-uninstall:
+	scripts/test-uninstall.sh
 
 # Line coverage per file for WarbleModel and WarbleCore, lowest first. Not a gate: it shows where tests are missing.
 coverage:

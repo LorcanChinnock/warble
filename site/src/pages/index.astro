@@ -7,7 +7,7 @@ import player from '../../../docs/media/player.png';
 import { latestRelease } from '../lib/release';
 
 const release = await latestRelease();
-const brew = 'brew install lorcanchinnock/tap/warble';
+const install = 'curl -fsSL https://warble.lorcanchinnock.com/install.sh | bash';
 
 const points = [
   { key: 'note', title: 'Any player', color: 'pink', text: 'Apple Music, Spotify, podcast apps, and video in Safari, Chrome or any other browser.', icon: ['M9 18V6l10-2v12M6.5 15.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM16.5 13.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z'] },
@@ -52,7 +52,7 @@ const software = {
       <p class="lede">Warble shows what's playing in your Mac's notch. Hover over it to see the song, then play, pause, skip or switch speakers. When nothing's playing, it stays out of sight.</p>
       <div class="cta">
         <a class="button big" href="/download">Download for Mac</a>
-        <Copy command={brew} />
+        <Copy command={install} />
       </div>
       <ForMacs />
       <p class="meta">Free and open source · Beta {release.version} · macOS 15 or later · Apple silicon and Intel · <a href="#install">How to install</a></p>
@@ -73,7 +73,7 @@ const software = {
           <li class={`card point ${point.key}`}>
             <span class={`icon ${point.color}`}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{point.icon.map((d) => <path d={d} />)}</svg></span>
             <h3>{point.title}</h3>
-            <p>{point.text}{point.sponsor && <> The <a href="https://github.com/LorcanChinnock/warble">code is on GitHub</a>. If you like it, you can <a href="/sponsor">sponsor it</a>, which helps pay to have Apple notarize it.</>}</p>
+            <p>{point.text}{point.sponsor && <> The <a href="https://github.com/LorcanChinnock/warble">code is on GitHub</a>. If you like it, you can <a href="/sponsor">sponsor it</a>, which keeps it free.</>}</p>
           </li>
         ))}
       </ul>
@@ -86,8 +86,8 @@ const software = {
         <span class="panel-notch" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
         <div class="left">
           <h2 id="install-title">Get Warble.</h2>
-          <p class="blurb">Install it with Homebrew, or download the zip and drag Warble into Applications.</p>
-          <Copy command={brew} />
+          <p class="blurb">Paste this into Terminal. It downloads the latest release, checks it against the release's checksum and copies Warble into Applications. Or download the zip and drag it there yourself.</p>
+          <Copy command={install} />
           <div class="actions">
             <a class="button big dark" href="/download">Download the zip</a>
             <a class="button big quiet" href="https://github.com/LorcanChinnock/warble">GitHub</a>
@@ -96,12 +96,12 @@ const software = {
         </div>
         <div class="right">
           <p class="label">The first time you open it</p>
-          <p class="gate">Warble isn't notarized by Apple yet, so macOS blocks it the first time you open it:</p>
+          <p class="gate">After the command, Warble opens by itself. Play something and the notch slides out to show it.</p>
+          <p class="gate">If you downloaded the zip, Apple hasn't notarized Warble, so macOS blocks it the first time you open it:</p>
           <ol class="steps">
             <li><span>Open Warble from Applications. macOS says it can't check Warble. Click <b>Done</b>.</span></li>
             <li><span>Open <b>System Settings</b>, choose <b>Privacy &amp; Security</b> and scroll down to <b>Security</b>.</span></li>
             <li><span>Click <b>Open Anyway</b> next to the message about Warble, then confirm.</span></li>
-            <li><span>Play something. The notch slides out to show it.</span></li>
           </ol>
           <p class="beta">Warble is a beta, still being built, so expect changes between versions. The <a href="/docs/get-started/">guide</a> covers the rest.</p>
         </div>
