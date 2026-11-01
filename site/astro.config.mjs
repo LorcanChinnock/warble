@@ -4,7 +4,6 @@ import { fileURLToPath } from 'node:url';
 import * as pagefind from 'pagefind';
 import { SKIP, visit } from 'unist-util-visit';
 import { readGuide } from './src/lib/guide-files.ts';
-import { latestRelease } from './src/lib/release.ts';
 import { rehypeRepoLinks } from './src/lib/rehype.ts';
 
 const repo = 'https://github.com/LorcanChinnock/warble';
@@ -24,15 +23,13 @@ function rehypeDropCommitLinks() {
     });
 }
 
-/** Writes Cloudflare's _redirects, so /download is a real redirect to the latest release's zip, and old guide pages go to their new ones. */
+/** Writes Cloudflare's _redirects, so old guide pages go to their new ones. */
 function redirects() {
   return {
     name: 'warble-redirects',
     hooks: {
       'astro:build:done': async ({ dir }) => {
-        const release = await latestRelease();
         const lines = [
-          `/download ${release.zip} 302`,
           `/github ${repo} 302`,
           '/sponsor https://github.com/sponsors/LorcanChinnock 302',
           `/releases ${repo}/releases 302`,
