@@ -51,7 +51,6 @@ const software = {
       <h1>Your music, in the <span class="squig">notch<svg aria-hidden="true" viewBox="0 0 300 24" preserveAspectRatio="none"><path d="M4 14C40 2 70 22 110 12S190 4 230 14 280 8 296 12" fill="none" stroke="var(--pink)" stroke-width="8" stroke-linecap="round" pathLength="1" /></svg></span>.</h1>
       <p class="lede">Warble shows what's playing in your Mac's notch. Hover over it to see the song, then play, pause, skip or switch speakers. When nothing's playing, it stays out of sight.</p>
       <div class="cta">
-        <a class="button big" href="/download">Download for Mac</a>
         <Copy command={install} />
       </div>
       <ForMacs />
@@ -86,10 +85,9 @@ const software = {
         <span class="panel-notch" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
         <div class="left">
           <h2 id="install-title">Get Warble.</h2>
-          <p class="blurb">Paste this into Terminal. It downloads the latest release, checks it against the release's checksum and copies Warble into Applications. Or download the zip and drag it there yourself.</p>
+          <p class="blurb">Paste this into Terminal. It downloads the latest release, checks it against the release's checksum and copies Warble into Applications.</p>
           <Copy command={install} />
           <div class="actions">
-            <a class="button big dark" href="/download">Download the zip</a>
             <a class="button big quiet" href="https://github.com/LorcanChinnock/warble">GitHub</a>
           </div>
           <ForMacs />
@@ -97,7 +95,7 @@ const software = {
         <div class="right">
           <p class="label">The first time you open it</p>
           <p class="gate">After the command, Warble opens by itself. Play something and the notch slides out to show it.</p>
-          <p class="gate">If you downloaded the zip, Apple hasn't notarized Warble, so macOS blocks it the first time you open it:</p>
+          <p class="gate">If macOS says it can't check Warble, Apple hasn't notarized it, so allow it once:</p>
           <ol class="steps">
             <li><span>Open Warble from Applications. macOS says it can't check Warble. Click <b>Done</b>.</span></li>
             <li><span>Open <b>System Settings</b>, choose <b>Privacy &amp; Security</b> and scroll down to <b>Security</b>.</span></li>
