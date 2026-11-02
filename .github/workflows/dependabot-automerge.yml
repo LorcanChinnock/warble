@@ -19,12 +19,15 @@ jobs:
         uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      # Patch and minor bumps only. Major bumps, and the Sparkle (swift) and mediaremote-adapter
-      # (gitsubmodule) bumps that ship inside the app, stay manual.
+      # Patch and minor bumps only, so major and unclassified bumps (a submodule moves between commits and has no
+      # update type) stay manual. The ecosystem check also keeps Sparkle (swift) and the mediaremote-adapter submodule,
+      # which ship inside the app, manual. fetch-metadata reads the ecosystem from the branch name, where the
+      # submodule one is `submodules`.
       - if: >-
-          steps.metadata.outputs.update-type != 'version-update:semver-major'
+          (steps.metadata.outputs.update-type == 'version-update:semver-patch'
+          || steps.metadata.outputs.update-type == 'version-update:semver-minor')
           && steps.metadata.outputs.package-ecosystem != 'swift'
-          && steps.metadata.outputs.package-ecosystem != 'gitsubmodule'
+          && steps.metadata.outputs.package-ecosystem != 'submodules'
         run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
