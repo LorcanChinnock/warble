@@ -58,6 +58,7 @@ final class NotchController {
             let surface = surfaces[housing.display] ?? makeSurface(housing)
             surfaces[housing.display] = surface
             surface.housing = housing.frame
+            surface.shape = housing.shape
             surface.replace()
         }
         layingOut = true

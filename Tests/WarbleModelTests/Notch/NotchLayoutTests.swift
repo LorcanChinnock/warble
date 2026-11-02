@@ -139,6 +139,22 @@ func theWindowCoversWholePointsAndStaysCentredOnTheHousing(_ scale: MeasuredScal
     #expect(NotchLayout.hoverArea(.resting, notch: notch, cardSize: .large) == notch)
 }
 
+@Test func aPillIsRoundAndHasNoFlare() {
+    let pill = CGRect(x: 600, y: 740, width: 126, height: 30)
+    #expect(NotchLayout.cornerRadius(notch: pill, shape: .pill) == 15)
+    #expect(NotchLayout.topCornerRadius(notch: pill, shape: .pill) == 0)
+    #expect(NotchLayout.topCornerRadius(notch: pill) > 0)
+}
+
+@Test func aPillsCardHangsFromThePillAndKeepsTheGapAboveIt() throws {
+    let pill = CGRect(x: 600, y: 740, width: 126, height: 30)
+    let card = try #require(NotchLayout.frame(.expanded, notch: pill))
+    #expect(card.maxY == pill.maxY)
+    #expect(card.midX == pill.midX)
+    #expect(NotchLayout.hoverArea(.resting, notch: pill) == pill)
+    #expect(NotchLayout.window(for: pill, flare: NotchLayout.topCornerRadius(notch: pill, shape: .pill)) == pill)
+}
+
 @Test func theFlareReachesOutsideTheFrameOnBothSides() {
     let notch = CGRect(x: 456, y: 643, width: 112, height: 20)
     #expect(NotchLayout.window(for: notch, flare: 6) == CGRect(x: 450, y: 643, width: 124, height: 20))

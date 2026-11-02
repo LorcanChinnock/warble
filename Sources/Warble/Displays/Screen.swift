@@ -15,6 +15,14 @@ extension NSScreen {
         MenuBar.notch(safeAreaTop: safeAreaInsets.top, leftArea: auxiliaryTopLeftArea, rightArea: auxiliaryTopRightArea)
     }
 
+    /// AppKit global frame of a pill-shaped camera cutout, or `nil` without one. macOS has no value for a cutout that
+    /// we've confirmed, so a Mac with one reads as having no notch and gets the virtual notch, flush with the top edge.
+    /// To see the pill, launch with `-notchPreviewHousing pill`, which gives the main display a made-up cutout.
+    var cutout: CGRect? {
+        guard UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)["notchPreviewHousing"] as? String == "pill", self == NSScreen.screens.first else { return nil }
+        return VirtualNotch.previewCutout(in: frame)
+    }
+
     /// The display's UUID, which, unlike `displayID`, stays the same across launches and reconnections.
     var uuid: String {
         guard let uuid = CGDisplayCreateUUIDFromDisplayID(displayID)?.takeRetainedValue() else { return "\(displayID)" }
@@ -26,11 +34,12 @@ extension NSScreen {
     /// To see the virtual notch on a Mac with a notch, launch with `open build/WarbleDev.app --args -notchPreviewVirtual
     /// YES`, which treats every display as having none for that launch.
     static var notchDisplays: [NotchDisplay] {
-        let ignoresNotch = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)["notchPreviewVirtual"] != nil
+        let arguments = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
+        let ignoresNotch = arguments["notchPreviewVirtual"] != nil || arguments["notchPreviewHousing"] != nil
         return screens.enumerated().map { index, screen in
             NotchDisplay(
                 id: screen.uuid, frame: screen.frame, menuBarHeight: screen.menuBarHeight,
-                notch: ignoresNotch ? nil : screen.notch, isMain: index == 0
+                notch: ignoresNotch ? nil : screen.notch, cutout: screen.cutout, isMain: index == 0
             )
         }
     }
