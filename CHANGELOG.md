@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0-beta.22](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.21...v0.1.0-beta.22) (2026-11-02)
+
+
+### Features
+
+* **notch:** draw the notch around a pill-shaped camera cutout ([#392](https://github.com/LorcanChinnock/warble/issues/392)) ([fca8dfb](https://github.com/LorcanChinnock/warble/commit/fca8dfb6843ad3d317dee14b25df3817ffbdfa74))
+
 ## [0.1.0-beta.21](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.20...v0.1.0-beta.21) (2026-11-01)
 
 
