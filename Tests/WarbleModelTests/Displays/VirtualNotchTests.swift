@@ -65,6 +65,37 @@ private func main(_ display: NotchDisplay) -> NotchDisplay {
     #expect(housings.map(\.isVirtual) == [true])
 }
 
+@Test func aCutoutIsARealPillHousingAndNotAVirtualNotch() {
+    var air = builtIn
+    air.notch = nil
+    air.cutout = VirtualNotch.previewCutout(in: air.frame)
+    #expect(VirtualNotch.housings([air]) == [
+        NotchHousing(display: "built-in", frame: VirtualNotch.previewCutout(in: air.frame), isVirtual: false, shape: .pill),
+    ])
+}
+
+@Test func aNotchWinsOverACutoutOnTheSameDisplay() throws {
+    var both = builtIn
+    both.cutout = VirtualNotch.previewCutout(in: both.frame)
+    let housing = try #require(VirtualNotch.housings([both]).first)
+    #expect(housing.shape == .notch)
+    #expect(housing.frame == both.notch)
+}
+
+@Test func aCutoutOnADisplayThatIsNotMainStillGetsAHousing() {
+    var second = builtIn
+    second.notch = nil
+    second.isMain = false
+    second.cutout = VirtualNotch.previewCutout(in: second.frame)
+    #expect(VirtualNotch.housings([main(external), second]).map(\.shape) == [.notch, .pill])
+}
+
+@Test func thePreviewCutoutIsCentredBelowTheTopEdge() {
+    let cutout = VirtualNotch.previewCutout(in: builtIn.frame)
+    #expect(cutout.midX == builtIn.frame.midX)
+    #expect(cutout.maxY < builtIn.frame.maxY)
+}
+
 @Test func otherDisplaysDrawNothing() {
     var second = external
     second.id = "second"

@@ -19,7 +19,7 @@ extension NSScreen {
     /// we've confirmed, so a Mac with one reads as having no notch and gets the virtual notch, flush with the top edge.
     /// To see the pill, launch with `-notchPreviewHousing pill`, which gives the main display a made-up cutout.
     var cutout: CGRect? {
-        guard UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)["notchPreviewHousing"] as? String == "pill" else { return nil }
+        guard UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)["notchPreviewHousing"] as? String == "pill", self == NSScreen.screens.first else { return nil }
         return VirtualNotch.previewCutout(in: frame)
     }
 
