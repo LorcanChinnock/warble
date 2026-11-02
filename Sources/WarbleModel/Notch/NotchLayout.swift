@@ -81,14 +81,21 @@ public enum NotchLayout {
     /// How far the remembered track's card reaches below the housing: the art beside two lines, with room around them.
     public static let recallDrop: CGFloat = 72
 
-    /// The radius of the housing's bottom corners, which Empty and Resting draw too.
-    public static func cornerRadius(notch: CGRect) -> CGFloat {
-        notch.height * cornerRatio
+    /// The radius of the housing's bottom corners, which Empty and Resting draw too. A pill is round: half its height.
+    public static func cornerRadius(notch: CGRect, shape: HousingShape = .notch) -> CGFloat {
+        switch shape {
+        case .notch: notch.height * cornerRatio
+        case .pill: notch.height / 2
+        }
     }
 
-    /// The radius of the top corners' outward flare, which every state draws.
-    public static func topCornerRadius(notch: CGRect) -> CGFloat {
-        notch.height * topCornerRatio
+    /// The radius of the top corners' outward flare, which every state draws. A pill isn't joined to the top edge, so it
+    /// has none.
+    public static func topCornerRadius(notch: CGRect, shape: HousingShape = .notch) -> CGFloat {
+        switch shape {
+        case .notch: notch.height * topCornerRatio
+        case .pill: 0
+        }
     }
 
     /// The space around the art and the play-state bars in a resting wing, the same on every side.

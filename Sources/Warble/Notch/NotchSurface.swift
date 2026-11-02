@@ -13,6 +13,8 @@ final class NotchSurface {
     let display: String
     /// The camera housing the panel is drawn over.
     var housing: CGRect
+    /// The housing's outline, which sets the panel's corners and the flare its window holds.
+    var shape = HousingShape.notch
     /// What the store last decided for this notch, which `render` draws.
     private var last: NotchRender?
     var state: NotchState { last?.state ?? .hidden }
@@ -124,6 +126,7 @@ final class NotchSurface {
             morphs += 1
             let morph = morphs
             model.notch = notch
+            model.shape = shape
             if let opening = plan.opening {
                 // Draw Hidden, the housing's own size, over the housing first, so the wings slide out from behind it. A hide
                 // still sliding in keeps its larger panel until the shape has caught up.
@@ -165,7 +168,7 @@ final class NotchSurface {
     }
 
     /// How far the shape's top corners reach outside the housing's width, which the panel's window holds.
-    private var flare: CGFloat { NotchLayout.topCornerRadius(notch: housing) }
+    private var flare: CGFloat { NotchLayout.topCornerRadius(notch: housing, shape: shape) }
 
     private func hide() {
         panel.orderOut(nil)

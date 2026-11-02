@@ -10,6 +10,8 @@ final class NotchModel {
     var state = NotchState.hidden
     /// The camera housing, real or virtual, which every state's shape is measured from.
     var notch = CGRect.zero
+    /// The housing's outline: a notch joined to the top edge, or a pill below it.
+    var shape = HousingShape.notch
     /// What's playing, shared by every display's notch.
     let player: PlayerModel
     /// Whether the notch shows what's playing, rather than Idle. While Idle, `player` may still hold the paused track.

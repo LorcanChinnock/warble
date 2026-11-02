@@ -6,6 +6,12 @@ Read this before changing the panel, its states, hover, displays, scrolling or t
 
 `NotchController` (`Sources/Warble/Notch`) keeps a `NotchSurface` for each camera housing that `VirtualNotch.housings` (WarbleModel) returns: the built-in display's notch, and a virtual one at the top centre of the main display when it has no notch of its own, so a lid-open MacBook with an external main display draws both. Each surface puts its `NotchPanel` over its housing in a `NotchState`, at the frame `NotchLayout` works out, while `PlayerModel` holds what's playing once for all of them. The controller only turns displays, from the `DisplayProvider` port (`Displays`), into surfaces and dispatches `.housingsChanged`, again whenever they change. In `Store.onChange` it copies the state into `PlayerModel` and has each surface draw what `AppState` says for it (`NotchSurface.apply(_:)`, then `update`). Turning mirroring on or off sends several screen changes while the window server rebuilds the displays, and it moves windows to fit each half-built arrangement. `NotchSurface.draw` asks `PanelPlan` (WarbleModel) what to do: keep what's drawn, hide, or morph, with the frame to open Hidden in, the frame to grow the panel to first and the frame to settle on after, so `NotchSurface` only carries the plan out. It skips a layout whose frame hasn't changed, so `NotchSurface.replace()` puts the panel back where its layout has it, on each layout and whenever `NotchPanel` reports a move (`onDisplaced`).
 
+## Cutouts
+
+A display can report `NotchDisplay.cutout`, a pill-shaped camera hole set below the top edge, in place of a notch. `VirtualNotch.housings` then returns it as a real housing (`isVirtual` false) with `HousingShape.pill`, so `VirtualNotchVisibility` never applies to it. A pill is round all round (`NotchLayout.cornerRadius(notch:shape:)` is half its height, and `NotchShape.roundTop` rounds its top corners as much), has no flare, and keeps its gap to the top edge: every state is laid out from the pill's own frame, so the open card hangs from the pill's top. The empty state is the pill itself, so nothing extra is drawn until the pointer opens the note.
+
+No Mac is known to report a cutout, and macOS has no value for one that we've confirmed, so `NSScreen.cutout` is `nil` except under `-notchPreviewHousing pill`, which gives the main display a made-up one (`VirtualNotch.previewCutout`) and ignores its real notch. Until that is known, a Mac with a cutout reads as having no notch and gets the virtual notch flush with the top edge, black over black. Find the value, and return it from `NSScreen.cutout`, before treating this as shipped.
+
 ## When a virtual notch is there
 
 `VirtualNotchVisibility` (WarbleModel) is Settings' choice for a notch Warble draws: only while playing, always, or off. `Notches.notchState` applies it to a virtual surface alone, so a real notch is never affected by it. Off is Hidden at all times. Only while playing is Hidden at Idle. Always is Empty at Idle. A full-screen app still hides every notch.
@@ -50,7 +56,7 @@ Expanded holds the playback controls. They dispatch `.command`, and `reduce` sho
 
 ## Previews
 
-To see the notch without playing anything, launch with `open build/WarbleDev.app --args -notchPreviewState resting`, which shows a preview track instead of reading the adapter, and hover it. Add `-notchPreviewVirtual YES` to draw the virtual notch instead, on a Mac that has a notch.
+To see the notch without playing anything, launch with `open build/WarbleDev.app --args -notchPreviewState resting`, which shows a preview track instead of reading the adapter, and hover it. Add `-notchPreviewVirtual YES` to draw the virtual notch instead, on a Mac that has a notch, or `-notchPreviewHousing pill` to draw a pill-shaped cutout.
 
 ## The context menu
 

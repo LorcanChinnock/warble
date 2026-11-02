@@ -18,9 +18,9 @@ enum Native {
     static let noteRadius: CGFloat = 14
 
     /// Bottom corner radius of the notch over `notch`: the camera housing's own at rest, `expandedRadius` once open.
-    static func radius(_ state: NotchState, notch: CGRect) -> CGFloat {
+    static func radius(_ state: NotchState, notch: CGRect, shape: HousingShape = .notch) -> CGFloat {
         switch state {
-        case .hidden, .empty, .resting: NotchLayout.cornerRadius(notch: notch)
+        case .hidden, .empty, .resting: NotchLayout.cornerRadius(notch: notch, shape: shape)
         case .expanded: expandedRadius
         case .note, .recall: noteRadius
         }

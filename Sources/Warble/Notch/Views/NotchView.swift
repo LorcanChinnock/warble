@@ -10,8 +10,10 @@ struct NotchView: View {
     var body: some View {
         let state = model.state
         let size = model.size(state)
-        let flare = NotchLayout.topCornerRadius(notch: model.notch)
-        let shape = NotchShape(topRadius: flare, bottomRadius: Native.radius(state, notch: model.notch))
+        let flare = NotchLayout.topCornerRadius(notch: model.notch, shape: model.shape)
+        let radius = Native.radius(state, notch: model.notch, shape: model.shape)
+        // A pill's top corners are as round as its bottom ones, since nothing joins it to the screen's edge.
+        let shape = NotchShape(topRadius: flare, bottomRadius: radius, roundTop: model.shape == .pill ? radius : 0)
         ZStack(alignment: .top) {
             shape
                 .fill(Native.panel)
