@@ -1,11 +1,14 @@
 import AppKit
 
-/// What a right-click on any notch offers: the app it follows, Settings, updates and Quit, so Warble can be reached and
+/// What a right-click on any notch offers: the app it follows, copying the song, Settings, updates and Quit, so Warble can be reached and
 /// quit with its menu bar icon off. Built only when it opens, so a resting notch keeps nothing up to date.
 @MainActor
 enum NotchMenu {
-    /// `source` is the bundle identifier of the app that's playing, or while Idle the one that played last.
-    static func make(source: String?, updater: Updater, settingsWindow: SettingsWindow, openApp: @escaping () -> Void) -> NSMenu {
+    /// `source` is the bundle identifier of the app that's playing, or while Idle the one that played last. `copyText`
+    /// is the song and artist to copy, from `TrackTitle.copyText`, or `nil` while no track with a title shows.
+    static func make(
+        source: String?, copyText: String?, updater: Updater, settingsWindow: SettingsWindow, openApp: @escaping () -> Void
+    ) -> NSMenu {
         let menu = NSMenu()
         if let source, let app = NSWorkspace.shared.urlForApplication(withBundleIdentifier: source) {
             let item = ActionItem(title: String(localized: "Open \(name(of: app, bundleIdentifier: source))"), action: openApp)
@@ -13,6 +16,14 @@ enum NotchMenu {
             icon.size = NSSize(width: 16, height: 16)
             item.image = icon
             menu.addItem(item)
+        }
+        if let copyText {
+            menu.addItem(ActionItem(title: String(localized: "Copy Song and Artist")) {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(copyText, forType: .string)
+            })
+        }
+        if !menu.items.isEmpty {
             menu.addItem(.separator())
         }
         menu.addItem(ActionItem(title: String(localized: "Settings…"), keyEquivalent: ",") { settingsWindow.show() })
