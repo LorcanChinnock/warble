@@ -117,6 +117,9 @@
         }
       }
     },
+    "Add to Favourites" : {
+
+    },
     "All" : {
       "localizations" : {
         "de" : {
@@ -1948,6 +1951,9 @@
         }
       }
     },
+    "Remove from Favourites" : {
+
+    },
     "Repeat" : {
       "localizations" : {
         "de" : {
@@ -2054,6 +2060,9 @@
           }
         }
       }
+    },
+    "Show a heart to favourite songs in Music" : {
+
     },
     "Show the title in a virtual notch" : {
 
@@ -2488,6 +2497,9 @@
           }
         }
       }
+    },
+    "While Music is playing, a heart beside the title on the opened notch adds the song to your Favourites in Music, or takes it out. The first time, macOS asks you to let Warble control Music." : {
+
     },
     "macOS kept the sound on %@. Switch in System Settings › Sound instead." : {
 

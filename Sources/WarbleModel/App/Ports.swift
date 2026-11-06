@@ -65,3 +65,12 @@ public protocol AudioOutputs: AnyObject {
     func startListening(_ onChange: @escaping () -> Void)
     func stopListening()
 }
+
+/// Music's Favourites, through its AppleScript. Each call runs off the main actor and may take a while, since Music can
+/// be busy or macOS can be asking for Automation permission.
+public protocol MusicFavourites: Sendable {
+    /// Whether the song titled `title` that Music is playing is a favourite, or `nil` when Music plays another or can't say.
+    func isFavourite(title: String) async -> Bool?
+    /// Makes the song titled `title` a favourite or not, and returns what it is afterwards, or `nil` when that fails.
+    func setFavourite(_ favourited: Bool, title: String) async -> Bool?
+}

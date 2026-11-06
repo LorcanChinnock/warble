@@ -122,11 +122,36 @@ final class FakeOutputs: AudioOutputs {
     }
 }
 
+/// Music's Favourites as a test sets them, by title, recording what it was asked.
+actor FakeFavourites: MusicFavourites {
+    /// Each title's `favorited`; a title missing here can't be read or set, as when `favorited` fails.
+    var favourites: [String: Bool] = [:]
+    private(set) var reads: [String] = []
+    private(set) var sets: [(Bool, String)] = []
+
+    init(_ favourites: [String: Bool] = [:]) {
+        self.favourites = favourites
+    }
+
+    func isFavourite(title: String) async -> Bool? {
+        reads.append(title)
+        return favourites[title]
+    }
+
+    func setFavourite(_ favourited: Bool, title: String) async -> Bool? {
+        sets.append((favourited, title))
+        guard favourites[title] != nil else { return nil }
+        favourites[title] = favourited
+        return favourited
+    }
+}
+
 @MainActor
 func makeRunner(
-    hotkeys: FakeHotkeys = FakeHotkeys(), volume: FakeVolume = FakeVolume(), outputs: FakeOutputs = FakeOutputs()
+    hotkeys: FakeHotkeys = FakeHotkeys(), volume: FakeVolume = FakeVolume(), outputs: FakeOutputs = FakeOutputs(),
+    favourites: FakeFavourites = FakeFavourites()
 ) -> EffectRunner {
-    EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs)
+    EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, favourites: favourites)
 }
 
 /// A player that records the commands it's sent.

@@ -137,7 +137,7 @@ public final class ScriptSource: NowPlayingSource {
     }
 
     /// What `read` makes of the script's result, or `nil` and the error number when it fails.
-    private nonisolated static func execute<T: Sendable>(_ source: String, _ read: @escaping @Sendable (NSAppleEventDescriptor) -> T) async -> (result: T?, error: Int?) {
+    nonisolated static func execute<T: Sendable>(_ source: String, _ read: @escaping @Sendable (NSAppleEventDescriptor) -> T) async -> (result: T?, error: Int?) {
         await withCheckedContinuation { continuation in
             queue.async {
                 var error: NSDictionary?

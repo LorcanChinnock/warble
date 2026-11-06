@@ -6,6 +6,7 @@ public final class EffectRunner {
     private let hotkeys: any HotkeyRegistrar
     private let volume: any VolumeControl
     private let outputs: any AudioOutputs
+    private let favourites: any MusicFavourites
     /// Carries out the effects that need AppKit. The app sets it, since it owns what they change.
     public var platform: (AppEffect) -> Void = { _ in }
     /// Where an answer goes back in as an action. The store sets it once both exist.
@@ -16,10 +17,11 @@ public final class EffectRunner {
     private var holdsEscape = false
     private var followsVolume = false
 
-    public init(hotkeys: any HotkeyRegistrar, volume: any VolumeControl, outputs: any AudioOutputs) {
+    public init(hotkeys: any HotkeyRegistrar, volume: any VolumeControl, outputs: any AudioOutputs, favourites: any MusicFavourites) {
         self.hotkeys = hotkeys
         self.volume = volume
         self.outputs = outputs
+        self.favourites = favourites
     }
 
     public func perform(_ effect: AppEffect) {
@@ -48,6 +50,19 @@ public final class EffectRunner {
         case .send(let command):
             guard let source else { return }
             Task { await source.send(command) }
+        case .readFavourite(let ask):
+            // Off the main actor, after the card has opened, so Music being slow never holds up the notch.
+            let favourites = favourites
+            Task { [weak self] in
+                let value = await favourites.isFavourite(title: ask.track.title)
+                self?.dispatch(.favouriteAnswered(value, ask))
+            }
+        case .setFavourite(let favourited, let ask):
+            let favourites = favourites
+            Task { [weak self] in
+                let value = await favourites.setFavourite(favourited, title: ask.track.title)
+                self?.dispatch(.favouriteAnswered(value, ask))
+            }
         case .watchClicksOutside, .openApp, .openArtist, .haptic:
             platform(effect)
         }

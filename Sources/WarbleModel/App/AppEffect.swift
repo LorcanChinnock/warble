@@ -21,4 +21,8 @@ public enum AppEffect: Equatable, Sendable {
     /// A light tick on a Force Touch trackpad.
     case haptic
     case selectOutput(UInt32)
+    /// Ask Music whether the song is a favourite, off the main actor, and answer with `.favouriteAnswered`.
+    case readFavourite(Favourite.Ask)
+    /// Make the song a favourite in Music (true) or not, and answer with what it is afterwards.
+    case setFavourite(Bool, Favourite.Ask)
 }

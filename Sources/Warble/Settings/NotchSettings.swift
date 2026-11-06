@@ -5,7 +5,8 @@ import WarbleModel
 private let log = Logger.warble("settings")
 
 /// What Settings chooses about the notch: whether a virtual notch shows the title in its middle, how long a paused song
-/// stays, when a virtual notch is there, how big the open card is and the face of the notch's title. Each is kept in Warble's own preferences and handed to the store, which decides what
+/// stays, when a virtual notch is there, how big the open card is, the face of the notch's title and whether the card has
+/// a heart for Music's Favourites. Each is kept in Warble's own preferences and handed to the store, which decides what
 /// follows.
 @MainActor
 @Observable
@@ -15,6 +16,7 @@ final class NotchSettings {
     private static let visibilityKey = "virtualNotch"
     private static let cardSizeKey = "cardSize"
     private static let fontKey = "notchFont"
+    private static let favouriteKey = "favouriteHeart"
 
     private let defaults: UserDefaults
     private let dispatch: (AppAction) -> Void
@@ -64,6 +66,16 @@ final class NotchSettings {
         }
     }
 
+    /// Whether the open card has a heart for Music's Favourites. It starts off.
+    var showsFavourite: Bool {
+        didSet {
+            guard showsFavourite != oldValue else { return }
+            defaults.set(showsFavourite, forKey: Self.favouriteKey)
+            log.notice("Favourite heart \(self.showsFavourite ? "on" : "off", privacy: .public)")
+            dispatch(.favouriteHeartChanged(showsFavourite))
+        }
+    }
+
     init(defaults: UserDefaults = .standard, dispatch: @escaping (AppAction) -> Void) {
         self.defaults = defaults
         self.dispatch = dispatch
@@ -72,6 +84,7 @@ final class NotchSettings {
         cardSize = defaults.string(forKey: Self.cardSizeKey).flatMap(CardSize.init) ?? .standard
         notchFont = defaults.string(forKey: Self.fontKey).flatMap(NotchFont.init) ?? .system
         pauseDelay = defaults.string(forKey: Self.pauseDelayKey).flatMap(PauseDelay.init) ?? .standard
+        showsFavourite = defaults.bool(forKey: Self.favouriteKey)
     }
 
     /// Tells the store what was saved, once it exists.
@@ -90,6 +103,9 @@ final class NotchSettings {
         }
         if pauseDelay != .standard {
             dispatch(.pauseDelayChanged(pauseDelay))
+        }
+        if showsFavourite {
+            dispatch(.favouriteHeartChanged(true))
         }
     }
 }

@@ -99,7 +99,7 @@ public struct Notches: Feature {
             effects.append(.takeEscape(takesEscape))
         }
         // Only the player has a slider and an output menu, not the note.
-        let followsVolume = surfaces.values.contains { notchState($0, shared) == .expanded }
+        let followsVolume = showsCard(shared)
         if followsVolume != self.followsVolume {
             self.followsVolume = followsVolume
             effects.append(.followVolume(followsVolume))
@@ -108,6 +108,11 @@ public struct Notches: Feature {
     }
 
     // MARK: Selectors
+
+    /// Whether any notch is open on the player's card, rather than resting or showing a note.
+    func showsCard(_ shared: SharedState) -> Bool {
+        surfaces.values.contains { notchState($0, shared) == .expanded }
+    }
 
     /// The state the notch draws.
     func notchState(_ surface: Surface, _ shared: SharedState) -> NotchState {
