@@ -38,6 +38,9 @@ public final class EffectRunner {
         case .setVolume(let value):
             volume.set(value)
             readVolume()
+        case .setMuted(let muted):
+            volume.setMuted(muted)
+            readVolume()
         case .selectOutput(let id):
             // The volume's listener follows the new output, and reads its volume.
             outputs.select(id)

@@ -39,11 +39,13 @@ While the pointer is over the bar, the time at that point shows just above it, s
 
 ![Dragging along the volume bar](../../../docs/media/volume.gif)
 
+To mute, click the speaker at the left end of the volume bar. It shows a line through it while your Mac is muted, and the bar drops to empty. Click it again to unmute at the volume you had before.
+
 ## Move through the song or skip with a trackpad
 
 With two fingers on the notch, slide sideways to move through the song, right to go forward and left to go back, as far as you slide. Flick sideways quickly to skip: a flick to the right plays the next song and a flick to the left plays the previous one. Like scrolling for volume, it works while the notch is closed.
 
-The volume is your Mac's own, so it changes everything you hear, not just the app in the notch. The speaker symbol at the end of the bar picks where the sound plays. See [Switch speakers](/docs/switch-speakers/).
+The volume is your Mac's own, so it changes everything you hear, not just the app in the notch. The speaker symbol at the right end of the bar picks where the sound plays. See [Switch speakers](/docs/switch-speakers/).
 
 A title, artist or album that is too long for the card waits a moment after the notch opens and then scrolls slowly past in a loop while the song plays. With **Reduce motion** on, it ends in "…" instead.
 

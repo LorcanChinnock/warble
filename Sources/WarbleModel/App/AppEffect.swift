@@ -16,6 +16,8 @@ public enum AppEffect: Equatable, Sendable {
     /// Open the artist's page for the track titled `title`, or `openApp` when there's no exact one to open.
     case openArtist(bundleIdentifier: String, title: String)
     case setVolume(Double)
+    /// Mute the default output (true) or unmute it, which leaves its volume as it was.
+    case setMuted(Bool)
     /// A light tick on a Force Touch trackpad.
     case haptic
     case selectOutput(UInt32)

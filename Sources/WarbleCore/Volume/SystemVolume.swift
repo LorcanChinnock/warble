@@ -39,6 +39,14 @@ public final class SystemVolume: VolumeControl {
         }
     }
 
+    /// Mutes or unmutes the output as the mute key does, which keeps its volume for when it's unmuted. An output with no
+    /// mute switch Warble can set is left as it is.
+    public func setMuted(_ muted: Bool) {
+        let output = hardware.defaultOutput()
+        guard hardware.isSettable(output, .mute) else { return }
+        hardware.set(output, .mute, uint32: muted ? 1 : 0)
+    }
+
     /// Calls `onChange` whenever the volume, mute or output changes, from anywhere, until `stopListening()`. Listen only
     /// while the volume shows, so Warble does nothing for volume changes nobody sees.
     public func startListening(_ onChange: @escaping () -> Void) {
