@@ -35,6 +35,26 @@ public struct ScrubberHandle: Equatable, Sendable {
         public let end: CGPoint
     }
 
+    /// How far along a bar `width` wide the point `x` is, from 0 at its start to 1 at its end. A pointer dragged
+    /// past either end counts as that end.
+    public static func fraction(atX x: CGFloat, width: CGFloat) -> Double {
+        guard width > 0 else { return 0 }
+        return Double(min(max(x / width, 0), 1))
+    }
+
+    /// The time in a track `duration` long at the point `x` along a bar `width` wide, which a click there seeks to,
+    /// or `nil` for a track with no known length, such as a live stream.
+    public static func time(atX x: CGFloat, width: CGFloat, duration: TimeInterval?) -> TimeInterval? {
+        guard let duration, duration > 0 else { return nil }
+        return fraction(atX: x, width: width) * duration
+    }
+
+    /// The label over the bar at the point `x` along it: the time there, written as the elapsed time is ("3:07"),
+    /// or `nil` for a track with no known length.
+    public static func timeLabel(atX x: CGFloat, width: CGFloat, duration: TimeInterval?) -> String? {
+        time(atX: x, width: width, duration: duration).map(PlaybackState.positionLabel)
+    }
+
     /// - Parameters:
     ///   - fraction: how far through the track the playback is, 0 to 1.
     ///   - width: the bar's length.

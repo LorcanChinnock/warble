@@ -28,6 +28,8 @@ The keyboard's play/pause, next and previous keys work as they always have.
 1. Find the bar under the song, with the time played on its left and the time left on its right.
 2. Click a point on the bar, or drag along it and let go where you want to be.
 
+While the pointer is over the bar, the time at that point shows just above it, so you can see where a click will take you before you click. While you drag, it shows the time you'll land on when you let go. A live stream has no end, so it shows no time there.
+
 ![Dragging along the progress bar to move through the song](../../../docs/media/scrub.gif)
 
 ## Change the volume
