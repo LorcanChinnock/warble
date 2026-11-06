@@ -5,14 +5,16 @@ import WarbleCore
 import WarbleModel
 
 /// The elapsed and remaining time either side of a bar that seeks where it's released. While dragging, the bar and the
-/// time follow the pointer and nothing is sent; a live stream, which has no end, shows only the elapsed time.
+/// time follow the pointer and nothing is sent; a live stream, which has no end, shows only the elapsed time. While the
+/// pointer is over the bar, a label above it shows the time there, or while dragging the time the drag will seek to.
 struct Scrubber: View {
     let playback: PlaybackState
     let seek: (TimeInterval) -> Void
     /// The position the pointer is dragging to, as a fraction of the track.
     @State private var dragged: Double?
-    /// Whether the pointer is over the bar, which grows the knob.
-    @State private var hovering = false
+    /// Where the pointer is along the bar while it's over it, which grows the knob and places the time label. The
+    /// card is only in the view while open, so nothing tracks the pointer once it closes.
+    @State private var pointer: CGFloat?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
@@ -60,24 +62,57 @@ struct Scrubber: View {
             let width = geometry.size.width
             let fraction = min(max(fraction, 0), 1)
             // The filled part ends in its own rounded tip, and grows a knob to drag while the pointer is on the bar.
-            let grown = hovering || dragged != nil
+            let grown = pointer != nil || dragged != nil
+            // While dragging, the label shows where the drag will seek to; otherwise the time under the pointer.
+            let labelX = dragged.map { $0 * width } ?? pointer
+            let label = labelX.flatMap { ScrubberHandle.timeLabel(atX: $0, width: width, duration: duration) }
             ZStack {
                 Capsule().fill(Native.track).frame(height: ScrubberHandle.barHeight)
                 BarFill(fraction: fraction, grown: grown ? 1 : 0)
                     .fill(.white)
                     .animation(reduceMotion ? nil : .smooth(duration: ScrubberHandle.growDuration), value: grown)
             }
+            .overlay(alignment: .topLeading) {
+                ZStack {
+                    if let label, let labelX {
+                        timeLabel(label)
+                            .position(x: min(max(labelX, 0), width), y: geometry.size.height / 2 - 17)
+                            .transition(.opacity)
+                    }
+                }
+                .animation(reduceMotion ? nil : .easeOut(duration: ScrubberHandle.growDuration), value: label != nil)
+            }
             .contentShape(Rectangle())
-            .onHover { hovering = $0 }
+            .onContinuousHover { phase in
+                switch phase {
+                case .active(let location): pointer = location.x
+                case .ended: pointer = nil
+                }
+            }
             .gesture(
                 DragGesture(minimumDistance: 0)
-                    .onChanged { dragged = min(max($0.location.x / width, 0), 1) }
+                    .onChanged { dragged = ScrubberHandle.fraction(atX: $0.location.x, width: width) }
                     .onEnded { value in
-                        seek(min(max(value.location.x / width, 0), 1) * duration)
+                        seek(ScrubberHandle.fraction(atX: value.location.x, width: width) * duration)
                         dragged = nil
                     }
             )
         }
+    }
+
+    /// The time at the pointer, in white on a black pill so it reads over the card's text and glow. VoiceOver skips it:
+    /// the bar already reads as a slider with its position.
+    private func timeLabel(_ text: String) -> some View {
+        Text(verbatim: text)
+            .font(.system(size: 11).monospacedDigit())
+            .foregroundStyle(.white)
+            .lineLimit(1)
+            .fixedSize()
+            .padding(.horizontal, 5)
+            .padding(.vertical, 2)
+            .background(Capsule().fill(Native.panel))
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
     }
 }
 

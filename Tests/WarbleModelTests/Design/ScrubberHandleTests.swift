@@ -64,3 +64,27 @@ func theKnobStaysInsideTheBarAtEitherEnd(_ fraction: Double) {
     let handle = ScrubberHandle(fraction: 0.9, width: 6, grown: 1)
     #expect(handle.centre == 3)
 }
+
+@Test func theTimeUnderThePointerRunsFromTheStartOfTheTrackToItsEnd() {
+    #expect(ScrubberHandle.time(atX: 0, width: 200, duration: 180) == 0)
+    #expect(ScrubberHandle.time(atX: 100, width: 200, duration: 180) == 90)
+    #expect(ScrubberHandle.time(atX: 200, width: 200, duration: 180) == 180)
+}
+
+@Test func aPointerPastEitherEndOfTheBarReadsAsThatEnd() {
+    #expect(ScrubberHandle.time(atX: -30, width: 200, duration: 180) == 0)
+    #expect(ScrubberHandle.time(atX: 260, width: 200, duration: 180) == 180)
+    #expect(ScrubberHandle.fraction(atX: 50, width: 0) == 0)
+}
+
+@Test func theLabelOverTheBarReadsLikeTheElapsedTime() {
+    #expect(ScrubberHandle.timeLabel(atX: 0, width: 200, duration: 187) == "0:00")
+    #expect(ScrubberHandle.timeLabel(atX: 100, width: 200, duration: 187) == "1:33")
+    #expect(ScrubberHandle.timeLabel(atX: 200, width: 200, duration: 187) == "3:07")
+    #expect(ScrubberHandle.timeLabel(atX: 150, width: 200, duration: 4964) == "1:02:03")
+}
+
+@Test func aTrackWithNoKnownLengthHasNoTimeUnderThePointer() {
+    #expect(ScrubberHandle.time(atX: 100, width: 200, duration: nil) == nil)
+    #expect(ScrubberHandle.timeLabel(atX: 100, width: 200, duration: 0) == nil)
+}
