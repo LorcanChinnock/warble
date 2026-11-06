@@ -100,6 +100,11 @@ final class PlayerModel {
         dispatch(.setVolume(volume))
     }
 
+    /// Mutes the output, or unmutes it at the volume it had.
+    func toggleMute() {
+        dispatch(.toggleMute)
+    }
+
     func selectOutput(_ id: UInt32) {
         dispatch(.selectOutput(id))
     }

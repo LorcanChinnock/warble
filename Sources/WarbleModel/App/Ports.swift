@@ -50,6 +50,8 @@ public protocol VolumeControl: AnyObject {
     var volume: Double? { get }
     var isMuted: Bool { get }
     func set(_ volume: Double)
+    /// Mutes or unmutes the output, keeping its volume, or does nothing when it has no mute switch.
+    func setMuted(_ muted: Bool)
     func startListening(_ onChange: @escaping () -> Void)
     func stopListening()
 }

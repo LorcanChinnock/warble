@@ -174,6 +174,36 @@ private struct Run {
     #expect(dispatched == [.volumeRead(0.2, isMuted: false), .outputsRead(outputs.all, current: 2)])
 }
 
+@Test func clickingTheSpeakerMutesAndUnmutesAtOnce() {
+    var run = Run()
+    run.send(.volumeRead(0.6, isMuted: false))
+    run.send(.toggleMute)
+    #expect(run.state.isMuted)
+    run.send(.toggleMute)
+    #expect(!run.state.isMuted)
+    #expect(run.effects == [.setMuted(true), .setMuted(false)])
+    #expect(run.state.volume == 0.6)
+}
+
+@Test func clickingTheSpeakerUnmutesAnOutputMutedElsewhere() {
+    var run = Run()
+    run.send(.volumeRead(0.6, isMuted: true))
+    run.send(.toggleMute)
+    #expect(!run.state.isMuted)
+    #expect(run.effects == [.setMuted(false)])
+}
+
+@MainActor
+@Test func theRunnerMutesAndReadsTheVolumeBackKeptAsItWas() {
+    let volume = FakeVolume()
+    let runner = makeRunner(volume: volume)
+    var dispatched: [AppAction] = []
+    runner.dispatch = { dispatched.append($0) }
+    runner.perform(.setMuted(true))
+    runner.perform(.setMuted(false))
+    #expect(dispatched == [.volumeRead(0.5, isMuted: true), .volumeRead(0.5, isMuted: false)])
+}
+
 @Test func aSlideSidewaysMovesThroughTheSongAtOnceAndAsksTheAppToSeek() {
     var run = Run()
     run.send(.scrubbed(by: 20), after: 5)

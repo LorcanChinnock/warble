@@ -29,6 +29,8 @@ public enum AppAction: Equatable, Sendable {
     case openArtist
     /// Volume from the slider or a scroll over a notch. A scroll carries the volume read just before, since the card that follows it may not be open.
     case setVolume(Double)
+    /// A click on the speaker beside the volume bar, which mutes the output or unmutes it at the volume it had.
+    case toggleMute
     /// A scroll over a notch: `delta` up and down, as `NSEvent.scrollingDeltaY` reports it.
     case scrolled(delta: Double, precise: Bool, inverted: Bool, volume: Double?, isMuted: Bool)
     /// A slide sideways over a notch: seconds to move through the song, forward when positive.

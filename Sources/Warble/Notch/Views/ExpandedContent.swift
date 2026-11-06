@@ -64,7 +64,7 @@ struct ExpandedContent: View {
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: .infinity, minHeight: 24, alignment: .leading)
                 } else if let volume = model.player.volume {
-                    VolumeSlider(volume: model.player.isMuted ? 0 : volume, isMuted: model.player.isMuted, set: model.player.setVolume)
+                    VolumeSlider(volume: model.player.isMuted ? 0 : volume, isMuted: model.player.isMuted, set: model.player.setVolume, toggleMute: model.player.toggleMute)
                 } else {
                     Spacer(minLength: 0)
                 }

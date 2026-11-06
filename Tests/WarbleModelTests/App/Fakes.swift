@@ -82,6 +82,10 @@ final class FakeVolume: VolumeControl {
         self.volume = volume
     }
 
+    func setMuted(_ muted: Bool) {
+        isMuted = muted
+    }
+
     func startListening(_ onChange: @escaping () -> Void) {
         listening = true
         self.onChange = onChange
