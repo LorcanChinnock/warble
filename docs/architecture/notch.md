@@ -60,7 +60,7 @@ To see the notch without playing anything, launch with `open build/WarbleDev.app
 
 ## The context menu
 
-A right-click or Control-click on a notch that's showing opens `NotchMenu`: the app it follows, Settings, updates and Quit, so Warble can be reached from the notch as well as the menu bar. `NotchPanel.sendEvent` takes the click before SwiftUI, and while the menu is open `HoverIntent` keeps a resting notch resting and `reduce` lets go of Escape, so the key closes the menu.
+A right-click or Control-click on a notch that's showing opens `NotchMenu`: the app it follows, Copy Song and Artist, Settings, updates and Quit, so Warble can be reached from the notch as well as the menu bar. Copy Song and Artist shows only while the notch shows a track with a title, not while Idle, and puts `TrackTitle.copyText` on the general pasteboard: the trimmed title, so tags such as "- Remastered 2009" stay out, then " – " and the artist, or the title alone when there's no artist. The menu writes the pasteboard itself, as Settings and Quit act directly, because copying changes nothing the store decides. `NotchPanel.sendEvent` takes the click before SwiftUI, and while the menu is open `HoverIntent` keeps a resting notch resting and `reduce` lets go of Escape, so the key closes the menu.
 
 ## Keys
 

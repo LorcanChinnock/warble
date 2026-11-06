@@ -76,7 +76,13 @@ final class NotchController {
         ) { [weak self] in self?.scroll($0) }
         surface.makeMenu = { [weak self] in
             guard let self else { return nil }
-            return NotchMenu.make(source: self.playback?.bundleIdentifier, updater: self.environment.updater, settingsWindow: self.environment.settingsWindow) { [weak self] in
+            let state = self.store.state
+            let shown = state.showsPlayback ? state.playback : nil
+            return NotchMenu.make(
+                source: self.playback?.bundleIdentifier,
+                copyText: shown.flatMap { TrackTitle.copyText(title: $0.title, artist: $0.artist) },
+                updater: self.environment.updater, settingsWindow: self.environment.settingsWindow
+            ) { [weak self] in
                 self?.store.dispatch(.openApp)
             }
         }

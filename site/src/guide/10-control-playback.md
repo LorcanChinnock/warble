@@ -53,3 +53,5 @@ A title, artist or album that is too long for the card waits a moment after the 
 ## The notch menu
 
 Right-click the notch, or Control-click it, for a short menu: open the app that's playing, open **Settings…**, check for updates, or quit Warble.
+
+While a song is on, the menu also has **Copy Song and Artist**, which copies the song's name and artist as one line, such as "Heroes – David Bowie", ready to paste into a message. Extras in the name such as "- Remastered 2009" are left out.

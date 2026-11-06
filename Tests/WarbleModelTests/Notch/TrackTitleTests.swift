@@ -64,3 +64,26 @@ func trimmingLeavesWhatIsntATag(title: String) {
     #expect(line(String(repeating: "a", count: 22)) == .title(String(repeating: "a", count: 22)))
     #expect(line(String(repeating: "a", count: 23)).isCut)
 }
+
+@Test func theCopiedSongJoinsTitleAndArtistWithAnEnDash() {
+    #expect(TrackTitle.copyText(title: "Heroes", artist: "David Bowie") == "Heroes – David Bowie")
+}
+
+@Test func theCopiedSongLeavesTheTagsOutOfTheTitle() {
+    #expect(TrackTitle.copyText(title: "Heroes - Remastered 2009", artist: "David Bowie") == "Heroes – David Bowie")
+    #expect(TrackTitle.copyText(title: "Song (feat. Someone)", artist: "Artist") == "Song – Artist")
+}
+
+@Test(arguments: [nil, "", "   "] as [String?])
+func theCopiedSongIsTheTitleAloneWithoutAnArtist(artist: String?) {
+    #expect(TrackTitle.copyText(title: "Heroes", artist: artist) == "Heroes")
+}
+
+@Test func theCopiedSongTrimsTheSpaceAroundTheArtist() {
+    #expect(TrackTitle.copyText(title: "Heroes", artist: " David Bowie ") == "Heroes – David Bowie")
+}
+
+@Test(arguments: ["", "   "])
+func thereIsNothingToCopyWithoutATitle(title: String) {
+    #expect(TrackTitle.copyText(title: title, artist: "David Bowie") == nil)
+}

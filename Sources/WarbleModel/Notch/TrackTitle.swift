@@ -52,6 +52,17 @@ public enum TrackTitle {
         return measure(title) <= width ? .title(title) : .faded(title)
     }
 
+    /// What "Copy Song and Artist" puts on the clipboard: the trimmed title, an en dash and the artist, as in
+    /// "Heroes – David Bowie", or the title alone when there's no artist. Nil when there's no title to copy.
+    public static func copyText(title: String, artist: String?) -> String? {
+        let title = trimmed(title)
+        guard !title.isEmpty else { return nil }
+        if let artist = artist?.trimmingCharacters(in: .whitespaces), !artist.isEmpty {
+            return "\(title) – \(artist)"
+        }
+        return title
+    }
+
     private static func withoutLastTag(_ title: String) -> String? {
         if let close = title.last, let open = ["(": ")", "[": "]"].first(where: { $0.value == String(close) })?.key,
            let start = title.lastIndex(of: Character(open))
