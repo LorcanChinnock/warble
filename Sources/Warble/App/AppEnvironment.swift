@@ -32,7 +32,7 @@ final class AppEnvironment {
         let dispatch: (AppAction) -> Void = { [weak store] in store?.dispatch($0) }
         volume = SystemVolume()
         let outputs = CoreAudioOutputs()
-        runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs)
+        runner = EffectRunner(hotkeys: hotkeys, volume: volume, outputs: outputs, favourites: ScriptedFavourites())
         platform = PlatformEffects(dispatch: dispatch)
         store.perform = { [weak runner] in runner?.perform($0) }
         runner.dispatch = dispatch

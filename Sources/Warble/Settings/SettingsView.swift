@@ -74,6 +74,11 @@ struct SettingsView: View {
                                 (.monospaced, Text("Mono")),
                             ]
                         )
+                        SettingsToggleRow(
+                            title: Text("Show a heart to favourite songs in Music"),
+                            detail: Text("While Music is playing, a heart beside the title on the opened notch adds the song to your Favourites in Music, or takes it out. The first time, macOS asks you to let Warble control Music."),
+                            isOn: Binding { notchSettings.showsFavourite } set: { notchSettings.showsFavourite = $0 }
+                        )
                     }
                     SettingsGroup(title: Text("General"), symbol: "gearshape", tint: Warm.sky) {
                         SettingsToggleRow(
@@ -188,7 +193,7 @@ struct SettingsView: View {
             // Clear of the bar over the title bar.
             .padding(.top, 44)
             VStack(alignment: .leading, spacing: 8) {
-                NotchPreview(showsTitle: notchSettings.showsVirtualTitle, notchFont: notchSettings.notchFont, pauseDelay: notchSettings.pauseDelay, cardSize: notchSettings.cardSize, visibility: notchSettings.virtualVisibility, isScrolling: isScrolling)
+                NotchPreview(showsTitle: notchSettings.showsVirtualTitle, notchFont: notchSettings.notchFont, pauseDelay: notchSettings.pauseDelay, cardSize: notchSettings.cardSize, visibility: notchSettings.virtualVisibility, showsFavourite: notchSettings.showsFavourite, isScrolling: isScrolling)
                 Text("How the notch looks, with the song that's playing. Point at it to open it.")
                     .font(.footnote)
                     .foregroundStyle(Warm.secondary)

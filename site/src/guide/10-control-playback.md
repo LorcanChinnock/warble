@@ -54,6 +54,15 @@ A title, artist or album that is too long for the card waits a moment after the 
 >
 > Click the artist to open their page: in Spotify for a Spotify song, and on YouTube for a YouTube video in one of those browsers. For anything else, including Apple Music, Warble can't be sure which artist page is the right one, so the click opens the app instead, as the album art does.
 
+## Add a song to your Favourites in Music
+
+If you use Apple's Music app, Warble can show a heart beside the song's title on the open notch. The heart is off until you turn on **Show a heart to favourite songs in Music** in [Settings](/docs/settings/).
+
+1. Play a song in Music and open the notch.
+2. Click the heart. A filled heart means the song is in your Favourites, and an outline means it isn't.
+
+Warble checks the song each time you open the notch, so a song you favourite in Music shows a filled heart the next time you open it. The first time, macOS asks whether Warble may control Music; if you say no, the heart doesn't show. It also doesn't show for a song Music can't add to Favourites, or for any app other than Music, since no other player lets Warble read or set a like.
+
 ## The notch menu
 
 Right-click the notch, or Control-click it, for a short menu: open the app that's playing, open **Settings…**, check for updates, or quit Warble.

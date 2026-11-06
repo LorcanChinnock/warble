@@ -109,6 +109,9 @@ final class NotchController {
             player.outputs = new.outputs
             player.currentOutput = new.currentOutput
         }
+        if new.favourite != old.favourite {
+            player.favourite = new.favourite
+        }
         if new.outputSwitch != old.outputSwitch || new.outputs != old.outputs {
             player.keptOutput = new.keptOutputName
         }

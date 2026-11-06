@@ -84,6 +84,8 @@ public func reduce(_ state: inout AppState, _ action: AppAction, now: Date) -> [
         state.notchFont = font
     case .pauseDelayChanged(let delay):
         state.idle.pauseDelay = delay
+    case .favouriteHeartChanged, .toggleFavourite, .favouriteAnswered:
+        effects += state.favourites.reduce(action, shared: state.shared, at: now)
     case .housingsChanged, .fullScreenChanged, .pointer, .hover, .menu, .dismiss, .virtualTitleChanged, .virtualVisibilityChanged:
         effects += state.notches.reduce(action, shared: state.shared, at: now)
     case .tick:
@@ -142,5 +144,10 @@ private func settle(_ state: inout AppState, from old: AppState, at now: Date) -
         state.idle.handle(hovering ? .hoverStarted : .hoverEnded, at: now)
     }
     shared = state.shared
-    return state.notches.follow(shared, at: now)
+    var effects = state.notches.follow(shared, at: now)
+    // Off by default, when it costs the hover nothing.
+    if state.favourites.isEnabled {
+        effects += state.favourites.follow(shared, cardOpen: state.notches.showsCard(shared))
+    }
+    return effects
 }

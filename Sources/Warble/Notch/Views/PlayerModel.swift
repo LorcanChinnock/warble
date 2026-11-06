@@ -55,6 +55,8 @@ final class PlayerModel {
     /// The outputs to offer and the one playing, read while Expanded shows.
     var outputs: [AudioOutput] = []
     var currentOutput: UInt32?
+    /// Whether the song is in Music's Favourites, which fills the card's heart, or `nil` when the card has no heart.
+    var favourite: Bool?
     /// The name of the output macOS kept after a switch away from it, such as in-ear AirPods; `nil` when nothing needs saying.
     var keptOutput: String? {
         didSet {
@@ -94,6 +96,11 @@ final class PlayerModel {
     /// Opens the page of the artist that's playing, or the app when there isn't one to open.
     func openArtist() {
         dispatch(.openArtist)
+    }
+
+    /// Adds the song to Music's Favourites, or takes it out.
+    func toggleFavourite() {
+        dispatch(.toggleFavourite)
     }
 
     func setVolume(_ volume: Double) {

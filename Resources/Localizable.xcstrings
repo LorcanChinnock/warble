@@ -117,6 +117,58 @@
         }
       }
     },
+    "Add to Favourites" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zu Favoriten hinzufügen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir a Favoritos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter aux favoris"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aggiungi ai Preferiti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入りに追加"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "즐겨찾기에 추가"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar aos Favoritos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加到喜爱"
+          }
+        }
+      }
+    },
     "All" : {
       "localizations" : {
         "de" : {
@@ -1948,6 +2000,58 @@
         }
       }
     },
+    "Remove from Favourites" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aus Favoriten entfernen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar de Favoritos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retirer des favoris"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rimuovi dai Preferiti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入りから削除"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "즐겨찾기에서 제거"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover dos Favoritos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从喜爱中移除"
+          }
+        }
+      }
+    },
     "Repeat" : {
       "localizations" : {
         "de" : {
@@ -2051,6 +2155,58 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设置…"
+          }
+        }
+      }
+    },
+    "Show a heart to favourite songs in Music" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herz zum Favorisieren von Titeln in Musik anzeigen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar un corazón para marcar canciones como favoritas en Música"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher un cœur pour ajouter des morceaux aux favoris dans Musique"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra un cuore per aggiungere brani ai Preferiti in Musica"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“ミュージック”の曲をお気に入りに追加するハートを表示"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "음악 앱의 노래를 즐겨찾기에 추가하는 하트 표시"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar um coração para favoritar músicas no Música"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示爱心以将“音乐”中的歌曲标为喜爱"
           }
         }
       }
@@ -2485,6 +2641,58 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Warble 设置"
+          }
+        }
+      }
+    },
+    "While Music is playing, a heart beside the title on the opened notch adds the song to your Favourites in Music, or takes it out. The first time, macOS asks you to let Warble control Music." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Während Musik spielt, fügt ein Herz neben dem Titel in der geöffneten Notch den Song deinen Favoriten in Musik hinzu oder entfernt ihn. Beim ersten Mal fragt macOS, ob Warble Musik steuern darf."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mientras Música reproduce, un corazón junto al título en el notch abierto añade la canción a tus Favoritos de Música o la quita. La primera vez, macOS te pide que permitas a Warble controlar Música."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pendant la lecture dans Musique, un cœur à côté du titre dans l’encoche ouverte ajoute le morceau à vos favoris dans Musique, ou l’en retire. La première fois, macOS vous demande d’autoriser Warble à contrôler Musique."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mentre Musica è in riproduzione, un cuore accanto al titolo nel notch aperto aggiunge il brano ai tuoi Preferiti in Musica o lo rimuove. La prima volta, macOS ti chiede di consentire a Warble di controllare Musica."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“ミュージック”の再生中、開いたノッチのタイトル横にあるハートで、曲を“ミュージック”のお気に入りに追加または削除できます。初回は、Warbleが“ミュージック”を制御することを許可するようmacOSから求められます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "음악 앱이 재생 중일 때 열린 노치의 제목 옆 하트를 누르면 노래를 음악 앱의 즐겨찾기에 추가하거나 제거합니다. 처음에는 macOS가 Warble이 음악 앱을 제어하도록 허용할지 묻습니다."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enquanto o Música toca, um coração ao lado do título no notch aberto adiciona a música aos seus Favoritos no Música, ou a remove. Na primeira vez, o macOS pede que você permita que o Warble controle o Música."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“音乐”播放时，展开的刘海中标题旁的爱心可将歌曲添加到“音乐”的喜爱中，或将其移除。首次使用时，macOS 会请你允许 Warble 控制“音乐”。"
           }
         }
       }

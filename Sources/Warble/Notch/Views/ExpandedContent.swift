@@ -25,6 +25,8 @@ struct ExpandedContent: View {
                 .accessibilityLabel(model.player.appName.map { Text("Open \($0)") } ?? Text("Open the app that's playing"))
                 VStack(alignment: .leading, spacing: 2) {
                     MarqueeLine(text: playback.title, font: Native.titleFont(model.player.notchFont, size: 16, weight: .semibold), tint: model.player.tint, isPlaying: playback.isPlaying)
+                        // Room for the heart, which sits over the end of the line.
+                        .padding(.trailing, model.player.favourite == nil ? 0 : FavouriteButton.size)
                     if let artist = playback.artist {
                         MarqueeLine(text: artist, font: .systemFont(ofSize: 13), isSecondary: true, isPlaying: playback.isPlaying)
                             .contentShape(Rectangle())
@@ -45,6 +47,14 @@ struct ExpandedContent: View {
                 .accessibilityAction(named: Text("Go to the artist"), model.player.openArtist)
                 // VoiceOver starts here when the notch opens from the keyboard, ahead of the art beside it.
                 .accessibilitySortPriority(1)
+                // Over the text rather than in it, so it's a button of its own, outside the text's click and VoiceOver
+                // element. Centred on the title's line, which is about 20 points tall.
+                .overlay(alignment: .topTrailing) {
+                    if let favourite = model.player.favourite {
+                        FavouriteButton(isFavourite: favourite, tint: model.player.tint, toggle: model.player.toggleFavourite)
+                            .offset(x: 4, y: -3)
+                    }
+                }
                 Spacer(minLength: 0)
             }
             // The art lines up with where a short elapsed time starts, which is right-aligned in a 34 pt column.
