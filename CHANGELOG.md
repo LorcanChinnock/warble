@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.1.0-beta.23](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.22...v0.1.0-beta.23) (2026-11-06)
+
+
+### Features
+
+* **notch:** click the speaker to mute and unmute ([#407](https://github.com/LorcanChinnock/warble/issues/407)) ([d8d6a10](https://github.com/LorcanChinnock/warble/commit/d8d6a107e08cec0326d01e188451d7cbb6262282))
+* **notch:** copy the song and artist from the right-click menu ([#405](https://github.com/LorcanChinnock/warble/issues/405)) ([cad7f4a](https://github.com/LorcanChinnock/warble/commit/cad7f4aecfc24dd90bdba1c7d0e609a3111847dc))
+* **notch:** hide the playback bar's knob until the pointer is over it ([#399](https://github.com/LorcanChinnock/warble/issues/399)) ([ca299ab](https://github.com/LorcanChinnock/warble/commit/ca299ab6190992bbcfb7b69f4e68702d7eb3f3e1))
+* **notch:** show the time under the pointer on the playback bar ([#406](https://github.com/LorcanChinnock/warble/issues/406)) ([c2aa119](https://github.com/LorcanChinnock/warble/commit/c2aa119a2713281a26520c4b6acf0d7c781c3c0c))
+* **player:** a heart to favourite the song in Music ([#408](https://github.com/LorcanChinnock/warble/issues/408)) ([e04ec94](https://github.com/LorcanChinnock/warble/commit/e04ec94de88b7fc2733db6f2f41d117fd556c651))
+
+
+### Bug Fixes
+
+* **notch:** line the playback bar's ends up with the volume bar ([#397](https://github.com/LorcanChinnock/warble/issues/397)) ([36de933](https://github.com/LorcanChinnock/warble/commit/36de933aab77c249b346f83e7d2dc7289f90935c))
+
 ## [0.1.0-beta.22](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.21...v0.1.0-beta.22) (2026-11-02)
 
 
