@@ -43,11 +43,16 @@ struct Scrubber: View {
         .frame(height: 24)
     }
 
+    /// A time in a fixed 34 pt column, the width of the speaker icon and output button below, so the bar's ends line up
+    /// with the volume bar's. A longer time, such as -12:34 or 1:02:03, runs outward into the card's margin rather than
+    /// pushing the bar in.
     private func time(_ text: String, alignment: Alignment) -> some View {
         Text(verbatim: text)
             .font(.system(size: 11).monospacedDigit())
             .foregroundStyle(Native.secondary)
-            .frame(minWidth: 34, alignment: alignment)
+            .lineLimit(1)
+            .fixedSize()
+            .frame(width: 34, alignment: alignment)
     }
 
     private func bar(fraction: Double, duration: TimeInterval) -> some View {
