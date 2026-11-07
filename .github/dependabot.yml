@@ -21,7 +21,8 @@ updates:
       interval: weekly
     commit-message:
       prefix: "build(deps)"
-  # Sparkle. A bump changes Package.resolved, which release builds require (--force-resolved-versions).
+  # Sparkle, from Warble.xcodeproj. A bump changes its Package.resolved, which release builds require
+  # (-onlyUsePackageVersionsFromResolvedFile).
   - package-ecosystem: swift
     directory: /
     schedule:

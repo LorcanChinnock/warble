@@ -1,0 +1,29 @@
+{
+  "configurations" : [
+    {
+      "id" : "5D0C3F0E-6A51-4B7E-9C1F-2E8B7A4D9F10",
+      "name" : "Default",
+      "options" : {}
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Warble.xcodeproj",
+        "identifier" : "219B7C17215BC33BD5986B4C",
+        "name" : "WarbleCoreTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Warble.xcodeproj",
+        "identifier" : "F0A433711001A48ADB6EE96E",
+        "name" : "WarbleModelTests"
+      }
+    }
+  ],
+  "version" : 1
+}

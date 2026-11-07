@@ -75,10 +75,10 @@ jobs:
           persist-credentials: false # Later steps run scripts with every secret, and none of them pushes to this repo.
       # The release PR's gate tested its own head, but a docs:, test: or ci: commit merged after it doesn't update that
       # PR, so the tagged commit may be one the gate never ran. Test it here, before any secret is in reach, with the
-      # same Package.resolved that `make dist` builds against.
+      # same Package.resolved (in Warble.xcodeproj) that `make dist` builds against.
       - name: Test
         timeout-minutes: 15
-        run: scripts/ci-test.sh test --force-resolved-versions
+        run: scripts/ci-test.sh test -onlyUsePackageVersionsFromResolvedFile
       # Every release signs with the same self-signed certificate, so macOS keeps the
       # permissions it granted, such as Automation, across updates. See CONTRIBUTING.md › Release secrets.
       - name: Import the signing certificate
@@ -126,7 +126,7 @@ jobs:
           mkdir build/release
           mv build/Warble.zip "build/release/Warble-${TAG}.zip"
           gh release view "$TAG" --json body --jq .body > "build/release/Warble-${TAG}.md"
-          echo "$SPARKLE_PRIVATE_KEY" | .build/artifacts/sparkle/Sparkle/bin/generate_appcast \
+          echo "$SPARKLE_PRIVATE_KEY" | build/DerivedData/SourcePackages/artifacts/sparkle/Sparkle/bin/generate_appcast \
             --ed-key-file - \
             --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/${TAG}/" \
             --embed-release-notes \

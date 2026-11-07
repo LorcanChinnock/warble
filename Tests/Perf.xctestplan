@@ -1,0 +1,29 @@
+{
+  "configurations" : [
+    {
+      "id" : "8B3E2A71-0F4C-4D6B-A2E9-6C1D5F7B3A28",
+      "name" : "Default",
+      "options" : {}
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "environmentVariableEntries" : [
+      {
+        "key" : "WARBLE_PERF",
+        "value" : "1"
+      }
+    ]
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Warble.xcodeproj",
+        "identifier" : "219B7C17215BC33BD5986B4C",
+        "name" : "WarbleCoreTests"
+      }
+    }
+  ],
+  "version" : 1
+}

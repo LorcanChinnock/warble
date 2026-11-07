@@ -1,0 +1,30 @@
+// The app. Every build is WarbleDev.app, with its own bundle ID, settings and Automation permission and no update
+// feed, so it never replaces or answers for an installed release. Only `make dist` passes WARBLE_DISTRIBUTION=YES,
+// which builds Warble.app with the feed.
+WARBLE_DISTRIBUTION = NO
+
+PRODUCT_NAME = $(WARBLE_PRODUCT_NAME_$(WARBLE_DISTRIBUTION))
+WARBLE_PRODUCT_NAME_NO = WarbleDev
+WARBLE_PRODUCT_NAME_YES = Warble
+
+PRODUCT_BUNDLE_IDENTIFIER = $(WARBLE_BUNDLE_ID_$(WARBLE_DISTRIBUTION))
+WARBLE_BUNDLE_ID_NO = dev.lorcan.Warble.dev
+WARBLE_BUNDLE_ID_YES = dev.lorcan.Warble
+
+// Sparkle's update feed. "$()" keeps xcconfig from reading the "//" as a comment.
+WARBLE_FEED_URL = $(WARBLE_FEED_URL_$(WARBLE_DISTRIBUTION))
+WARBLE_FEED_URL_NO =
+WARBLE_FEED_URL_YES = https:/$()/github.com/LorcanChinnock/warble/releases/latest/download/appcast.xml
+
+INFOPLIST_FILE = Resources/Info.plist
+GENERATE_INFOPLIST_FILE = NO
+// Lets the app send Music and Spotify Apple Events (ScriptSource).
+CODE_SIGN_ENTITLEMENTS = Resources/Warble.entitlements
+ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
+COMBINE_HIDPI_IMAGES = YES
+LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/../Frameworks
+// The adapter and Sparkle phases write and sign files inside the built app.
+ENABLE_USER_SCRIPT_SANDBOXING = NO
+
+// Your own overrides, such as CODE_SIGN_IDENTITY. Git ignores this file.
+#include? "Local.xcconfig"

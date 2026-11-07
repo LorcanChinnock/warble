@@ -1,25 +1,28 @@
-# Building with only the Command Line Tools: their default SDK (27) makes SwiftUI's @State a
-# macro whose compiler plugin ships with Xcode alone, so pin the newest 26.x SDK when there is one.
-# With Xcode selected, the default SDK works and nothing is pinned.
-CLT_SDK := $(lastword $(sort $(wildcard /Library/Developer/CommandLineTools/SDKs/MacOSX26.*.sdk)))
-ifeq ($(findstring CommandLineTools,$(shell xcode-select -p)),CommandLineTools)
-ifneq ($(wildcard $(CLT_SDK)),)
-export SDKROOT ?= $(CLT_SDK)
-endif
-TEST_FLAGS := -Xswiftc -plugin-path -Xswiftc $(shell xcode-select -p)/usr/lib/swift/host/plugins/testing
-endif
+# The app builds from Warble.xcodeproj through scripts/xcodebuild.sh, into build/DerivedData. Package.swift holds only
+# WarbleModel, for its tests on Linux (make test-linux).
 
 INSTALL_DIR ?= /Applications
-# Extra `swift test` flags, e.g. ARGS=--skip-build in CI.
+# Extra xcodebuild arguments, e.g. ARGS=-onlyUsePackageVersionsFromResolvedFile in CI.
 ARGS ?=
+# One suite or test, e.g. ONLY=WarbleModelTests/HoverTests or ONLY='WarbleModelTests/notchSitsBetweenTheMenuBarAreas()'.
+ONLY ?=
+# CI builds the tests in one step and runs them in the next, with TEST_ACTION=test-without-building.
+TEST_ACTION ?= test
+XCODEBUILD := scripts/xcodebuild.sh
+DESTINATION := -destination 'platform=macOS,arch=$(shell uname -m)'
 
-.PHONY: build test test-install test-uninstall coverage test-linux perf lint strings bundle app run dist icon clean
+.PHONY: build build-tests test test-install test-uninstall coverage test-linux perf lint strings bundle app run dist icon clean
 
 build:
-	swift build
+	$(XCODEBUILD) -scheme Warble -configuration Debug $(DESTINATION) -quiet build $(ARGS)
 
+# Not -quiet: with it, Xcode 27 reports some test files that compiled fine as failed "with exit code 0".
+build-tests:
+	$(XCODEBUILD) -scheme Warble $(DESTINATION) build-for-testing $(ARGS)
+
+# WarbleModel's and WarbleCore's tests, from Tests/Warble.xctestplan. PerfTests skip themselves there.
 test:
-	swift test $(TEST_FLAGS) $(ARGS) --skip PerfTests
+	$(XCODEBUILD) -scheme Warble $(DESTINATION) $(TEST_ACTION) $(if $(ONLY),-only-testing:'$(ONLY)') $(ARGS)
 
 # Runs site/public/install.sh against a local folder standing in for the GitHub release.
 test-install:
@@ -31,12 +34,12 @@ test-uninstall:
 
 # Line coverage per file for WarbleModel and WarbleCore, lowest first. Not a gate: it shows where tests are missing.
 coverage:
-	scripts/coverage.sh $(TEST_FLAGS) $(ARGS)
+	scripts/coverage.sh $(ARGS)
 
-# The performance budgets, alone and one test at a time, so other tests don't skew the timings. Budgets and baselines:
-# docs/performance.md.
+# The performance budgets, alone and one test at a time, so other tests don't skew the timings. Tests/Perf.xctestplan
+# sets WARBLE_PERF, which PerfTests needs to run. Budgets and baselines: docs/performance.md.
 perf:
-	swift test $(TEST_FLAGS) $(ARGS) --filter PerfTests
+	$(XCODEBUILD) -scheme Warble $(DESTINATION) -testPlan Perf $(TEST_ACTION) -only-testing:WarbleCoreTests/PerfTests $(ARGS)
 
 # WarbleModel's tests on Linux, as CI's linux job runs them. Needs Docker; keep the image in step with ci.yml.
 test-linux:
@@ -46,13 +49,12 @@ test-linux:
 lint:
 	scripts/lint.sh
 ifeq ($(shell uname),Darwin)
-	swift build
+	$(MAKE) build
 	scripts/strings.sh --check
 endif
 
 # Adds new strings to Resources/Localizable.xcstrings and drops ones the source no longer uses.
-strings:
-	swift build
+strings: build
 	scripts/strings.sh
 
 bundle:
@@ -72,9 +74,9 @@ dist: bundle
 	@echo "Wrote build/Warble.zip"
 
 icon:
-	mkdir -p .build
-	cat Sources/WarbleModel/Design/IconBars.swift scripts/make-icon.swift > .build/make-icon.swift
-	swift .build/make-icon.swift .
+	mkdir -p build
+	cat Sources/WarbleModel/Design/IconBars.swift scripts/make-icon.swift > build/make-icon.swift
+	swift build/make-icon.swift .
 
 clean:
 	rm -rf .build build

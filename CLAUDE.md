@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Warble is a macOS 15+ app that shows what's playing in the notch and controls it. It's a SwiftPM package (Swift 6 language mode, strict concurrency) whose only Swift dependency is Sparkle; it also bundles mediaremote-adapter, a git submodule built with CMake. Its repository layout, tooling and release pipeline come from Shot (`LorcanChinnock/shot`); when you need a pattern this repo doesn't have yet, look there first.
+Warble is a macOS 15+ app that shows what's playing in the notch and controls it. It's an Xcode project, `Warble.xcodeproj` (Swift 6 language mode, strict concurrency), whose only Swift dependency is the Sparkle package; it also bundles mediaremote-adapter, a git submodule a build phase builds with CMake. `Package.swift` holds only WarbleModel and its tests, for the Linux build. Its repository layout, tooling and release pipeline come from Shot (`LorcanChinnock/shot`); when you need a pattern this repo doesn't have yet, look there first.
 
 ## Mantra
 
@@ -31,15 +31,17 @@ make test-linux                   # WarbleModel tests in Docker on Linux, as CI 
 make perf                         # PerfTests alone: the timed paths with budgets in docs/performance.md
 make lint                         # scripts/lint.sh: bans patterns that caused bugs (see below); on macOS also scripts/strings.sh --check
 make strings                      # sync Resources/Localizable.xcstrings with the strings the build extracted
-make build                        # swift build
-make bundle                       # build and sign build/WarbleDev.app only
+make build                        # Debug build of the app, as Xcode's Build does
+make bundle                       # archive a universal Release build/WarbleDev.app only
 make run                          # build, install to /Applications/WarbleDev.app, relaunch
 cd site && npm run dev            # the website (see site/README.md)
-swift test --filter <testName>    # one test, e.g. --filter notchSitsBetweenTheMenuBarAreas
+make test ONLY='WarbleModelTests/notchSitsBetweenTheMenuBarAreas()'   # one test or suite
 ```
 
-- With only the Command Line Tools selected, the Makefile pins the newest 26.x SDK and adds the testing plugin path, so a bare `swift build`/`swift test` can fail on SwiftUI macros. Prefer `make`, or prefix with `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`.
-- Signing uses the `Warble Dev` certificate from `scripts/make-dev-cert.sh`, so permissions such as Automation survive rebuilds. Without it, `bundle.sh` signs ad hoc and warns.
+- In Xcode, open `Warble.xcodeproj`: the **Warble** scheme runs and debugs WarbleDev (⌘R, which first quits the installed Warble) and runs the test plan `Tests/Warble.xctestplan` (⌘U). `make` builds the same project through `scripts/xcodebuild.sh` into `build/DerivedData`, never Xcode's own folder, since Xcode 27 can leave a test bundle unsigned when both build into one.
+- Build settings live in `Config/*.xcconfig`, never in the project file: `Shared.xcconfig` (version, signing, Swift), `Debug`/`Release`, and one per target. `Config/Local.xcconfig`, which git ignores, takes personal overrides. Folders are synchronised, so a new Swift file in `Sources/` or `Tests/` needs no project edit.
+- `PerfTests` run only when `WARBLE_PERF` is set, which `Tests/Perf.xctestplan` (`make perf`) does, so ⌘U and `make test` skip them. Xcode 27 doesn't apply a test plan's selected or skipped tests to Swift Testing suites, so don't rely on them.
+- Signing uses the `Warble Dev` certificate from `scripts/make-dev-cert.sh`, so permissions such as Automation survive rebuilds. Without it, `scripts/xcodebuild.sh` signs ad hoc and warns.
 - Logs: `/usr/bin/log stream --predicate 'subsystem == "dev.lorcan.Warble.dev"'` for WarbleDev, `dev.lorcan.Warble` for a release (in zsh, plain `log` is a builtin). Use `Logger.warble("category")` from `Sources/Warble/Log.swift`.
 
 ## Running and testing locally
@@ -58,7 +60,7 @@ Local builds are `WarbleDev.app`. A real installed version is `/Applications/War
 
 ## Architecture
 
-Three targets:
+Three code targets in `Warble.xcodeproj`, plus `WarbleModelTests` and `WarbleCoreTests`. WarbleModel and WarbleCore are static frameworks, so the app is still one binary.
 - `Sources/WarbleModel`: logic that needs only Foundation, so CI builds and tests it on Linux: the app's state, `reduce` and their ports (`App/`), notch geometry, playback state and its interpolation, the hover state machine, source priority. It may import CoreGraphics only inside `#if canImport(CoreGraphics)`. Linux Foundation has `CGFloat`, `CGPoint`, `CGSize` and `CGRect`, but not `CGPath`, `CGColor` or `CGImage`.
 - `Sources/WarbleCore`: logic that needs Apple frameworks but no window, display or permission, including the real side of most ports: the now-playing sources, Core Audio volume and outputs (`SystemVolume`, `CoreAudioOutputs`), artwork colours and `TimerScheduler`.
 - `Sources/Warble`: AppKit and SwiftUI that need a real session. `WarbleApp` is a `MenuBarExtra` with an `AppDelegate` adaptor; `Updater` wraps Sparkle. It draws the store's state, turns AppKit events into actions and carries out the effects that need AppKit, and decides nothing else.
@@ -96,7 +98,7 @@ Claude Code loads only this file, so read a feature's note before you change tha
 ## CI
 
 The repository is public, so GitHub's runners are free, but the free plan runs only 5 macOS jobs at once, so macOS runs can queue (`.github/workflows/ci.yml`):
-- Every PR runs two required checks. `linux` is `scripts/lint.sh` and WarbleModel's tests, which keeps WarbleModel portable. `macos` is skipped, which counts as a pass, when the PR changes only `site/`, `docs/` or top-level Markdown files; otherwise it builds the app, checks the strings catalog, compiles for Intel, and runs every test except `PerfTests`, which it runs only on the release PR and on PRs labelled `performance` (adding the label alone doesn't start a run); its job summary then has a table of every budget's timing. The tests run through `scripts/ci-test.sh`, which samples the test process when no test has started or ended for five minutes, and prints crash reports when the run fails, since `swift test` buffers its output and a hang or crash otherwise leaves nothing to go on. On the release PR, `macos` also builds the release configuration, as `make dist` does. On push to `main`, `warm-cache.yml` only builds, to save the Linux build cache PRs restore.
+- Every PR runs two required checks. `linux` is `scripts/lint.sh` and WarbleModel's tests, which keeps WarbleModel portable. `macos` is skipped, which counts as a pass, when the PR changes only `site/`, `docs/` or top-level Markdown files; otherwise it builds the app, checks the strings catalog, compiles for Intel, and runs every test except `PerfTests`, which it runs only on the release PR and on PRs labelled `performance` (adding the label alone doesn't start a run); its job summary then has a table of every budget's timing. The tests run through `scripts/ci-test.sh`, which samples the test process when no test has started or ended for five minutes, prints crash reports when the run fails, and keeps the `.xcresult` as an artifact to open in Xcode. On the release PR, `macos` also builds the release configuration, as `make dist` does. On push to `main`, `warm-cache.yml` only builds, to save the Linux build cache PRs restore.
 - A third check, `adapter`, isn't required. It builds both apps, runs the adapter's own test in each, and launches `WarbleDev.app` for a few seconds (`scripts/smoke-test.sh`), so a bad entitlement, a missing resource or a Sparkle misconfiguration fails a PR rather than the release.
 - release-please opens its release PR as the repository's GitHub App (`release.yml`), so its runs start without approval. The repository has auto-merge turned on only for `dependabot-automerge.yml`, which enables it on Dependabot's patch and minor PRs (not major bumps, Sparkle or the adapter submodule) so they merge once `linux` and `macos` pass. An admin merges the release PR by hand once its checks pass.
 - `release.yml` runs `make test` on the tagged commit before it signs anything, because a `docs:`, `test:` or `ci:` commit merged after the release PR's checks can change what's released.
@@ -111,5 +113,5 @@ The repository is public, so GitHub's runners are free, but the free plan runs o
 - Website changes use the `site:` type, with no scope (`site: rework the guide home`). release-please ignores it, so it makes no changelog entry or app version. `exclude-paths` already skips commits that touch only `site/`, but a PR that also touches app files counts unless it's `site:`. If a change also alters the app's behaviour, split it so the app part has its own `fix:` or `feat:` PR.
 - Every PR links an issue or sub-issue: put `Closes #N` (or `Part of #N` when it doesn't finish the issue) in the PR body. Create the issue before starting any work, as a sub-issue of its release's umbrella issue.
 - Any substantial change or new feature keeps docs in line in the same PR: the user guide in `site/src/guide/`, `README.md` and the landing page `site/src/pages/index.astro`. `CHANGELOG.md` is generated, so don't edit it.
-- Only `make dist` builds `Warble.app` with the Sparkle feed. Every other build is `WarbleDev.app` (bundle ID `dev.lorcan.Warble.dev`, executable `WarbleDev`, no feed), so dev builds never self-update or replace the installed release. `scripts/bundle.sh` does the renaming.
+- Only `make dist` builds `Warble.app` with the Sparkle feed. Every other build, Xcode's included, is `WarbleDev.app` (bundle ID `dev.lorcan.Warble.dev`, executable `WarbleDev`, no feed), so dev builds never self-update or replace the installed release. `Config/Warble.xcconfig` switches them on `WARBLE_DISTRIBUTION`, which only `make dist` sets.
 - For recordings that need a real player, `docs/demo/` is a made-up one with invented tracks and generated art (`docs/demo/README.md`). It's a separate package, outside every Make target and CI.

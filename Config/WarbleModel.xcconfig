@@ -1,0 +1,13 @@
+// The app's state, reduce and its ports, notch geometry, playback and the hover state machine: logic that needs only
+// Foundation. Package.swift builds it on Linux too, so CI keeps it portable. A static framework, so the app stays one
+// binary.
+PRODUCT_NAME = WarbleModel
+PRODUCT_BUNDLE_IDENTIFIER = dev.lorcan.Warble.WarbleModel
+MACH_O_TYPE = staticlib
+DEFINES_MODULE = YES
+GENERATE_INFOPLIST_FILE = YES
+SKIP_INSTALL = YES
+CODE_SIGN_IDENTITY = -
+
+// Your own overrides, such as CODE_SIGN_IDENTITY. Git ignores this file.
+#include? "Local.xcconfig"
