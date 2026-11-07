@@ -8,7 +8,7 @@ The default is the simplest state. Extra features start off, and the user turns 
 
 ## Set up
 
-You need a Mac with macOS 15 or later, either Xcode or the Xcode Command Line Tools, and [CMake](https://cmake.org) (`brew install cmake`). Warble is a SwiftPM package whose only Swift dependency is [Sparkle](https://sparkle-project.org), for updates. It also bundles [MediaRemote Adapter](https://github.com/ungive/mediaremote-adapter), which reads what's playing; `make bundle` builds it with CMake from the `Vendor/mediaremote-adapter` submodule.
+You need a Mac with macOS 15 or later, Xcode 16 or later, and [CMake](https://cmake.org) (`brew install cmake`). Warble is an Xcode project, `Warble.xcodeproj`, whose only Swift dependency is the [Sparkle](https://sparkle-project.org) package, for updates. It also bundles [MediaRemote Adapter](https://github.com/ungive/mediaremote-adapter), which reads what's playing; a build phase in the app target builds it with CMake from the `Vendor/mediaremote-adapter` submodule.
 
 ```bash
 git clone --recurse-submodules https://github.com/LorcanChinnock/warble.git   # in an existing clone: git submodule update --init
@@ -16,6 +16,8 @@ cd warble
 scripts/make-dev-cert.sh   # once: a stable signing identity, so permissions survive rebuilds
 make run                   # build, install to /Applications/WarbleDev.app, and launch
 ```
+
+Or open `Warble.xcodeproj` in Xcode and press ⌘R, as described in [Working in Xcode](#working-in-xcode).
 
 macOS ties permissions such as Automation to the app's code signature. An ad-hoc signature changes on every build, so those permissions would reset each time. `make-dev-cert.sh` creates a self-signed certificate named `Warble Dev` in your login keychain, and the build signs with it. Keychain Access shows it as "not trusted"; that's expected and signing still works. To sign with another identity, set `WARBLE_SIGN_IDENTITY`.
 
@@ -26,24 +28,34 @@ Only `make dist` builds `Warble.app` with the update feed. Every other build is 
 | Target | What it does |
 |---|---|
 | `make run` | Build, install to `/Applications/WarbleDev.app`, and launch |
-| `make build` | `swift build`, without making an app |
-| `make test` | Run the `WarbleModel` and `WarbleCore` unit tests |
+| `make build` | A Debug build of the app, the same as Xcode's Build |
+| `make test` | Run the `WarbleModel` and `WarbleCore` unit tests (`ONLY='WarbleModelTests/notchSitsBetweenTheMenuBarAreas()'` runs one) |
 | `make test-linux` | Run the `WarbleModel` tests on Linux in Docker, as CI does |
 | `make coverage` | Print line coverage per file for `WarbleModel` and `WarbleCore` ([docs/coverage.md](docs/coverage.md)) |
 | `make perf` | Time the paths with a performance budget ([docs/performance.md](docs/performance.md)) |
 | `make lint` | Check for code patterns that have caused bugs (`scripts/lint.sh`) and, on a Mac, that the string catalog is up to date |
 | `make strings` | Add new strings to `Resources/Localizable.xcstrings` and drop unused ones |
 | `make app` | Build and install without launching (`INSTALL_DIR=~/Applications make app` to install elsewhere) |
-| `make bundle` | Build and sign `build/WarbleDev.app` only |
+| `make bundle` | Archive a universal Release `build/WarbleDev.app`, as Product › Archive does, and keep the archive with its dSYMs |
 | `make dist` | Build a universal (Apple Silicon and Intel) `build/Warble.zip`, as the release workflow does |
-| `make icon` | Regenerate `Resources/AppIcon.icns` from `scripts/make-icon.swift`. Its bars come from `Sources/WarbleModel/Design/IconBars.swift`, which the menu bar icon draws too |
+| `make icon` | Regenerate the app icon in `Resources/Assets.xcassets` from `scripts/make-icon.swift`. Its bars come from `Sources/WarbleModel/Design/IconBars.swift`, which the menu bar icon draws too |
 | `make clean` | Remove build output |
 
-**Command Line Tools only:** the CLT's default SDK (27) makes SwiftUI's `@State` a macro whose compiler plugin ships only with Xcode. When Xcode isn't selected, the Makefile pins the newest 26.x SDK the CLT has and points the tests at the CLT's testing plugin, so use `make` rather than a bare `swift build`. With Xcode, nothing is pinned.
+### Working in Xcode
+
+Open `Warble.xcodeproj`. Pick the **Warble** scheme and **My Mac**, then press ⌘R to build WarbleDev and run it with the debugger attached, or ⌘U to run the tests in `Tests/Warble.xctestplan`. Breakpoints, the console and SwiftUI previews all work, and the copy Xcode runs has the adapter, so it shows what's playing. Run `scripts/make-dev-cert.sh` first, as above: the project signs with `Warble Dev`, and the build fails without it.
+
+- **Settings** live in `Config/*.xcconfig`, never in the project file. `Shared.xcconfig` has the version, signing and Swift settings, `Debug.xcconfig` and `Release.xcconfig` the configurations, and each target has its own file. For a setting only you need, such as another signing identity, create `Config/Local.xcconfig`, which git ignores, and set it there: `CODE_SIGN_IDENTITY = Apple Development`, say.
+- **New files** need no project edit. The targets use synchronised folders, so a Swift file added under `Sources/Warble`, `Sources/WarbleCore`, `Sources/WarbleModel` or either test folder is part of that target.
+- **WarbleDev or Warble.** Every build is WarbleDev, Xcode's included. `Config/Warble.xcconfig` builds Warble, with the update feed, only when `WARBLE_DISTRIBUTION=YES`, which only `make dist` passes.
+- **Run quits the installed Warble**, because both draw in the notch and their panels would stack. Reopen it when you've finished.
+- **The performance budgets** run only from the **Perf** test plan, which sets `WARBLE_PERF`. Pick it in the scheme's test plans, or run `make perf`.
+
+The Makefile builds the same project through `scripts/xcodebuild.sh`, into `build/DerivedData` rather than Xcode's own folder: Xcode 27 can leave a test bundle unsigned when the IDE and `xcodebuild` share one. CI and the release workflow run the same `make` targets. `Package.swift` holds only WarbleModel and its tests, so `make test-linux` and CI's `linux` check can build them on Linux.
 
 ### Updating the adapter
 
-Since macOS 15.4, only Apple-signed processes can read what's playing through MediaRemote. MediaRemote Adapter gets round this: Warble runs the adapter's Perl script under `/usr/bin/perl`, which is Apple-signed, and the script loads the adapter's framework. `make bundle` builds the framework and the adapter's test client from the `Vendor/mediaremote-adapter` submodule, puts them and the script in `Contents/Resources`, and signs them with the app's identity. The app never links the framework.
+Since macOS 15.4, only Apple-signed processes can read what's playing through MediaRemote. MediaRemote Adapter gets round this: Warble runs the adapter's Perl script under `/usr/bin/perl`, which is Apple-signed, and the script loads the adapter's framework. The app target's **Build the adapter** phase builds the framework and the adapter's test client from the `Vendor/mediaremote-adapter` submodule with CMake, puts them and the script in `Contents/Resources`, and signs them with the app's identity, so every build has them, Xcode's included. The app never links the framework.
 
 The submodule is pinned to a tagged commit. Dependabot checks it weekly, but it follows the adapter's `main` branch, not its tags, so its pull request may point at an untagged commit. If the new commit is a release, check it as in step 4 and merge. Otherwise close the pull request, or move to a tag by hand:
 
@@ -71,8 +83,12 @@ Sources/WarbleCore/     Logic that needs Apple frameworks but no window: the sou
 Sources/Warble/         The app: the composition root (App/), the notch, Settings, the menu bar menu and updates
 Tests/WarbleModelTests/ WarbleModel's Swift Testing suite, in the same folders, with the ports' fakes in App/Fakes.swift
 Tests/WarbleCoreTests/  WarbleCore's Swift Testing suite
-Resources/              Info.plist, the app icon and the string catalog
-scripts/                Bundling, install, signing certificate, icon, lint, and the install and uninstall tests
+Tests/*.xctestplan      The test plans the Warble scheme runs: Warble (the default) and Perf (the budgets)
+Resources/              Info.plist, the entitlements, the asset catalog with the app icon, and the string catalogs
+Config/                 The build settings (.xcconfig files) for every target
+Warble.xcodeproj        The project: the Warble, WarbleCore, WarbleModel and test targets, and their shared schemes
+Package.swift           WarbleModel and its tests alone, for the Linux build
+scripts/                Building, bundling, install, signing certificate, icon, lint, and the install and uninstall tests
 Vendor/                 MediaRemote Adapter, as a git submodule
 docs/                   Per-feature architecture notes (architecture/), performance budgets, images for the README and the user guide, and demo/, a made-up player to record
 site/                   The website (see site/README.md)
@@ -102,7 +118,7 @@ Nothing may sit between a hover or a click and the panel: dispatch is synchronou
 
 ## Strings and translations
 
-Warble's interface is in English, German, Spanish, French, Italian, Japanese, Korean, Brazilian Portuguese and Simplified Chinese. Every string it shows goes through `Resources/Localizable.xcstrings`, so it can be translated. Each build extracts the strings from `Sources/Warble` and `Sources/WarbleCore` (see `Package.swift`), and `make strings` adds the new ones to the catalog. `make lint` and CI fail while the catalog is out of date.
+Warble's interface is in English, German, Spanish, French, Italian, Japanese, Korean, Brazilian Portuguese and Simplified Chinese. Every string it shows goes through `Resources/Localizable.xcstrings`, so it can be translated. Each build extracts the strings from `Sources/Warble` and `Sources/WarbleCore`. Building in Xcode adds the new ones to the catalog, since the catalog belongs to both targets, and `make strings` does the same from the terminal. `make lint` and CI fail while the catalog is out of date.
 
 A string reaches the catalog when it's a literal passed to an API that localizes:
 
@@ -138,7 +154,7 @@ By contributing, you agree that your contributions are licensed under the projec
 
 Releases are automated with [release-please](https://github.com/googleapis/release-please). Don't create tags or edit the version by hand.
 
-1. When `main` gets a `feat:` or `fix:` commit, release-please opens or updates a release pull request. It bumps the version in `Resources/Info.plist` and `.release-please-manifest.json`, and adds the changes to `CHANGELOG.md`. While Warble is in beta, each release only bumps the beta number, for example `0.1.0-beta.1` to `0.1.0-beta.2`, whether it has features or only fixes. Changes under `site/` never trigger one. Other types such as `docs`, `chore`, `ci`, `refactor`, and `build` appear in the history but don't trigger a release.
+1. When `main` gets a `feat:` or `fix:` commit, release-please opens or updates a release pull request. It bumps `MARKETING_VERSION` in `Config/Shared.xcconfig` and `.release-please-manifest.json`, and adds the changes to `CHANGELOG.md`. While Warble is in beta, each release only bumps the beta number, for example `0.1.0-beta.1` to `0.1.0-beta.2`, whether it has features or only fixes. Changes under `site/` never trigger one. Other types such as `docs`, `chore`, `ci`, `refactor`, and `build` appear in the history but don't trigger a release.
 2. The release pull request's CI is the release gate. It runs again on every push to the pull request, and the pull request can't merge until it passes. The gate runs the performance budgets too ([docs/performance.md](docs/performance.md)).
    - A repository admin merges the release pull request by hand. The repository has auto-merge turned off.
    - If the gate fails, fix it in a normal pull request first. release-please only updates the release pull request for changes that appear in the changelog, so after a `test:`, `ci:` or `docs:` fix, run `gh pr update-branch <number>` on the release pull request to run the gate again.
@@ -170,8 +186,8 @@ Each release also attaches `SHA256SUMS` and a build provenance attestation. To c
 ```bash
 make build                                                     # fetches Sparkle's tools
 # --account keeps Warble's key apart from other apps' keys in the keychain; without it you get the default account's key.
-.build/artifacts/sparkle/Sparkle/bin/generate_keys --account warble     # prints the public key for SUPublicEDKey
-.build/artifacts/sparkle/Sparkle/bin/generate_keys --account warble -x sparkle.key
+build/DerivedData/SourcePackages/artifacts/sparkle/Sparkle/bin/generate_keys --account warble     # prints the public key for SUPublicEDKey
+build/DerivedData/SourcePackages/artifacts/sparkle/Sparkle/bin/generate_keys --account warble -x sparkle.key
 gh secret set --env release SPARKLE_PRIVATE_KEY < sparkle.key
 
 scripts/make-dev-cert.sh "Warble Release" release.p12            # prints the .p12 password

@@ -1,0 +1,12 @@
+// Logic that needs Apple frameworks but no window: the now-playing sources, Core Audio volume and outputs, artwork
+// colours and the timer. A static framework, so the app stays one binary.
+PRODUCT_NAME = WarbleCore
+PRODUCT_BUNDLE_IDENTIFIER = dev.lorcan.Warble.WarbleCore
+MACH_O_TYPE = staticlib
+DEFINES_MODULE = YES
+GENERATE_INFOPLIST_FILE = YES
+SKIP_INSTALL = YES
+CODE_SIGN_IDENTITY = -
+
+// Your own overrides, such as CODE_SIGN_IDENTITY. Git ignores this file.
+#include? "Local.xcconfig"

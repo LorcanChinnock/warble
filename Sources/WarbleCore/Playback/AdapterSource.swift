@@ -4,7 +4,7 @@ import Synchronization
 
 private let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Warble", category: "now-playing")
 
-/// Reads what's playing, and sends commands, through mediaremote-adapter, which `scripts/bundle.sh` puts in the app's
+/// Reads what's playing, and sends commands, through mediaremote-adapter, which the app's Build the adapter phase puts in its
 /// resources. Since macOS 15.4 only Apple-signed processes may read MediaRemote, so each command runs the adapter's
 /// script under `/usr/bin/perl`, which loads the adapter's framework.
 ///

@@ -1,0 +1,148 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		17980976526D56618384AD2F /* WarbleCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EB0C98464C14D0FF3EAF337 /* WarbleCore.framework */; };
+		571E215FCA5EFCFC22DB47BE /* WarbleModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A0B03BB690A104BF752DFEE /* WarbleModel.framework */; };
+		62144305F6E93E92C84E5AA1 /* WarbleModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A0B03BB690A104BF752DFEE /* WarbleModel.framework */; };
+		7DE1999CF2F0AA99EC4A7145 /* WarbleCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EB0C98464C14D0FF3EAF337 /* WarbleCore.framework */; };
+		D6A6611BE8C70461B9868ECA /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 58A511A4A707D283AEB5F517 /* Sparkle */; };
+		F749A50AE77BCC7771FE730A /* WarbleModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A0B03BB690A104BF752DFEE /* WarbleModel.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3BDF5B8D014D162E1085941A /* PBXContainerItemProxy */ = {isa = PBXContainerItemProxy; containerPortal = 46F86FAA6BBF9AC94A7E4595 /* Project object */; proxyType = 1; remoteGlobalIDString = 71BAACDF3B710A20B10B6559; remoteInfo = WarbleModel; };
+		64E82710C6FBBE41A8549F4C /* PBXContainerItemProxy */ = {isa = PBXContainerItemProxy; containerPortal = 46F86FAA6BBF9AC94A7E4595 /* Project object */; proxyType = 1; remoteGlobalIDString = 8800E85FA8A08B11CE4C7450; remoteInfo = WarbleCore; };
+		78635A8FF9616011F82E9C06 /* PBXContainerItemProxy */ = {isa = PBXContainerItemProxy; containerPortal = 46F86FAA6BBF9AC94A7E4595 /* Project object */; proxyType = 1; remoteGlobalIDString = 71BAACDF3B710A20B10B6559; remoteInfo = WarbleModel; };
+		90D493E2E461D92AA9B92702 /* PBXContainerItemProxy */ = {isa = PBXContainerItemProxy; containerPortal = 46F86FAA6BBF9AC94A7E4595 /* Project object */; proxyType = 1; remoteGlobalIDString = 71BAACDF3B710A20B10B6559; remoteInfo = WarbleModel; };
+		A2EE50A2B00E989FDFCB5F1B /* PBXContainerItemProxy */ = {isa = PBXContainerItemProxy; containerPortal = 46F86FAA6BBF9AC94A7E4595 /* Project object */; proxyType = 1; remoteGlobalIDString = 71BAACDF3B710A20B10B6559; remoteInfo = WarbleModel; };
+		B65C53026A8CFCA688BA9D68 /* PBXContainerItemProxy */ = {isa = PBXContainerItemProxy; containerPortal = 46F86FAA6BBF9AC94A7E4595 /* Project object */; proxyType = 1; remoteGlobalIDString = 8800E85FA8A08B11CE4C7450; remoteInfo = WarbleCore; };
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0DF83D8A3F6238FB091E84CE /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		28A63BCCC87B6DE442429D41 /* Warble.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Warble.xcconfig; sourceTree = "<group>"; };
+		3A0B03BB690A104BF752DFEE /* WarbleModel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WarbleModel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		446E661A1B880DF61C8235A0 /* WarbleModel.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = WarbleModel.xcconfig; sourceTree = "<group>"; };
+		580EE50EC93B55628F44C14C /* WarbleDev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WarbleDev.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5EB0C98464C14D0FF3EAF337 /* WarbleCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WarbleCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6ABF303579DE08151A1808B1 /* WarbleModelTests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = WarbleModelTests.xcconfig; sourceTree = "<group>"; };
+		6C5032D6E0A55E2EE7412F4A /* WarbleModelTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WarbleModelTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9207E80361F28618BFB31AC1 /* Perf.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Perf.xctestplan; sourceTree = "<group>"; };
+		94F30230C4D8F8A92F5FA3FD /* WarbleCoreTests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = WarbleCoreTests.xcconfig; sourceTree = "<group>"; };
+		AAD7BF4331227098EECE1978 /* Warble.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Warble.xctestplan; sourceTree = "<group>"; };
+		B3E961EFFF16D01BADA44E31 /* WarbleCore.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = WarbleCore.xcconfig; sourceTree = "<group>"; };
+		C07C21912A94E44986B092C9 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		E7C91CC45A919371439011B7 /* WarbleCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WarbleCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FD6696DDD0602721644D17D1 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		275F6871220BE3FE7D9F319F /* Exceptions for "Resources" folder in "Warble" target */ = {isa = PBXFileSystemSynchronizedBuildFileExceptionSet; membershipExceptions = (Info.plist, Warble.entitlements, ); target = 0E5C59994BDE47819764A575 /* Warble */; };
+		3E8848E615F7C47D1A8620F3 /* Exceptions for "WarbleModelTests" folder in "WarbleModelTests" target */ = {isa = PBXFileSystemSynchronizedBuildFileExceptionSet; membershipExceptions = (Playback/Fixtures, ); target = F0A433711001A48ADB6EE96E /* WarbleModelTests */; };
+		7D9DFB0CD697213C1E282BE4 /* Exceptions for "Resources" folder in "WarbleCore" target */ = {isa = PBXFileSystemSynchronizedBuildFileExceptionSet; membershipExceptions = (Localizable.xcstrings, ); target = 8800E85FA8A08B11CE4C7450 /* WarbleCore */; };
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		09782E04B106B590B2D201EC /* WarbleCore */ = {isa = PBXFileSystemSynchronizedRootGroup; path = WarbleCore; sourceTree = "<group>"; };
+		410C8E6632AC9885ED29E018 /* WarbleModelTests */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (3E8848E615F7C47D1A8620F3 /* Exceptions for "WarbleModelTests" folder in "WarbleModelTests" target */, ); path = WarbleModelTests; sourceTree = "<group>"; };
+		8180CB13746F9A6FFCB643DF /* Resources */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (275F6871220BE3FE7D9F319F /* Exceptions for "Resources" folder in "Warble" target */, 7D9DFB0CD697213C1E282BE4 /* Exceptions for "Resources" folder in "WarbleCore" target */, ); path = Resources; sourceTree = "<group>"; };
+		C40179C752C8CFC9F15E3740 /* Warble */ = {isa = PBXFileSystemSynchronizedRootGroup; path = Warble; sourceTree = "<group>"; };
+		C9A5774DBE9009E876B1E276 /* WarbleModel */ = {isa = PBXFileSystemSynchronizedRootGroup; path = WarbleModel; sourceTree = "<group>"; };
+		D28481F05834895253A648A6 /* WarbleCoreTests */ = {isa = PBXFileSystemSynchronizedRootGroup; path = WarbleCoreTests; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2C3283B5759BD0D79F7B7693 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		3C0EC0DCBCD2B5B8EBCF3849 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (17980976526D56618384AD2F /* WarbleCore.framework in Frameworks */, F749A50AE77BCC7771FE730A /* WarbleModel.framework in Frameworks */, ); runOnlyForDeploymentPostprocessing = 0; };
+		46FA3D89349C3EC085C0DF53 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		D6449AC024B19559FA57AC1F /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (571E215FCA5EFCFC22DB47BE /* WarbleModel.framework in Frameworks */, ); runOnlyForDeploymentPostprocessing = 0; };
+		EA15B9060DA1D1278264C51B /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (62144305F6E93E92C84E5AA1 /* WarbleModel.framework in Frameworks */, 7DE1999CF2F0AA99EC4A7145 /* WarbleCore.framework in Frameworks */, D6A6611BE8C70461B9868ECA /* Sparkle in Frameworks */, ); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2576446EB93BE94ACB5601EF /* Tests */ = {isa = PBXGroup; children = (D28481F05834895253A648A6 /* WarbleCoreTests */, 410C8E6632AC9885ED29E018 /* WarbleModelTests */, AAD7BF4331227098EECE1978 /* Warble.xctestplan */, 9207E80361F28618BFB31AC1 /* Perf.xctestplan */, ); path = Tests; sourceTree = "<group>"; };
+		871844B8711B037314D660AC = {isa = PBXGroup; children = (B26F62053B6AA598074F73A7 /* Sources */, 8180CB13746F9A6FFCB643DF /* Resources */, 2576446EB93BE94ACB5601EF /* Tests */, B19C88A4B6438B68125ABC48 /* Config */, BC891EC06CEBF20F30FA0E3E /* Products */, ); sourceTree = "<group>"; };
+		B19C88A4B6438B68125ABC48 /* Config */ = {isa = PBXGroup; children = (FD6696DDD0602721644D17D1 /* Shared.xcconfig */, C07C21912A94E44986B092C9 /* Debug.xcconfig */, 0DF83D8A3F6238FB091E84CE /* Release.xcconfig */, 28A63BCCC87B6DE442429D41 /* Warble.xcconfig */, 446E661A1B880DF61C8235A0 /* WarbleModel.xcconfig */, B3E961EFFF16D01BADA44E31 /* WarbleCore.xcconfig */, 6ABF303579DE08151A1808B1 /* WarbleModelTests.xcconfig */, 94F30230C4D8F8A92F5FA3FD /* WarbleCoreTests.xcconfig */, ); path = Config; sourceTree = "<group>"; };
+		B26F62053B6AA598074F73A7 /* Sources */ = {isa = PBXGroup; children = (C40179C752C8CFC9F15E3740 /* Warble */, 09782E04B106B590B2D201EC /* WarbleCore */, C9A5774DBE9009E876B1E276 /* WarbleModel */, ); path = Sources; sourceTree = "<group>"; };
+		BC891EC06CEBF20F30FA0E3E /* Products */ = {isa = PBXGroup; children = (580EE50EC93B55628F44C14C /* WarbleDev.app */, 3A0B03BB690A104BF752DFEE /* WarbleModel.framework */, 5EB0C98464C14D0FF3EAF337 /* WarbleCore.framework */, 6C5032D6E0A55E2EE7412F4A /* WarbleModelTests.xctest */, E7C91CC45A919371439011B7 /* WarbleCoreTests.xctest */, ); name = Products; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0E5C59994BDE47819764A575 /* Warble */ = {isa = PBXNativeTarget; buildConfigurationList = B868008127461781D27FC16B /* Build configuration list for PBXNativeTarget "Warble" */; buildPhases = (DE3617CA603BE5B1471158DA /* Sources */, EA15B9060DA1D1278264C51B /* Frameworks */, 5293B98DD3D63D2AF028B34F /* Resources */, E8B0F9309C888484EF97C859 /* Build the adapter */, 9A989AB99F96F44C117D157C /* Sign Sparkle's helpers */, ); buildRules = ( ); dependencies = (0ECB822E16F2D8E140FCACA8 /* PBXTargetDependency */, CFE27F3AFE5C3424D5CC845E /* PBXTargetDependency */, ); fileSystemSynchronizedGroups = (C40179C752C8CFC9F15E3740 /* Warble */, 8180CB13746F9A6FFCB643DF /* Resources */, ); name = Warble; packageProductDependencies = (58A511A4A707D283AEB5F517 /* Sparkle */, ); productName = Warble; productReference = 580EE50EC93B55628F44C14C /* WarbleDev.app */; productType = "com.apple.product-type.application"; };
+		219B7C17215BC33BD5986B4C /* WarbleCoreTests */ = {isa = PBXNativeTarget; buildConfigurationList = ADFD5362F4B9242C9B7C67FA /* Build configuration list for PBXNativeTarget "WarbleCoreTests" */; buildPhases = (C61436C7BDE65B6E80E148C9 /* Sources */, 3C0EC0DCBCD2B5B8EBCF3849 /* Frameworks */, ); buildRules = ( ); dependencies = (6A3BBB930EDF6A90C104CC41 /* PBXTargetDependency */, 1B0074E1B6472367046412B5 /* PBXTargetDependency */, ); fileSystemSynchronizedGroups = (D28481F05834895253A648A6 /* WarbleCoreTests */, ); name = WarbleCoreTests; packageProductDependencies = (); productName = WarbleCoreTests; productReference = E7C91CC45A919371439011B7 /* WarbleCoreTests.xctest */; productType = "com.apple.product-type.bundle.unit-test"; };
+		71BAACDF3B710A20B10B6559 /* WarbleModel */ = {isa = PBXNativeTarget; buildConfigurationList = 6233259F989388BD344192C9 /* Build configuration list for PBXNativeTarget "WarbleModel" */; buildPhases = (0EED61C567308FB003F1F0DA /* Sources */, 46FA3D89349C3EC085C0DF53 /* Frameworks */, ); buildRules = ( ); dependencies = (); fileSystemSynchronizedGroups = (C9A5774DBE9009E876B1E276 /* WarbleModel */, ); name = WarbleModel; packageProductDependencies = (); productName = WarbleModel; productReference = 3A0B03BB690A104BF752DFEE /* WarbleModel.framework */; productType = "com.apple.product-type.framework"; };
+		8800E85FA8A08B11CE4C7450 /* WarbleCore */ = {isa = PBXNativeTarget; buildConfigurationList = 1208691A0AD475C954FDE005 /* Build configuration list for PBXNativeTarget "WarbleCore" */; buildPhases = (C6ED499EC776859AC1A2ED7D /* Sources */, 2C3283B5759BD0D79F7B7693 /* Frameworks */, 05D0DB0C922C4A029313AC72 /* Resources */, ); buildRules = ( ); dependencies = (906B8CA8E096D2DA3F913F6E /* PBXTargetDependency */, ); fileSystemSynchronizedGroups = (09782E04B106B590B2D201EC /* WarbleCore */, ); name = WarbleCore; packageProductDependencies = (); productName = WarbleCore; productReference = 5EB0C98464C14D0FF3EAF337 /* WarbleCore.framework */; productType = "com.apple.product-type.framework"; };
+		F0A433711001A48ADB6EE96E /* WarbleModelTests */ = {isa = PBXNativeTarget; buildConfigurationList = 5D2D32E55AC754669DC0AFFC /* Build configuration list for PBXNativeTarget "WarbleModelTests" */; buildPhases = (ECA11723CDB1FE7570F42323 /* Sources */, D6449AC024B19559FA57AC1F /* Frameworks */, ); buildRules = ( ); dependencies = (8515E6156489FD8AE22B2DE3 /* PBXTargetDependency */, ); fileSystemSynchronizedGroups = (410C8E6632AC9885ED29E018 /* WarbleModelTests */, ); name = WarbleModelTests; packageProductDependencies = (); productName = WarbleModelTests; productReference = 6C5032D6E0A55E2EE7412F4A /* WarbleModelTests.xctest */; productType = "com.apple.product-type.bundle.unit-test"; };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		46F86FAA6BBF9AC94A7E4595 /* Project object */ = {isa = PBXProject; attributes = {BuildIndependentTargetsInParallel = 1; LastSwiftUpdateCheck = 2720; LastUpgradeCheck = 2720; TargetAttributes = {0E5C59994BDE47819764A575 = {CreatedOnToolsVersion = 27.0; }; 71BAACDF3B710A20B10B6559 = {CreatedOnToolsVersion = 27.0; }; 8800E85FA8A08B11CE4C7450 = {CreatedOnToolsVersion = 27.0; }; F0A433711001A48ADB6EE96E = {CreatedOnToolsVersion = 27.0; }; 219B7C17215BC33BD5986B4C = {CreatedOnToolsVersion = 27.0; }; }; }; buildConfigurationList = A109D0F4ED1639CE74CB5885 /* Build configuration list for PBXProject "Warble" */; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base, de, es, fr, it, ja, ko, "pt-BR", "zh-Hans", ); mainGroup = 871844B8711B037314D660AC; minimizedProjectReferenceProxies = 1; packageReferences = (858FD70212EB18AC020D9A77 /* XCRemoteSwiftPackageReference "Sparkle" */, ); preferredProjectObjectVersion = 77; productRefGroup = BC891EC06CEBF20F30FA0E3E /* Products */; projectDirPath = ""; projectRoot = ""; targets = (0E5C59994BDE47819764A575 /* Warble */, 71BAACDF3B710A20B10B6559 /* WarbleModel */, 8800E85FA8A08B11CE4C7450 /* WarbleCore */, F0A433711001A48ADB6EE96E /* WarbleModelTests */, 219B7C17215BC33BD5986B4C /* WarbleCoreTests */, ); };
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		05D0DB0C922C4A029313AC72 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		5293B98DD3D63D2AF028B34F /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		9A989AB99F96F44C117D157C /* Sign Sparkle's helpers */ = {isa = PBXShellScriptBuildPhase; buildActionMask = 2147483647; files = (); alwaysOutOfDate = 1; inputFileListPaths = ( ); inputPaths = ( ); name = "Sign Sparkle's helpers"; outputFileListPaths = ( ); outputPaths = ( ); shellPath = /bin/sh; shellScript = "# Sparkle's helpers keep the signature they shipped with when Xcode embeds the framework. Sign them, then the\n# framework, with the app's identity, inside-out as Sparkle's docs advise (never --deep), so an update installed\n# by the release keeps the permissions macOS granted, such as Automation. Xcode signs the app itself after this phase.\nset -eu\nsparkle=\"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/Sparkle.framework\"\nfor part in XPCServices/Installer.xpc XPCServices/Downloader.xpc Autoupdate Updater.app; do\n    codesign --force --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" --preserve-metadata=entitlements \"$sparkle/Versions/B/$part\"\ndone\ncodesign --force --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \"$sparkle\"\n"; showEnvVarsInLog = 0; runOnlyForDeploymentPostprocessing = 0; };
+		E8B0F9309C888484EF97C859 /* Build the adapter */ = {isa = PBXShellScriptBuildPhase; buildActionMask = 2147483647; files = (); alwaysOutOfDate = 1; inputFileListPaths = ( ); inputPaths = ( ); name = "Build the adapter"; outputFileListPaths = ( ); outputPaths = ( ); shellPath = /bin/sh; shellScript = "# Builds ungive/mediaremote-adapter from the Vendor/mediaremote-adapter submodule with CMake and puts it in the app's\n# Resources, signed with the app's identity. Since macOS 15.4 MediaRemote answers only Apple-signed processes, so the\n# now-playing source runs the adapter's script under /usr/bin/perl, which loads this framework. It's only bundled,\n# never linked. The adapter's CMakeLists.txt builds both architectures itself. See CONTRIBUTING.md › Updating the adapter.\nset -eu\nsrc=\"$SRCROOT/Vendor/mediaremote-adapter\"\nif [ ! -f \"$src/CMakeLists.txt\" ]; then\n    echo \"error: Vendor/mediaremote-adapter is empty; run git submodule update --init.\" >&2\n    exit 1\nfi\n# Xcode runs scripts with a short PATH that misses Homebrew.\nPATH=\"$PATH:/opt/homebrew/bin:/usr/local/bin\"\nif ! command -v cmake >/dev/null; then\n    echo \"error: building the adapter needs CMake; install it with brew install cmake.\" >&2\n    exit 1\nfi\n# A clean environment, so none of Xcode's build settings reach CMake. Without the deployment target, CMake would target\n# the Mac doing the build, and the framework wouldn't load on older macOS.\nbuild=\"$TARGET_TEMP_DIR/mediaremote-adapter\"\nrun() {\n    env -i PATH=\"$PATH\" HOME=\"$HOME\" DEVELOPER_DIR=\"$DEVELOPER_DIR\" \"$@\"\n}\n# CMake's output goes to a log, which is printed only when the build fails.\nlog=\"$TARGET_TEMP_DIR/mediaremote-adapter.log\"\nif ! { run cmake -S \"$src\" -B \"$build\" -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=\"$MACOSX_DEPLOYMENT_TARGET\" &&\n    run cmake --build \"$build\" --parallel; } >\"$log\" 2>&1; then\n    cat \"$log\" >&2\n    echo \"error: building the adapter failed; CMake's output is above.\" >&2\n    exit 1\nfi\n\n# The now-playing source runs `/usr/bin/perl <script> <framework> <test client> <command>` with these paths. The test\n# client is only for the `test` command, which fakes playback to check the adapter still works.\nresources=\"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\nmkdir -p \"$resources\"\ncp \"$src/bin/mediaremote-adapter.pl\" \"$resources/mediaremote-adapter.pl\"\nrm -rf \"$resources/MediaRemoteAdapter.framework\"\nditto \"$build/MediaRemoteAdapter.framework\" \"$resources/MediaRemoteAdapter.framework\"\ncp \"$build/MediaRemoteAdapterTestClient\" \"$resources/MediaRemoteAdapterTestClient\"\n# CMake signs them ad hoc. Sign them again with the app's identity before Xcode signs the app and seals its resources.\ncodesign --force --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \"$resources/MediaRemoteAdapterTestClient\" 2>/dev/null\ncodesign --force --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \"$resources/MediaRemoteAdapter.framework\" 2>/dev/null\n"; showEnvVarsInLog = 0; runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0EED61C567308FB003F1F0DA /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		C61436C7BDE65B6E80E148C9 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		C6ED499EC776859AC1A2ED7D /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		DE3617CA603BE5B1471158DA /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		ECA11723CDB1FE7570F42323 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0ECB822E16F2D8E140FCACA8 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = 71BAACDF3B710A20B10B6559 /* WarbleModel */; targetProxy = 3BDF5B8D014D162E1085941A /* PBXContainerItemProxy */; };
+		1B0074E1B6472367046412B5 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = 71BAACDF3B710A20B10B6559 /* WarbleModel */; targetProxy = 90D493E2E461D92AA9B92702 /* PBXContainerItemProxy */; };
+		6A3BBB930EDF6A90C104CC41 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = 8800E85FA8A08B11CE4C7450 /* WarbleCore */; targetProxy = 64E82710C6FBBE41A8549F4C /* PBXContainerItemProxy */; };
+		8515E6156489FD8AE22B2DE3 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = 71BAACDF3B710A20B10B6559 /* WarbleModel */; targetProxy = A2EE50A2B00E989FDFCB5F1B /* PBXContainerItemProxy */; };
+		906B8CA8E096D2DA3F913F6E /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = 71BAACDF3B710A20B10B6559 /* WarbleModel */; targetProxy = 78635A8FF9616011F82E9C06 /* PBXContainerItemProxy */; };
+		CFE27F3AFE5C3424D5CC845E /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = 8800E85FA8A08B11CE4C7450 /* WarbleCore */; targetProxy = B65C53026A8CFCA688BA9D68 /* PBXContainerItemProxy */; };
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0393D15279E34D0AA26E7A83 /* Release */ = {isa = XCBuildConfiguration; baseConfigurationReference = B3E961EFFF16D01BADA44E31 /* WarbleCore.xcconfig */; buildSettings = { }; name = Release; };
+		0F20ABF3895225AC1A8F89B8 /* Release */ = {isa = XCBuildConfiguration; baseConfigurationReference = 446E661A1B880DF61C8235A0 /* WarbleModel.xcconfig */; buildSettings = { }; name = Release; };
+		1CAD3E9505361E9C53BDCA9E /* Debug */ = {isa = XCBuildConfiguration; baseConfigurationReference = B3E961EFFF16D01BADA44E31 /* WarbleCore.xcconfig */; buildSettings = { }; name = Debug; };
+		21C3B737F78589CF578F9332 /* Debug */ = {isa = XCBuildConfiguration; baseConfigurationReference = C07C21912A94E44986B092C9 /* Debug.xcconfig */; buildSettings = { }; name = Debug; };
+		34C83CBBE7EBACB161C941D5 /* Release */ = {isa = XCBuildConfiguration; baseConfigurationReference = 0DF83D8A3F6238FB091E84CE /* Release.xcconfig */; buildSettings = { }; name = Release; };
+		54F94F176A36EE8A0502694D /* Release */ = {isa = XCBuildConfiguration; baseConfigurationReference = 94F30230C4D8F8A92F5FA3FD /* WarbleCoreTests.xcconfig */; buildSettings = { }; name = Release; };
+		5DAA6335E7AC68637CFD8AAB /* Release */ = {isa = XCBuildConfiguration; baseConfigurationReference = 6ABF303579DE08151A1808B1 /* WarbleModelTests.xcconfig */; buildSettings = { }; name = Release; };
+		8EB765FE1C9E2B3BE73DBE3F /* Debug */ = {isa = XCBuildConfiguration; baseConfigurationReference = 6ABF303579DE08151A1808B1 /* WarbleModelTests.xcconfig */; buildSettings = { }; name = Debug; };
+		95BC8BFA110F6BD63BA82217 /* Debug */ = {isa = XCBuildConfiguration; baseConfigurationReference = 28A63BCCC87B6DE442429D41 /* Warble.xcconfig */; buildSettings = { }; name = Debug; };
+		ABAE4C96CF761F4129C88C83 /* Debug */ = {isa = XCBuildConfiguration; baseConfigurationReference = 94F30230C4D8F8A92F5FA3FD /* WarbleCoreTests.xcconfig */; buildSettings = { }; name = Debug; };
+		CBEDF1379C91063872948CE1 /* Release */ = {isa = XCBuildConfiguration; baseConfigurationReference = 28A63BCCC87B6DE442429D41 /* Warble.xcconfig */; buildSettings = { }; name = Release; };
+		D1737C1D5CCB5D162625B432 /* Debug */ = {isa = XCBuildConfiguration; baseConfigurationReference = 446E661A1B880DF61C8235A0 /* WarbleModel.xcconfig */; buildSettings = { }; name = Debug; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1208691A0AD475C954FDE005 /* Build configuration list for PBXNativeTarget "WarbleCore" */ = {isa = XCConfigurationList; buildConfigurations = (1CAD3E9505361E9C53BDCA9E /* Debug */, 0393D15279E34D0AA26E7A83 /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		5D2D32E55AC754669DC0AFFC /* Build configuration list for PBXNativeTarget "WarbleModelTests" */ = {isa = XCConfigurationList; buildConfigurations = (8EB765FE1C9E2B3BE73DBE3F /* Debug */, 5DAA6335E7AC68637CFD8AAB /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		6233259F989388BD344192C9 /* Build configuration list for PBXNativeTarget "WarbleModel" */ = {isa = XCConfigurationList; buildConfigurations = (D1737C1D5CCB5D162625B432 /* Debug */, 0F20ABF3895225AC1A8F89B8 /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		A109D0F4ED1639CE74CB5885 /* Build configuration list for PBXProject "Warble" */ = {isa = XCConfigurationList; buildConfigurations = (21C3B737F78589CF578F9332 /* Debug */, 34C83CBBE7EBACB161C941D5 /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		ADFD5362F4B9242C9B7C67FA /* Build configuration list for PBXNativeTarget "WarbleCoreTests" */ = {isa = XCConfigurationList; buildConfigurations = (ABAE4C96CF761F4129C88C83 /* Debug */, 54F94F176A36EE8A0502694D /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		B868008127461781D27FC16B /* Build configuration list for PBXNativeTarget "Warble" */ = {isa = XCConfigurationList; buildConfigurations = (95BC8BFA110F6BD63BA82217 /* Debug */, CBEDF1379C91063872948CE1 /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		858FD70212EB18AC020D9A77 /* XCRemoteSwiftPackageReference "Sparkle" */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/sparkle-project/Sparkle"; requirement = {kind = upToNextMajorVersion; minimumVersion = 2.10.0; }; };
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		58A511A4A707D283AEB5F517 /* Sparkle */ = {isa = XCSwiftPackageProductDependency; package = 858FD70212EB18AC020D9A77 /* XCRemoteSwiftPackageReference "Sparkle" */; productName = Sparkle; };
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 46F86FAA6BBF9AC94A7E4595 /* Project object */;
+}

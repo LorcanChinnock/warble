@@ -7,10 +7,12 @@ import UniformTypeIdentifiers
 import WarbleModel
 
 /// Times the pure paths that have budgets in `docs/performance.md`: what happens between the player reporting a change and
-/// the notch showing it. `make test` skips this suite and `make perf` runs it alone, one test at a time, so other tests
-/// don't skew the timings. Budgets are 2× the baseline measured on the CI runner, the slowest machine that runs them,
-/// which leaves room for noise but still fails on a regression that does the work again on every call.
-@Suite(.serialized) struct PerfTests {
+/// the notch showing it. It runs only when `WARBLE_PERF` is set, as `Tests/Perf.xctestplan` sets it, so `make test` and
+/// Xcode's default test plan skip it, and `make perf` runs it alone, one test at a time, so other tests don't skew the
+/// timings. Budgets are 2× the baseline measured on the CI runner, the slowest machine that runs them, which leaves room
+/// for noise but still fails on a regression that does the work again on every call.
+@Suite(.serialized, .enabled(if: ProcessInfo.processInfo.environment["WARBLE_PERF"] != nil, "Runs from Tests/Perf.xctestplan (make perf)"))
+struct PerfTests {
     /// A new track arrives as one line holding everything, its art included, which `AdapterSource` reads before the notch
     /// hears of it.
     @Test func readingANewTrackWithItsArtStaysInBudget() throws {
