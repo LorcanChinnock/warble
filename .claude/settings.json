@@ -3,6 +3,9 @@
     "allow": [
       "Bash(make lint)",
       "Bash(make test)",
+      "Bash(make stop)",
+      "Bash(scripts/dev.sh status)",
+      "Bash(scripts/dev.sh stop)",
       "Bash(defaults read *)",
       "Bash(log show *)",
       "Bash(lsappinfo info *)",
