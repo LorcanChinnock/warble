@@ -13,9 +13,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var fallback: ScriptSource?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // To see the notch without playing anything, launch with
-        // `open build/WarbleDev.app --args -notchPreviewState resting` and hover or click it to open it; the argument
-        // lasts only for that launch.
+        // To see the notch without playing anything, turn on `-notchPreviewState resting` in the Warble scheme's
+        // arguments, or run `make run APP_ARGS='-notchPreviewState resting'`, and hover or click it to open it; the
+        // argument lasts only for that launch.
         let store = environment.store
         let runner = environment.runner
         let preview = Self.preview

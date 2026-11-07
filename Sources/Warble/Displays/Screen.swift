@@ -31,8 +31,9 @@ extension NSScreen {
 
     /// Every display as the notch sees it; the first screen is the one with the menu bar.
     ///
-    /// To see the virtual notch on a Mac with a notch, launch with `open build/WarbleDev.app --args -notchPreviewVirtual
-    /// YES`, which treats every display as having none for that launch.
+    /// To see the virtual notch on a Mac with a notch, turn on `-notchPreviewVirtual YES` in the Warble scheme's
+    /// arguments (or `make run APP_ARGS='-notchPreviewVirtual YES'`), which treats every display as having none for that
+    /// launch.
     static var notchDisplays: [NotchDisplay] {
         let arguments = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
         let ignoresNotch = arguments["notchPreviewVirtual"] != nil || arguments["notchPreviewHousing"] != nil
