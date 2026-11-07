@@ -14,20 +14,23 @@ You need a Mac with macOS 15 or later, Xcode 16 or later, and [CMake](https://cm
 git clone --recurse-submodules https://github.com/LorcanChinnock/warble.git   # in an existing clone: git submodule update --init
 cd warble
 scripts/make-dev-cert.sh   # once: a stable signing identity, so permissions survive rebuilds
-make run                   # build, install to /Applications/WarbleDev.app, and launch
+make run                   # build and launch WarbleDev; make stop quits it
 ```
 
-Or open `Warble.xcodeproj` in Xcode and press ⌘R, as described in [Working in Xcode](#working-in-xcode).
+Or, better for day-to-day work, open `Warble.xcodeproj` in Xcode and press ⌘R, as described in [Working in Xcode](#working-in-xcode).
 
 macOS ties permissions such as Automation to the app's code signature. An ad-hoc signature changes on every build, so those permissions would reset each time. `make-dev-cert.sh` creates a self-signed certificate named `Warble Dev` in your login keychain, and the build signs with it. Keychain Access shows it as "not trusted"; that's expected and signing still works. To sign with another identity, set `WARBLE_SIGN_IDENTITY`.
 
-Only `make dist` builds `Warble.app` with the update feed. Every other build is `WarbleDev.app`: a separate app with its own bundle ID (`dev.lorcan.Warble.dev`), settings and permissions, and no update feed. It installs beside a released Warble rather than over it, and Sparkle never replaces it. Quit a running release first (`pkill -x Warble`), or both draw in the notch.
+Only `make dist` builds `Warble.app` with the update feed. Every other build is `WarbleDev.app`: a separate app with its own bundle ID (`dev.lorcan.Warble.dev`), settings and permissions, and no update feed. It runs beside a released Warble rather than replacing it, and Sparkle never updates it.
+
+Only one WarbleDev runs at a time. Xcode's Run and `make run` both go through `scripts/dev.sh`, which first quits every other WarbleDev, whether from another worktree, an earlier run or a copy Xcode is debugging. It also quits the installed Warble, since both draw in the notch, and `make stop` reopens it.
 
 ### Make targets
 
 | Target | What it does |
 |---|---|
-| `make run` | Build, install to `/Applications/WarbleDev.app`, and launch |
+| `make run` | A Debug build, as Xcode's Run makes, launched from `build/DerivedData` after quitting every other WarbleDev (`APP_ARGS='-notchPreviewState resting'` passes launch arguments) |
+| `make stop` | Quit WarbleDev, however it started, and reopen the installed Warble if a run quit it |
 | `make build` | A Debug build of the app, the same as Xcode's Build |
 | `make test` | Run the `WarbleModel` and `WarbleCore` unit tests (`ONLY='WarbleModelTests/notchSitsBetweenTheMenuBarAreas()'` runs one) |
 | `make test-linux` | Run the `WarbleModel` tests on Linux in Docker, as CI does |
@@ -35,7 +38,6 @@ Only `make dist` builds `Warble.app` with the update feed. Every other build is 
 | `make perf` | Time the paths with a performance budget ([docs/performance.md](docs/performance.md)) |
 | `make lint` | Check for code patterns that have caused bugs (`scripts/lint.sh`) and, on a Mac, that the string catalog is up to date |
 | `make strings` | Add new strings to `Resources/Localizable.xcstrings` and drop unused ones |
-| `make app` | Build and install without launching (`INSTALL_DIR=~/Applications make app` to install elsewhere) |
 | `make bundle` | Archive a universal Release `build/WarbleDev.app`, as Product › Archive does, and keep the archive with its dSYMs |
 | `make dist` | Build a universal (Apple Silicon and Intel) `build/Warble.zip`, as the release workflow does |
 | `make icon` | Regenerate the app icon in `Resources/Assets.xcassets` from `scripts/make-icon.swift`. Its bars come from `Sources/WarbleModel/Design/IconBars.swift`, which the menu bar icon draws too |
@@ -48,7 +50,8 @@ Open `Warble.xcodeproj`. Pick the **Warble** scheme and **My Mac**, then press �
 - **Settings** live in `Config/*.xcconfig`, never in the project file. `Shared.xcconfig` has the version, signing and Swift settings, `Debug.xcconfig` and `Release.xcconfig` the configurations, and each target has its own file. For a setting only you need, such as another signing identity, create `Config/Local.xcconfig`, which git ignores, and set it there: `CODE_SIGN_IDENTITY = Apple Development`, say.
 - **New files** need no project edit. The targets use synchronised folders, so a Swift file added under `Sources/Warble`, `Sources/WarbleCore`, `Sources/WarbleModel` or either test folder is part of that target.
 - **WarbleDev or Warble.** Every build is WarbleDev, Xcode's included. `Config/Warble.xcconfig` builds Warble, with the update feed, only when `WARBLE_DISTRIBUTION=YES`, which only `make dist` passes.
-- **Run quits the installed Warble**, because both draw in the notch and their panels would stack. Reopen it when you've finished.
+- **Run quits every other WarbleDev and the installed Warble** first, through the scheme's pre-action (`scripts/dev.sh prepare`), because each draws in the notch and their panels would stack. Stop (⌘.) ends the run; `make stop` then reopens the installed Warble if Run quit it.
+- **Preview states.** The scheme's Run arguments include `-notchPreviewState resting`, `-notchPreviewVirtual YES`, `-notchPreviewHousing pill` and `-AppleLanguages (de)`, all off. Tick one in Product › Scheme › Edit Scheme › Run › Arguments to try it, and untick it before you commit.
 - **The performance budgets** run only from the **Perf** test plan, which sets `WARBLE_PERF`. Pick it in the scheme's test plans, or run `make perf`.
 
 The Makefile builds the same project through `scripts/xcodebuild.sh`, into `build/DerivedData` rather than Xcode's own folder: Xcode 27 can leave a test bundle unsigned when the IDE and `xcodebuild` share one. CI and the release workflow run the same `make` targets. `Package.swift` holds only WarbleModel and its tests, so `make test-linux` and CI's `linux` check can build them on Linux.
@@ -127,7 +130,7 @@ A string reaches the catalog when it's a literal passed to an API that localizes
 
 Interpolate values into one string, such as `"Playing on \(device)"`, rather than joining fragments, so a translator can reorder the words. Leave log messages and text that scripts read in English.
 
-A new string needs a translation in each language, and `make strings` adds it untranslated, so translate it before you merge. The two permission prompts in `Resources/Info.plist` are translated in `Resources/InfoPlist.xcstrings`. To add a language, open both catalogs in Xcode, add the language, translate each string and add its code to `CFBundleLocalizations` in `Resources/Info.plist`. To try a language without changing your Mac's, run `open -a WarbleDev --args -AppleLanguages '(de)'`.
+A new string needs a translation in each language, and `make strings` adds it untranslated, so translate it before you merge. The two permission prompts in `Resources/Info.plist` are translated in `Resources/InfoPlist.xcstrings`. To add a language, open both catalogs in Xcode, add the language, translate each string and add its code to `CFBundleLocalizations` in `Resources/Info.plist`. To try a language without changing your Mac's, turn on `-AppleLanguages (de)` in the scheme's Run arguments, or run `make run APP_ARGS="-AppleLanguages '(de)'"`.
 
 ## Debugging
 

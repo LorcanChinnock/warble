@@ -1,7 +1,6 @@
 # The app builds from Warble.xcodeproj through scripts/xcodebuild.sh, into build/DerivedData. Package.swift holds only
 # WarbleModel, for its tests on Linux (make test-linux).
 
-INSTALL_DIR ?= /Applications
 # Extra xcodebuild arguments, e.g. ARGS=-onlyUsePackageVersionsFromResolvedFile in CI.
 ARGS ?=
 # One suite or test, e.g. ONLY=WarbleModelTests/HoverTests or ONLY='WarbleModelTests/notchSitsBetweenTheMenuBarAreas()'.
@@ -11,7 +10,7 @@ TEST_ACTION ?= test
 XCODEBUILD := scripts/xcodebuild.sh
 DESTINATION := -destination 'platform=macOS,arch=$(shell uname -m)'
 
-.PHONY: build build-tests test test-install test-uninstall coverage test-linux perf lint strings bundle app run dist icon clean
+.PHONY: build build-tests test test-install test-uninstall coverage test-linux perf lint strings bundle run stop dist icon clean
 
 build:
 	$(XCODEBUILD) -scheme Warble -configuration Debug $(DESTINATION) -quiet build $(ARGS)
@@ -60,13 +59,16 @@ strings: build
 bundle:
 	scripts/bundle.sh
 
-app: bundle
-	scripts/install.sh "$(INSTALL_DIR)"
+# Without Xcode open: a Debug build, as Xcode's Run makes, launched from build/DerivedData. Like Run, it first quits every
+# other WarbleDev and the installed Warble (scripts/dev.sh). Arguments for the app go in APP_ARGS, e.g.
+# APP_ARGS='-notchPreviewState resting'.
+APP_ARGS ?=
+run:
+	scripts/dev.sh run $(APP_ARGS)
 
-run: app
-	pkill -x WarbleDev || true
-	while pgrep -x WarbleDev >/dev/null; do sleep 0.1; done
-	open "$(INSTALL_DIR)/WarbleDev.app"
+# Quits WarbleDev, however it started, and reopens the installed Warble if a run quit it.
+stop:
+	scripts/dev.sh stop
 
 dist: export WARBLE_RELEASE = 1
 dist: bundle

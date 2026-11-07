@@ -33,12 +33,13 @@ make lint                         # scripts/lint.sh: bans patterns that caused b
 make strings                      # sync Resources/Localizable.xcstrings with the strings the build extracted
 make build                        # Debug build of the app, as Xcode's Build does
 make bundle                       # archive a universal Release build/WarbleDev.app only
-make run                          # build, install to /Applications/WarbleDev.app, relaunch
+make run                          # without Xcode: Debug build, quit other copies, launch (APP_ARGS=… for the app)
+make stop                         # quit WarbleDev and reopen the installed Warble if a run quit it
 cd site && npm run dev            # the website (see site/README.md)
 make test ONLY='WarbleModelTests/notchSitsBetweenTheMenuBarAreas()'   # one test or suite
 ```
 
-- In Xcode, open `Warble.xcodeproj`: the **Warble** scheme runs and debugs WarbleDev (⌘R, which first quits the installed Warble) and runs the test plan `Tests/Warble.xctestplan` (⌘U). `make` builds the same project through `scripts/xcodebuild.sh` into `build/DerivedData`, never Xcode's own folder, since Xcode 27 can leave a test bundle unsigned when both build into one.
+- In Xcode, open `Warble.xcodeproj`: the **Warble** scheme runs and debugs WarbleDev (⌘R, which first quits every other WarbleDev and the installed Warble) and runs the test plan `Tests/Warble.xctestplan` (⌘U). `make` builds the same project through `scripts/xcodebuild.sh` into `build/DerivedData`, never Xcode's own folder, since Xcode 27 can leave a test bundle unsigned when both build into one.
 - Build settings live in `Config/*.xcconfig`, never in the project file: `Shared.xcconfig` (version, signing, Swift), `Debug`/`Release`, and one per target. `Config/Local.xcconfig`, which git ignores, takes personal overrides. Folders are synchronised, so a new Swift file in `Sources/` or `Tests/` needs no project edit.
 - `PerfTests` run only when `WARBLE_PERF` is set, which `Tests/Perf.xctestplan` (`make perf`) does, so ⌘U and `make test` skip them. Xcode 27 doesn't apply a test plan's selected or skipped tests to Swift Testing suites, so don't rely on them.
 - Signing uses the `Warble Dev` certificate from `scripts/make-dev-cert.sh`, so permissions such as Automation survive rebuilds. Without it, `scripts/xcodebuild.sh` signs ad hoc and warns.
@@ -46,17 +47,12 @@ make test ONLY='WarbleModelTests/notchSitsBetweenTheMenuBarAreas()'   # one test
 
 ## Running and testing locally
 
-Local builds are `WarbleDev.app`. A real installed version is `/Applications/Warble.app`, usually from the curl installer on the website. Never install over, rename or delete `Warble.app`; it is the copy the user relies on.
+Run WarbleDev through Xcode, with the `run-warbledev` skill (`.claude/skills/run-warbledev/SKILL.md`): it uses the Xcode tools to build, run, read the console, debug and stop. A real installed version is `/Applications/Warble.app`, usually from the curl installer on the website. Never install over, rename or delete `Warble.app`; it is the copy the user relies on.
 
-1. **Quit the installed release first:** `pkill -x Warble`. Both apps draw in the notch, so with both running their panels stack. `-x` matches the executable name exactly, so `pkill -x Warble` never kills WarbleDev, and `pkill -x WarbleDev` never kills the release.
-2. **Run the dev build:** `make run` builds, installs `/Applications/WarbleDev.app` and launches it. Confirm the running binary with `pgrep -lf WarbleDev`.
-3. **When finished, quit and uninstall the dev build,** then reopen the release if it was running:
-   ```bash
-   pkill -x WarbleDev
-   rm -rf /Applications/WarbleDev.app build/WarbleDev.app   # or $INSTALL_DIR/WarbleDev.app if you set it
-   open /Applications/Warble.app
-   ```
-   Leave WarbleDev's settings (`dev.lorcan.Warble.dev`) and any Automation permission it has in place, so the next run doesn't ask for the permission again.
+- **Only one WarbleDev runs at a time.** The Warble scheme's Run pre-action and `make run` both call `scripts/dev.sh prepare`, which quits every other WarbleDev (another worktree's, an earlier run, one Xcode is debugging) and the installed Warble, and notes that the release was running. Never start WarbleDev any other way, such as `open` on a built app.
+- **Always stop it when finished:** `StopProject`, then `scripts/dev.sh stop` (or `make stop`), which quits anything left and reopens the installed Warble if a run quit it. `scripts/dev.sh status` shows what's running.
+- Preview states and languages are launch arguments in the scheme, all off; the Xcode tools can't pass arguments, so use `make run APP_ARGS='-notchPreviewState resting'` for them, then `make stop`.
+- Leave WarbleDev's settings (`dev.lorcan.Warble.dev`) and any Automation permission it has in place, so the next run doesn't ask for the permission again.
 
 ## Architecture
 

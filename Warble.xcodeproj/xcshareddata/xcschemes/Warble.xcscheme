@@ -80,8 +80,8 @@
          <ExecutionAction
             ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
             <ActionContent
-               title = "Quit the installed Warble"
-               scriptText = "# The installed release draws in the notch too, so with both running their panels stack.&#10;pkill -x Warble || true&#10;">
+               title = "Quit every other WarbleDev and the installed Warble"
+               scriptText = "# Only one WarbleDev runs at a time, and the installed release draws in the notch too. scripts/dev.sh stop reopens it.&#10;&quot;$SRCROOT/scripts/dev.sh&quot; prepare&#10;">
                <EnvironmentBuildable>
                   <BuildableReference
                BuildableIdentifier = "primary"
@@ -104,6 +104,24 @@
                ReferencedContainer = "container:Warble.xcodeproj">
             </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "-notchPreviewState resting"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-notchPreviewVirtual YES"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-notchPreviewHousing pill"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-AppleLanguages (de)"
+            isEnabled = "NO">
+         </CommandLineArgument>
+      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

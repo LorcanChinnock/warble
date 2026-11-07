@@ -62,7 +62,7 @@ With Settings' heart switch on, the card has a heart over the end of the title's
 
 ## Previews
 
-To see the notch without playing anything, launch with `open build/WarbleDev.app --args -notchPreviewState resting`, which shows a preview track instead of reading the adapter, and hover it. Add `-notchPreviewVirtual YES` to draw the virtual notch instead, on a Mac that has a notch, or `-notchPreviewHousing pill` to draw a pill-shaped cutout.
+To see the notch without playing anything, turn on `-notchPreviewState resting` in the Warble scheme's arguments (Product › Scheme › Edit Scheme › Run › Arguments) and run, or run `make run APP_ARGS='-notchPreviewState resting'`. It shows a preview track instead of reading the adapter; hover it. Turn on `-notchPreviewVirtual YES` as well to draw the virtual notch instead, on a Mac that has a notch, or `-notchPreviewHousing pill` to draw a pill-shaped cutout.
 
 ## The context menu
 
