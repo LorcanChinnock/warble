@@ -63,8 +63,6 @@ struct NotchPreview: View {
     let visibility: VirtualNotchVisibility
     /// Whether the card has the heart for Music's Favourites, which the preview shows on any song.
     let showsFavourite: Bool
-    /// While the page scrolls under the pointer, the preview stays as it is rather than opening mid-scroll.
-    let isScrolling: Bool
     @Environment(PlayerModel.self) private var live
     @State private var preview = PreviewNotch()
     /// When the made-up song started, which its position runs on from.
@@ -99,6 +97,17 @@ struct NotchPreview: View {
     }
 
     private static let housing = CGRect(x: 0, y: 0, width: VirtualNotch.width, height: 24)
+    private static let radius: CGFloat = 10
+    /// The pastel strip the notch sits on, the one fixed colour in Settings, the same in light and dark as the notch is.
+    /// The spec's 110° gradient.
+    private static let strip = LinearGradient(
+        stops: [
+            .init(color: Color(hex: 0xFFE6A1), location: 0),
+            .init(color: Color(hex: 0xF9C9DE), location: 0.52),
+            .init(color: Color(hex: 0xCDE5F6), location: 1),
+        ],
+        startPoint: UnitPoint(x: 0, y: 0.32), endPoint: UnitPoint(x: 1, y: 0.68)
+    )
 
     var body: some View {
         let housing = Self.housing
@@ -108,7 +117,7 @@ struct NotchPreview: View {
         let radius = Native.radius(state, notch: housing)
         let shape = UnevenRoundedRectangle(bottomLeadingRadius: radius, bottomTrailingRadius: radius)
         ZStack(alignment: .top) {
-            Warm.wallpaper
+            Self.strip
             Rectangle().fill(.white.opacity(0.3)).frame(height: housing.height).frame(maxHeight: .infinity, alignment: .top)
             Button {
                 guard !isHovering else { return }
@@ -146,8 +155,8 @@ struct NotchPreview: View {
             }
             .buttonStyle(.notch)
             .onHover {
-                isHovering = $0 && !isScrolling
-                isOpen = $0 && !isScrolling
+                isHovering = $0
+                isOpen = $0
             }
             .accessibilityLabel(Text("Notch preview"))
             .accessibilityValue(isOpen ? Text("Open") : Text("Closed"))
@@ -163,7 +172,12 @@ struct NotchPreview: View {
             }
         }
         .frame(height: 232)
-        .clipShape(RoundedRectangle(cornerRadius: Warm.cardRadius, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: Self.radius, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: Self.radius, style: .continuous)
+                .strokeBorder(.black.opacity(0.12), lineWidth: 0.5)
+                .allowsHitTesting(false)
+        }
         .onHover { inside in
             if !inside, isPaused { play() }
         }

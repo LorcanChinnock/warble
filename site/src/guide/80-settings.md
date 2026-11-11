@@ -11,13 +11,13 @@ Warble works without changing anything. The things you may want to set are how l
 1. Click the Warble icon in the menu bar, or right-click the notch. You can also Control-click it.
 2. Choose **Settings…**.
 
-The right-click menu also opens the app that's playing, copies the song and artist, checks for updates and quits Warble. Settings follows your Mac's light or dark appearance, and uses the same cream and yellow as this website.
+The right-click menu also opens the app that's playing, copies the song and artist, checks for updates and quits Warble. Settings is a standard Mac window with three tabs: Notch, General and About. It follows your Mac's light or dark appearance.
 
 ![The Settings window: Warble's name and version, the notch preview, and the Notch settings for how long a paused song stays and how big the open notch is](../../../docs/media/settings.png)
 
 ## What's in Settings
 
-At the top, under the version, is a small preview of the notch. It shows the song that's playing, with its art, and a made-up song when nothing plays. Point at it to open it. Its buttons do nothing, so it never controls your player. Every setting under it changes it. The title switch shows at once, and the notch fades out when you choose Off for external displays. When you change the title font, the opened notch size or the heart, the preview opens for a couple of seconds to show it, unless Reduce Motion is on. When you change **Stay visible after pausing** or **Notch on external displays**, the song pauses and, a moment later, ends as those settings would: the paused song stays, an empty notch is left, or the notch goes. The preview takes the same short moment for 10 seconds and 1 minute. Move the pointer off the preview and the song plays again.
+At the top of the Notch tab is a small preview of the notch. It shows the song that's playing, with its art, and a made-up song when nothing plays. Point at it to open it. Its buttons do nothing, so it never controls your player. Every setting under it changes it. The title switch shows at once, and the notch fades out when you choose Off for external displays. When you change the title font, the opened notch size or the heart, the preview opens for a couple of seconds to show it, unless Reduce Motion is on. When you change **Stay visible after pausing** or **Notch on external displays**, the song pauses and, a moment later, ends as those settings would: the paused song stays, an empty notch is left, or the notch goes. The preview takes the same short moment for 10 seconds and 1 minute. Move the pointer off the preview and the song plays again.
 
 - **Stay visible after pausing.** **Always** at first. When you pause, the song stays in the notch until something else plays or the app stops. Choose **10 seconds** or **1 minute** to have Warble hide after that long. If you change it while a song is paused, the new time counts from the pause.
 - **Opened notch size.** **Default** at first. How big the notch is when you open it: **Small** or **Large** instead. The closed notch never changes size, so it keeps matching a real notch, and it applies on every display.

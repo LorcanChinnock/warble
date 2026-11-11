@@ -11,4 +11,10 @@ extension NSView {
         hosting.autoresizingMask = [.width, .height]
         addSubview(hosting)
     }
+
+    /// The height `rootView` takes at `width`, measured off screen, for a window that fits its content before it shows.
+    static func fittingHeight(of rootView: some View, width: CGFloat) -> CGFloat {
+        let hosting = NSHostingView(rootView: rootView.frame(width: width))
+        return hosting.fittingSize.height.rounded(.up)
+    }
 }

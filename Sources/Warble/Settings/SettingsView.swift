@@ -3,18 +3,136 @@ import SwiftUI
 import WarbleCore
 import WarbleModel
 
-/// The Settings window's one page, in the website's look and following the system's light or dark appearance: what Warble
-/// is, the notch and how it looks, whether Warble opens at login, and updates.
-struct SettingsView: View {
-    @Environment(Updater.self) private var updater
-    @Environment(LoginItem.self) private var loginItem
+/// The Notch tab: the preview, and every setting that changes what the notch shows or how it looks.
+struct NotchTab: View {
     @Environment(NotchSettings.self) private var notchSettings
-    private static let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
-    /// How wide the page grows when the window is made wider.
-    private static let pageWidth: CGFloat = 640
+
+    var body: some View {
+        @Bindable var settings = notchSettings
+        SettingsPage {
+            VStack(alignment: .leading, spacing: 8) {
+                NotchPreview(showsTitle: settings.showsVirtualTitle, notchFont: settings.notchFont, pauseDelay: settings.pauseDelay, cardSize: settings.cardSize, visibility: settings.virtualVisibility, showsFavourite: settings.showsFavourite)
+                Text("How the notch looks, with the song that's playing. Point at it to open it.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 2)
+            }
+        } form: {
+            Section {
+                let pause = Text("Stay visible after pausing")
+                let pauseDetail = Text("How long the notch keeps showing a paused song before it goes quiet.")
+                Picker(selection: $settings.pauseDelay) {
+                    Text("10 seconds").tag(PauseDelay.tenSeconds)
+                    Text("1 minute").tag(PauseDelay.oneMinute)
+                    Text("Always").tag(PauseDelay.always)
+                } label: {
+                    pause
+                    pauseDetail
+                }
+                .described(pause, pauseDetail)
+
+                let size = Text("Opened notch size")
+                let sizeDetail = Text("How big the notch is when you open it. The closed notch stays the same size.")
+                Picker(selection: $settings.cardSize) {
+                    Text("Small").tag(CardSize.small)
+                    Text("Default").tag(CardSize.standard)
+                    Text("Large").tag(CardSize.large)
+                } label: {
+                    size
+                    sizeDetail
+                }
+                .pickerStyle(.segmented)
+                .accentSwitch()
+                .described(size, sizeDetail)
+
+                let external = Text("Notch on external displays")
+                let externalDetail = Text("On a display without a notch, or with the lid closed, when Warble draws a notch of its own.")
+                Picker(selection: $settings.virtualVisibility) {
+                    Text("Only when playing").tag(VirtualNotchVisibility.whenPlaying)
+                    Text("Always").tag(VirtualNotchVisibility.always)
+                    Text("Off").tag(VirtualNotchVisibility.off)
+                } label: {
+                    external
+                    externalDetail
+                }
+                .described(external, externalDetail)
+
+                let title = Text("Show the title in a virtual notch")
+                let titleDetail = Text("On a display without a notch, the middle of the notch shows the song's title and artist.")
+                Toggle(isOn: $settings.showsVirtualTitle) {
+                    title
+                    titleDetail
+                }
+                .accentSwitch()
+                .described(title, titleDetail)
+
+                let font = Text("Song title font")
+                let fontDetail = Text("The typeface the notch sets the song's title in.")
+                Picker(selection: $settings.notchFont) {
+                    Text("Default").tag(NotchFont.system)
+                    Text("Rounded").tag(NotchFont.rounded)
+                    Text("Mono").tag(NotchFont.monospaced)
+                } label: {
+                    font
+                    fontDetail
+                }
+                .described(font, fontDetail)
+
+                let heart = Text("Show a heart to favourite songs in Music")
+                let heartDetail = Text("While Music is playing, a heart beside the title on the opened notch adds the song to your Favourites in Music, or takes it out. The first time, macOS asks you to let Warble control Music.")
+                Toggle(isOn: $settings.showsFavourite) {
+                    heart
+                    heartDetail
+                }
+                .accentSwitch()
+                .described(heart, heartDetail)
+            }
+        }
+    }
+}
+
+/// The General tab: whether Warble opens at login, and where to find help.
+struct GeneralTab: View {
+    @Environment(LoginItem.self) private var loginItem
     private static let guide = URL(string: "https://warble.lorcanchinnock.com/docs/")!
-    /// Whether the page is moving, so the preview under the pointer doesn't open mid-scroll.
-    @State private var isScrolling = false
+
+    var body: some View {
+        SettingsPage {
+            Section {
+                let login = Text("Open at login")
+                let loginDetail = Text("Turned off in System Settings. Turn Warble on in Login Items to open it at login again.")
+                Toggle(isOn: Binding { loginItem.isEnabled } set: { loginItem.set($0) }) {
+                    login
+                    if loginItem.needsApproval {
+                        loginDetail
+                    }
+                }
+                .accentSwitch()
+                .described(login, loginItem.needsApproval ? loginDetail : nil)
+                if loginItem.needsApproval {
+                    LabeledContent("Login Items") {
+                        Button("Open Login Items…") { SMAppService.openSystemSettingsLoginItems() }
+                    }
+                }
+            }
+            Section {
+                LabeledContent("Help and user guide") {
+                    Link(destination: Self.guide) {
+                        Text(verbatim: "warble.lorcanchinnock.com")
+                    }
+                }
+            }
+        }
+        // Login Items can change in System Settings, which tells Warble nothing.
+        .onAppear { loginItem.refresh() }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in loginItem.refresh() }
+    }
+}
+
+/// The About tab: what Warble is and which version, updates, and the acknowledgements.
+struct AboutTab: View {
+    @Environment(Updater.self) private var updater
+    private static let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
     @State private var pecks = 0
     @State private var streak = (count: 0, last: Date.distantPast)
     @State private var songs = 0
@@ -24,186 +142,70 @@ struct SettingsView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        VStack(spacing: 0) {
-            pinned
-            ScrollView {
-                VStack(spacing: 20) {
-                    SettingsGroup(title: Text("Notch"), symbol: "music.note") {
-                        SettingsChoiceRow(
-                            title: Text("Stay visible after pausing"),
-                            detail: Text("How long the notch keeps showing a paused song before it goes quiet."),
-                            selection: Binding { notchSettings.pauseDelay } set: { notchSettings.pauseDelay = $0 },
-                            options: [
-                                (.tenSeconds, Text("10 seconds")),
-                                (.oneMinute, Text("1 minute")),
-                                (.always, Text("Always")),
-                            ]
-                        )
-                        SettingsChoiceRow(
-                            title: Text("Opened notch size"),
-                            detail: Text("How big the notch is when you open it. The closed notch stays the same size."),
-                            selection: Binding { notchSettings.cardSize } set: { notchSettings.cardSize = $0 },
-                            options: [
-                                (.small, Text("Small")),
-                                (.standard, Text("Default")),
-                                (.large, Text("Large")),
-                            ]
-                        )
-                        SettingsChoiceRow(
-                            title: Text("Notch on external displays"),
-                            detail: Text("On a display without a notch, or with the lid closed, when Warble draws a notch of its own."),
-                            selection: Binding { notchSettings.virtualVisibility } set: { notchSettings.virtualVisibility = $0 },
-                            options: [
-                                (.whenPlaying, Text("Only when playing")),
-                                (.always, Text("Always")),
-                                (.off, Text("Off")),
-                            ]
-                        )
-                        SettingsToggleRow(
-                            title: Text("Show the title in a virtual notch"),
-                            detail: Text("On a display without a notch, the middle of the notch shows the song's title and artist."),
-                            isOn: Binding { notchSettings.showsVirtualTitle } set: { notchSettings.showsVirtualTitle = $0 }
-                        )
-                        SettingsChoiceRow(
-                            title: Text("Song title font"),
-                            detail: Text("The typeface the notch sets the song's title in."),
-                            selection: Binding { notchSettings.notchFont } set: { notchSettings.notchFont = $0 },
-                            options: [
-                                (.system, Text("Default")),
-                                (.rounded, Text("Rounded")),
-                                (.monospaced, Text("Mono")),
-                            ]
-                        )
-                        SettingsToggleRow(
-                            title: Text("Show a heart to favourite songs in Music"),
-                            detail: Text("While Music is playing, a heart beside the title on the opened notch adds the song to your Favourites in Music, or takes it out. The first time, macOS asks you to let Warble control Music."),
-                            isOn: Binding { notchSettings.showsFavourite } set: { notchSettings.showsFavourite = $0 }
-                        )
-                    }
-                    SettingsGroup(title: Text("General"), symbol: "gearshape", tint: Warm.sky) {
-                        SettingsToggleRow(
-                            title: Text("Open at login"),
-                            detail: loginItem.needsApproval
-                                ? Text("Turned off in System Settings. Turn Warble on in Login Items to open it at login again.")
-                                : nil,
-                            isOn: Binding { loginItem.isEnabled } set: { loginItem.set($0) }
-                        )
-                        if loginItem.needsApproval {
-                            SettingsRow(title: Text("Login Items")) {
-                                Button("Open Login Items…") { SMAppService.openSystemSettingsLoginItems() }
-                                    .buttonStyle(.warble)
-                            }
-                        }
-                        SettingsToggleRow(
-                            title: Text("Check for updates automatically"),
-                            isOn: automaticallyChecks
-                        )
-                        .disabled(!updater.isEnabled)
-                        SettingsRow(title: Text("Help and user guide")) {
-                            Link(destination: Self.guide) {
-                                Text(verbatim: "warble.lorcanchinnock.com")
-                                    .font(.body.weight(.semibold))
-                                    .underline(color: Warm.pink)
-                            }
-                        }
-                    }
-                    // Login Items can change in System Settings, which tells Warble nothing.
-                    .onAppear { loginItem.refresh() }
-                    .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in loginItem.refresh() }
-                    SettingsGroup(title: Text("Acknowledgements"), symbol: "heart", tint: Warm.pink) {
-                        SettingsRow(title: Text(verbatim: "mediaremote-adapter")) {
-                            Text("BSD 3-Clause License").foregroundStyle(Warm.secondary)
-                        }
-                        SettingsRow(title: Text(verbatim: "Sparkle")) {
-                            Text("MIT License").foregroundStyle(Warm.secondary)
-                        }
-                    }
-                }
-                .padding(.horizontal, 30)
-                .padding(.top, 6)
-                .padding(.bottom, 30)
-                .frame(maxWidth: Self.pageWidth)
-                .frame(maxWidth: .infinity)
-            }
-            // The page slides under a short fade at the pinned preview's foot rather than being cut.
-            .overlay(alignment: .top) {
-                Rectangle()
-                    .fill(Warm.window)
-                    .frame(height: 14)
-                    .mask {
-                        LinearGradient(colors: [.black, .clear], startPoint: .top, endPoint: .bottom)
-                    }
-                    .allowsHitTesting(false)
-            }
-            .onScrollPhaseChange { _, phase in isScrolling = phase != .idle }
-        }
-        .frame(minWidth: SettingsWindow.minimumSize.width, minHeight: SettingsWindow.minimumSize.height)
-        .onDisappear { singing?.cancel() }
-        .background { Rectangle().fill(Warm.window).ignoresSafeArea() }
-        .foregroundStyle(Warm.ink)
-    }
-
-    /// The name, version and preview, which stay put while the settings scroll under them, so each change shows at once.
-    private var pinned: some View {
-        VStack(spacing: 20) {
-            HStack(spacing: 16) {
-                Image(nsImage: NSApp.applicationIconImage)
-                    .resizable()
-                    .frame(width: 64, height: 64)
-                    .keyframeAnimator(initialValue: 0.0, trigger: pecks) { icon, angle in
-                        icon.rotationEffect(.degrees(angle), anchor: .bottom)
-                    } keyframes: { _ in
-                        KeyframeTrack {
-                            CubicKeyframe(-10, duration: 0.08)
-                            CubicKeyframe(8, duration: 0.1)
-                            CubicKeyframe(-4, duration: 0.1)
-                            SpringKeyframe(0, duration: 0.25)
-                        }
-                    }
-                    .keyframeAnimator(initialValue: 0.0, trigger: songs) { icon, lift in
-                        icon.offset(y: lift)
-                    } keyframes: { _ in
-                        KeyframeTrack {
-                            CubicKeyframe(-14, duration: 0.14)
-                            CubicKeyframe(0, duration: 0.14)
-                            CubicKeyframe(-10, duration: 0.12)
-                            SpringKeyframe(0, duration: 0.3, spring: .bouncy)
-                        }
-                    }
-                    .overlay(alignment: .top) { if !reduceMotion { Notes(trigger: songs) } }
-                    .onTapGesture { peck() }
-                    .accessibilityHidden(true)
+        SettingsPage {
+            HStack(spacing: 14) {
+                icon
                 VStack(alignment: .leading, spacing: 2) {
                     Text(verbatim: "Warble")
-                        .font(.system(size: 32, weight: .bold, design: .serif))
-                        .foregroundStyle(Warm.ink)
-                    // Plain, like the website's meta line: yellow is for what is on or chosen.
+                        .font(.system(size: 20, weight: .bold))
                     (song.map { Text(verbatim: $0) } ?? Text("Version \(Self.version)"))
-                    .font(.callout.weight(.semibold))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-                        .foregroundStyle(Warm.secondary)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
                         .textSelection(.enabled)
                 }
                 Spacer(minLength: 0)
                 Button("Check for Updates…") { updater.checkForUpdates() }
-                    .buttonStyle(.warbleQuiet)
                     .disabled(!updater.canCheckForUpdates)
             }
-            // Clear of the bar over the title bar.
-            .padding(.top, 44)
-            VStack(alignment: .leading, spacing: 8) {
-                NotchPreview(showsTitle: notchSettings.showsVirtualTitle, notchFont: notchSettings.notchFont, pauseDelay: notchSettings.pauseDelay, cardSize: notchSettings.cardSize, visibility: notchSettings.virtualVisibility, showsFavourite: notchSettings.showsFavourite, isScrolling: isScrolling)
-                Text("How the notch looks, with the song that's playing. Point at it to open it.")
-                    .font(.footnote)
-                    .foregroundStyle(Warm.secondary)
-                    .padding(.horizontal, 14)
+        } form: {
+            Section {
+                Toggle("Check for updates automatically", isOn: automaticallyChecks)
+                    .accentSwitch()
+                    .disabled(!updater.isEnabled)
+            }
+            Section("Acknowledgements") {
+                LabeledContent {
+                    Text("BSD 3-Clause License")
+                } label: {
+                    Text(verbatim: "mediaremote-adapter")
+                }
+                LabeledContent {
+                    Text("MIT License")
+                } label: {
+                    Text(verbatim: "Sparkle")
+                }
             }
         }
-        .padding(.horizontal, 30)
-        .padding(.bottom, 8)
-        .frame(maxWidth: Self.pageWidth)
-        .frame(maxWidth: .infinity)
+        .onDisappear { singing?.cancel() }
+    }
+
+    private var icon: some View {
+        Image(nsImage: NSApp.applicationIconImage)
+            .resizable()
+            .frame(width: 64, height: 64)
+            .keyframeAnimator(initialValue: 0.0, trigger: pecks) { icon, angle in
+                icon.rotationEffect(.degrees(angle), anchor: .bottom)
+            } keyframes: { _ in
+                KeyframeTrack {
+                    CubicKeyframe(-10, duration: 0.08)
+                    CubicKeyframe(8, duration: 0.1)
+                    CubicKeyframe(-4, duration: 0.1)
+                    SpringKeyframe(0, duration: 0.25)
+                }
+            }
+            .keyframeAnimator(initialValue: 0.0, trigger: songs) { icon, lift in
+                icon.offset(y: lift)
+            } keyframes: { _ in
+                KeyframeTrack {
+                    CubicKeyframe(-14, duration: 0.14)
+                    CubicKeyframe(0, duration: 0.14)
+                    CubicKeyframe(-10, duration: 0.12)
+                    SpringKeyframe(0, duration: 0.3, spring: .bouncy)
+                }
+            }
+            .overlay(alignment: .top) { if !reduceMotion { Notes(trigger: songs) } }
+            .onTapGesture { peck() }
+            .accessibilityHidden(true)
     }
 
     private static let lines = [
@@ -242,10 +244,56 @@ struct SettingsView: View {
     }
 }
 
+/// A tab's layout: an optional header above a grouped form, at the window's insets. The form doesn't scroll, because the
+/// window fits it.
+private struct SettingsPage<Header: View, Content: View>: View {
+    let header: Header
+    let form: Content
+
+    init(@ViewBuilder header: () -> Header, @ViewBuilder form: () -> Content) {
+        self.header = header()
+        self.form = form()
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            header
+                .padding(.horizontal, 24)
+                .padding(.top, 20)
+            Form { form }
+                .formStyle(.grouped)
+                .scrollDisabled(true)
+        }
+    }
+}
+
+private extension SettingsPage where Header == EmptyView {
+    init(@ViewBuilder form: () -> Content) {
+        self.init(header: { EmptyView() }, form: form)
+    }
+}
+
+private extension View {
+    /// Names a row whose label has two `Text`s, since such a row reports no VoiceOver name of its own: the title as its
+    /// label and the line under it as its hint.
+    func described(_ title: Text, _ detail: Text?) -> some View {
+        accessibilityLabel(title)
+            .accessibilityHint(detail ?? Text(verbatim: ""))
+    }
+
+    /// The icon's yellow on a switch that's on or a chosen segment. It's set on each control rather than as the app's
+    /// accent colour, because the system draws the selected toolbar tab's label in the accent, and text is never yellow.
+    func accentSwitch() -> some View {
+        tint(Color.warbleYellow)
+    }
+}
+
 /// A few notes that drift up from the icon and fade, each on its own sway, once `trigger` changes. Nothing runs before then.
 private struct Notes: View {
     let trigger: Int
     private static let glyphs = ["♪", "♫", "♪", "♫", "♪"]
+    /// The website's pink and sky.
+    private static let colours = [Color(hex: 0xFF7DB4), Color(hex: 0x7FBEDF)]
 
     private struct Flight {
         var rise = 0.0
@@ -259,7 +307,7 @@ private struct Notes: View {
                 let side = index.isMultiple(of: 2) ? 1.0 : -1.0
                 Text(verbatim: Self.glyphs[index])
                     .font(.system(size: 18, weight: .bold, design: .rounded))
-                    .foregroundStyle(index.isMultiple(of: 2) ? Warm.pink : Warm.sky)
+                    .foregroundStyle(Self.colours[index % 2])
                     .keyframeAnimator(initialValue: Flight(), trigger: trigger) { note, flight in
                         note
                             .offset(x: flight.sway + side * Double(index) * 6, y: -flight.rise)
