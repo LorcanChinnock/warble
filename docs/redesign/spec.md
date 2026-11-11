@@ -11,7 +11,7 @@ The boards are HTML mock-ups drawn in the system font. Read a pixel as a point. 
 1. **Native where it's familiar.** Standard window chrome, toolbar tabs, grouped forms (`Form` with `.formStyle(.grouped)`), system toggles, pop-up menus, segmented controls, buttons and menus. Nothing a Mac user has to learn twice.
 2. **The notch preview is the personality.** It's the one expressive thing in the app's windows: a black notch on a pastel strip. Every other surface is plain system material.
 3. **The default is the simplest view.** Settings opens on Notch, which shows only what changes the notch. About holds the version, updates and acknowledgements.
-4. **Calm stays calm.** Warble opens a window on its own only twice: the first-run window, once, and the update window after an automatic check the person agreed to.
+4. **Calm stays calm.** Warble opens a window on its own only three times: the first-run window, once; Sparkle's one-time question about checking automatically; and the update window after an automatic check the person agreed to.
 5. **Yellow is the accent for what's on or chosen,** through the app's accent colour: switches that are on, the default button, a waiting update's dot. Text is never yellow. Menus keep the system's own highlight.
 6. **Every screen works with the accessibility settings.** Increase Contrast, Reduce Transparency, Reduce Motion, VoiceOver and keyboard-only use. The system controls cover most of this; the preview, the update window and the first-run window need checking by hand.
 
@@ -100,7 +100,7 @@ The settings and their `UserDefaults` keys don't change, only their labels and p
 | --- | --- | --- | --- |
 | Startup | Open at login | Warble opens each time you log in, so it's there after a restart. It's the same switch as System Settings › General › Login Items. | Switch, from `LoginItem` |
 | Help | User guide | none | Link row showing `warble.lorcanchinnock.com` and an arrow, opening `/docs/` |
-| Help | If nothing shows in the notch | none | Link row, opening `/docs/nothing-shows/` |
+| Help | If nothing shows in the notch | none | Link row, opening `/docs/when-nothing-shows/` |
 
 ### About tab
 
@@ -155,7 +155,7 @@ Under them, centred, in 11 pt secondary text: "Made by Lorcan Chinnock. Free and
 
 ## First run
 
-#432 builds it: one of the two windows Warble opens on its own (rule 4), shown once, at first launch. It never opens for someone updating from an earlier version; #432 decides how to tell them apart, for example by a stored version or an existing settings key.
+#432 builds it: one of the three windows Warble opens on its own (rule 4), shown once, at first launch. It never opens for someone updating from an earlier version; #432 decides how to tell them apart, for example by a stored version or an existing settings key.
 
 - No title in the title bar, the close button only.
 - The preview strip, showing the open card with the song that's playing, or `NotchDemo`'s made-up song.
