@@ -209,6 +209,8 @@ Every page in `site/src/guide/` the redesign changes. #435 updates the text and 
 | 01 Get started | The first-run window and Open at login from it | #432 | ☐ |
 | 80 Settings | Rewritten for the tabs, the new names and groups; new screenshots | #428, #429 | ☐ |
 | New: Updates | The update window, About's status, the menu's dot | #430, #431 | ☐ |
+| 10 Control playback | The heart setting's name; the right-click menu's items and order | #428, #431 | ☐ |
+| 20 External displays | The Show a notch and Song title in the notch setting names | #428 | ☐ |
 | 90 Nothing shows | The first-run window and the About tab | #432, #429 | ☐ |
 | 95 Remove Warble | Setting names | #429 | ☐ |
 | Landing page and README | Settings and update mentions, screenshots | #433 | ☐ |
