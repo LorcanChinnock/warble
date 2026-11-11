@@ -109,10 +109,12 @@ A header: the icon, "Warble" at 20 bold, "Version" and the version, and the stat
 | Status | Line | Button |
 | --- | --- | --- |
 | Up to date | Green dot, "Up to date · checked today at 09:12" (relative day, local time) | Check for Updates… |
-| Checking | Spinner, "Checking for updates…" | Cancel |
+| Checking | Spinner, "Checking for updates…" | Cancel once #430 lands; none until then |
 | An update is ready | Accent dot with its edge, "Version 0.2.0 is ready" | Update… (default button), opens the update window |
 | Couldn't check | Grey dot, "Couldn't reach the update server. Check your connection." | Try Again |
 | Dev build, no feed | Grey dot, "This build doesn't update itself." | none |
+
+#429 added two lines the boards don't show. "Up to date" needs a check in this session that found nothing, since Sparkle keeps no result between launches, so a check from an earlier session shows a grey dot and "Last checked today at 09:12" (or yesterday, or the date), with Check for Updates…. A build that has never checked shows no line, just the button. While checking, Sparkle's own checking window has the Cancel button, because only the user driver can cancel a check; #430's own driver adds Cancel here.
 
 Then the groups:
 
@@ -180,8 +182,8 @@ Each board, the issue that builds it, and where it lands. #436 ticks **QA** afte
 | Settings › Notch (light) | #427 window and tabs | `Settings/SettingsWindow.swift`, `Settings/SettingsView.swift`, `Design/Warm.swift` and `Design/SettingsControls.swift` removed, the three architecture notes | ☐ |
 | Settings › Notch (light) | #428 | `Settings/SettingsView.swift`, `Settings/NotchPreview.swift` (strip height and the preview's scale), `NotchLayout.previewScale` in WarbleModel with its tests, `docs/architecture/settings.md`, the guide's label renames | ☐ |
 | Settings › Notch (dark) | #428, checked by #434 | as above | ☐ |
-| Settings › General | #429 | `Settings/SettingsView.swift`, `Settings/LoginItem.swift` | ☐ |
-| Settings › About, with update status variants | #429 | `Settings/SettingsView.swift`, `App/Updater.swift` (status) | ☐ |
+| Settings › General | #429 | `Settings/SettingsView.swift` | ☐ |
+| Settings › About, with update status variants | #429 | `Settings/SettingsView.swift`, `App/Updater.swift`, `WarbleModel/Updates/UpdateStatus.swift`, `WarbleCore/App/UpdateStatusLabel.swift` | ☐ |
 | Update window › offer | #430 | `App/Updater.swift`, new user driver and window in `Sources/Warble/App`, update status and offer in WarbleModel | ☐ |
 | Update window › other states | #430 | as above | ☐ |
 | Menu bar and right-click menus | #431 | `App/WarbleApp.swift`, `Notch/NotchMenu.swift` | ☐ |
