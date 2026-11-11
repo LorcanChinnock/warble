@@ -19,7 +19,7 @@ A real notch has the camera in the middle. The notch Warble draws is a plain bla
 
 ## Choose when it shows
 
-In Settings, **Notch on external displays** sets when a notch that Warble draws is there:
+In Settings, **Show a notch**, under Displays without a notch, sets when a notch that Warble draws is there:
 
 - **Only when playing.** The first choice. The notch appears when something plays and goes when the song has been paused for a while.
 - **Always.** After that, an empty black notch stays at the top of the display, with nothing in it. Point at it and a small "Nothing playing" note opens, as on a MacBook's own notch, so it never feels broken.
@@ -29,7 +29,7 @@ This only applies to a notch Warble draws, never your MacBook's own.
 
 ## Show the title in the middle
 
-A real notch has the camera there, but a notch Warble draws has nothing in the middle. It shows the title of what's playing, with the artist after it when both fit. A title that's too long scrolls slowly past in a loop while the song plays, and stops when you pause. With **Reduce motion** on, it stays still and fades out at its end instead. You can also point at the notch to see the title in the player. Tags such as "(Remastered 2009)" or "(feat. …)" are left out so more of the title fits, and a paused song's title turns grey. Turn off **Show the title in a virtual notch** in Settings to keep the middle empty.
+A real notch has the camera there, but a notch Warble draws has nothing in the middle. It shows the title of what's playing, with the artist after it when both fit. A title that's too long scrolls slowly past in a loop while the song plays, and stops when you pause. With **Reduce motion** on, it stays still and fades out at its end instead. You can also point at the notch to see the title in the player. Tags such as "(Remastered 2009)" or "(feat. …)" are left out so more of the title fits, and a paused song's title turns grey. Turn off **Song title in the notch** in Settings to keep the middle empty.
 
 It's off at first, and it only applies to a notch Warble draws, never your MacBook's own.
 

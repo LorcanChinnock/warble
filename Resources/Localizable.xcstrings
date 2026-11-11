@@ -543,6 +543,58 @@
     "Default" : {
 
     },
+    "Displays without a notch" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Displays ohne Notch"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pantallas sin notch"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Écrans sans encoche"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schermi senza notch"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ノッチのないディスプレイ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "노치가 없는 디스플레이"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Telas sem notch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有刘海的显示器"
+          }
+        }
+      }
+    },
     "From %@" : {
       "localizations" : {
         "de" : {
@@ -700,6 +752,58 @@
         }
       }
     },
+    "Heart for Music's Favourites" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herz für Favoriten in Musik"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Corazón para Favoritos de Música"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cœur pour les favoris de Musique"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuore per i Preferiti di Musica"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“ミュージック”のお気に入り用ハート"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "음악 앱 즐겨찾기용 하트"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coração para Favoritos do Música"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“音乐”喜爱的爱心"
+          }
+        }
+      }
+    },
     "Help and user guide" : {
       "localizations" : {
         "de" : {
@@ -752,14 +856,57 @@
         }
       }
     },
-    "How big the notch is when you open it. The closed notch stays the same size." : {
-
-    },
-    "How long the notch keeps showing a paused song before it goes quiet." : {
-
-    },
-    "How the notch looks, with the song that's playing. Point at it to open it." : {
-
+    "How long a paused song stays before the notch goes quiet." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wie lange ein pausierter Song zu sehen bleibt, bevor die Notch zur Ruhe kommt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuánto tiempo sigue visible una canción en pausa antes de que el notch se quede en reposo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Combien de temps un morceau en pause reste affiché avant que l’encoche ne se calme."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per quanto tempo un brano in pausa resta visibile prima che il notch si quieti."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一時停止した曲が表示されたままになる時間。その後、ノッチは静かになります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일시 정지된 노래가 노치에서 사라지기 전까지 표시되는 시간입니다."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por quanto tempo uma música pausada continua visível antes de o notch ficar em repouso."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂停的歌曲在刘海安静下来之前保留多久。"
+          }
+        }
+      }
     },
     "It was installed while Warble was running. Relaunch to use it." : {
       "localizations" : {
@@ -1132,9 +1279,6 @@
         }
       }
     },
-    "Notch on external displays" : {
-
-    },
     "Notch preview" : {
 
     },
@@ -1355,11 +1499,57 @@
         }
       }
     },
-    "On a display without a notch, or with the lid closed, when Warble draws a notch of its own." : {
-
-    },
-    "On a display without a notch, the middle of the notch shows the song's title and artist." : {
-
+    "On an external display, or with the lid closed, Warble draws one." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auf einem externen Display oder bei geschlossenem Deckel zeichnet Warble eine."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En una pantalla externa, o con la tapa cerrada, Warble dibuja uno."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sur un écran externe, ou capot fermé, Warble en dessine une."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Su uno schermo esterno, o con il coperchio chiuso, Warble ne disegna uno."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外部ディスプレイや、蓋を閉じているときに、Warbleがノッチを描きます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "외장 디스플레이나 덮개를 닫았을 때 Warble이 노치를 그립니다."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Em uma tela externa, ou com a tampa fechada, o Warble desenha um."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在外接显示器上或合盖时，Warble 会绘制一个刘海。"
+          }
+        }
+      }
     },
     "One" : {
       "localizations" : {
@@ -1627,8 +1817,57 @@
         }
       }
     },
-    "Opened notch size" : {
-
+    "Opened notch" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geöffnete Notch"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notch abierto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encoche ouverte"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notch aperto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開いたノッチ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "열린 노치"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notch aberto"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "展开的刘海"
+          }
+        }
+      }
     },
     "Output" : {
       "localizations" : {
@@ -1889,6 +2128,58 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "播放中"
+          }
+        }
+      }
+    },
+    "Point at the preview to open it. Its buttons don't control your music." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeige auf die Vorschau, um sie zu öffnen. Ihre Tasten steuern deine Musik nicht."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apunta a la vista previa para abrirla. Sus botones no controlan tu música."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pointez l’aperçu pour l’ouvrir. Ses boutons ne contrôlent pas votre musique."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Punta all’anteprima per aprirla. I suoi pulsanti non controllano la tua musica."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プレビューにポインタを合わせると開きます。プレビューのボタンでは音楽を操作できません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "미리보기를 가리키면 열립니다. 미리보기의 버튼으로는 음악을 제어할 수 없습니다."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aponte para a pré-visualização para abri-la. Os botões dela não controlam sua música."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将指针移到预览上即可展开。预览中的按钮不会控制你的音乐。"
           }
         }
       }
@@ -2312,60 +2603,57 @@
         }
       }
     },
-    "Show a heart to favourite songs in Music" : {
+    "Show a notch" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Herz zum Favorisieren von Titeln in Musik anzeigen"
+            "value" : "Notch anzeigen"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostrar un corazón para marcar canciones como favoritas en Música"
+            "value" : "Mostrar un notch"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Afficher un cœur pour ajouter des morceaux aux favoris dans Musique"
+            "value" : "Afficher une encoche"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostra un cuore per aggiungere brani ai Preferiti in Musica"
+            "value" : "Mostra un notch"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“ミュージック”の曲をお気に入りに追加するハートを表示"
+            "value" : "ノッチを表示"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "음악 앱의 노래를 즐겨찾기에 추가하는 하트 표시"
+            "value" : "노치 표시"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostrar um coração para favoritar músicas no Música"
+            "value" : "Mostrar um notch"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示爱心以将“音乐”中的歌曲标为喜爱"
+            "value" : "显示刘海"
           }
         }
       }
-    },
-    "Show the title in a virtual notch" : {
-
     },
     "Shows how the notch looks." : {
 
@@ -2422,17 +2710,170 @@
         }
       }
     },
+    "Size" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Größe"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tamaño"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taille"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dimensioni"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サイズ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "크기"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tamanho"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "大小"
+          }
+        }
+      }
+    },
     "Small" : {
 
     },
     "Song title font" : {
 
     },
+    "Song title in the notch" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Songtitel in der Notch"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Título de la canción en el notch"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Titre du morceau dans l’encoche"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Titolo del brano nel notch"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ノッチに曲名を表示"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "노치에 노래 제목 표시"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Título da música no notch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在刘海中显示歌曲标题"
+          }
+        }
+      }
+    },
     "Stay visible after pausing" : {
 
     },
-    "The typeface the notch sets the song's title in." : {
-
+    "The middle of the notch shows the title and artist." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Mitte der Notch zeigt Titel und Künstler."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El centro del notch muestra el título y el artista."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le milieu de l’encoche affiche le titre et l’artiste."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il centro del notch mostra titolo e artista."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ノッチの中央にタイトルとアーティストを表示します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "노치 가운데에 제목과 아티스트를 표시합니다."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O centro do notch mostra o título e o artista."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刘海中间显示标题和艺人。"
+          }
+        }
+      }
     },
     "Turned off in System Settings. Turn Warble on in Login Items to open it at login again." : {
       "localizations" : {
@@ -2746,54 +3187,158 @@
         }
       }
     },
-    "While Music is playing, a heart beside the title on the opened notch adds the song to your Favourites in Music, or takes it out. The first time, macOS asks you to let Warble control Music." : {
+    "When a song is paused" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Während Musik spielt, fügt ein Herz neben dem Titel in der geöffneten Notch den Song deinen Favoriten in Musik hinzu oder entfernt ihn. Beim ersten Mal fragt macOS, ob Warble Musik steuern darf."
+            "value" : "Wenn ein Song pausiert ist"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mientras Música reproduce, un corazón junto al título en el notch abierto añade la canción a tus Favoritos de Música o la quita. La primera vez, macOS te pide que permitas a Warble controlar Música."
+            "value" : "Cuando una canción está en pausa"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pendant la lecture dans Musique, un cœur à côté du titre dans l’encoche ouverte ajoute le morceau à vos favoris dans Musique, ou l’en retire. La première fois, macOS vous demande d’autoriser Warble à contrôler Musique."
+            "value" : "Quand un morceau est en pause"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mentre Musica è in riproduzione, un cuore accanto al titolo nel notch aperto aggiunge il brano ai tuoi Preferiti in Musica o lo rimuove. La prima volta, macOS ti chiede di consentire a Warble di controllare Musica."
+            "value" : "Quando un brano è in pausa"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“ミュージック”の再生中、開いたノッチのタイトル横にあるハートで、曲を“ミュージック”のお気に入りに追加または削除できます。初回は、Warbleが“ミュージック”を制御することを許可するようmacOSから求められます。"
+            "value" : "曲の一時停止中"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "음악 앱이 재생 중일 때 열린 노치의 제목 옆 하트를 누르면 노래를 음악 앱의 즐겨찾기에 추가하거나 제거합니다. 처음에는 macOS가 Warble이 음악 앱을 제어하도록 허용할지 묻습니다."
+            "value" : "노래가 일시 정지되었을 때"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enquanto o Música toca, um coração ao lado do título no notch aberto adiciona a música aos seus Favoritos no Música, ou a remove. Na primeira vez, o macOS pede que você permita que o Warble controle o Música."
+            "value" : "Quando uma música está pausada"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“音乐”播放时，展开的刘海中标题旁的爱心可将歌曲添加到“音乐”的喜爱中，或将其移除。首次使用时，macOS 会请你允许 Warble 控制“音乐”。"
+            "value" : "歌曲暂停时"
+          }
+        }
+      }
+    },
+    "While Music plays, a heart beside the title adds the song to your Favourites." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Während Musik spielt, fügt ein Herz neben dem Titel den Song deinen Favoriten hinzu."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mientras Música reproduce, un corazón junto al título añade la canción a tus Favoritos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pendant la lecture dans Musique, un cœur à côté du titre ajoute le morceau à vos favoris."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mentre Musica è in riproduzione, un cuore accanto al titolo aggiunge il brano ai tuoi Preferiti."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“ミュージック”の再生中、タイトル横のハートで曲をお気に入りに追加できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "음악 앱이 재생 중일 때 제목 옆 하트를 누르면 노래를 즐겨찾기에 추가합니다."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enquanto o Música toca, um coração ao lado do título adiciona a música aos seus Favoritos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“音乐”播放时，标题旁的爱心可将歌曲添加到喜爱中。"
+          }
+        }
+      }
+    },
+    "Your MacBook's own notch never changes." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die eigene Notch deines MacBook ändert sich nie."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El notch propio de tu MacBook nunca cambia."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’encoche de votre MacBook ne change jamais."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il notch del tuo MacBook non cambia mai."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MacBook本体のノッチは変わりません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MacBook 자체의 노치는 바뀌지 않습니다."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O notch do seu MacBook nunca muda."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MacBook 自身的刘海不会改变。"
           }
         }
       }

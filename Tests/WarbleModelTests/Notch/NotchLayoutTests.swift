@@ -159,3 +159,26 @@ func theWindowCoversWholePointsAndStaysCentredOnTheHousing(_ scale: MeasuredScal
     let notch = CGRect(x: 456, y: 643, width: 112, height: 20)
     #expect(NotchLayout.window(for: notch, flare: 6) == CGRect(x: 450, y: 643, width: 124, height: 20))
 }
+
+/// Settings' preview: a 160 × 24 virtual notch on a strip 150 tall, with 10 below the card.
+private let previewNotch = CGRect(x: 0, y: 0, width: 160, height: 24)
+
+@Test func thePreviewScaleFitsTheLargeCardAndItsMarginIntoTheStrip() throws {
+    let scale = NotchLayout.previewScale(fitting: 150, notch: previewNotch, margin: 10)
+    let large = try #require(NotchLayout.frame(.expanded, notch: previewNotch, cardSize: .large))
+    #expect(abs(large.height - 220.8) < 0.0001)
+    #expect(abs(large.height * scale + 10 - 150) < 0.0001)
+}
+
+@Test func everyCardSizeStillDiffersInThePreview() throws {
+    let scale = NotchLayout.previewScale(fitting: 150, notch: previewNotch, margin: 10)
+    let heights = try CardSize.allCases.map { try #require(NotchLayout.frame(.expanded, notch: previewNotch, cardSize: $0)).height * scale }
+    #expect(heights == heights.sorted())
+    #expect(Set(heights).count == CardSize.allCases.count)
+    #expect(heights.allSatisfy { $0 <= 140 })
+}
+
+@Test func thePreviewIsNeverDrawnLargerThanLife() {
+    #expect(NotchLayout.previewScale(fitting: 1000, notch: previewNotch, margin: 10) == 1)
+    #expect(NotchLayout.previewScale(fitting: 5, notch: previewNotch, margin: 10) == 0)
+}

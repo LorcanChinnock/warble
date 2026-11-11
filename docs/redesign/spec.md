@@ -65,7 +65,7 @@ System fonts at fixed sizes.
 
 | Part | Value |
 | --- | --- |
-| Settings preview strip | 118 tall, radius 10. The preview inside is drawn scaled down so the open card at Large, 221 pt at full size, fits the strip; the resting notch scales with it |
+| Settings preview strip | 150 tall, radius 10. The preview inside is drawn scaled down, about 0.63×, so the open card at Large, 221 pt at full size, fits the strip with 10 pt below it; the resting notch scales with it. #428 raised it from the board's 118, where the resting notch was about 12 pt tall |
 | First-run preview strip | 150 tall, radius 10, showing the open card, scaled down to fit as in Settings |
 | Icons in About and the update window | 64 in About, 56 in the offer, 44 in the other states |
 
@@ -79,7 +79,7 @@ General holds one setting. The board's note suggests folding it into Notch if it
 
 ### Notch tab
 
-The preview, behaving exactly as it does now (`NotchPreview`, see [Settings](../architecture/settings.md)), on the shorter strip. The open card is 156, 184 or 221 pt tall at full size, so the whole preview is drawn at the scale that fits the Large card into the strip, and a Size change still shows as a change in size. Under it, in 11 pt secondary text: "Point at the preview to open it. Its buttons don't control your music."
+The preview, behaving exactly as it does now (`NotchPreview`, see [Settings](../architecture/settings.md)), on the 150 pt strip. The open card is 156, 184 or 221 pt tall at full size, so the whole preview is drawn at the scale that fits the Large card into the strip, and a Size change still shows as a change in size. Under it, in 11 pt secondary text: "Point at the preview to open it. Its buttons don't control your music."
 
 | Group | Row | Description | Control | Default |
 | --- | --- | --- | --- | --- |
@@ -178,7 +178,7 @@ Each board, the issue that builds it, and where it lands. #436 ticks **QA** afte
 | Board | Issue | Files | QA |
 | --- | --- | --- | --- |
 | Settings › Notch (light) | #427 window and tabs | `Settings/SettingsWindow.swift`, `Settings/SettingsView.swift`, `Design/Warm.swift` and `Design/SettingsControls.swift` removed, the three architecture notes | ☐ |
-| Settings › Notch (light) | #428 | `Settings/SettingsView.swift`, `Settings/NotchPreview.swift` (strip height and the preview's scale) | ☐ |
+| Settings › Notch (light) | #428 | `Settings/SettingsView.swift`, `Settings/NotchPreview.swift` (strip height and the preview's scale), `NotchLayout.previewScale` in WarbleModel with its tests, `docs/architecture/settings.md`, the guide's label renames | ☐ |
 | Settings › Notch (dark) | #428, checked by #434 | as above | ☐ |
 | Settings › General | #429 | `Settings/SettingsView.swift`, `Settings/LoginItem.swift` | ☐ |
 | Settings › About, with update status variants | #429 | `Settings/SettingsView.swift`, `App/Updater.swift` (status) | ☐ |

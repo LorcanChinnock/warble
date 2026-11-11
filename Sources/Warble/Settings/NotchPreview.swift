@@ -44,7 +44,7 @@ final class PreviewNotch {
     }
 }
 
-/// A small screen with a virtual notch on it, drawn at the real notch's proportions from the real views
+/// A small screen with a virtual notch on it, drawn scaled down at the real notch's proportions from the real views
 /// (`RestingContent`, `ExpandedContent`), with the song that's playing or, when nothing is, a made-up one. It rests as a
 /// notch does, with the art, the bars and, when the setting is on, the title, and opens into the card when the pointer is
 /// on it; its controls do nothing. A change to the title font, the card size or the heart opens it for a couple of seconds
@@ -98,6 +98,13 @@ struct NotchPreview: View {
 
     private static let housing = CGRect(x: 0, y: 0, width: VirtualNotch.width, height: 24)
     private static let radius: CGFloat = 10
+    /// The strip's height. The notch is drawn scaled down to fit it, by `scale`.
+    static let height: CGFloat = 150
+    /// The room below the open card at Large, so it doesn't touch the strip's bottom edge.
+    private static let margin: CGFloat = 10
+    /// How much smaller than life the preview draws everything on the strip, so the card at Large fits it and each size
+    /// still looks different.
+    private static let scale = NotchLayout.previewScale(fitting: height, notch: housing, margin: margin)
     /// The pastel strip the notch sits on, the one fixed colour in Settings, the same in light and dark as the notch is.
     /// The spec's 110° gradient.
     private static let strip = LinearGradient(
@@ -118,7 +125,7 @@ struct NotchPreview: View {
         let shape = UnevenRoundedRectangle(bottomLeadingRadius: radius, bottomTrailingRadius: radius)
         ZStack(alignment: .top) {
             Self.strip
-            Rectangle().fill(.white.opacity(0.3)).frame(height: housing.height).frame(maxHeight: .infinity, alignment: .top)
+            Rectangle().fill(.white.opacity(0.3)).frame(height: housing.height * Self.scale).frame(maxHeight: .infinity, alignment: .top)
             Button {
                 guard !isHovering else { return }
                 isOpen.toggle()
@@ -170,8 +177,11 @@ struct NotchPreview: View {
                 isOpen = false
                 isHovering = false
             }
+            // Laid out at full size and drawn smaller, so the real views keep their proportions.
+            .scaleEffect(Self.scale, anchor: .top)
+            .frame(width: size.width * Self.scale, height: size.height * Self.scale, alignment: .top)
         }
-        .frame(height: 232)
+        .frame(height: Self.height)
         .clipShape(RoundedRectangle(cornerRadius: Self.radius, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: Self.radius, style: .continuous)

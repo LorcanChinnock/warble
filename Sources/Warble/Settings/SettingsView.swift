@@ -12,15 +12,15 @@ struct NotchTab: View {
         SettingsPage {
             VStack(alignment: .leading, spacing: 8) {
                 NotchPreview(showsTitle: settings.showsVirtualTitle, notchFont: settings.notchFont, pauseDelay: settings.pauseDelay, cardSize: settings.cardSize, visibility: settings.virtualVisibility, showsFavourite: settings.showsFavourite)
-                Text("How the notch looks, with the song that's playing. Point at it to open it.")
-                    .font(.caption)
+                Text("Point at the preview to open it. Its buttons don't control your music.")
+                    .font(.system(size: 11))
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 2)
             }
         } form: {
-            Section {
+            Section("When a song is paused") {
                 let pause = Text("Stay visible after pausing")
-                let pauseDetail = Text("How long the notch keeps showing a paused song before it goes quiet.")
+                let pauseDetail = Text("How long a paused song stays before the notch goes quiet.")
                 Picker(selection: $settings.pauseDelay) {
                     Text("10 seconds").tag(PauseDelay.tenSeconds)
                     Text("1 minute").tag(PauseDelay.oneMinute)
@@ -30,23 +30,40 @@ struct NotchTab: View {
                     pauseDetail
                 }
                 .described(pause, pauseDetail)
+            }
 
-                let size = Text("Opened notch size")
-                let sizeDetail = Text("How big the notch is when you open it. The closed notch stays the same size.")
-                Picker(selection: $settings.cardSize) {
+            Section("Opened notch") {
+                Picker("Size", selection: $settings.cardSize) {
                     Text("Small").tag(CardSize.small)
                     Text("Default").tag(CardSize.standard)
                     Text("Large").tag(CardSize.large)
-                } label: {
-                    size
-                    sizeDetail
                 }
                 .pickerStyle(.segmented)
                 .accentSwitch()
-                .described(size, sizeDetail)
+                // A one-line row is named by its label, but a grouped form leaves these controls reporting only their
+                // value, so name them outright.
+                .accessibilityLabel(Text("Size"))
 
-                let external = Text("Notch on external displays")
-                let externalDetail = Text("On a display without a notch, or with the lid closed, when Warble draws a notch of its own.")
+                Picker("Song title font", selection: $settings.notchFont) {
+                    Text("Default").tag(NotchFont.system)
+                    Text("Rounded").tag(NotchFont.rounded)
+                    Text("Mono").tag(NotchFont.monospaced)
+                }
+                .accessibilityLabel(Text("Song title font"))
+
+                let heart = Text("Heart for Music's Favourites")
+                let heartDetail = Text("While Music plays, a heart beside the title adds the song to your Favourites.")
+                Toggle(isOn: $settings.showsFavourite) {
+                    heart
+                    heartDetail
+                }
+                .accentSwitch()
+                .described(heart, heartDetail)
+            }
+
+            Section {
+                let external = Text("Show a notch")
+                let externalDetail = Text("On an external display, or with the lid closed, Warble draws one.")
                 Picker(selection: $settings.virtualVisibility) {
                     Text("Only when playing").tag(VirtualNotchVisibility.whenPlaying)
                     Text("Always").tag(VirtualNotchVisibility.always)
@@ -57,35 +74,21 @@ struct NotchTab: View {
                 }
                 .described(external, externalDetail)
 
-                let title = Text("Show the title in a virtual notch")
-                let titleDetail = Text("On a display without a notch, the middle of the notch shows the song's title and artist.")
+                let title = Text("Song title in the notch")
+                let titleDetail = Text("The middle of the notch shows the title and artist.")
                 Toggle(isOn: $settings.showsVirtualTitle) {
                     title
                     titleDetail
                 }
                 .accentSwitch()
                 .described(title, titleDetail)
-
-                let font = Text("Song title font")
-                let fontDetail = Text("The typeface the notch sets the song's title in.")
-                Picker(selection: $settings.notchFont) {
-                    Text("Default").tag(NotchFont.system)
-                    Text("Rounded").tag(NotchFont.rounded)
-                    Text("Mono").tag(NotchFont.monospaced)
-                } label: {
-                    font
-                    fontDetail
-                }
-                .described(font, fontDetail)
-
-                let heart = Text("Show a heart to favourite songs in Music")
-                let heartDetail = Text("While Music is playing, a heart beside the title on the opened notch adds the song to your Favourites in Music, or takes it out. The first time, macOS asks you to let Warble control Music.")
-                Toggle(isOn: $settings.showsFavourite) {
-                    heart
-                    heartDetail
-                }
-                .accentSwitch()
-                .described(heart, heartDetail)
+            } header: {
+                Text("Displays without a notch")
+            } footer: {
+                Text("Your MacBook's own notch never changes.")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }

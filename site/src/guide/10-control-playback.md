@@ -56,7 +56,7 @@ A title, artist or album that is too long for the card waits a moment after the 
 
 ## Add a song to your Favourites in Music
 
-If you use Apple's Music app, Warble can show a heart beside the song's title on the open notch. The heart is off until you turn on **Show a heart to favourite songs in Music** in [Settings](/docs/settings/).
+If you use Apple's Music app, Warble can show a heart beside the song's title on the open notch. The heart is off until you turn on **Heart for Music's Favourites** in [Settings](/docs/settings/).
 
 1. Play a song in Music and open the notch.
 2. Click the heart. A filled heart means the song is in your Favourites, and an outline means it isn't.

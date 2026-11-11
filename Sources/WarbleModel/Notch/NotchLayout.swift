@@ -128,6 +128,14 @@ public enum NotchLayout {
         }
     }
 
+    /// The scale a preview draws the whole notch at so that the open card at its largest size, with `margin` below it,
+    /// fits a strip `height` tall. Every state shrinks by the same amount, so the card sizes still differ from each other,
+    /// and nothing is ever drawn larger than life.
+    public static func previewScale(fitting height: CGFloat, notch: CGRect, margin: CGFloat) -> CGFloat {
+        let largest = CardSize.allCases.map { expandedFrame(notch: notch, cardSize: $0).height }.max() ?? notch.height
+        return min(1, max(0, height - margin) / largest)
+    }
+
     /// The open card at its standard size scaled by `cardSize`, hanging from the top of the housing and centred on it.
     private static func expandedFrame(notch: CGRect, cardSize: CardSize) -> CGRect {
         let width = (notch.width + 2 * expandedWing) * cardSize.scale
