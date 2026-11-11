@@ -1,0 +1,214 @@
+# Redesign spec
+
+The source of truth for the redesign (#425) inside the repository. The [redesign canvas](https://claude.ai/artifact/6n4yuqCDS21mH5oritjSJz) shows how each screen looks, and was signed off on 11 November 2026. This page records the rules, the values and the copy those boards use, so the build stays the same if the canvas changes later. When the canvas and this page disagree, this page wins. Change it in a PR, and redraw the board afterwards.
+
+The redesign covers Warble's windows and menus: Settings, the update window, a first-run window, the menu bar menu and the notch's right-click menu, plus the website. The notch itself, its states, hover and controls, is out of scope. Nothing here touches the hover → expand path or play/pause.
+
+The boards are HTML mock-ups drawn in the system font. Read a pixel as a point. Their colours stand in for the system's: in the app, use the semantic `NSColor` and SwiftUI styles named below, not the hex values.
+
+## Rules
+
+1. **Native where it's familiar.** Standard window chrome, toolbar tabs, grouped forms (`Form` with `.formStyle(.grouped)`), system toggles, pop-up menus, segmented controls, buttons and menus. Nothing a Mac user has to learn twice.
+2. **The notch preview is the personality.** It's the one expressive thing in the app's windows: a black notch on a pastel strip. Every other surface is plain system material.
+3. **The default is the simplest view.** Settings opens on Notch, which shows only what changes the notch. About holds the version, updates and acknowledgements.
+4. **Calm stays calm.** Warble opens a window on its own only twice: the first-run window, once, and the update window after an automatic check the person agreed to.
+5. **Yellow is the accent for what's on or chosen,** through the app's accent colour: switches that are on, the default button, a waiting update's dot. Text is never yellow. Menus keep the system's own highlight.
+6. **Every screen works with the accessibility settings.** Increase Contrast, Reduce Transparency, Reduce Motion, VoiceOver and keyboard-only use. The system controls cover most of this; the preview, the update window and the first-run window need checking by hand.
+
+Every PR also follows the checklist in #425: matches its board in light and dark, Increase Contrast, VoiceOver names (Accessibility Inspector), keyboard only, Reduce Motion, `make strings`, and `make lint` and `make test` pass. A change to anything the notch draws also runs `make perf`.
+
+## Values
+
+### Colour
+
+The app uses system colours throughout. The design note's two palettes become one: `Native` stays for the notch, and `Warm` is removed with the Settings controls (#427).
+
+| Role | In the app | Board stand-in (light / dark) |
+| --- | --- | --- |
+| Accent | Asset catalog `AccentColor`, set as the app's accent | `#F6C744` in both |
+| Accent edge | 0.5 pt inner edge at 28% black, light appearance only, on any yellow fill, so it has a 3:1 boundary against the window | `rgba(0,0,0,0.28)` / none |
+| Text on accent | `labelColor` of the light appearance, in both | `#1D1D1F` |
+| Window | `windowBackgroundColor` | `#F2F2F2` / `#2A2A2C` |
+| Group | The grouped form's own background | `rgba(0,0,0,0.03)` / `rgba(255,255,255,0.045)` |
+| Text | `labelColor` | `#1D1D1F` / `#F2F2F4` |
+| Descriptions | `secondaryLabelColor` | `#5F5F64` / `#A6A6AB` |
+| Up to date | `systemGreen` | `#2FA84F` |
+| Couldn't check, no feed | `systemGray` | `#8E8E93` |
+
+The preview's strip is the one fixed colour: a 110° gradient from `#FFE6A1` through `#F9C9DE` at 52% to `#CDE5F6`, with a 0.5 pt edge at 12% black. It's the same in light and dark, as the notch is.
+
+Whether an `AccentColor` reaches a `Toggle`'s switch depends on the person's own accent setting (System Settings › Appearance). #427 checks this and, if the system colour wins, sets `.tint` on each switch.
+
+### Type
+
+System fonts at fixed sizes.
+
+| Use | Size | Weight |
+| --- | --- | --- |
+| Rows, buttons, pop-up menus | 13 | Regular |
+| Group headings, window title | 13 | Semibold |
+| Descriptions under rows, captions, the status line's variants | 11 | Regular, secondary |
+| About's status line | 12 | Regular |
+| About's name | 20 | Bold |
+| Update window's title (offer) | 15 | Bold |
+| Update window's title (other states) | 14 | Bold |
+| First-run title | 22 | Bold |
+| Download sizes and times | 11 | Regular, tabular figures |
+
+### Sizes
+
+| Window | Width | Notes |
+| --- | --- | --- |
+| Settings | 600 | Height fits the tab, and the window animates between tabs as standard preferences windows do. Content inset 24 × 20 |
+| Update window | 540 for the offer, about 500 for the other states | Release notes in a 230 pt scrolling box |
+| First run | 500 | Content inset 28 |
+
+| Part | Value |
+| --- | --- |
+| Settings preview strip | 118 tall, radius 10 |
+| First-run preview strip | 150 tall, radius 10, showing the open card |
+| Icons in About and the update window | 64 in About, 56 in the offer, 44 in the other states |
+
+## Settings
+
+#427 builds the window and the tabs, #428 the Notch tab and #429 General and About. The window is a standard preferences window: a unified title bar showing the tab's name, and Notch, General and About as toolbar tabs with an icon over a label. The selected tab has the system's selected-item background. The arrow keys and ⌘1–⌘3 should switch tabs if the chosen implementation gives them for free.
+
+The window opens from the menu bar menu, the notch's right-click menu and a relaunch from Finder, and takes a Dock icon while open, as now. #427 starts with a spike to choose between SwiftUI's `Settings` scene and an own `NSWindow` with `NSTabViewController`.
+
+General holds one setting. The board's note suggests folding it into Notch if it stays that thin. The boards were signed off with three tabs, so build three. #429 can raise it again.
+
+### Notch tab
+
+The preview, behaving exactly as it does now (`NotchPreview`, see [Settings](../architecture/settings.md)), on the shorter strip. Under it, in 11 pt secondary text: "Point at the preview to open it. Its buttons don't control your music."
+
+| Group | Row | Description | Control | Default |
+| --- | --- | --- | --- | --- |
+| When a song is paused | Stay visible after pausing | How long a paused song stays before the notch goes quiet. | Pop-up: 10 seconds, 1 minute, Always | Always |
+| Opened notch | Size | none | Segmented: Small, Default, Large | Default |
+| Opened notch | Song title font | none | Pop-up: Default, Rounded, Mono | Default |
+| Opened notch | Heart for Music's Favourites | While Music plays, a heart beside the title adds the song to your Favourites. | Switch | Off |
+| Displays without a notch | Show a notch | On an external display, or with the lid closed, Warble draws one. | Pop-up: Only when playing, Always, Off | Only when playing |
+| Displays without a notch | Song title in the notch | The middle of the notch shows the title and artist. | Switch | On |
+
+Under the last group: "Your MacBook's own notch never changes."
+
+The settings and their `UserDefaults` keys don't change, only their labels and places. The new group answers the first open question in #425.
+
+### General tab
+
+| Group | Row | Description | Control |
+| --- | --- | --- | --- |
+| Startup | Open at login | Warble opens each time you log in, so it's there after a restart. It's the same switch as System Settings › General › Login Items. | Switch, from `LoginItem` |
+| Help | User guide | none | Link row showing `warble.lorcanchinnock.com` and an arrow, opening `/docs/` |
+| Help | If nothing shows in the notch | none | Link row, opening `/docs/nothing-shows/` |
+
+### About tab
+
+A header: the icon, "Warble" at 20 bold, "Version" and the version, and the status line under it, with Check for Updates… on the right.
+
+| Status | Line | Button |
+| --- | --- | --- |
+| Up to date | Green dot, "Up to date · checked today at 09:12" (relative day, local time) | Check for Updates… |
+| Checking | Spinner, "Checking for updates…" | Cancel |
+| An update is ready | Accent dot with its edge, "Version 0.2.0 is ready" | Update… (default button), opens the update window |
+| Couldn't check | Grey dot, "Couldn't reach the update server. Check your connection." | Try Again |
+| Dev build, no feed | Grey dot, "This build doesn't update itself." | none |
+
+Then the groups:
+
+| Group | Row | Detail |
+| --- | --- | --- |
+| Updates | Check for updates automatically | "Warble checks once a day and asks before it downloads anything." Switch, Sparkle's own setting |
+| Updates | What's new | "Release notes ↗", opens `/changelog/` |
+| Warble (left column) | User guide, Source code, Sponsor Warble | Link rows with ↗ |
+| Acknowledgements (right column) | mediaremote-adapter, Sparkle | Link rows showing "BSD 3-Clause" and "MIT" |
+
+Under them, centred, in 11 pt secondary text: "Made by Lorcan Chinnock. Free and open source."
+
+## Update window
+
+#430 builds it: Warble's own Sparkle user driver, ported from Shot's `UpdateUserDriver` (LorcanChinnock/shot#1228) and drawn with system controls. The window is titled "Software Update", with the close button only. The update's status, the offer and the release-notes parsing live in WarbleModel, with tests. Sparkle's standard alerts still handle the first question about checking automatically, "You're up to date" and errors.
+
+| State | When | Title | Text | Buttons |
+| --- | --- | --- | --- | --- |
+| Offer | A check finds an update | Warble 0.2.0 is ready | You have 0.1.0-beta.14. The download is 6 MB, and Warble quits and reopens to finish, which takes a few seconds. | Skip This Version (left), Remind Me Tomorrow, Install and Relaunch (default) |
+| Checking | Only after Check for Updates…; a scheduled check never shows it | Checking for updates… | none | Cancel |
+| Downloading | After Install and Relaunch | Downloading Warble 0.2.0 | A progress bar, then "3.2 of 6.0 MB" and "About 5 seconds left" | Cancel |
+| Ready to relaunch | The download finishes | Warble 0.2.0 is downloaded | Warble quits and reopens to finish. Your music keeps playing. | Later, Relaunch Now (default) |
+| Installed while running | Another installer replaced Warble while it ran | Warble 0.2.0 is installed | It was installed while this copy was running. Relaunch to start using it. | Later, Relaunch (default) |
+
+- The offer shows the release notes for every version since the installed one, in a scrolling box, and under it a checkbox, "Install updates automatically from now on".
+- Closing the window while it downloads keeps the download going, and the menu shows its progress.
+- Later on Ready installs the update the next time Warble quits.
+- Installed while running replaces the `NSAlert` in `Updater.offerRelaunch(installed:)`.
+- A menu bar app's window can open behind others, so the menu still offers a waiting update (see Menus).
+
+## Menus
+
+#431 builds both menus. Only the menus change; the notch doesn't.
+
+**Menu bar menu,** in this order: About Warble, Check for Updates…, a separator, Settings… ⌘,, a separator, Quit Warble ⌘Q. About Warble opens Settings on the About tab.
+
+**While an update waits,** the menu bar icon keeps its bars and gains a 6 pt dot at its top right, with a 1.5 pt ring in the menu bar's colour, in place of today's `arrow.down.circle`. "Update to 0.2.0…" with an accent dot replaces Check for Updates… and opens the update window. The icon's VoiceOver name becomes "Warble, update available".
+
+**Right-click on the notch:** Open <app> and Copy Song and Artist while a song with a title shows, a separator, then the menu bar menu's items in the same order.
+
+## First run
+
+#432 builds it: the only window Warble opens on its own, once, at first launch. It never opens for someone updating from an earlier version; #432 decides how to tell them apart, for example by a stored version or an existing settings key.
+
+- No title in the title bar, the close button only.
+- The preview strip, showing the open card with the song that's playing, or `NotchDemo`'s made-up song.
+- Title: "Warble is in your notch".
+- Text: "Play something in any app, then point at the notch to see the song and control it. When nothing's playing, Warble stays out of sight." On a Mac without a notch, the text says Warble draws one at the top of the screen.
+- One row: "Open Warble when you log in", described "So it's still there after you restart your Mac.", a switch, off.
+- Footer: "Settings are in the menu bar, under Warble's icon." and Done, the default button.
+
+It doesn't ask for the Automation permission that ScriptSource needs. That stays with the system's prompt when it's first needed, which answers the second open question in #425.
+
+## Website
+
+#433 refreshes the site. It keeps the Warm look ([Website](../architecture/website.md)), with no new tokens. The Settings guide page is rewritten for the tabs, with the new screenshots on a pastel figure panel, and a new Updates page sits beside it under Reference.
+
+## Coverage: boards
+
+Each board, the issue that builds it, and where it lands. #436 ticks **QA** after walking the board in the running app in light and dark.
+
+| Board | Issue | Files | QA |
+| --- | --- | --- | --- |
+| Settings › Notch (light) | #427 window and tabs | `Settings/SettingsWindow.swift`, `Settings/SettingsView.swift`, `Design/Warm.swift` and `Design/SettingsControls.swift` removed, the three architecture notes | ☐ |
+| Settings › Notch (light) | #428 | `Settings/SettingsView.swift`, `Settings/NotchPreview.swift` (strip height) | ☐ |
+| Settings › Notch (dark) | #428, checked by #434 | as above | ☐ |
+| Settings › General | #429 | `Settings/SettingsView.swift`, `Settings/LoginItem.swift` | ☐ |
+| Settings › About, with update status variants | #429 | `Settings/SettingsView.swift`, `App/Updater.swift` (status) | ☐ |
+| Update window › offer | #430 | `App/Updater.swift`, new user driver and window in `Sources/Warble/App`, update status and offer in WarbleModel | ☐ |
+| Update window › other states | #430 | as above | ☐ |
+| Menu bar and right-click menus | #431 | `App/WarbleApp.swift`, `Notch/NotchMenu.swift` | ☐ |
+| First-run window | #432 | new window in `Sources/Warble/Settings` or `App`, `App/AppDelegate.swift` | ☐ |
+| Website › guide › Settings | #433 | `site/src/guide/80-settings.md`, new Updates page, `docs/media` | ☐ |
+
+The file lists are where the work is expected to land. Each PR corrects its row.
+
+### Whole-app checks
+
+These run once across every board after #427–#432, and tick nothing above.
+
+| Check | Issue |
+| --- | --- |
+| Dark mode, Increase Contrast and Reduce Transparency | #434 |
+| VoiceOver and keyboard only | #434 |
+| A long pseudo-language | #434 |
+| `make perf` against `main` | #434 |
+
+## Coverage: guide pages
+
+Every page in `site/src/guide/` the redesign changes. #435 updates the text and ticks **Updated**.
+
+| Page | What changes | Build issues | Updated |
+| --- | --- | --- | --- |
+| 01 Get started | The first-run window and Open at login from it | #432 | ☐ |
+| 80 Settings | Rewritten for the tabs, the new names and groups; new screenshots | #428, #429 | ☐ |
+| New: Updates | The update window, About's status, the menu's dot | #430, #431 | ☐ |
+| 90 Nothing shows | The first-run window and the About tab | #432, #429 | ☐ |
+| 95 Remove Warble | Setting names | #429 | ☐ |
+| Landing page and README | Settings and update mentions, screenshots | #433 | ☐ |
