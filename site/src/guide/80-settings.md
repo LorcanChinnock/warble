@@ -1,6 +1,6 @@
 ---
 title: Settings
-summary: Choose how long a paused song stays, how big the opened notch is, when a notch shows on an external display, open Warble at login, show the title in a virtual notch, add a heart for Music's Favourites, check for updates and see which version you have.
+summary: Choose how long a paused song stays, how big the opened notch is, when a notch shows on an external display, open Warble at login, show the title in a virtual notch, add a heart for Music's Favourites, check for and install updates and see which version you have.
 group: Reference
 ---
 
@@ -24,10 +24,11 @@ At the top of the Notch tab is a small preview of the notch. It shows the song t
 - **Show a notch**, under Displays without a notch. **Only when playing** at first. On a display without a notch, or with the lid closed, Warble draws a notch of its own. Choose **Always** to keep an empty black notch there after the music stops, or **Off** to draw none. Your MacBook's own notch is never affected. See [External displays](/docs/external-displays/).
 - **Song title font.** **Default** at first. The typeface the notch sets the song's title in: **Rounded** or **Mono** instead. The artist and album stay in the default font.
 - **Heart for Music's Favourites.** Off at first. While Music is playing, a heart beside the title on the opened notch adds the song to your Favourites in Music, or takes it out. It never shows for other apps. See [Control playback](/docs/control-playback/#add-a-song-to-your-favourites-in-music).
-- **Open at login.** Off at first. Turn it on, and Warble opens each time you log in, so it's there after a restart. It's the same switch as Warble's entry in System Settings › General › Login Items. If you turn Warble off there, turn it back on there.
+- **Open at login**, on the General tab. Off at first. Turn it on, and Warble opens each time you log in, so it's there after a restart. It's the same switch as Warble's entry in System Settings › General › Login Items & Extensions. If you turn Warble off there, turn it back on there.
 - **Song title in the notch.** On at first. On a display without a notch, which Warble draws a notch for, the middle of the notch shows the title and artist of what's playing. See [External displays](/docs/external-displays/).
-- **Check for updates automatically.** Warble goes online to check for updates, to find album covers for songs in your browser, and to find an artist's page when you click the artist. Click **Check for Updates…** to check right away, and the version you have is shown beside it.
-- **Help and user guide** opens this guide in your browser.
+- **Check for updates automatically**, on the About tab. Warble checks once a day for a new version. It also goes online to find album covers for songs in your browser, and to find an artist's page when you click the artist. Under the version you have, a line says whether Warble is up to date and when it last checked. Click **Check for Updates…** to check right away, or **Update…** when a new version is ready.
+- **Install updates automatically**, on the About tab. Off at first. New versions download by themselves and install the next time Warble quits. While it's off, Warble asks before it downloads anything. It can be on only while Warble checks for updates automatically.
+- The General tab's Help section opens this guide, or its [When nothing shows](/docs/when-nothing-shows/) page, in your browser. The About tab links to the release notes, the source code and the page for sponsoring Warble.
 
 ![The rest of Settings: the external-display setting and the title switch, then the General card with Open at login, updates and the user guide, and the acknowledgements under it](../../../docs/media/settings-more.png)
 

@@ -2,6 +2,7 @@ import AppKit
 import Observation
 import os
 import Sparkle
+import WarbleModel
 
 private let log = Logger.warble("update")
 
@@ -17,11 +18,18 @@ final class Updater: NSObject {
     /// update alert can open behind other windows, so the menu offers it too.
     private(set) var pendingVersion: String?
     private(set) var canCheckForUpdates = false
+    /// Set from the moment Sparkle starts a check, scheduled or asked for, until it finds an update or nothing or fails.
+    private(set) var isChecking = false
+    /// What the last check in this session found, for Settings' status. Nil until one finishes.
+    private(set) var lastCheckResult: UpdateCheckResult?
+    /// When Sparkle last checked, in this session or an earlier one. Sparkle stores it.
+    private(set) var lastCheckDate: Date?
     /// Whether this build has a feed, which only `make dist` gives it, so the updater runs at all.
     let isEnabled = !((Bundle.main.object(forInfoDictionaryKey: "SUFeedURL") as? String) ?? "").isEmpty
 
     @ObservationIgnored private var controller: SPUStandardUpdaterController!
     @ObservationIgnored private var canCheckObservation: NSKeyValueObservation?
+    @ObservationIgnored private var lastCheckObservation: NSKeyValueObservation?
 
     override init() {
         super.init()
@@ -32,6 +40,14 @@ final class Updater: NSObject {
                     return
                 }
                 self.canCheckForUpdates = self.controller.updater.canCheckForUpdates
+            }
+        }
+        lastCheckObservation = controller.updater.observe(\.lastUpdateCheckDate, options: [.initial, .new]) { [weak self] _, _ in
+            MainActor.assumeIsolated {
+                guard let self else {
+                    return
+                }
+                self.lastCheckDate = self.controller.updater.lastUpdateCheckDate
             }
         }
     }
@@ -49,6 +65,49 @@ final class Updater: NSObject {
         }
     }
 
+    /// Sparkle's automatic downloads: a found update downloads by itself and installs when Warble quits.
+    var automaticallyDownloads: Bool {
+        get {
+            access(keyPath: \.automaticallyDownloads)
+            return controller.updater.automaticallyDownloadsUpdates
+        }
+        set {
+            withMutation(keyPath: \.automaticallyDownloads) {
+                controller.updater.automaticallyDownloadsUpdates = newValue
+            }
+            log.notice("Automatic update downloads \(newValue ? "on" : "off")")
+        }
+    }
+
+    /// What About's status line says.
+    var status: UpdateStatus {
+        #if DEBUG
+        if let preview = Self.previewStatus {
+            return preview
+        }
+        #endif
+        return UpdateStatus(hasFeed: isEnabled, isChecking: isChecking, pendingVersion: pendingVersion, lastResult: lastCheckResult, lastCheck: lastCheckDate)
+    }
+
+    /// What About's two switches show.
+    var switches: UpdateSwitches {
+        UpdateSwitches(hasFeed: isEnabled, checksAutomatically: automaticallyChecks, downloadsAutomatically: automaticallyDownloads)
+    }
+
+    #if DEBUG
+    /// `-updateStatusPreview checking|ready|upToDate|lastChecked|failed|off` shows that status line in a dev build, which
+    /// has no feed and so would only ever show `off`.
+    private static let previewStatus: UpdateStatus? = switch UserDefaults.standard.string(forKey: "updateStatusPreview") {
+    case "checking": .checking
+    case "ready": .available(version: "0.2.0")
+    case "upToDate": .upToDate(checked: .now.addingTimeInterval(-3600))
+    case "lastChecked": .lastChecked(.now.addingTimeInterval(-26 * 3600))
+    case "failed": .failed
+    case "off": .off
+    default: nil
+    }
+    #endif
+
     func checkForUpdates() {
         NSApp.activate()
         controller.checkForUpdates(nil)
@@ -56,6 +115,53 @@ final class Updater: NSObject {
 }
 
 extension Updater: SPUUpdaterDelegate {
+    nonisolated func updater(_ updater: SPUUpdater, mayPerform updateCheck: SPUUpdateCheck) throws {
+        MainActor.assumeIsolated {
+            isChecking = true
+        }
+    }
+
+    nonisolated func updater(_ updater: SPUUpdater, didFindValidUpdate item: SUAppcastItem) {
+        let version = item.displayVersionString
+        MainActor.assumeIsolated {
+            finishCheck(.found(version: version))
+        }
+    }
+
+    nonisolated func updaterDidNotFindUpdate(_ updater: SPUUpdater) {
+        MainActor.assumeIsolated {
+            finishCheck(.upToDate)
+        }
+    }
+
+    /// No update found and a cancelled install both arrive here too, and aren't failures. Our own relaunch offer below
+    /// cancels with `installationCanceledError`.
+    nonisolated func updater(_ updater: SPUUpdater, didAbortWithError error: any Error) {
+        let error = error as NSError
+        let failed = !(error.domain == SUSparkleErrorDomain
+            && [Int(SUError.noUpdateError.rawValue), Int(SUError.installationCanceledError.rawValue)].contains(error.code))
+        MainActor.assumeIsolated {
+            if failed {
+                log.error("Update check failed: \(error.localizedDescription, privacy: .public)")
+            }
+            finishCheck(failed ? .failed : nil)
+        }
+    }
+
+    nonisolated func updater(_ updater: SPUUpdater, didFinishUpdateCycleFor updateCheck: SPUUpdateCheck, error: (any Error)?) {
+        MainActor.assumeIsolated {
+            finishCheck(nil)
+        }
+    }
+
+    /// Ends the check, keeping the last result when `result` is nil.
+    private func finishCheck(_ result: UpdateCheckResult?) {
+        isChecking = false
+        if let result {
+            lastCheckResult = result
+        }
+    }
+
     nonisolated func updater(_ updater: SPUUpdater, shouldProceedWithUpdate updateItem: SUAppcastItem, updateCheck: SPUUpdateCheck) throws {
         let running = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
         let infoURL = Bundle.main.bundleURL.appending(path: "Contents/Info.plist")
