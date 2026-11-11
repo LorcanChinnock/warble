@@ -12,7 +12,7 @@ The boards are HTML mock-ups drawn in the system font. Read a pixel as a point. 
 2. **The notch preview is the personality.** It's the one expressive thing in the app's windows: a black notch on a pastel strip. Every other surface is plain system material.
 3. **The default is the simplest view.** Settings opens on Notch, which shows only what changes the notch. About holds the version, updates and acknowledgements.
 4. **Calm stays calm.** Warble opens a window on its own only three times: the first-run window, once; Sparkle's one-time question about checking automatically; and the update window after an automatic check the person agreed to.
-5. **Yellow is the accent for what's on or chosen,** through the app's accent colour: switches that are on, the default button, a waiting update's dot. Text is never yellow. Menus keep the system's own highlight.
+5. **Yellow marks what's on or chosen,** set with `.tint` on each control rather than as the app's accent colour: switches that are on, the chosen segment, the default button, a waiting update's dot. Text is never yellow. Toolbar tabs, links and menus keep the person's own accent and highlight.
 6. **Every screen works with the accessibility settings.** Increase Contrast, Reduce Transparency, Reduce Motion, VoiceOver and keyboard-only use. The system controls cover most of this; the preview, the update window and the first-run window need checking by hand.
 
 Every PR also follows the checklist in #425: matches its board in light and dark, Increase Contrast, VoiceOver names (Accessibility Inspector), keyboard only, Reduce Motion, `make strings`, and `make lint` and `make test` pass. A change to anything the notch draws also runs `make perf`.
@@ -25,8 +25,8 @@ The app uses system colours throughout. The design note's two palettes become on
 
 | Role | In the app | Board stand-in (light / dark) |
 | --- | --- | --- |
-| Accent | Asset catalog `AccentColor`, set as the app's accent | `#F6C744` in both |
-| Accent edge | 0.5 pt inner edge at 28% black, light appearance only, on any yellow fill, so it has a 3:1 boundary against the window | `rgba(0,0,0,0.28)` / none |
+| Accent | Asset catalog colour `Yellow` (`Color.warbleYellow`), set with `.tint` on each control. Not the app's accent colour: the system draws the selected toolbar tab's label in that, about 1.6:1 on the light toolbar | `#F6C744` in both |
+| Accent edge | 0.5 pt inner edge at 28% black, light appearance only, on any yellow fill Warble draws itself, so it has a 3:1 boundary against the window. A system switch can't take it; its knob's position also shows its state, and #434's contrast pass decides whether it needs more | `rgba(0,0,0,0.28)` / none |
 | Text on accent | `labelColor` of the light appearance, in both | `#1D1D1F` |
 | Window | `windowBackgroundColor` | `#F2F2F2` / `#2A2A2C` |
 | Group | The grouped form's own background | `rgba(0,0,0,0.03)` / `rgba(255,255,255,0.045)` |
@@ -37,7 +37,7 @@ The app uses system colours throughout. The design note's two palettes become on
 
 The preview's strip is the one fixed colour: a 110° gradient from `#FFE6A1` through `#F9C9DE` at 52% to `#CDE5F6`, with a 0.5 pt edge at 12% black. It's the same in light and dark, as the notch is.
 
-Whether an `AccentColor` reaches a `Toggle`'s switch depends on the person's own accent setting (System Settings › Appearance). #427 checks this and, if the system colour wins, sets `.tint` on each switch.
+#427 found that an app-wide `AccentColor` also colours the selected toolbar tab's label, which breaks rule 5, and that the person's own accent (System Settings › Appearance) wins over it anyway unless they use Multicolour. So the yellow is set with `.tint` on each control, which holds whatever accent the person chose.
 
 ### Type
 
