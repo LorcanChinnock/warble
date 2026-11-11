@@ -65,8 +65,8 @@ System fonts at fixed sizes.
 
 | Part | Value |
 | --- | --- |
-| Settings preview strip | 118 tall, radius 10 |
-| First-run preview strip | 150 tall, radius 10, showing the open card |
+| Settings preview strip | 118 tall, radius 10. The preview inside is drawn scaled down so the open card at Large, 221 pt at full size, fits the strip; the resting notch scales with it |
+| First-run preview strip | 150 tall, radius 10, showing the open card, scaled down to fit as in Settings |
 | Icons in About and the update window | 64 in About, 56 in the offer, 44 in the other states |
 
 ## Settings
@@ -79,7 +79,7 @@ General holds one setting. The board's note suggests folding it into Notch if it
 
 ### Notch tab
 
-The preview, behaving exactly as it does now (`NotchPreview`, see [Settings](../architecture/settings.md)), on the shorter strip. Under it, in 11 pt secondary text: "Point at the preview to open it. Its buttons don't control your music."
+The preview, behaving exactly as it does now (`NotchPreview`, see [Settings](../architecture/settings.md)), on the shorter strip. The open card is 156, 184 or 221 pt tall at full size, so the whole preview is drawn at the scale that fits the Large card into the strip, and a Size change still shows as a change in size. Under it, in 11 pt secondary text: "Point at the preview to open it. Its buttons don't control your music."
 
 | Group | Row | Description | Control | Default |
 | --- | --- | --- | --- | --- |
@@ -118,7 +118,8 @@ Then the groups:
 
 | Group | Row | Detail |
 | --- | --- | --- |
-| Updates | Check for updates automatically | "Warble checks once a day and asks before it downloads anything." Switch, Sparkle's own setting |
+| Updates | Check for updates automatically | "Warble checks once a day for a new version." Switch, Sparkle's own setting |
+| Updates | Install updates automatically | "New versions download by themselves and install the next time Warble quits. While it's off, Warble asks before it downloads anything." Switch, Sparkle's automatic downloads, off at first and dimmed while checking automatically is off |
 | Updates | What's new | "Release notes ↗", opens `/changelog/` |
 | Warble (left column) | User guide, Source code, Sponsor Warble | Link rows with ↗ |
 | Acknowledgements (right column) | mediaremote-adapter, Sparkle | Link rows showing "BSD 3-Clause" and "MIT" |
@@ -137,7 +138,7 @@ Under them, centred, in 11 pt secondary text: "Made by Lorcan Chinnock. Free and
 | Ready to relaunch | The download finishes | Warble 0.2.0 is downloaded | Warble quits and reopens to finish. Your music keeps playing. | Later, Relaunch Now (default) |
 | Installed while running | Another installer replaced Warble while it ran | Warble 0.2.0 is installed | It was installed while this copy was running. Relaunch to start using it. | Later, Relaunch (default) |
 
-- The offer shows the release notes for every version since the installed one, in a scrolling box, and under it a checkbox, "Install updates automatically from now on".
+- The offer shows the release notes for every version since the installed one, in a scrolling box, and under it a checkbox, "Install updates automatically from now on". It turns on the same setting as About's Install updates automatically, which is where it's turned off again.
 - Closing the window while it downloads keeps the download going, and the menu shows its progress.
 - Later on Ready installs the update the next time Warble quits.
 - Installed while running replaces the `NSAlert` in `Updater.offerRelaunch(installed:)`.
@@ -177,7 +178,7 @@ Each board, the issue that builds it, and where it lands. #436 ticks **QA** afte
 | Board | Issue | Files | QA |
 | --- | --- | --- | --- |
 | Settings › Notch (light) | #427 window and tabs | `Settings/SettingsWindow.swift`, `Settings/SettingsView.swift`, `Design/Warm.swift` and `Design/SettingsControls.swift` removed, the three architecture notes | ☐ |
-| Settings › Notch (light) | #428 | `Settings/SettingsView.swift`, `Settings/NotchPreview.swift` (strip height) | ☐ |
+| Settings › Notch (light) | #428 | `Settings/SettingsView.swift`, `Settings/NotchPreview.swift` (strip height and the preview's scale) | ☐ |
 | Settings › Notch (dark) | #428, checked by #434 | as above | ☐ |
 | Settings › General | #429 | `Settings/SettingsView.swift`, `Settings/LoginItem.swift` | ☐ |
 | Settings › About, with update status variants | #429 | `Settings/SettingsView.swift`, `App/Updater.swift` (status) | ☐ |
