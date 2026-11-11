@@ -155,7 +155,7 @@ Under them, centred, in 11 pt secondary text: "Made by Lorcan Chinnock. Free and
 
 ## First run
 
-#432 builds it: the only window Warble opens on its own, once, at first launch. It never opens for someone updating from an earlier version; #432 decides how to tell them apart, for example by a stored version or an existing settings key.
+#432 builds it: one of the two windows Warble opens on its own (rule 4), shown once, at first launch. It never opens for someone updating from an earlier version; #432 decides how to tell them apart, for example by a stored version or an existing settings key.
 
 - No title in the title bar, the close button only.
 - The preview strip, showing the open card with the song that's playing, or `NotchDemo`'s made-up song.
