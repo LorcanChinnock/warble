@@ -217,13 +217,15 @@ These run once across every board after #427–#432, and tick nothing above. #43
 
 Every page in `site/src/guide/` the redesign changes. #435 updates the text and ticks **Updated**.
 
+#435 checked every page against the app on 12 November 2026. #449 had already done most of it, and the screenshots it took still match after #450 and #451. #435 fixed what was left: Song title in the notch is on at first, not off; When nothing shows names the About tab; Remove Warble says Open at login is on the General tab; Settings says ⌘, also works from the app menu while a window is open; and Accessibility says "a notch Warble draws" rather than "a virtual notch".
+
 | Page | What changes | Build issues | Updated |
 | --- | --- | --- | --- |
-| 01 Get started | The first-run window and Open at login from it | #432 | ☐ |
-| 80 Settings | Rewritten for the tabs, the new names and groups; new screenshots | #428, #429 | ☐ |
-| New: Updates | The update window, About's status, the menu's dot | #430, #431 | ☐ |
-| 10 Control playback | The heart setting's name; the right-click menu's items and order | #428, #431 | ☐ |
-| 20 External displays | The Show a notch and Song title in the notch setting names | #428 | ☐ |
-| 90 Nothing shows | The first-run window and the About tab | #432, #429 | ☐ |
-| 95 Remove Warble | Setting names | #429 | ☐ |
-| Landing page and README | Settings and update mentions: the README's Little to set up and a new Updates itself point, and the landing page's Free card. Neither shows a Settings or update screenshot | #433 | ☐ |
+| 01 Get started | The first-run window and Open at login from it | #432 | ☑ |
+| 80 Settings | Rewritten for the tabs, the new names and groups; new screenshots | #428, #429 | ☑ |
+| New: Updates | The update window, About's status, the menu's dot | #430, #431 | ☑ |
+| 10 Control playback | The heart setting's name; the right-click menu's items and order | #428, #431 | ☑ |
+| 20 External displays | The Show a notch and Song title in the notch setting names | #428 | ☑ |
+| 90 Nothing shows | The first-run window and the About tab | #432, #429 | ☑ |
+| 95 Remove Warble | Setting names | #429 | ☑ |
+| Landing page and README | Settings and update mentions: the README's Little to set up and a new Updates itself point, and the landing page's Free card. Neither shows a Settings or update screenshot | #433 | ☑ |
