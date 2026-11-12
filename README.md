@@ -50,6 +50,10 @@ It needs macOS 15 or later, on Apple silicon or Intel. To remove Warble, run `cu
 - **For everyone.** Works with VoiceOver, and follows Increase Contrast and Reduce Motion.
 - **Little to set up.** Open at login, a switch for the title in a virtual notch, which is on at first, and a heart that adds the song to your Favourites in Apple Music, which is off at first. Right-click the notch, or use the menu bar icon, for Settings, updates and Quit.
 
+<p align="center">
+  <img src="docs/media/play-pause.gif" width="480" alt="The pointer opens the notch, then pauses and plays the song">
+</p>
+
 ## Privacy
 
 Warble collects nothing. It has no account, no cloud and no analytics, and it goes online only to check for updates, after you agree, and to find the album cover for a song playing in your browser, which sends just its title and artist to Apple's iTunes Search. When you click the artist, it asks Spotify or YouTube for the artist's page.
