@@ -125,7 +125,14 @@ jobs:
         run: |
           mkdir build/release
           mv build/Warble.zip "build/release/Warble-${TAG}.zip"
-          gh release view "$TAG" --json body --jq .body > "build/release/Warble-${TAG}.md"
+          # The notes are this release's and the 9 published before it, newest first, each under its own "## [version]"
+          # heading, so the update window can show every version since the one a person has (ReleaseNotes.since).
+          notes="build/release/Warble-${TAG}.md"
+          gh release view "$TAG" --json body --jq .body > "$notes"
+          for tag in $(gh release list --exclude-drafts --limit 11 --json tagName --jq '.[].tagName' | awk -v t="$TAG" '$0 != t && n < 9 { print; n++ }'); do
+            printf '\n\n' >> "$notes"
+            gh release view "$tag" --json body --jq .body >> "$notes"
+          done
           echo "$SPARKLE_PRIVATE_KEY" | build/DerivedData/SourcePackages/artifacts/sparkle/Sparkle/bin/generate_appcast \
             --ed-key-file - \
             --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/${TAG}/" \

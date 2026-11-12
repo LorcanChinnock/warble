@@ -232,18 +232,19 @@ struct AboutTab: View {
         }
     }
 
-    /// The button beside the status: none in a build that can't update, and none while checking, since Sparkle's own
-    /// checking window has the Cancel button until #430 gives Warble its own.
+    /// The button beside the status: none in a build that can't update, and Cancel while a check you asked for runs. A
+    /// scheduled check can't be cancelled, so it shows none.
     @ViewBuilder private var statusButton: some View {
         switch updater.status {
-        case .off, .checking:
+        case .off:
             EmptyView()
+        case .checking:
+            if updater.canCancelCheck {
+                Button("Cancel") { updater.cancelCheck() }
+            }
         case .available:
             Button("Update…") { updater.checkForUpdates() }
-                .buttonStyle(.borderedProminent)
-                .tint(Color.warbleYellow)
-                .foregroundStyle(Color.black.opacity(0.85))
-                .keyboardShortcut(.defaultAction)
+                .yellowDefaultButton()
         case .failed:
             Button("Try Again") { updater.checkForUpdates() }
                 .disabled(!updater.canCheckForUpdates)

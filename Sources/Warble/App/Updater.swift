@@ -9,17 +9,20 @@ private let log = Logger.warble("update")
 /// Wraps Sparkle. Nothing goes over the network until the user agrees: Sparkle asks once whether to
 /// check automatically (Info.plist leaves SUEnableAutomaticChecks unset), and "Check for Updates…" is always manual.
 /// Local builds have an empty SUFeedURL, so the updater never starts and Sparkle can't replace them with a release.
-/// Homebrew or a drag-and-drop can replace the app while it runs, so before offering an update it checks the
-/// copy on disk and offers a relaunch instead.
+/// Warble's own `UpdateUserDriver` draws the update window. Homebrew or a drag-and-drop can replace the app while it
+/// runs, so before offering an update it checks the copy on disk and offers a relaunch instead.
 @MainActor
 @Observable
 final class Updater: NSObject {
     /// Set while a scheduled check has found an update the user hasn't looked at yet. A menu bar app's
-    /// update alert can open behind other windows, so the menu offers it too.
+    /// update window can open behind other windows, so the menu offers it too.
     private(set) var pendingVersion: String?
     private(set) var canCheckForUpdates = false
     /// Set from the moment Sparkle starts a check, scheduled or asked for, until it finds an update or nothing or fails.
     private(set) var isChecking = false
+    /// Whether a check you asked for is running and its window is open, so About can offer Cancel. A scheduled check
+    /// can't be cancelled.
+    private(set) var canCancelCheck = false
     /// What the last check in this session found, for Settings' status. Nil until one finishes.
     private(set) var lastCheckResult: UpdateCheckResult?
     /// When Sparkle last checked, in this session or an earlier one. Sparkle stores it.
@@ -27,27 +30,54 @@ final class Updater: NSObject {
     /// Whether this build has a feed, which only `make dist` gives it, so the updater runs at all.
     let isEnabled = !((Bundle.main.object(forInfoDictionaryKey: "SUFeedURL") as? String) ?? "").isEmpty
 
-    @ObservationIgnored private var controller: SPUStandardUpdaterController!
+    @ObservationIgnored private var updater: SPUUpdater!
+    @ObservationIgnored private var driver: UpdateUserDriver!
     @ObservationIgnored private var canCheckObservation: NSKeyValueObservation?
     @ObservationIgnored private var lastCheckObservation: NSKeyValueObservation?
 
     override init() {
         super.init()
-        controller = SPUStandardUpdaterController(startingUpdater: isEnabled, updaterDelegate: self, userDriverDelegate: self)
-        canCheckObservation = controller.updater.observe(\.canCheckForUpdates, options: [.initial, .new]) { [weak self] _, _ in
+        driver = UpdateUserDriver(owner: self, standardDelegate: self)
+        updater = SPUUpdater(hostBundle: .main, applicationBundle: .main, userDriver: driver, delegate: self)
+        driver.updater = updater
+        canCheckObservation = updater.observe(\.canCheckForUpdates, options: [.initial, .new]) { [weak self] _, _ in
             MainActor.assumeIsolated {
                 guard let self else {
                     return
                 }
-                self.canCheckForUpdates = self.controller.updater.canCheckForUpdates
+                self.canCheckForUpdates = self.updater.canCheckForUpdates
             }
         }
-        lastCheckObservation = controller.updater.observe(\.lastUpdateCheckDate, options: [.initial, .new]) { [weak self] _, _ in
+        lastCheckObservation = updater.observe(\.lastUpdateCheckDate, options: [.initial, .new]) { [weak self] _, _ in
             MainActor.assumeIsolated {
                 guard let self else {
                     return
                 }
-                self.lastCheckDate = self.controller.updater.lastUpdateCheckDate
+                self.lastCheckDate = self.updater.lastUpdateCheckDate
+            }
+        }
+        if isEnabled {
+            start()
+        }
+        #if DEBUG
+        if let preview = UserDefaults.standard.string(forKey: "updateWindowPreview") {
+            DispatchQueue.main.async { [driver] in driver?.preview(preview) }
+        }
+        #endif
+    }
+
+    /// Starts Sparkle, as `SPUStandardUpdaterController` did, with an alert if the updater can't start.
+    private func start() {
+        do {
+            try updater.start()
+        } catch {
+            log.error("The updater didn't start: \(error.localizedDescription, privacy: .public)")
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(1))
+                let alert = NSAlert()
+                alert.messageText = String(localized: "Warble can't check for updates")
+                alert.informativeText = String(localized: "The updater didn't start. Install the latest Warble from the website to get updates again.")
+                alert.runModal()
             }
         }
     }
@@ -55,11 +85,11 @@ final class Updater: NSObject {
     var automaticallyChecks: Bool {
         get {
             access(keyPath: \.automaticallyChecks)
-            return controller.updater.automaticallyChecksForUpdates
+            return updater.automaticallyChecksForUpdates
         }
         set {
             withMutation(keyPath: \.automaticallyChecks) {
-                controller.updater.automaticallyChecksForUpdates = newValue
+                updater.automaticallyChecksForUpdates = newValue
             }
             log.notice("Automatic update checks \(newValue ? "on" : "off")")
         }
@@ -69,11 +99,11 @@ final class Updater: NSObject {
     var automaticallyDownloads: Bool {
         get {
             access(keyPath: \.automaticallyDownloads)
-            return controller.updater.automaticallyDownloadsUpdates
+            return updater.automaticallyDownloadsUpdates
         }
         set {
             withMutation(keyPath: \.automaticallyDownloads) {
-                controller.updater.automaticallyDownloadsUpdates = newValue
+                updater.automaticallyDownloadsUpdates = newValue
             }
             log.notice("Automatic update downloads \(newValue ? "on" : "off")")
         }
@@ -110,7 +140,36 @@ final class Updater: NSObject {
 
     func checkForUpdates() {
         NSApp.activate()
-        controller.checkForUpdates(nil)
+        updater.checkForUpdates()
+    }
+
+    /// Stops the check you asked for, as the window's Cancel does.
+    func cancelCheck() {
+        driver.cancelCheck()
+    }
+
+    /// The window offered a version. A scheduled check's offer can open behind other windows, so the menu offers it too.
+    func updateShown(version: String, userInitiated: Bool) {
+        if !userInitiated {
+            pendingVersion = version
+        }
+    }
+
+    /// The person looked at the offer or answered it.
+    func updateGotAttention() {
+        pendingVersion = nil
+    }
+
+    func updateSessionEnded() {
+        pendingVersion = nil
+    }
+
+    /// The window opened, closed or changed state, which decides whether About offers Cancel.
+    func checkWindowChanged() {
+        let can = driver?.canCancelCheck ?? false
+        if canCancelCheck != can {
+            canCancelCheck = can
+        }
     }
 }
 
@@ -134,8 +193,8 @@ extension Updater: SPUUpdaterDelegate {
         }
     }
 
-    /// No update found and a cancelled install both arrive here too, and aren't failures. Our own relaunch offer below
-    /// cancels with `installationCanceledError`.
+    /// No update found and a cancelled install both arrive here too, and aren't failures. The installed-while-running
+    /// offer below cancels with `installationCanceledError`.
     nonisolated func updater(_ updater: SPUUpdater, didAbortWithError error: any Error) {
         let error = error as NSError
         let failed = !(error.domain == SUSparkleErrorDomain
@@ -169,24 +228,14 @@ extension Updater: SPUUpdaterDelegate {
             return
         }
         log.notice("Warble \(installed) is installed but \(running ?? "?") is running; offering a relaunch")
+        let userInitiated = updateCheck == .updates
+        // After Sparkle has ended the session this throw stops, so the window's state outlasts it.
         DispatchQueue.main.async {
             MainActor.assumeIsolated {
-                Self.offerRelaunch(installed: installed)
+                self.driver.showInstalledWhileRunning(version: installed, userInitiated: userInitiated)
             }
         }
         throw NSError(domain: SUSparkleErrorDomain, code: Int(SUError.installationCanceledError.rawValue))
-    }
-
-    private static func offerRelaunch(installed: String) {
-        NSApp.activate()
-        let alert = NSAlert()
-        alert.messageText = String(localized: "Warble \(installed) is installed")
-        alert.informativeText = String(localized: "It was installed while Warble was running. Relaunch to use it.")
-        alert.addButton(withTitle: String(localized: "Relaunch"))
-        alert.addButton(withTitle: String(localized: "Later"))
-        if alert.runModal() == .alertFirstButtonReturn {
-            relaunch()
-        }
     }
 
     /// Opens a new copy of Warble and quits this one.
@@ -207,29 +256,6 @@ extension Updater: SPUUpdaterDelegate {
     }
 }
 
-extension Updater: SPUStandardUserDriverDelegate {
-    nonisolated var supportsGentleScheduledUpdateReminders: Bool { true }
-
-    nonisolated func standardUserDriverWillHandleShowingUpdate(_ handleShowingUpdate: Bool, forUpdate update: SUAppcastItem, state: SPUUserUpdateState) {
-        let version = update.displayVersionString
-        let userInitiated = state.userInitiated
-        MainActor.assumeIsolated {
-            log.notice("Update \(version) available")
-            if !userInitiated {
-                pendingVersion = version
-            }
-        }
-    }
-
-    nonisolated func standardUserDriverDidReceiveUserAttention(forUpdate update: SUAppcastItem) {
-        MainActor.assumeIsolated {
-            pendingVersion = nil
-        }
-    }
-
-    nonisolated func standardUserDriverWillFinishUpdateSession() {
-        MainActor.assumeIsolated {
-            pendingVersion = nil
-        }
-    }
-}
+/// Sparkle's standard driver still shows the alerts `UpdateUserDriver` hands it, such as errors and "You're up to date",
+/// and reads its delegate for them.
+extension Updater: SPUStandardUserDriverDelegate {}
