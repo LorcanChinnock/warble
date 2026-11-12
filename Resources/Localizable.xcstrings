@@ -909,6 +909,58 @@
         }
       }
     },
+    "Done" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fertig"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terminé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fine"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完了"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "완료"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成"
+          }
+        }
+      }
+    },
     "Download the new version, then quit Warble, install it and open it again" : {
       "localizations" : {
         "de" : {
@@ -3182,6 +3234,58 @@
         }
       }
     },
+    "Open Warble when you log in" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble beim Anmelden öffnen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Warble al iniciar sesión"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir Warble à la connexion"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apri Warble al login"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログイン時にWarbleを開く"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그인할 때 Warble 열기"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir o Warble no login"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登录时打开 Warble"
+          }
+        }
+      }
+    },
     "Open at login" : {
       "localizations" : {
         "de" : {
@@ -3548,6 +3652,110 @@
     },
     "Play %@ again" : {
 
+    },
+    "Play something in any app, and Warble draws a notch at the top of the screen. Point at it to see the song and control it. When nothing's playing, Warble stays out of sight." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spiel etwas in einer beliebigen App ab, dann zeichnet Warble oben auf dem Bildschirm eine Notch. Zeig darauf, um den Song zu sehen und zu steuern. Wenn nichts läuft, bleibt Warble unsichtbar."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reproduce algo en cualquier app y Warble dibuja un notch en la parte superior de la pantalla. Señálalo para ver la canción y controlarla. Cuando no suena nada, Warble no se ve."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lancez la lecture dans n’importe quelle app, et Warble dessine une encoche en haut de l’écran. Pointez-la pour voir le morceau et le contrôler. Quand rien ne joue, Warble reste invisible."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riproduci qualcosa in qualsiasi app e Warble disegna un notch in cima allo schermo. Puntalo per vedere il brano e controllarlo. Quando non suona niente, Warble non si vede."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "どのアプリでも何かを再生すると、Warbleが画面上部にノッチを描きます。ポインタを合わせると曲が表示され、操作できます。何も再生していないときは、Warbleは表示されません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아무 앱에서나 음악을 재생하면 Warble이 화면 위쪽에 노치를 그립니다. 노치를 가리키면 노래를 보고 제어할 수 있습니다. 아무것도 재생하지 않을 때는 Warble이 보이지 않습니다."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toque algo em qualquer app e o Warble desenha um notch no topo da tela. Aponte para ele para ver a música e controlá-la. Quando nada está tocando, o Warble fica fora de vista."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在任意 App 中播放内容，Warble 会在屏幕顶部画出一个刘海。将指针移到上面即可查看歌曲并进行控制。没有播放时，Warble 不会显示。"
+          }
+        }
+      }
+    },
+    "Play something in any app, then point at the notch to see the song and control it. When nothing's playing, Warble stays out of sight." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spiel etwas in einer beliebigen App ab und zeig dann auf die Notch, um den Song zu sehen und zu steuern. Wenn nichts läuft, bleibt Warble unsichtbar."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reproduce algo en cualquier app y señala el notch para ver la canción y controlarla. Cuando no suena nada, Warble no se ve."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lancez la lecture dans n’importe quelle app, puis pointez l’encoche pour voir le morceau et le contrôler. Quand rien ne joue, Warble reste invisible."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riproduci qualcosa in qualsiasi app, poi punta il notch per vedere il brano e controllarlo. Quando non suona niente, Warble non si vede."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "どのアプリでも何かを再生して、ノッチにポインタを合わせると曲が表示され、操作できます。何も再生していないときは、Warbleは表示されません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아무 앱에서나 음악을 재생한 다음 노치를 가리키면 노래를 보고 제어할 수 있습니다. 아무것도 재생하지 않을 때는 Warble이 보이지 않습니다."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toque algo em qualquer app e aponte para o notch para ver a música e controlá-la. Quando nada está tocando, o Warble fica fora de vista."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在任意 App 中播放内容，然后将指针移到刘海上即可查看歌曲并进行控制。没有播放时，Warble 不会显示。"
+          }
+        }
+      }
     },
     "Playing" : {
       "localizations" : {
@@ -4228,6 +4436,58 @@
     "Rounded" : {
 
     },
+    "Settings are in the menu bar, under Warble's icon." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Einstellungen findest du in der Menüleiste unter dem Symbol von Warble."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los ajustes están en la barra de menús, bajo el icono de Warble."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les réglages sont dans la barre des menus, sous l’icône de Warble."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le impostazioni sono nella barra dei menu, sotto l’icona di Warble."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定は、メニューバーのWarbleのアイコンにあります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정은 메뉴 막대의 Warble 아이콘 아래에 있습니다."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os ajustes estão na barra de menus, no ícone do Warble."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置位于菜单栏中 Warble 的图标下。"
+          }
+        }
+      }
+    },
     "Settings…" : {
       "localizations" : {
         "de" : {
@@ -4493,6 +4753,58 @@
     },
     "Small" : {
 
+    },
+    "So it's still there after you restart your Mac." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "So ist es auch nach einem Neustart deines Mac da."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para que siga ahí después de reiniciar el Mac."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour qu’il soit toujours là après le redémarrage de votre Mac."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Così resta lì anche dopo il riavvio del Mac."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Macを再起動しても使えるようにします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mac을 재시동한 후에도 그대로 있도록 합니다."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para que continue lá depois de reiniciar o Mac."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这样重新启动 Mac 后它仍然在。"
+          }
+        }
+      }
     },
     "Software Update" : {
       "localizations" : {
@@ -5956,6 +6268,58 @@
         }
       }
     },
+    "Warble is in your notch" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble ist in deiner Notch"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble está en tu notch"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble est dans votre encoche"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble è nel tuo notch"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warbleはノッチにいます"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble이 노치에 있습니다"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Warble está no seu notch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble 就在刘海里"
+          }
+        }
+      }
+    },
     "Warble opens each time you log in, so it's there after a restart. It's the same switch as System Settings › General › Login Items & Extensions." : {
       "localizations" : {
         "de" : {
@@ -6109,6 +6473,59 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Warble，有可用更新"
+          }
+        }
+      }
+    },
+    "Welcome to Warble" : {
+      "comment" : "The first-run window's name for VoiceOver and Mission Control; the title bar shows no title.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Willkommen bei Warble"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te damos la bienvenida a Warble"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bienvenue dans Warble"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Benvenuto in Warble"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warbleへようこそ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble에 오신 것을 환영합니다"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Boas-vindas ao Warble"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "欢迎使用 Warble"
           }
         }
       }

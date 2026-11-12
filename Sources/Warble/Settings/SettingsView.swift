@@ -442,7 +442,7 @@ private extension SettingsPage where Header == EmptyView {
     }
 }
 
-private extension View {
+extension View {
     /// Names a row whose label has two `Text`s, since such a row reports no VoiceOver name of its own: the title as its
     /// label and the line under it as its hint.
     func described(_ title: Text, _ detail: Text?) -> some View {

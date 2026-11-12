@@ -168,10 +168,10 @@ Under them, centred, in 11 pt secondary text: "Made by Lorcan Chinnock. Free and
 
 ## First run
 
-#432 builds it: one of the three windows Warble opens on its own (rule 4), shown once, at first launch. It never opens for someone updating from an earlier version; #432 decides how to tell them apart, for example by a stored version or an existing settings key.
+#432 built it: one of the three windows Warble opens on its own (rule 4), shown once, at first launch. It never opens for someone updating from an earlier version. #432 tells them apart by the keys in Warble's own stored settings, read before Sparkle starts: every release has had Sparkle, which stores `SUHasLaunchedBefore` on its first start, so even someone who never opened Settings has it. Any of those keys, or the window's own `firstRunShown`, keeps the window shut (`FirstRun`, WarbleModel, tested).
 
-- No title in the title bar, the close button only.
-- The preview strip, showing the open card with the song that's playing, or `NotchDemo`'s made-up song.
+- No title in the title bar, the close button only. VoiceOver and Mission Control name it Welcome to Warble. Escape closes it too.
+- The preview strip, showing the open card with the song that's playing, or `NotchDemo`'s made-up song. It holds the card open (`NotchPreview`'s `holdsOpen`), so it isn't a control there and takes no keyboard focus.
 - Title: "Warble is in your notch".
 - Text: "Play something in any app, then point at the notch to see the song and control it. When nothing's playing, Warble stays out of sight." On a Mac without a notch, the text says Warble draws one at the top of the screen.
 - One row: "Open Warble when you log in", described "So it's still there after you restart your Mac.", a switch, off.
@@ -197,7 +197,7 @@ Each board, the issue that builds it, and where it lands. #436 ticks **QA** afte
 | Update window › offer | #430 | `App/Updater.swift`, `App/DockIcon.swift`, `Update/UpdateUserDriver.swift` and `Update/UpdateWindow.swift`, `Design/YellowDefaultButton.swift`, `WarbleModel/Updates/UpdateOffer.swift` and `ReleaseNotes.swift` with their tests, `WarbleCore/App/UpdateWindowLabel.swift`, the release notes in `.github/workflows/release.yml` | ☐ |
 | Update window › other states | #430 | as above, and About's Cancel in `Settings/SettingsView.swift` | ☐ |
 | Menu bar and right-click menus | #431 | `App/WarbleApp.swift`, `Notch/NotchMenu.swift`, `Design/MenuImages.swift`, `App/Updater.swift` (`menuItem`), `WarbleModel/Menu/AppMenu.swift` with its tests, `WarbleCore/App/AppMenuLabel.swift` | ☐ |
-| First-run window | #432 | new window in `Sources/Warble/Settings` or `App`, `App/AppDelegate.swift` | ☐ |
+| First-run window | #432 | `App/FirstRunWindow.swift`, `App/AppDelegate.swift`, `App/AppEnvironment.swift`, `App/DockIcon.swift`, `Settings/NotchPreview.swift` (`holdsOpen`), `WarbleModel/FirstRun/FirstRun.swift` with its tests | ☐ |
 | Website › guide › Settings | #433 | `site/src/guide/80-settings.md`, new Updates page, `docs/media` | ☐ |
 
 The file lists are where the work is expected to land. Each PR corrects its row.

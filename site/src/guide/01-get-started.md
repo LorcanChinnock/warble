@@ -24,7 +24,7 @@ Download the zip from the [latest release](https://github.com/LorcanChinnock/war
 2. Open **System Settings**, choose **Privacy & Security**, and scroll down to **Security**.
 3. Click **Open Anyway** next to the message about Warble, then confirm with your password or Touch ID.
 
-A small icon of three bars appears in the menu bar, and the notch looks just as it did before. Warble shows nothing else until something plays.
+A small icon of three bars appears in the menu bar, and a window opens to say that Warble is in your notch. It shows the open notch with a made-up song, or the one that's playing, and has one switch, **Open Warble when you log in**. Turn it on to have Warble there after you restart your Mac, then click **Done**. The window opens only this once, and an update never brings it back.
 
 ## See what's playing
 
@@ -39,7 +39,7 @@ Move the pointer away and the notch closes again. [Control playback](/docs/contr
 When you pause, the song stays in the notch until something else plays. You can make it leave after 10 seconds or a minute instead, in Settings, and Warble then hides behind the camera. When nothing is playing, Warble shows nothing and does nothing until a song starts. If you point at the notch then, a small card shows the last song that played, with a button to play it again, and goes when you move away. Until a song has played since Warble opened, the card says "Nothing playing" instead.
 
 > [!TIP]
-> To have Warble there after you restart your Mac, turn on **Open at login** in **Settings…**, from the menu bar icon.
+> If you left the switch off and want it later, it's **Open at login** in **Settings…**, from the menu bar icon, under **General**.
 
 ## Updates
 

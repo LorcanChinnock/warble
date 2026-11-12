@@ -11,6 +11,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var notch: NotchController?
     private var source: AdapterSource?
     private var fallback: ScriptSource?
+    /// Open only at the first launch of a new install, until it's closed.
+    private var firstRun: FirstRunWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // To see the notch without playing anything, turn on `-notchPreviewState resting` in the Warble scheme's
@@ -46,6 +48,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             startFallback()
         }
         self.notch = notch
+        if environment.opensFirstRun {
+            let firstRun = FirstRunWindow(environment: environment) { [weak self] in self?.firstRun = nil }
+            firstRun.show()
+            self.firstRun = firstRun
+        }
         if let launch = Perf.millisecondsSinceLaunch() {
             Perf.signposter.emitEvent("Ready", "launch ms=\(launch)")
         }
