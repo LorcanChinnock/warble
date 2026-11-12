@@ -112,6 +112,7 @@ A header: the icon, "Warble" at 20 bold, "Version" and the version, and the stat
 | Checking | Spinner, "Checking for updates…" | Cancel, while a check you asked for runs; none during a scheduled check |
 | An update is ready | Accent dot with its edge, "Version 0.2.0 is ready" | Update… (default button), opens the update window |
 | Couldn't check | Grey dot, "Couldn't reach the update server. Check your connection." | Try Again |
+| Couldn't install | Grey dot, "The update downloaded but couldn't be installed." (added by #436, since a failure after the download isn't the connection) | Try Again |
 | Dev build, no feed | Grey dot, "This build doesn't update itself." | none |
 
 #429 added two lines the boards don't show. "Up to date" needs a check in this session that found nothing, since Sparkle keeps no result between launches, so a check from an earlier session shows a grey dot and "Last checked today at 09:12" (or yesterday, or the date), with Check for Updates…. A build that has never checked shows no line, just the button. Only the user driver can cancel a check, so #430's own driver gives About its Cancel, for a check you asked for. A scheduled check has nothing to cancel, so it shows no button.
