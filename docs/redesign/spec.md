@@ -202,7 +202,7 @@ It doesn't ask for the Automation permission that ScriptSource needs. That stays
 | Part | Value |
 | --- | --- |
 | Bezel | `#0A0A0A`, 11 px on the top and sides, outer corners 30 |
-| Screen | Inner corners 19. A 118° gradient of the site's sky, pink and yellow (`#CFE6F5`, `#FBD0E3` at 55%, `#FFE7A6`) |
+| Screen | Inner corners 19. `linear-gradient(118deg, var(--sky), color-mix(in srgb, var(--pink) 30%, #fff) 55%, color-mix(in srgb, var(--yellow) 42%, #fff))`, the guide figure panel's tints, so it adds no colour. 55% is a stop position |
 | Menu bar | 37 px, white at 30%, system font 13 px. An external display's is 24 px, 12 px text |
 | Fade | A mask from solid at 58% of the crop's height to clear at the bottom, so the screen dissolves into the page |
 | Heights | Hero 300, resting notch and note 190, open card with the speaker list 330, external display 150 |
