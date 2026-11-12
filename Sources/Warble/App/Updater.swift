@@ -128,10 +128,7 @@ final class Updater: NSObject {
     var menuItem: UpdateMenuItem {
         let model = driver.model
         let phase = model.phase
-        let downloading = switch phase {
-        case .downloading, .preparing: true
-        default: false
-        }
+        let downloading = phase.isDownloading
         return UpdateMenuItem(
             pendingVersion: pendingVersion, canCheck: canCheckForUpdates, phase: downloading ? phase : nil,
             version: model.version, fraction: downloading ? model.download.fraction : nil

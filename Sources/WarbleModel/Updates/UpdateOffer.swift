@@ -200,6 +200,14 @@ public enum UpdatePhase: Equatable, Sendable {
         }
     }
 
+    /// Whether an update is downloading or unpacking, which the menus' update item shows as progress.
+    public var isDownloading: Bool {
+        switch self {
+        case .downloading, .preparing: true
+        default: false
+        }
+    }
+
     /// The window is 540 pt wide for the offer, with its release notes, and 500 for the rest.
     public var width: Double {
         self == .offer ? 540 : 500

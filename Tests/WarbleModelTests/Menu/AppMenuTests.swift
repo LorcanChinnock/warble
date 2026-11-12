@@ -61,6 +61,14 @@ private func update(pending: String? = nil, canCheck: Bool = true, phase: Update
     #expect(!item.hasDot)
 }
 
+@Test func onlyDownloadingAndUnpackingCountAsADownload() {
+    #expect(UpdatePhase.downloading.isDownloading)
+    #expect(UpdatePhase.preparing(0.5).isDownloading)
+    for phase in [UpdatePhase.checking, .offer, .ready, .installing, .installedWhileRunning(version: "0.2.0")] {
+        #expect(!phase.isDownloading)
+    }
+}
+
 @Test func theWindowsOtherStatesLeaveTheItemAsItWas() {
     for phase in [UpdatePhase.checking, .offer, .ready, .installing, .installedWhileRunning(version: "0.2.0")] {
         #expect(update(phase: phase) == .check(enabled: true))
