@@ -12,8 +12,10 @@ public extension UpdateStatus {
             return String(localized: "Checking for updates…")
         case .available(let version):
             return String(localized: "Version \(version) is ready")
-        case .failed:
+        case .failed(.unreachable):
             return String(localized: "Couldn't reach the update server. Check your connection.")
+        case .failed(.install):
+            return String(localized: "The update downloaded but couldn't be installed.")
         case .upToDate(let checked):
             guard let checked else {
                 return String(localized: "Up to date")

@@ -21,6 +21,7 @@ The About tab of Settings shows the version you have, with a line under it:
 - **Checking for updates…** while a check runs.
 - **Version 0.2.0 is ready**, with a yellow dot, when there's a new version. Click **Update…** to see it.
 - **Couldn't reach the update server. Check your connection.**, with a grey dot, when a check failed. Click **Try Again** once you're back online.
+- **The update downloaded but couldn't be installed.**, with a grey dot, when a new version arrived but something went wrong while installing it. Click **Try Again** to download it afresh.
 
 ## When a new version is ready
 

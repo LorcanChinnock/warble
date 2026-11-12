@@ -141,14 +141,15 @@ final class Updater: NSObject {
     }
 
     #if DEBUG
-    /// `-updateStatusPreview checking|ready|upToDate|lastChecked|failed|off` shows that status line in a dev build, which
-    /// has no feed and so would only ever show `off`. `ready` also shows a waiting update in the menus.
+    /// `-updateStatusPreview checking|ready|upToDate|lastChecked|failed|failedInstall|off` shows that status line in a dev
+    /// build, which has no feed and so would only ever show `off`. `ready` also shows a waiting update in the menus.
     private static let previewStatus: UpdateStatus? = switch UserDefaults.standard.string(forKey: "updateStatusPreview") {
     case "checking": .checking
     case "ready": .available(version: "0.2.0")
     case "upToDate": .upToDate(checked: .now.addingTimeInterval(-3600))
     case "lastChecked": .lastChecked(.now.addingTimeInterval(-26 * 3600))
-    case "failed": .failed
+    case "failed": .failed(.unreachable)
+    case "failedInstall": .failed(.install)
     case "off": .off
     default: nil
     }
@@ -219,7 +220,7 @@ extension Updater: SPUUpdaterDelegate {
             if failed {
                 log.error("Update check failed: \(error.localizedDescription, privacy: .public)")
             }
-            finishCheck(failed ? .failed : nil)
+            finishCheck(failed ? .failed(UpdateFailure(sparkleCode: error.domain == SUSparkleErrorDomain ? error.code : nil)) : nil)
         }
     }
 

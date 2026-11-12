@@ -5,8 +5,30 @@ import Foundation
 public enum UpdateCheckResult: Equatable, Sendable {
     case upToDate
     case found(version: String)
-    /// The check didn't reach the update server, or the server's answer couldn't be read.
-    case failed
+    /// The check or the update after it failed, for this reason.
+    case failed(UpdateFailure)
+}
+
+/// Why an update failed, which decides what About says: a problem reaching the server is the person's connection, while
+/// one after the download isn't, and telling them to check their connection then would send them the wrong way.
+public enum UpdateFailure: Equatable, Sendable {
+    /// The check or the download didn't reach the update server, or the server's answer couldn't be read.
+    case unreachable
+    /// The update downloaded but couldn't be unpacked, verified or installed.
+    case install
+
+    /// - Parameter sparkleCode: The error's code when it's in Sparkle's own error domain (`SUError`), or nil for any
+    ///   other error, such as a network one. Sparkle numbers its errors by stage: 2000 is its temporary folder,
+    ///   3000–3999 unpacking and verifying the download, and 4000–4999 installing it. The feed (1000–1999), the
+    ///   download (2001) and its setup (below 1000) are all the server or the way to it.
+    public init(sparkleCode: Int?) {
+        switch sparkleCode {
+        case .some(2000), .some(3000..<5000):
+            self = .install
+        default:
+            self = .unreachable
+        }
+    }
 }
 
 /// What Settings › About says about updates, on the status line under the version. It says "Up to date" only when a
@@ -20,8 +42,8 @@ public enum UpdateStatus: Equatable, Sendable {
     case available(version: String)
     /// A check in this session found nothing newer, at this time.
     case upToDate(checked: Date?)
-    /// The last check in this session failed.
-    case failed
+    /// The last check in this session, or the update after it, failed for this reason.
+    case failed(UpdateFailure)
     /// No check has finished in this session; the last one, in an earlier session, was at this time.
     case lastChecked(Date)
     /// Warble has never checked.
@@ -51,8 +73,8 @@ public enum UpdateStatus: Equatable, Sendable {
             self = .available(version: version)
         case .upToDate:
             self = .upToDate(checked: lastCheck)
-        case .failed:
-            self = .failed
+        case .failed(let failure):
+            self = .failed(failure)
         case nil:
             self = lastCheck.map { .lastChecked($0) } ?? .notChecked
         }

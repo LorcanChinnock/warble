@@ -5124,6 +5124,58 @@
         }
       }
     },
+    "The update downloaded but couldn't be installed." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Update wurde geladen, konnte aber nicht installiert werden."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La actualización se descargó, pero no se pudo instalar."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La mise à jour a été téléchargée, mais n'a pas pu être installée."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'aggiornamento è stato scaricato, ma non è stato possibile installarlo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アップデートはダウンロードされましたが、インストールできませんでした。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "업데이트를 다운로드했지만 설치할 수 없습니다."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A atualização foi baixada, mas não pôde ser instalada."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新已下载，但无法安装。"
+          }
+        }
+      }
+    },
     "The updater didn't start. Install the latest Warble from the website to get updates again." : {
       "localizations" : {
         "de" : {

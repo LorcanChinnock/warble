@@ -14,7 +14,7 @@ private func status(hasFeed: Bool = true, checking: Bool = false, pending: Strin
 
 @Test func aRunningCheckShowsAsCheckingEvenWithAnUpdateWaiting() {
     #expect(status(checking: true, pending: "0.2.0") == .checking)
-    #expect(status(checking: true, result: .failed) == .checking)
+    #expect(status(checking: true, result: .failed(.unreachable)) == .checking)
 }
 
 @Test func anUpdateAScheduledCheckFoundIsReady() {
@@ -33,7 +33,19 @@ private func status(hasFeed: Bool = true, checking: Bool = false, pending: Strin
 }
 
 @Test func aFailedCheckSaysSoUntilTheNextCheckFinishes() {
-    #expect(status(result: .failed, lastCheck: earlier) == .failed)
+    #expect(status(result: .failed(.unreachable), lastCheck: earlier) == .failed(.unreachable))
+    #expect(status(result: .failed(.install), lastCheck: earlier) == .failed(.install))
+}
+
+@Test func onlyAFailureAfterTheDownloadIsAnInstallFailure() {
+    // The feed, the download and Sparkle's setup, and any error from outside Sparkle, such as a network one.
+    for code in [nil, 4, 1000, 1002, 2001] {
+        #expect(UpdateFailure(sparkleCode: code) == .unreachable)
+    }
+    // Sparkle's temporary folder, unpacking, the signature and installing.
+    for code in [2000, 3000, 3001, 3002, 4000, 4005] {
+        #expect(UpdateFailure(sparkleCode: code) == .install)
+    }
 }
 
 @Test func aBuildThatHasNeverCheckedSaysNotChecked() {
