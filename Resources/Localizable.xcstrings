@@ -3809,54 +3809,54 @@
         }
       }
     },
-    "Point at the preview to open it. Its buttons don't control your music." : {
+    "Point at the preview to open it, and click it to close it. Its buttons don't control your music." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeige auf die Vorschau, um sie zu öffnen. Ihre Tasten steuern deine Musik nicht."
+            "value" : "Zeige auf die Vorschau, um sie zu öffnen, und klicke darauf, um sie zu schließen. Ihre Tasten steuern deine Musik nicht."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apunta a la vista previa para abrirla. Sus botones no controlan tu música."
+            "value" : "Apunta a la vista previa para abrirla y haz clic en ella para cerrarla. Sus botones no controlan tu música."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pointez l’aperçu pour l’ouvrir. Ses boutons ne contrôlent pas votre musique."
+            "value" : "Pointez l’aperçu pour l’ouvrir, et cliquez dessus pour le fermer. Ses boutons ne contrôlent pas votre musique."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Punta all’anteprima per aprirla. I suoi pulsanti non controllano la tua musica."
+            "value" : "Punta all’anteprima per aprirla e fai clic per chiuderla. I suoi pulsanti non controllano la tua musica."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "プレビューにポインタを合わせると開きます。プレビューのボタンでは音楽を操作できません。"
+            "value" : "プレビューにポインタを合わせると開き、クリックすると閉じます。プレビューのボタンでは音楽を操作できません。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "미리보기를 가리키면 열립니다. 미리보기의 버튼으로는 음악을 제어할 수 없습니다."
+            "value" : "미리보기를 가리키면 열리고, 클릭하면 닫힙니다. 미리보기의 버튼으로는 음악을 제어할 수 없습니다."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aponte para a pré-visualização para abri-la. Os botões dela não controlam sua música."
+            "value" : "Aponte para a pré-visualização para abri-la e clique nela para fechá-la. Os botões dela não controlam sua música."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将指针移到预览上即可展开。预览中的按钮不会控制你的音乐。"
+            "value" : "将指针移到预览上即可展开，点按即可收起。预览中的按钮不会控制你的音乐。"
           }
         }
       }

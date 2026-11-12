@@ -44,13 +44,15 @@ final class PreviewNotch {
     }
 }
 
-/// A small screen with a virtual notch on it, drawn scaled down at the real notch's proportions from the real views
-/// (`RestingContent`, `ExpandedContent`), with the song that's playing or, when nothing is, a made-up one. It rests as a
-/// notch does, with the art, the bars and, when the setting is on, the title, and opens into the card when the pointer is
-/// on it; its controls do nothing. A change to the title font, the card size or the heart opens it for a couple of seconds
-/// to show the change, unless Reduce Motion is on. A change to the pause or external-display setting pauses the song and, a beat
-/// later, ends it as those settings would (`PreviewEnding`); it holds that end until the pointer leaves the preview, or
-/// another setting changes, then plays again. Nothing else in it moves by itself.
+/// A screen with a virtual notch on it, drawn at the real notch's proportions from the real views (`RestingContent`,
+/// `ExpandedContent`), at life size or scaled down to fit `height`, with the song that's playing or, when nothing is, a
+/// made-up one. It rests as a notch does, with the art, the bars and, when the setting is on, the title, and opens into
+/// the card when the pointer reaches it. It stays open after the pointer leaves, so a setting's change shows without
+/// pointing at it again, and a click on it closes it; its controls do nothing. A change to the title font, the card size
+/// or the heart opens a closed card for a couple of seconds to show the change, unless Reduce Motion is on. A change to
+/// the pause or external-display setting pauses the song and, a beat later, ends it as those settings would
+/// (`PreviewEnding`); it holds that end until the pointer leaves the preview, or another setting changes, then plays
+/// again. Nothing else in it moves by itself.
 struct NotchPreview: View {
     /// Whether the resting notch draws the title, which the Settings switch turns on.
     let showsTitle: Bool
@@ -66,14 +68,18 @@ struct NotchPreview: View {
     /// Holds the card open, whatever the pointer does, as the first-run window shows it. Settings leaves it closed until
     /// the pointer is on it.
     var holdsOpen = false
+    /// The strip's height. The notch is drawn scaled down to fit it, by `scale`; Settings' strip is tall enough for life
+    /// size.
+    var height: CGFloat = 240
     @Environment(PlayerModel.self) private var live
     @State private var preview = PreviewNotch()
     /// When the made-up song started, which its position runs on from.
     @State private var startedAt = Date.now
+    /// Whether the card is open. The pointer reaching the notch opens it and it stays open; a click, or a press from the
+    /// keyboard or VoiceOver, toggles it.
     @State private var isOpen = false
-    /// Whether the pointer is on the preview, which opens it. A click then does nothing, so it can't close the card
-    /// under the pointer; a press from the keyboard or VoiceOver, which have no pointer, toggles it.
-    @State private var isHovering = false
+    /// Whether a change opened the card, which then closes by itself unless the pointer reaches it first.
+    @State private var isPeeking = false
     @State private var isPaused = false
     /// When the song was paused, which it holds its position at.
     @State private var pausedAt = Date.now
@@ -101,13 +107,11 @@ struct NotchPreview: View {
 
     private static let housing = CGRect(x: 0, y: 0, width: VirtualNotch.width, height: 24)
     private static let radius: CGFloat = 10
-    /// The strip's height. The notch is drawn scaled down to fit it, by `scale`.
-    static let height: CGFloat = 150
     /// The room below the open card at Large, so it doesn't touch the strip's bottom edge.
     private static let margin: CGFloat = 10
     /// How much smaller than life the preview draws everything on the strip, so the card at Large fits it and each size
-    /// still looks different.
-    private static let scale = NotchLayout.previewScale(fitting: height, notch: housing, margin: margin)
+    /// still looks different. At most life size.
+    private var scale: CGFloat { NotchLayout.previewScale(fitting: height, notch: Self.housing, margin: Self.margin) }
     /// The pastel strip the notch sits on, the one fixed colour in Settings, the same in light and dark as the notch is.
     /// The spec's 110° gradient.
     private static let strip = LinearGradient(
@@ -129,9 +133,10 @@ struct NotchPreview: View {
         let shape = UnevenRoundedRectangle(bottomLeadingRadius: radius, bottomTrailingRadius: radius)
         ZStack(alignment: .top) {
             Self.strip
-            Rectangle().fill(.white.opacity(0.3)).frame(height: housing.height * Self.scale).frame(maxHeight: .infinity, alignment: .top)
+            Rectangle().fill(.white.opacity(0.3)).frame(height: housing.height * scale).frame(maxHeight: .infinity, alignment: .top)
             Button {
-                guard !isHovering, !holdsOpen else { return }
+                guard !holdsOpen else { return }
+                isPeeking = false
                 isOpen.toggle()
             } label: {
                 ZStack(alignment: .top) {
@@ -168,9 +173,10 @@ struct NotchPreview: View {
             // Held open, a press does nothing, so it takes no keyboard focus; VoiceOver still reads it. Otherwise it takes
             // focus as a button does, only while keyboard navigation is on, rather than on every click and window open.
             .focusable(!holdsOpen, interactions: .activate)
-            .onHover {
-                isHovering = $0
-                isOpen = $0
+            .onHover { inside in
+                guard inside else { return }
+                isPeeking = false
+                isOpen = true
             }
             .accessibilityLabel(Text("Notch preview"))
             .accessibilityValue(opened ? Text("Open") : Text("Closed"))
@@ -182,13 +188,13 @@ struct NotchPreview: View {
             .accessibilityHidden(!showsNotch)
             .onChange(of: showsNotch) {
                 isOpen = false
-                isHovering = false
+                isPeeking = false
             }
             // Laid out at full size and drawn smaller, so the real views keep their proportions.
-            .scaleEffect(Self.scale, anchor: .top)
-            .frame(width: size.width * Self.scale, height: size.height * Self.scale, alignment: .top)
+            .scaleEffect(scale, anchor: .top)
+            .frame(width: size.width * scale, height: size.height * scale, alignment: .top)
         }
-        .frame(height: Self.height)
+        .frame(height: height)
         .clipShape(RoundedRectangle(cornerRadius: Self.radius, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: Self.radius, style: .continuous)
@@ -211,12 +217,13 @@ struct NotchPreview: View {
             ending = PreviewEnding(pauseDelay: pauseDelay, visibility: visibility)
         }
         .task(id: peeks) {
-            guard peeks > 0, (try? await Task.sleep(for: Self.peekLength)) != nil, !isHovering else { return }
+            guard peeks > 0, (try? await Task.sleep(for: Self.peekLength)) != nil, isPeeking else { return }
+            isPeeking = false
             isOpen = false
         }
     }
 
-    /// How long a change that opens the card leaves it open, unless the pointer is on it.
+    /// How long a change that opens a closed card leaves it open, unless the pointer reaches it.
     private static let peekLength: Duration = .seconds(2)
 
     /// What the real views read, which changes the preview's own player and model rather than the app's.
@@ -250,18 +257,20 @@ struct NotchPreview: View {
         model.isPlaying = true
     }
 
-    /// Plays the song and opens the card to show a change to it, which is left open a moment. Under Reduce Motion nothing
-    /// opens by itself, and with the virtual notch off there is no notch to open.
+    /// Plays the song and opens the card to show a change to it, which is left open a moment. A card that's already open
+    /// stays open. Under Reduce Motion nothing opens by itself, and with the virtual notch off there is no notch to open.
     private func peek() {
         play()
-        guard !reduceMotion, visibility != .off else { return }
+        guard !reduceMotion, visibility != .off, !isOpen else { return }
         isOpen = true
+        isPeeking = true
         peeks += 1
     }
 
     /// Pauses the song, which ends a beat later. With the virtual notch off there's no notch to pause, so it plays.
     private func pause() {
         isOpen = false
+        isPeeking = false
         ending = nil
         pausedAt = .now
         isPaused = visibility != .off

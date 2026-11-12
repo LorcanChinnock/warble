@@ -15,7 +15,7 @@ struct NotchTab: View {
         SettingsPage {
             VStack(alignment: .leading, spacing: 8) {
                 NotchPreview(showsTitle: settings.showsVirtualTitle, notchFont: settings.notchFont, pauseDelay: settings.pauseDelay, cardSize: settings.cardSize, visibility: settings.virtualVisibility, showsFavourite: settings.showsFavourite)
-                Text("Point at the preview to open it. Its buttons don't control your music.")
+                Text("Point at the preview to open it, and click it to close it. Its buttons don't control your music.")
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 2)
