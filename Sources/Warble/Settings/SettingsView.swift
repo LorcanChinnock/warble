@@ -365,6 +365,9 @@ private struct LinkRow: View {
     let url: URL
     @Environment(\.openURL) private var openURL
 
+    /// The room between the text and the focus ring.
+    private static let ringInset: CGFloat = 6
+
     init(_ title: Text, value: Text? = nil, arrow: Bool = true, url: URL) {
         self.title = title
         self.value = value
@@ -396,9 +399,16 @@ private struct LinkRow: View {
                 }
                 .foregroundStyle(.secondary)
             }
+            // The keyboard focus ring follows the label's edges, so a little room inside keeps it off the text. The
+            // same room taken back outside leaves the row where the form puts it.
+            .padding(.horizontal, Self.ringInset)
+            .padding(.vertical, Self.ringInset / 2)
             .contentShape(Rectangle())
+            .contentShape(.focusEffect, RoundedRectangle(cornerRadius: Self.ringInset, style: .continuous))
         }
         .buttonStyle(.plain)
+        .padding(.horizontal, -Self.ringInset)
+        .padding(.vertical, -Self.ringInset / 2)
         .accessibilityLabel(title)
         .accessibilityValue(value ?? Text(verbatim: ""))
         .accessibilityAddTraits(.isLink)
