@@ -236,7 +236,7 @@ Covers and songs are the ones `site/src/scripts/notch-demo.ts` already plays, fr
 | Token | Timing | Used for |
 | --- | --- | --- |
 | Press | 80 ms | Buttons sink 2 px |
-| Squiggle | 600 ms ease-out | Draws in once when its heading enters |
+| Squiggle | 600 ms ease-out on the hero, scroll timeline below it | The hero's draws in once after load. Every other one draws as its heading scrolls into view, since a timed animation there would need a script |
 | Rise | scroll timeline | Sections fade up 24 px as they enter (`animation-timeline: view()`) |
 | Notch | 250 ms, `cubic-bezier(0.3, 0.8, 0.3, 1)` | The site demo's open curve (`NotchDemo`), close to the app's 0.3 s smooth morph. Each chapter's notch opens once as it enters |
 
