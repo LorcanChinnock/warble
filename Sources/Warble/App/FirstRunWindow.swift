@@ -118,7 +118,7 @@ private struct FirstRunView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            NotchPreview(showsTitle: settings.showsVirtualTitle, notchFont: settings.notchFont, pauseDelay: settings.pauseDelay, cardSize: settings.cardSize, visibility: .always, showsFavourite: settings.showsFavourite, holdsOpen: true)
+            NotchPreview(showsTitle: settings.showsVirtualTitle, notchFont: settings.notchFont, pauseDelay: settings.pauseDelay, cardSize: settings.cardSize, visibility: .always, showsFavourite: settings.showsFavourite, holdsOpen: true, height: 150)
 
             Text("Warble is in your notch")
                 .font(.system(size: 22, weight: .bold))

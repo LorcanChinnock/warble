@@ -15,13 +15,13 @@ While Settings or the Software Update window is open, Warble has an icon in the 
 
 Settings is a standard Mac window with three tabs along the top: Notch, General and About. It opens on Notch, then on whichever tab you last used until Warble quits, and it follows your Mac's light or dark appearance. **About Warble**, at the top of both menus, opens it on the About tab.
 
-![The Notch tab of Settings: a small preview of the notch on a pastel strip, then the settings in three groups, When a song is paused, Opened notch and Displays without a notch](../../../docs/media/settings-notch.png "The Notch tab. Everything under the preview changes the notch, and the preview shows each change.")
+![The Notch tab of Settings: a life-size preview of the notch on a pastel strip, then the settings in three groups, When a song is paused, Opened notch and Displays without a notch](../../../docs/media/settings-notch.png "The Notch tab. Everything under the preview changes the notch, and the preview shows each change.")
 
 ## Notch
 
-At the top of the Notch tab is a small preview of the notch. It shows the song that's playing, with its art, or a made-up song when nothing plays. Point at it to open it. Its buttons don't control your music.
+At the top of the Notch tab is a life-size preview of the notch. It shows the song that's playing, with its art, or a made-up song when nothing plays. Point at it to open it, and it stays open while you change settings below, so you see each change as you make it. Click it to close it. Its buttons don't control your music.
 
-Every setting under the preview changes it. The title switch shows at once, and the notch fades out when you choose **Off** for **Show a notch**. When you change the song title font, the size or the heart, the preview opens for a couple of seconds to show it, unless Reduce Motion is on. When you change **Stay visible after pausing** or **Show a notch**, the preview's song pauses and, a moment later, ends as those settings would: the paused song stays, an empty notch is left, or the notch goes. The preview takes the same short moment for 10 seconds and 1 minute. Move the pointer off the preview and the song plays again.
+Every setting under the preview changes it. The title switch shows at once, and the notch fades out when you choose **Off** for **Show a notch**. When you change the song title font, the size or the heart, a closed preview opens for a couple of seconds to show it, unless Reduce Motion is on. When you change **Stay visible after pausing** or **Show a notch**, the preview's song pauses and, a moment later, ends as those settings would: the paused song stays, an empty notch is left, or the notch goes. The preview takes the same short moment for 10 seconds and 1 minute. Move the pointer off the preview and the song plays again.
 
 ### When a song is paused
 

@@ -65,7 +65,7 @@ System fonts at fixed sizes.
 
 | Part | Value |
 | --- | --- |
-| Settings preview strip | 150 tall, radius 10. The preview inside is drawn scaled down, about 0.63×, so the open card at Large, 221 pt at full size, fits the strip with 10 pt below it; the resting notch scales with it. #428 raised it from the board's 118, where the resting notch was about 12 pt tall |
+| Settings preview strip | 240 tall, radius 10. The preview inside is drawn at life size, since the open card at Large, 221 pt, fits with room below it. #428 raised it from the board's 118 to 150, drawn at about 0.63×, and a later change to 240, since at 0.63× a change was hard to judge |
 | First-run preview strip | 150 tall, radius 10, showing the open card, scaled down to fit as in Settings |
 | Icons in About and the update window | 64 in About, 56 in the offer, 44 in the other states |
 
@@ -79,7 +79,7 @@ General holds one setting. The board's note suggests folding it into Notch if it
 
 ### Notch tab
 
-The preview, behaving exactly as it does now (`NotchPreview`, see [Settings](../architecture/settings.md)), on the 150 pt strip. The open card is 156, 184 or 221 pt tall at full size, so the whole preview is drawn at the scale that fits the Large card into the strip, and a Size change still shows as a change in size. Under it, in 11 pt secondary text: "Point at the preview to open it. Its buttons don't control your music."
+The preview (`NotchPreview`, see [Settings](../architecture/settings.md)) on the 240 pt strip, drawn at life size: the open card is 156, 184 or 221 pt tall, so the Large card fits and a Size change shows as a change in size. Pointing at it opens it, and it stays open so changes show as you make them, until a click closes it. Under it, in 11 pt secondary text: "Point at the preview to open it, and click it to close it. Its buttons don't control your music."
 
 | Group | Row | Description | Control | Default |
 | --- | --- | --- | --- | --- |
