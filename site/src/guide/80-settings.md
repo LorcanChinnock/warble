@@ -11,6 +11,8 @@ Warble works without changing anything. The settings you're most likely to want 
 1. Click Warble's icon in the menu bar, or right-click the notch. You can also Control-click it.
 2. Choose **Settings…**, or press <kbd>⌘,</kbd> while the menu is open.
 
+While Settings or the Software Update window is open, Warble has an icon in the Dock and its own menu at the top of the screen, and <kbd>⌘,</kbd> works from there too.
+
 Settings is a standard Mac window with three tabs along the top: Notch, General and About. It opens on Notch, then on whichever tab you last used until Warble quits, and it follows your Mac's light or dark appearance. **About Warble**, at the top of both menus, opens it on the About tab.
 
 ![The Notch tab of Settings: a small preview of the notch on a pastel strip, then the settings in three groups, When a song is paused, Opened notch and Displays without a notch](../../../docs/media/settings-notch.png "The Notch tab. Everything under the preview changes the notch, and the preview shows each change.")

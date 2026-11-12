@@ -17,7 +17,7 @@ Warble normally shows whatever plays in any app, your browser included. When the
 Warble reads what's playing directly from macOS. When it can't, it falls back to following only Music and Spotify, so other apps, such as your browser, don't show.
 
 - **Part of Warble is missing.** Run the [install command](/docs/get-started/) again.
-- **macOS won't let Warble read what's playing.** This can happen after a macOS update. Click the menu bar icon and choose **Check for Updates…** to get the version of Warble that works with it.
+- **macOS won't let Warble read what's playing.** This can happen after a macOS update. Click the menu bar icon and choose **Check for Updates…** to get the version of Warble that works with it. The **About** tab of **Settings…** shows the version you have and whether a newer one is ready.
 - **This kept stopping.** Quit Warble and open it again. If it keeps happening, check for updates.
 
 ## Permission for Music and Spotify

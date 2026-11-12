@@ -38,7 +38,7 @@ brew uninstall --cask --zap warble
 
 ## By hand
 
-1. If you turned on **Open at login**, open **Settings…** from the Warble icon in the menu bar and turn it off.
+1. If you turned on **Open at login**, open **Settings…** from the Warble icon in the menu bar and turn it off on the **General** tab.
 2. Click the Warble icon in the menu bar and choose **Quit Warble**. If you've hidden the icon, right-click the notch instead.
 3. In Finder, open your Applications folder and drag **Warble** to the Bin.
 
