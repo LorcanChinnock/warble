@@ -189,18 +189,20 @@ Each board, the issue that builds it, and where it lands. #436 ticks **QA** afte
 
 | Board | Issue | Files | QA |
 | --- | --- | --- | --- |
-| Settings › Notch (light) | #427 window and tabs | `Settings/SettingsWindow.swift`, `Settings/SettingsView.swift`, `Design/Warm.swift` and `Design/SettingsControls.swift` removed, the three architecture notes | ☐ |
-| Settings › Notch (light) | #428 | `Settings/SettingsView.swift`, `Settings/NotchPreview.swift` (strip height and the preview's scale), `NotchLayout.previewScale` in WarbleModel with its tests, `docs/architecture/settings.md`, the guide's label renames | ☐ |
-| Settings › Notch (dark) | #428, checked by #434 | as above | ☐ |
-| Settings › General | #429 | `Settings/SettingsView.swift` | ☐ |
-| Settings › About, with update status variants | #429 | `Settings/SettingsView.swift`, `App/Updater.swift`, `WarbleModel/Updates/UpdateStatus.swift`, `WarbleCore/App/UpdateStatusLabel.swift` | ☐ |
-| Update window › offer | #430 | `App/Updater.swift`, `App/DockIcon.swift`, `Update/UpdateUserDriver.swift` and `Update/UpdateWindow.swift`, `Design/YellowDefaultButton.swift`, `WarbleModel/Updates/UpdateOffer.swift` and `ReleaseNotes.swift` with their tests, `WarbleCore/App/UpdateWindowLabel.swift`, the release notes in `.github/workflows/release.yml` | ☐ |
-| Update window › other states | #430 | as above, and About's Cancel in `Settings/SettingsView.swift` | ☐ |
-| Menu bar and right-click menus | #431 | `App/WarbleApp.swift`, `App/StatusItem.swift` (#434 replaced `MenuBarExtra`), `Notch/NotchMenu.swift`, `Design/MenuImages.swift`, `App/Updater.swift` (`menuItem`), `WarbleModel/Menu/AppMenu.swift` with its tests, `WarbleCore/App/AppMenuLabel.swift` | ☐ |
-| First-run window | #432 | `App/FirstRunWindow.swift`, `App/AppDelegate.swift`, `App/AppEnvironment.swift`, `App/DockIcon.swift`, `Settings/NotchPreview.swift` (`holdsOpen`), `WarbleModel/FirstRun/FirstRun.swift` with its tests | ☐ |
-| Website › guide › Settings | #433 | `site/src/guide/80-settings.md`, `site/src/guide/85-updates.md` and its card `site/public/og/updates.png`, the figure panel in `site/src/lib/guide.ts` and `site/src/styles/global.css`, `docs/media/settings-notch.png`, `settings-about.png`, `update-offer.png` and `menu-update.png` in place of `settings.png` and `settings-more.png`, links to Updates in `01-get-started.md` and `10-control-playback.md`, `docs/architecture/website.md` | ☐ |
+| Settings › Notch (light) | #427 window and tabs | `Settings/SettingsWindow.swift`, `Settings/SettingsView.swift`, `Design/Warm.swift` and `Design/SettingsControls.swift` removed, the three architecture notes | ☑ |
+| Settings › Notch (light) | #428 | `Settings/SettingsView.swift`, `Settings/NotchPreview.swift` (strip height and the preview's scale), `NotchLayout.previewScale` in WarbleModel with its tests, `docs/architecture/settings.md`, the guide's label renames | ☑ |
+| Settings › Notch (dark) | #428, checked by #434 | as above | ☑ |
+| Settings › General | #429 | `Settings/SettingsView.swift` | ☑ |
+| Settings › About, with update status variants | #429 | `Settings/SettingsView.swift`, `App/Updater.swift`, `WarbleModel/Updates/UpdateStatus.swift`, `WarbleCore/App/UpdateStatusLabel.swift` | ☑ |
+| Update window › offer | #430 | `App/Updater.swift`, `App/DockIcon.swift`, `Update/UpdateUserDriver.swift` and `Update/UpdateWindow.swift`, `Design/YellowDefaultButton.swift`, `WarbleModel/Updates/UpdateOffer.swift` and `ReleaseNotes.swift` with their tests, `WarbleCore/App/UpdateWindowLabel.swift`, the release notes in `.github/workflows/release.yml` | ☑ |
+| Update window › other states | #430 | as above, and About's Cancel in `Settings/SettingsView.swift` | ☑ |
+| Menu bar and right-click menus | #431 | `App/WarbleApp.swift`, `App/StatusItem.swift` (#434 replaced `MenuBarExtra`), `Notch/NotchMenu.swift`, `Design/MenuImages.swift`, `App/Updater.swift` (`menuItem`), `WarbleModel/Menu/AppMenu.swift` with its tests, `WarbleCore/App/AppMenuLabel.swift` | ☑ |
+| First-run window | #432 | `App/FirstRunWindow.swift`, `App/AppDelegate.swift`, `App/AppEnvironment.swift`, `App/DockIcon.swift`, `Settings/NotchPreview.swift` (`holdsOpen`), `WarbleModel/FirstRun/FirstRun.swift` with its tests | ☑ |
+| Website › guide › Settings | #433 | `site/src/guide/80-settings.md`, `site/src/guide/85-updates.md` and its card `site/public/og/updates.png`, the figure panel in `site/src/lib/guide.ts` and `site/src/styles/global.css`, `docs/media/settings-notch.png`, `settings-about.png`, `update-offer.png` and `menu-update.png` in place of `settings.png` and `settings-more.png`, links to Updates in `01-get-started.md` and `10-control-playback.md`, `docs/architecture/website.md` | ☑ |
 
 The file lists are where the work is expected to land. Each PR corrects its row.
+
+#436 walked every board in WarbleDev on 12 November 2026, in light and dark, using the preview arguments for About's status lines, the update window's states and the first-run window, and playing a track in Music for the right-click menu's song items. Every board matched its spec. The walk found three things to fix. A link row's keyboard focus ring sat on its text, so the ring now has room inside and rounded corners (#454). The first-run window's switch was drawn at the regular size, about twice Settings' switches, and now takes the mini size (#455). About blamed the connection for an update that downloaded but couldn't install, and now says so instead (#456). A dev build has no update feed, so About's live Check for Updates… was seen only through the preview arguments, and the Cancel beside a check you asked for, which needs a real check, wasn't seen.
 
 ### Whole-app checks
 
