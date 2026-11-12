@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.1.0-beta.24](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.23...v0.1.0-beta.24) (2026-11-12)
+
+
+### Features
+
+* **app:** a first-run window that offers Open at login ([#448](https://github.com/LorcanChinnock/warble/issues/448)) ([126ce58](https://github.com/LorcanChinnock/warble/commit/126ce5833c7be1d88591ed64af7008bd9c8a9f56))
+* **menu:** conventional menus, and a dot on the icon for a waiting update ([#447](https://github.com/LorcanChinnock/warble/issues/447)) ([46fc8c5](https://github.com/LorcanChinnock/warble/commit/46fc8c5cec965687b6509c1503ab0afd243f0a4f))
+* **settings:** build the General and About tabs from the redesign ([#441](https://github.com/LorcanChinnock/warble/issues/441)) ([fecf32f](https://github.com/LorcanChinnock/warble/commit/fecf32f2982ee77b34d6fce04269995827399b3d))
+* **settings:** build the Notch tab's groups, copy and preview strip ([#440](https://github.com/LorcanChinnock/warble/issues/440)) ([e5abe46](https://github.com/LorcanChinnock/warble/commit/e5abe465be0e60df5105fa3d088129b1736d0d05))
+* **settings:** replace the Settings page with a native preferences window ([#438](https://github.com/LorcanChinnock/warble/issues/438)) ([13a3dff](https://github.com/LorcanChinnock/warble/commit/13a3dff56c08c373a11d8d95cf4d412b9ab53de0))
+* **update:** Warble's own update window ([#444](https://github.com/LorcanChinnock/warble/issues/444)) ([a6ae92d](https://github.com/LorcanChinnock/warble/commit/a6ae92d9b4fbc0fcb23ceeffa00ff86e9df772ac))
+
+
+### Bug Fixes
+
+* **app:** draw the first-run window's Open at login switch at Settings' size ([#455](https://github.com/LorcanChinnock/warble/issues/455)) ([035fffe](https://github.com/LorcanChinnock/warble/commit/035fffec089d82b9a0cdb269445375d52513fde2))
+* **menu:** build the menu bar menu with AppKit so VoiceOver reads the update item cleanly ([#451](https://github.com/LorcanChinnock/warble/issues/451)) ([897dd8e](https://github.com/LorcanChinnock/warble/commit/897dd8e3a628019ea554938d04e377326b787ee0))
+* **settings:** focus, long translations and Increase Contrast across the redesigned windows ([#450](https://github.com/LorcanChinnock/warble/issues/450)) ([f9ba051](https://github.com/LorcanChinnock/warble/commit/f9ba051193dd3faea4bc166d75e64fc482400276))
+* **settings:** keep the focus ring off the text in link rows ([#454](https://github.com/LorcanChinnock/warble/issues/454)) ([1191fc8](https://github.com/LorcanChinnock/warble/commit/1191fc86d9cea936f1c9687d0d5995a9f9eb6941))
+* **update:** say when an update downloaded but couldn't install ([#456](https://github.com/LorcanChinnock/warble/issues/456)) ([acd93b5](https://github.com/LorcanChinnock/warble/commit/acd93b513ddd389c133518ed329515a28f31d55f))
+
 ## [0.1.0-beta.23](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.22...v0.1.0-beta.23) (2026-11-06)
 
 
