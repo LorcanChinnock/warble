@@ -83,7 +83,7 @@ Claude Code loads only this file, so read a feature's note before you change tha
 | [Motion](docs/architecture/motion.md) | changing how the notch moves between states |
 | [Website](docs/architecture/website.md) | changing `site/` or the user guide |
 | [Performance](docs/architecture/performance.md) | changing anything on the hover, expand or play/pause path, or adding a timer |
-| [Redesign spec](docs/redesign/spec.md) | working on any issue under #425, the redesign of Settings, updates, menus, first run and the website |
+| [Redesign spec](docs/redesign/spec.md) | working on any issue under #425, the redesign of Settings, updates, menus, first run and the website, or under #458, the website polish |
 
 ## Rules enforced by `make lint`
 
