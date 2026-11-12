@@ -13,11 +13,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var fallback: ScriptSource?
     /// Open only at the first launch of a new install, until it's closed.
     private var firstRun: FirstRunWindow?
+    /// The menu bar icon and its menu.
+    private var statusItem: StatusItem?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // To see the notch without playing anything, turn on `-notchPreviewState resting` in the Warble scheme's
         // arguments, or run `make run APP_ARGS='-notchPreviewState resting'`, and hover or click it to open it; the
         // argument lasts only for that launch.
+        statusItem = StatusItem(updater: environment.updater, settingsWindow: environment.settingsWindow)
         let store = environment.store
         let runner = environment.runner
         let preview = Self.preview

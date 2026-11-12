@@ -4,7 +4,7 @@ import WarbleModel
 
 /// What a right-click on any notch offers: the app it follows and copying the song, then the menu bar menu's items in
 /// the same order (`AppMenu`), so Warble can be reached from the notch as well as the menu bar. Built only when it
-/// opens, so a resting notch keeps nothing up to date.
+/// opens, so a resting notch keeps nothing up to date. The menu bar menu (`StatusItem`) is filled by the same code.
 @MainActor
 enum NotchMenu {
     /// `source` is the bundle identifier of the app that's playing, or while Idle the one that played last. `copyText`
@@ -12,8 +12,17 @@ enum NotchMenu {
     static func make(
         source: String?, copyText: String?, updater: Updater, settingsWindow: SettingsWindow, openApp: @escaping () -> Void
     ) -> NSMenu {
-        let app = source.flatMap { source in NSWorkspace.shared.urlForApplication(withBundleIdentifier: source).map { (source, $0) } }
         let menu = NSMenu()
+        fill(menu, source: source, copyText: copyText, updater: updater, settingsWindow: settingsWindow, openApp: openApp)
+        return menu
+    }
+
+    /// Adds the items to `menu`: the app and Copy Song and Artist when `source` and `copyText` are given, as on the
+    /// notch, and then the menu bar menu's items.
+    static func fill(
+        _ menu: NSMenu, source: String?, copyText: String?, updater: Updater, settingsWindow: SettingsWindow, openApp: @escaping () -> Void
+    ) {
+        let app = source.flatMap { source in NSWorkspace.shared.urlForApplication(withBundleIdentifier: source).map { (source, $0) } }
         for item in AppMenu.items(update: updater.menuItem, openApp: app != nil, copySong: copyText != nil) {
             switch item {
             case .openApp:
@@ -39,6 +48,9 @@ enum NotchMenu {
                 let check = ActionItem(title: update.title) { updater.checkForUpdates() }
                 if update.hasDot {
                     check.attributedTitle = titleWithDot(update.title)
+                    // The dot is a text attachment, so the item's name would otherwise end in U+FFFC, which VoiceOver
+                    // reads out.
+                    check.setAccessibilityTitle(update.title)
                 }
                 check.isEnabled = update.isEnabled
                 menu.addItem(check)
@@ -52,7 +64,6 @@ enum NotchMenu {
         }
         // Items keep the enabled state given above rather than asking their targets.
         menu.autoenablesItems = false
-        return menu
     }
 
     /// The title followed by the accent dot, as the menu bar menu shows a waiting update.
