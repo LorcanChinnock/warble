@@ -165,8 +165,9 @@ struct NotchPreview: View {
                 .contentShape(shape)
             }
             .buttonStyle(.notch)
-            // Held open, a press does nothing, so it takes no keyboard focus; VoiceOver still reads it.
-            .focusable(!holdsOpen)
+            // Held open, a press does nothing, so it takes no keyboard focus; VoiceOver still reads it. Otherwise it takes
+            // focus as a button does, only while keyboard navigation is on, rather than on every click and window open.
+            .focusable(!holdsOpen, interactions: .activate)
             .onHover {
                 isHovering = $0
                 isOpen = $0
