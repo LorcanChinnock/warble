@@ -110,10 +110,13 @@ public struct UpdateOfferButtons: Equatable, Sendable {
         install = offer.isInformationOnly ? .learnMore : .installAndRelaunch
         let mustInstall = offer.isCritical && !offer.isMajorUpgrade
         showsSkip = !mustInstall
-        if mustInstall || !automaticallyChecks {
+        if mustInstall {
             later = .hidden
+        } else if offer.stage == .installing {
+            // Installing on quit needs no check, so it stays with automatic checks off.
+            later = .installOnQuit
         } else {
-            later = offer.stage == .installing ? .installOnQuit : .remindTomorrow
+            later = automaticallyChecks ? .remindTomorrow : .hidden
         }
         showsAutomaticInstall = allowsAutomaticUpdates && !offer.isInformationOnly
     }

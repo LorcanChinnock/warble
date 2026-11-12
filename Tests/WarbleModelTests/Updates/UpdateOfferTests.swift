@@ -32,6 +32,11 @@ private let start = Date(timeIntervalSinceReferenceDate: 800_000_000)
     #expect(UpdateOfferButtons(offer: offer(stage: .downloaded), automaticallyChecks: true, allowsAutomaticUpdates: true).later == .remindTomorrow)
 }
 
+@Test func installOnQuitStaysWithoutAutomaticChecks() {
+    // Unlike Remind Me Tomorrow, it doesn't wait for a scheduled check.
+    #expect(UpdateOfferButtons(offer: offer(stage: .installing), automaticallyChecks: false, allowsAutomaticUpdates: false).later == .installOnQuit)
+}
+
 @Test func aCriticalUpdateCantBeSkippedOrPutOff() {
     let critical = UpdateOfferButtons(offer: offer(critical: true), automaticallyChecks: true, allowsAutomaticUpdates: true)
     #expect(!critical.showsSkip)
