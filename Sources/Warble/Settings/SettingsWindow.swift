@@ -71,7 +71,7 @@ final class SettingsWindow {
     private func makeTabs(_ environment: AppEnvironment) -> NSTabViewController {
         let tabs = SettingsTabs()
         tabs.tabStyle = .toolbar
-        tabs.transitionOptions = [.crossfade, .allowUserInteraction]
+        tabs.transitionOptions = [.allowUserInteraction]
         for tab in SettingsTab.allCases {
             let item = NSTabViewItem(viewController: SettingsTabController(tab.content.inject(environment)))
             item.label = tab.label
