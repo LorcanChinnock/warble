@@ -204,14 +204,14 @@ The file lists are where the work is expected to land. Each PR corrects its row.
 
 ### Whole-app checks
 
-These run once across every board after #427–#432, and tick nothing above.
+These run once across every board after #427–#432, and tick nothing above. #434 ran them on 12 November 2026 and fixed what failed in #450 and #451.
 
-| Check | Issue |
-| --- | --- |
-| Dark mode, Increase Contrast and Reduce Transparency | #434 |
-| VoiceOver and keyboard only | #434 |
-| A long pseudo-language | #434 |
-| `make perf` against `main` | #434 |
+| Check | Issue | Done | What #434 found |
+| --- | --- | --- | --- |
+| Dark mode, Increase Contrast and Reduce Transparency | #434 | ☑ | Dark and Reduce Transparency needed nothing. With Increase Contrast, a switch that's on became a darker gold and the Size segments the system's own (see Accent edge) |
+| VoiceOver and keyboard only | #434 | ☑ | Settings no longer opens with focus on the preview. The menu bar menu moved to AppKit, so the update item's name no longer ends in U+FFFC. Escape closes the first-run window and every update state. Names were checked in the accessibility tree, not by listening |
+| A long pseudo-language | #434 | ☑ | With `-NSDoubleLocalizedStrings YES`, the offer's buttons now stack and About's link values wrap |
+| `make perf` against `main` | #434 | ☑ | No change beyond noise |
 
 ## Coverage: guide pages
 
