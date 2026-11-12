@@ -216,7 +216,7 @@ It doesn't ask for the Automation permission that ScriptSource needs. That stays
 | Note | 244 × 73 | 14 | "Nothing playing", 13 px medium, secondary grey |
 | Drawn notch | 208 × 24 | 8 | 16 px cover, the title in the middle at 11 px medium |
 
-Covers and songs are the ones `scripts/notch-demo.ts` already plays, from `site/public/media/art-*.webp`.
+Covers and songs are the ones `site/src/scripts/notch-demo.ts` already plays, from `site/public/media/art-*.webp`.
 
 **Type and shape**
 
