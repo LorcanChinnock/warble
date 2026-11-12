@@ -26,7 +26,7 @@ The app uses system colours throughout. The design note's two palettes become on
 | Role | In the app | Board stand-in (light / dark) |
 | --- | --- | --- |
 | Accent | Asset catalog colour `Yellow` (`Color.warbleYellow`), set with `.tint` on each control. Not the app's accent colour: the system draws the selected toolbar tab's label in that, about 1.6:1 on the light toolbar | `#F6C744` in both |
-| Accent edge | 0.5 pt inner edge at 28% black, light appearance only, on any yellow fill Warble draws itself, so it has a 3:1 boundary against the window. A system switch can't take it; its knob's position also shows its state, and #434's contrast pass decides whether it needs more | `rgba(0,0,0,0.28)` / none |
+| Accent edge | 0.5 pt inner edge at 28% black, light appearance only, on any yellow fill Warble draws itself, so it has a 3:1 boundary against the window. A system switch or segment can't take it. #434 measured the yellow switch at 1.6:1 against its group and the chosen segment at 1.3:1 against its track. In standard contrast that stands: the knob's position shows a switch's state, and the system's own chosen segment, white on grey, is about 1.2:1. With Increase Contrast in the light appearance, a switch that's on is a darker gold, `#BE8E14` (3.3:1), and the Size segments keep the system's high-contrast look, since a gold dark enough for 3:1 turns their label white and too faint. The default buttons keep the yellow, with dark text at about 9:1 | `rgba(0,0,0,0.28)` / none |
 | Text on accent | `labelColor` of the light appearance, in both | `#1D1D1F` |
 | Window | `windowBackgroundColor` | `#F2F2F2` / `#2A2A2C` |
 | Group | The grouped form's own background | `rgba(0,0,0,0.03)` / `rgba(255,255,255,0.045)` |
