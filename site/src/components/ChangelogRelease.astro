@@ -1,0 +1,40 @@
+---
+import { prURL, releaseURL, type Release } from '../lib/changelog';
+
+interface Props {
+  release: Release;
+  latest?: boolean;
+}
+const { release, latest = false } = Astro.props;
+const { version, date, entries, summary } = release;
+const labels = { new: 'New', fixed: 'Fix', faster: 'Faster', changed: 'Changed' };
+// The New filter shows features and breaking changes, and Fixes shows bug fixes and speed-ups.
+const group = (kind: keyof typeof labels) => (kind === 'new' || kind === 'changed' ? 'is-new' : 'is-fix');
+const day = new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+---
+
+<li class:list={['release', 'rise', { latest }]} id={`v${version}`}>
+  <div class="meta">
+    <span class="pip" aria-hidden="true"></span>
+    <h2><a href={releaseURL(version)}>{version}</a></h2>
+    <time datetime={date}>{day}</time>
+    {latest && <span class="latest-badge">Latest</span>}
+  </div>
+  <div class="entries-card">
+    {summary && <p class="summary">{summary}</p>}
+    {entries.length > 0 && (
+      <ul class="entries">
+        {entries.map((e) => (
+          <li class:list={['entry', group(e.kind)]}>
+            <span class:list={['kind', e.kind]}>{labels[e.kind]}</span>
+            <span class="change">
+              <Fragment set:html={e.html} />
+              {e.scope && <> <span class="area">{e.scope}</span></>}
+            </span>
+            {e.pr && <a class="pr" href={prURL(e.pr)} aria-label={`Pull request ${e.pr}`}>#{e.pr}</a>}
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</li>

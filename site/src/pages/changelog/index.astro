@@ -1,17 +1,142 @@
 ---
-import Prose from '../../layouts/Prose.astro';
-import { Content } from '../../../../CHANGELOG.md';
+import Base from '../../layouts/Base.astro';
+import ChangelogRelease from '../../components/ChangelogRelease.astro';
+import { readChangelog } from '../../lib/changelog';
+
+const releases = await readChangelog();
+// The newest releases show; the rest wait behind "Show older releases".
+const shown = 8;
+const recent = releases.slice(0, shown);
+const older = releases.slice(shown);
+const filters = [
+  { id: 'all', label: 'Everything' },
+  { id: 'new', label: 'New' },
+  { id: 'fixes', label: 'Fixes' },
+];
+const squiggle = 'M4 14C40 2 70 22 110 12S190 4 230 14 280 8 296 12';
 ---
 
-<Prose title="Changelog" description="What changed in each Warble release.">
-  <div class="changelog"><Content /></div>
-</Prose>
+<Base title="Changelog" description="What changed in each Warble release, newest first, with every new feature and fix.">
+  <div class="changelog">
+    <header class="wrap head">
+      <div>
+        <h1>What's <span class="squig now">new<svg aria-hidden="true" viewBox="0 0 300 24" preserveAspectRatio="none"><path d={squiggle} fill="none" stroke="var(--pink)" stroke-width="8" stroke-linecap="round" pathLength="1" /></svg></span></h1>
+        <p class="lede">Every release, newest first. Warble updates itself once you allow it to.</p>
+      </div>
+      <div class="tools">
+        <a class="rss" href="/changelog/rss.xml">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16" /><circle cx="5" cy="19" r="1.5" fill="currentColor" stroke="none" /></svg>
+          RSS feed
+        </a>
+        <fieldset class="show">
+          <legend class="visually-hidden">Show</legend>
+          {filters.map((f, i) => (
+            <label>
+              <input class="visually-hidden" type="radio" name="show" value={f.id} id={`show-${f.id}`} checked={i === 0} />
+              {f.label}
+            </label>
+          ))}
+        </fieldset>
+      </div>
+    </header>
+
+    <div class="wrap body">
+      <ol class="timeline" aria-label="Releases">
+        {recent.map((release, i) => <ChangelogRelease release={release} latest={i === 0} />)}
+      </ol>
+      {older.length > 0 && (
+        <details class="older">
+          <summary>
+            <span class="when-closed">Show {older.length} older releases</span>
+            <span class="when-open">Hide older releases</span>
+          </summary>
+          <ol class="timeline" aria-label="Older releases">
+            {older.map((release) => <ChangelogRelease release={release} />)}
+          </ol>
+        </details>
+      )}
+      <p class="empty">Nothing in these releases matches. Pick Everything to see them all.</p>
+    </div>
+  </div>
+</Base>
 
 <style is:global>
-  .changelog h2 { font-size: 30px; margin: 56px 0 4px; }
-  .changelog h2 a { font-weight: inherit; text-decoration: none; }
-  .changelog h2 a:hover { text-decoration: underline; text-decoration-color: var(--pink); }
-  /* Features, Bug Fixes and the rest, as small yellow labels. */
-  .changelog h3 { display: inline-block; margin: 24px 0 6px; padding: 3px 12px; font: 800 12px/1.5 var(--font); letter-spacing: 0.08em; text-transform: uppercase; color: var(--on-accent); background: var(--yellow); border-radius: 999px; }
-  .changelog li { font-size: 16px; line-height: 1.5; }
+  .changelog .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  /* The title, the RSS link and the filters, from the board on the redesign canvas. */
+  .changelog .head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; padding-block: clamp(32px, 5vw, 48px) 40px; }
+  .changelog h1 { font-size: clamp(44px, 5.5vw, 72px); font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
+  .changelog .lede { max-width: 440px; margin: 14px 0 0; font-size: 18px; color: var(--secondary); }
+  .changelog .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .changelog .rss { display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 8px 14px; border-radius: 12px; font-size: 14px; font-weight: 700; text-decoration: none; background: var(--fill); }
+  .changelog .rss svg { color: var(--pink); }
+
+  /* Everything, New and Fixes: radio labels drawn as a segmented control, so filtering needs no script. */
+  .changelog .show { display: flex; margin: 0; padding: 3px; border: 0; border-radius: 12px; background: var(--fill); font-size: 14px; }
+  .changelog .show label { display: inline-flex; align-items: center; min-height: 34px; padding: 4px 14px; border-radius: 9px; font-weight: 700; color: var(--secondary); cursor: pointer; transition: background-color 120ms, color 120ms; }
+  .changelog .show label:has(:checked) { color: var(--on-accent); background: var(--yellow); }
+  .changelog .show label:has(:focus-visible) { outline: 3px solid var(--fg); outline-offset: 2px; }
+
+  .changelog:has(#show-new:checked) .entry:not(.is-new),
+  .changelog:has(#show-new:checked) .release:not(:has(.is-new)),
+  .changelog:has(#show-fixes:checked) .entry:not(.is-fix),
+  .changelog:has(#show-fixes:checked) .release:not(:has(.is-fix)) { display: none; }
+  .changelog .empty { display: none; margin: 0 0 24px; color: var(--secondary); }
+  .changelog:has(#show-new:checked) .body:not(:has(.is-new)) .empty,
+  .changelog:has(#show-fixes:checked) .body:not(:has(.is-fix)) .empty { display: block; }
+
+  /* The timeline: each release's version and date on the left, on a line with a pip, and its changes on a card. */
+  .changelog .body { padding-bottom: 24px; }
+  .changelog .timeline { list-style: none; margin: 0; padding: 0; }
+  .changelog .release { position: relative; display: grid; grid-template-columns: 200px minmax(0, 1fr); align-items: start; gap: 16px 32px; padding-bottom: 40px; }
+  .changelog .release::before { content: ""; position: absolute; left: 8px; top: 28px; bottom: 0; width: 2px; border-radius: 1px; background: var(--hairline); }
+  .changelog .meta { display: grid; grid-template-columns: 18px auto; align-content: start; justify-items: start; gap: 2px 16px; }
+  .changelog .meta > :not(.pip) { grid-column: 2; }
+  .changelog .pip { grid-row: 1; width: 18px; height: 18px; margin-top: 4px; border-radius: 50%; background: var(--bg); box-shadow: inset 0 0 0 3px var(--fg); }
+  .changelog .release.latest .pip { background: var(--pink); box-shadow: inset 0 0 0 3px var(--on-accent); }
+  .changelog .release h2 { grid-row: 1; font: 500 17px/1.6 var(--mono); letter-spacing: 0; }
+  .changelog .release h2 a { color: inherit; text-decoration: none; }
+  .changelog .release h2 a:hover { text-decoration: underline; text-decoration-color: var(--pink); }
+  .changelog .release time { font-size: 14px; color: var(--secondary); }
+  .changelog .latest-badge { margin-top: 6px; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 700; color: var(--on-accent); background: var(--yellow); }
+
+  .changelog .entries-card { padding: 10px 22px; border-radius: 22px; background: var(--surface); box-shadow: var(--lift); }
+  .changelog .summary { margin: 12px 0; }
+  .changelog .entries { list-style: none; margin: 0; padding: 0; }
+  .changelog .entry { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 4px 12px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--hairline); }
+  .changelog .entry:last-child { border-bottom: 0; }
+  .changelog .kind { padding: 2px 0; border-radius: 7px; font-size: 12px; font-weight: 700; text-align: center; color: var(--on-accent); background: var(--fill-strong); }
+  .changelog .kind.new { background: var(--yellow); }
+  .changelog .kind.fixed { background: color-mix(in srgb, var(--pink) 55%, #fff); }
+  .changelog .kind.changed { background: none; color: var(--fg); box-shadow: inset 0 0 0 1.5px var(--fg); }
+  .changelog .kind.faster { background: var(--sky); }
+  .changelog .change { font-size: 15.5px; line-height: 1.5; }
+  .changelog .change code { font-size: 0.86em; padding: 0.1em 0.35em; border-radius: 5px; background: var(--fill-strong); }
+  .changelog .area { display: inline-block; margin-left: 4px; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; vertical-align: 1px; color: var(--secondary); background: var(--fill); }
+  .changelog .pr { font: 500 13px/1.6 var(--mono); color: var(--secondary); }
+
+  /* Show older releases. */
+  .changelog .older > summary {
+    display: flex; width: fit-content; min-height: 44px; align-items: center; margin: 8px auto 0; padding: 10px 18px;
+    border-radius: 12px; font-weight: 700; font-size: 15px; list-style: none; cursor: pointer; background: var(--fill);
+  }
+  .changelog .older > summary::-webkit-details-marker { display: none; }
+  .changelog .older[open] > summary { margin-bottom: 40px; }
+  .changelog .older .when-open, .changelog .older[open] .when-closed { display: none; }
+  .changelog .older[open] .when-open { display: inline; }
+
+  @media (max-width: 760px) {
+    .changelog .release { grid-template-columns: minmax(0, 1fr); gap: 12px; padding-bottom: 32px; }
+    .changelog .release::before { display: none; }
+    .changelog .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+    .changelog .pip { margin-top: 0; }
+    .changelog .latest-badge { margin-top: 0; }
+    .changelog .entries-card { padding: 6px 16px; }
+    .changelog .entry { grid-template-columns: auto minmax(0, 1fr); }
+    .changelog .kind { min-width: 44px; padding-inline: 8px; }
+    .changelog .pr { grid-column: 2; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .changelog .show label { transition: none; }
+  }
 </style>
