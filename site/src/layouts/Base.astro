@@ -24,7 +24,37 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(image, Astro.site);
 const release = await latestRelease();
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
-const current = (href: string) => (path === href ? 'page' : undefined);
+const current = (href: string) => {
+  const target = href.replace(/\/$/, '') || '/';
+  return path === target || (target === '/docs/get-started' && path.startsWith('/docs')) ? 'page' : undefined;
+};
+const nav = [
+  { label: 'Features', href: '/#features' },
+  { label: 'Guide', href: '/docs/get-started/' },
+  { label: 'Changelog', href: '/changelog/' },
+  { label: 'GitHub', href: 'https://github.com/LorcanChinnock/warble' },
+];
+const footer: { title: string; links: [string, string][] }[] = [
+  { title: 'Product', links: [['Features', '/#features'], ['Install', '/#install'], ['Other notch apps', '/notch-apps/']] },
+  {
+    title: 'Help',
+    links: [
+      ['Guide', '/docs/get-started/'],
+      ['When nothing shows', '/docs/when-nothing-shows/'],
+      ['Remove Warble', '/docs/remove-warble/'],
+      ['Report a bug', 'https://github.com/LorcanChinnock/warble/issues'],
+    ],
+  },
+  {
+    title: 'Project',
+    links: [
+      ['Changelog', '/changelog/'],
+      ['GitHub', 'https://github.com/LorcanChinnock/warble'],
+      ['Privacy', '/privacy/'],
+      ['Sponsor', '/sponsor'],
+    ],
+  },
+];
 ---
 
 <!doctype html>
@@ -64,15 +94,22 @@ const current = (href: string) => (path === href ? 'page' : undefined);
     <header class="site-header">
       <div class="bar wrap">
         <a class="brand" href="/" aria-label="Warble home">
-          <img src="/icon-256.png" alt="" width="38" height="38" />
+          <img src="/icon-256.png" alt="" width="34" height="34" />
           <span>Warble</span>
+          <span class="beta">Beta</span>
         </a>
-        <nav aria-label="Main">
-          <a href="/docs/get-started/" aria-current={path.startsWith('/docs') ? 'page' : undefined}>Guide</a>
-          <a class="hide-sm" href="/changelog/" aria-current={current('/changelog')}>Changelog</a>
-          <a class="hide-sm" href="https://github.com/LorcanChinnock/warble">GitHub</a>
-          <a class="hide-sm" href="/sponsor">Sponsor</a>
+        <nav class="links" aria-label="Main">
+          {nav.map((link) => <a href={link.href} aria-current={current(link.href)}>{link.label}</a>)}
         </nav>
+        <details class="menu">
+          <summary>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+            Menu
+          </summary>
+          <nav aria-label="Pages">
+            {nav.map((link) => <a href={link.href} aria-current={current(link.href)}>{link.label}</a>)}
+          </nav>
+        </details>
       </div>
     </header>
 
@@ -81,27 +118,26 @@ const current = (href: string) => (path === href ? 'page' : undefined);
     </main>
 
     <footer class="site-footer">
-      <div class="bar wrap">
-        <div class="top">
-          <a class="brand" href="/">
-            <img src="/icon-256.png" alt="" width="38" height="38" loading="lazy" />
-            <span>Warble</span>
-          </a>
-          <nav aria-label="Footer">
-            <a href="/docs/get-started/">Guide</a>
-            <a href="/changelog/">Changelog</a>
-            <a href="/notch-apps/">Other notch apps</a>
-            <a href="/privacy/">Privacy</a>
-            <a href="https://github.com/LorcanChinnock/warble">Source</a>
-            <a href="https://github.com/LorcanChinnock/warble/issues">Report a bug</a>
-            <a href="/sponsor">Sponsor</a>
-            <a href="https://github.com/LorcanChinnock/warble/blob/main/LICENSE">GPL-3.0 license</a>
-          </nav>
+      <div class="wrap">
+        <div class="cols">
+          <div class="about">
+            <a class="brand" href="/">
+              <img src="/icon-256.png" alt="" width="28" height="28" loading="lazy" />
+              <span>Warble</span>
+            </a>
+            <p>What's playing, in your Mac's notch. Free and open source under the <a href="https://github.com/LorcanChinnock/warble/blob/main/LICENSE">GPL-3.0 license</a>.</p>
+          </div>
+          {footer.map((column) => (
+            <nav aria-labelledby={`footer-${column.title.toLowerCase()}`}>
+              <h2 id={`footer-${column.title.toLowerCase()}`}>{column.title}</h2>
+              {column.links.map(([label, href]) => <a href={href}>{label}</a>)}
+            </nav>
+          ))}
         </div>
-        <small>
+        <p class="credit">
           <a class="maker" href="https://lorcanchinnock.com"><span class="lc" aria-hidden="true">LC<span>_</span></span><span class="name">Made by Lorcan Chinnock</span></a>
           <span>Not affiliated with Apple.</span>
-        </small>
+        </p>
       </div>
     </footer>
   </body>

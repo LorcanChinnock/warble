@@ -29,6 +29,17 @@
   --on-notch: #fff;
   --on-notch-secondary: #b9b3ac;
 
+  /* The command block is cocoa in light, near black at night, with cream text in both. */
+  --cmd: #2b2118;
+  --on-cmd: #f5ecdd;
+
+  /* Type and motion, from the redesign spec's Website polish values. */
+  --h1-hero: clamp(52px, 8vw, 104px);
+  --h2: clamp(34px, 4vw, 48px);
+  --lede: 20px;
+  --press: 80ms;
+  --notch-open: 250ms cubic-bezier(0.3, 0.8, 0.3, 1);
+
   --radius: 24px;
   --radius-small: 14px;
   --gap: 20px;
@@ -52,6 +63,7 @@
     --fill: rgb(255 244 220 / 0.07);
     --fill-strong: rgb(255 244 220 / 0.13);
     --lift: 0 0 0 1px rgb(255 244 220 / 0.09), 0 10px 24px -16px rgb(0 0 0 / 0.6);
+    --cmd: #120d09;
   }
 }
 
@@ -118,12 +130,26 @@ code, kbd { font-family: var(--mono); }
 .button.dark { color: var(--yellow); background: var(--notch); box-shadow: 0 4px 0 rgb(0 0 0 / 0.35); }
 @media (prefers-reduced-motion: reduce) { .button { transition: none; } .button:hover, .button:active { transform: none; } }
 
-/* A one-line shell command with a copy button (Copy.astro, and sh code blocks in the guide). */
-.copy { display: flex; min-width: 0; align-items: center; gap: 12px; padding: 6px 6px 6px 20px; max-width: 100%; border-radius: 999px; }
-.copy code, .prose .copy code { font-size: 14px; font-weight: 500; flex: 1; min-width: 0; overflow-wrap: anywhere; padding: 0; background: none; }
+/* A shell command with a copy button (Copy.astro, and sh code blocks in the guide): one line on a cocoa bar, scrolling
+   sideways rather than wrapping, with the copy button as its one action. */
+.copy {
+  display: flex; min-width: 0; max-width: 100%; align-items: center; gap: 14px;
+  padding: 7px 7px 7px 18px; border-radius: 16px;
+  color: var(--on-cmd); background: var(--cmd); box-shadow: var(--lift);
+}
+.copy code, .prose .copy code {
+  flex: 1; min-width: 0; padding: 0; background: none; color: inherit;
+  font-size: 14.5px; font-weight: 500; white-space: nowrap; overflow-x: auto; scrollbar-width: none;
+}
 /* Generated content, so selecting the command (triple-click included) never picks up the prompt. */
-.copy code::before { content: '$ '; color: var(--secondary); }
-.copy button { flex: none; min-width: 78px; }
+.copy code::before { content: '$ '; color: var(--yellow); }
+.copy .button {
+  flex: none; min-width: 76px; min-height: 40px; padding: 8px 16px;
+  font-size: 14px; color: #2b2118; background: #fffbf2; border-radius: 11px; box-shadow: none;
+  transition: transform var(--press) linear;
+}
+.copy .button:hover { transform: none; box-shadow: none; }
+.copy .button:active { transform: translateY(2px); box-shadow: none; }
 .copy .status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 kbd.key, .prose kbd {
@@ -138,26 +164,49 @@ kbd.key, .prose kbd {
 .narrow { width: min(760px, 100% - 32px); margin-inline: auto; }
 section { padding-block: clamp(48px, 8vw, 110px); }
 
-/* Header: the app icon, and a few links that stay out of the way. */
-.site-header .bar { display: flex; align-items: center; gap: 12px; padding-block: 18px; }
-.brand { display: flex; align-items: center; gap: 10px; font: 800 20px/1 var(--font); text-decoration: none; letter-spacing: -0.02em; }
-.brand img { width: 38px; height: 38px; flex: none; }
-.site-header nav { display: flex; align-items: center; gap: 4px; margin-left: auto; }
-.site-header nav a:not(.button) { padding: 10px 12px; font-weight: 600; font-size: 15px; text-decoration: none; border-radius: 99px; color: var(--secondary); }
-.site-header nav a:not(.button):hover, .site-header nav a[aria-current="page"] { color: var(--fg); }
-.site-header nav .button { margin-left: 8px; }
-@media (max-width: 560px) {
-  .site-header nav a.hide-sm { display: none; }
+/* Header: the icon and name with a beta badge, and a few links that stay out of the way. On a phone the links move
+   behind a Menu button. */
+.site-header .bar { display: flex; align-items: center; gap: 12px 24px; padding-block: 20px; }
+.brand { display: flex; align-items: center; gap: 10px; font: 700 22px/1 var(--display); font-variation-settings: 'SOFT' 100; text-decoration: none; letter-spacing: -0.01em; }
+.brand img { width: 34px; height: 34px; flex: none; }
+.brand .beta { padding: 4px 7px; font: 700 11px/1 var(--font); letter-spacing: 0.04em; text-transform: uppercase; color: var(--secondary); background: var(--fill); border-radius: 999px; }
+.site-header .links { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+.site-header .links a, .site-header .menu nav a {
+  padding: 6px 12px; font-weight: 600; font-size: 15px; text-decoration: none; color: var(--secondary); border-radius: 999px;
+  transition: background-color 120ms, color 120ms;
+}
+.site-header .links a:hover, .site-header .links a[aria-current="page"],
+.site-header .menu nav a:hover, .site-header .menu nav a[aria-current="page"] { color: var(--fg); background: var(--fill); }
+.site-header .menu { display: none; position: relative; margin-left: auto; }
+.site-header .menu summary {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px;
+  font-weight: 600; font-size: 15px; list-style: none; cursor: pointer;
+  background: var(--surface); border-radius: 12px; box-shadow: var(--lift);
+}
+.site-header .menu summary::-webkit-details-marker { display: none; }
+.site-header .menu nav {
+  position: absolute; right: 0; top: calc(100% + 8px); z-index: 10;
+  display: grid; min-width: 220px; padding: 6px;
+  background: var(--surface); border-radius: 16px; box-shadow: var(--lift), 0 18px 40px -20px rgb(43 33 24 / 0.45);
+}
+.site-header .menu nav a { display: flex; align-items: center; min-height: 44px; border-radius: 10px; }
+@media (max-width: 720px) {
+  .site-header .links { display: none; }
+  .site-header .menu { display: block; }
 }
 
-/* Footer */
-.site-footer { margin-top: 48px; padding: 32px 0 44px; }
-.site-footer .bar { display: grid; gap: 20px; }
-.site-footer .top { display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: center; justify-content: space-between; }
-.site-footer nav { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 15px; font-weight: 600; }
+/* Footer: the name and licence, then three columns of links, then the maker's mark. */
+.site-footer { margin-top: 96px; padding: 44px 0 36px; border-top: 1px solid var(--hairline); }
+.site-footer .cols { display: flex; flex-wrap: wrap; gap: 32px 40px; }
+.site-footer .about { flex: 2 1 280px; font-size: 15px; color: var(--secondary); }
+.site-footer .about p { margin: 12px 0 0; max-width: 300px; }
+.site-footer .brand { color: var(--fg); }
+.site-footer .brand img { width: 28px; height: 28px; }
+.site-footer nav { flex: 1 1 140px; display: grid; align-content: start; gap: 9px; font-size: 15px; }
+.site-footer nav h2 { margin: 4px 0 3px; font: 700 14px/1.3 var(--font); letter-spacing: 0; color: var(--fg); }
 .site-footer nav a { text-decoration: none; color: var(--secondary); }
 .site-footer nav a:hover { color: var(--fg); }
-.site-footer small { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; color: var(--secondary); font-size: 14px; font-weight: 600; }
+.site-footer .credit { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 34px 0 0; padding-top: 20px; border-top: 1px solid var(--hairline); font-size: 14px; font-weight: 600; color: var(--secondary); }
 
 /* The maker's mark, LC_, which ends every product's footer, drawn here as a little notch. */
 .maker { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--fg); }
@@ -222,3 +271,24 @@ section { padding-block: clamp(48px, 8vw, 110px); }
 }
 .prose figure.shot img { margin-inline: auto; border-radius: 0; box-shadow: none; filter: drop-shadow(0 0 0.5px rgb(0 0 0 / 0.35)) drop-shadow(0 16px 24px rgb(43 33 24 / 0.28)); }
 .prose figure.shot figcaption { margin-top: 14px; font-size: 15px; line-height: 1.45; color: var(--on-accent); text-align: center; }
+
+/* A word in a heading with a pink squiggle under it, one per heading. The hero's draws in once after load (.now);
+   every other one draws as its heading scrolls into view. */
+.squig { position: relative; display: inline-block; white-space: nowrap; }
+.squig svg { position: absolute; left: -2%; bottom: -0.12em; width: 104%; height: 0.2em; overflow: visible; }
+.squig path { stroke-dasharray: 1; stroke-dashoffset: 0; }
+@keyframes draw { from { stroke-dashoffset: 1; } }
+@keyframes rise { from { opacity: 0; transform: translateY(24px); } }
+@media (prefers-reduced-motion: no-preference) {
+  .squig.now path { animation: draw 600ms 300ms ease-out backwards; }
+  @supports (animation-timeline: view()) {
+    .squig:not(.now) path { animation: draw linear both; animation-timeline: view(); animation-range: entry 10% cover 30%; }
+    /* Sections fade up as they scroll into view. */
+    .rise { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header .links a, .site-header .menu nav a { transition: none; }
+  .copy .button { transition: none; }
+  .copy .button:active { transform: none; filter: brightness(0.94); }
+}
