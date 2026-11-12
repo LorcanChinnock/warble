@@ -1,4 +1,6 @@
 import { createMarkdownProcessor } from '@astrojs/markdown-remark';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { visit } from 'unist-util-visit';
 import { readGuide } from './guide-files.ts';
 import { rehypeRepoLinks } from './rehype.ts';
@@ -38,6 +40,33 @@ function rehypeCallouts() {
     });
 }
 
+/**
+ * Turns a paragraph holding only an image with a title, `![alt](file.png "Caption")`, into a figure on the pastel panel
+ * the app's own preview sits on, with the title as its caption. Screenshots of Warble's windows use it; GitHub shows
+ * the title as a tooltip.
+ */
+function rehypeFigures() {
+  return (tree: any) =>
+    visit(tree, 'element', (node: any) => {
+      if (node.tagName !== 'p') return;
+      const elements = node.children.filter((child: any) => child.type === 'element' || child.value?.trim());
+      const img = elements.length === 1 && elements[0].tagName === 'img' && elements[0];
+      const caption = img?.properties?.title;
+      if (!caption) return;
+      delete img.properties.title;
+      // Screenshots are taken at 2×, so show them at the window's own size, and give the size up front so nothing moves.
+      const file = /docs\/media\/([^/]+\.png)$/.exec(img.properties.src ?? '')?.[1];
+      if (file) {
+        const png = readFileSync(resolve(process.cwd(), '../docs/media', file));
+        img.properties.width = png.readUInt32BE(16) / 2;
+        img.properties.height = png.readUInt32BE(20) / 2;
+      }
+      node.tagName = 'figure';
+      node.properties = { className: ['shot'] };
+      node.children = [img, { type: 'element', tagName: 'figcaption', properties: {}, children: [{ type: 'text', value: caption }] }];
+    });
+}
+
 const textOf = (node: any): string => (node.type === 'text' ? node.value : (node.children ?? []).map(textOf).join(''));
 
 /** Turns a one-line `sh` code block into the same copy block as Copy.astro, so a command in the guide copies in one click. */
@@ -60,7 +89,7 @@ function rehypeCopyCommands() {
 }
 
 const processor = await createMarkdownProcessor({
-  rehypePlugins: [rehypeRepoLinks, rehypeCallouts, rehypeCopyCommands],
+  rehypePlugins: [rehypeRepoLinks, rehypeCallouts, rehypeCopyCommands, rehypeFigures],
   shikiConfig: { themes: { light: 'github-light', dark: 'github-dark' } },
 });
 

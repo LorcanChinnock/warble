@@ -181,7 +181,7 @@ It doesn't ask for the Automation permission that ScriptSource needs. That stays
 
 ## Website
 
-#433 refreshes the site. It keeps the Warm look ([Website](../architecture/website.md)), with no new tokens. The Settings guide page is rewritten for the tabs, with the new screenshots on a pastel figure panel, and a new Updates page sits beside it under Reference.
+#433 refreshes the site. It keeps the Warm look ([Website](../architecture/website.md)), with no new tokens. The Settings guide page is rewritten for the tabs, with the new screenshots on a pastel figure panel, and a new Updates page sits beside it under Reference. The panel's gradient mixes the site's own yellow, pink and sky, so it adds no tokens. Screenshots of the app's windows are taken from WarbleDev at 2×, in light only, since the panel looks the same in dark mode as the app's preview strip does.
 
 ## Coverage: boards
 
@@ -198,7 +198,7 @@ Each board, the issue that builds it, and where it lands. #436 ticks **QA** afte
 | Update window › other states | #430 | as above, and About's Cancel in `Settings/SettingsView.swift` | ☐ |
 | Menu bar and right-click menus | #431 | `App/WarbleApp.swift`, `Notch/NotchMenu.swift`, `Design/MenuImages.swift`, `App/Updater.swift` (`menuItem`), `WarbleModel/Menu/AppMenu.swift` with its tests, `WarbleCore/App/AppMenuLabel.swift` | ☐ |
 | First-run window | #432 | `App/FirstRunWindow.swift`, `App/AppDelegate.swift`, `App/AppEnvironment.swift`, `App/DockIcon.swift`, `Settings/NotchPreview.swift` (`holdsOpen`), `WarbleModel/FirstRun/FirstRun.swift` with its tests | ☐ |
-| Website › guide › Settings | #433 | `site/src/guide/80-settings.md`, new Updates page, `docs/media` | ☐ |
+| Website › guide › Settings | #433 | `site/src/guide/80-settings.md`, `site/src/guide/85-updates.md` and its card `site/public/og/updates.png`, the figure panel in `site/src/lib/guide.ts` and `site/src/styles/global.css`, `docs/media/settings-notch.png`, `settings-about.png`, `update-offer.png` and `menu-update.png` in place of `settings.png` and `settings-more.png`, links to Updates in `01-get-started.md` and `10-control-playback.md`, `docs/architecture/website.md` | ☐ |
 
 The file lists are where the work is expected to land. Each PR corrects its row.
 
@@ -226,4 +226,4 @@ Every page in `site/src/guide/` the redesign changes. #435 updates the text and 
 | 20 External displays | The Show a notch and Song title in the notch setting names | #428 | ☐ |
 | 90 Nothing shows | The first-run window and the About tab | #432, #429 | ☐ |
 | 95 Remove Warble | Setting names | #429 | ☐ |
-| Landing page and README | Settings and update mentions, screenshots | #433 | ☐ |
+| Landing page and README | Settings and update mentions: the README's Little to set up and a new Updates itself point, and the landing page's Free card. Neither shows a Settings or update screenshot | #433 | ☐ |
