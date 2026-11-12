@@ -33,8 +33,7 @@ final class SettingsWindow {
         if isNew {
             window.center()
         }
-        // Warble has no Dock icon, so it takes one while Settings is open, to show in ⌘Tab and get the app menu.
-        NSApp.setActivationPolicy(.regular)
+        DockIcon.show(for: .settings)
         NSApp.activate()
         window.makeKeyAndOrderFront(nil)
         // Activation is cooperative, so it can be refused right after the policy changes; raise the window anyway and
@@ -62,7 +61,7 @@ final class SettingsWindow {
                     self.lastTab = SettingsTab(rawValue: tabs.selectedTabViewItemIndex) ?? .notch
                 }
                 window.contentViewController = nil
-                NSApp.setActivationPolicy(.accessory)
+                DockIcon.hide(for: .settings)
             }
         }
         self.window = window

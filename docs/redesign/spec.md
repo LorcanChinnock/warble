@@ -109,12 +109,12 @@ A header: the icon, "Warble" at 20 bold, "Version" and the version, and the stat
 | Status | Line | Button |
 | --- | --- | --- |
 | Up to date | Green dot, "Up to date · checked today at 09:12" (relative day, local time) | Check for Updates… |
-| Checking | Spinner, "Checking for updates…" | Cancel once #430 lands; none until then |
+| Checking | Spinner, "Checking for updates…" | Cancel, while a check you asked for runs; none during a scheduled check |
 | An update is ready | Accent dot with its edge, "Version 0.2.0 is ready" | Update… (default button), opens the update window |
 | Couldn't check | Grey dot, "Couldn't reach the update server. Check your connection." | Try Again |
 | Dev build, no feed | Grey dot, "This build doesn't update itself." | none |
 
-#429 added two lines the boards don't show. "Up to date" needs a check in this session that found nothing, since Sparkle keeps no result between launches, so a check from an earlier session shows a grey dot and "Last checked today at 09:12" (or yesterday, or the date), with Check for Updates…. A build that has never checked shows no line, just the button. While checking, Sparkle's own checking window has the Cancel button, because only the user driver can cancel a check; #430's own driver adds Cancel here.
+#429 added two lines the boards don't show. "Up to date" needs a check in this session that found nothing, since Sparkle keeps no result between launches, so a check from an earlier session shows a grey dot and "Last checked today at 09:12" (or yesterday, or the date), with Check for Updates…. A build that has never checked shows no line, just the button. Only the user driver can cancel a check, so #430's own driver gives About its Cancel, for a check you asked for. A scheduled check has nothing to cancel, so it shows no button.
 
 Then the groups:
 
@@ -143,7 +143,11 @@ Under them, centred, in 11 pt secondary text: "Made by Lorcan Chinnock. Free and
 - The offer shows the release notes for every version since the installed one, in a scrolling box, and under it a checkbox, "Install updates automatically from now on". It turns on the same setting as About's Install updates automatically, which is where it's turned off again.
 - Closing the window while it downloads keeps the download going, and the menu shows its progress.
 - Later on Ready installs the update the next time Warble quits.
-- Installed while running replaces the `NSAlert` in `Updater.offerRelaunch(installed:)`.
+- Installed while running replaces the `NSAlert` that was in `Updater.offerRelaunch(installed:)`.
+- Install and Relaunch downloads, then shows Ready, rather than relaunching as soon as the download is ready as Shot's window does.
+- The release notes are the last 10 GitHub releases' bodies, which the release workflow embeds in the feed, cut at the installed version. Features show as New, Bug Fixes as Fixed and Performance Improvements as Faster. #430 added this, since the feed carried only the newest release's notes.
+- Remind Me Tomorrow waits for the next daily check, so it's hidden while Check for updates automatically is off, and a critical update has neither it nor Skip This Version, as in Sparkle. Closing the offer is Remind Me Tomorrow, closing Checking is Cancel, and closing Installed while running is Later.
+- The window takes a Dock icon while it's open, as Settings does, so it can come to the front from the menu bar.
 - A menu bar app's window can open behind others, so the menu still offers a waiting update (see Menus).
 
 ## Menus
@@ -184,8 +188,8 @@ Each board, the issue that builds it, and where it lands. #436 ticks **QA** afte
 | Settings › Notch (dark) | #428, checked by #434 | as above | ☐ |
 | Settings › General | #429 | `Settings/SettingsView.swift` | ☐ |
 | Settings › About, with update status variants | #429 | `Settings/SettingsView.swift`, `App/Updater.swift`, `WarbleModel/Updates/UpdateStatus.swift`, `WarbleCore/App/UpdateStatusLabel.swift` | ☐ |
-| Update window › offer | #430 | `App/Updater.swift`, new user driver and window in `Sources/Warble/App`, update status and offer in WarbleModel | ☐ |
-| Update window › other states | #430 | as above | ☐ |
+| Update window › offer | #430 | `App/Updater.swift`, `App/DockIcon.swift`, `Update/UpdateUserDriver.swift` and `Update/UpdateWindow.swift`, `Design/YellowDefaultButton.swift`, `WarbleModel/Updates/UpdateOffer.swift` and `ReleaseNotes.swift` with their tests, `WarbleCore/App/UpdateWindowLabel.swift`, the release notes in `.github/workflows/release.yml` | ☐ |
+| Update window › other states | #430 | as above, and About's Cancel in `Settings/SettingsView.swift` | ☐ |
 | Menu bar and right-click menus | #431 | `App/WarbleApp.swift`, `Notch/NotchMenu.swift` | ☐ |
 | First-run window | #432 | new window in `Sources/Warble/Settings` or `App`, `App/AppDelegate.swift` | ☐ |
 | Website › guide › Settings | #433 | `site/src/guide/80-settings.md`, new Updates page, `docs/media` | ☐ |
