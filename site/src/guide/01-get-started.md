@@ -43,7 +43,7 @@ When you pause, the song stays in the notch until something else plays. You can 
 
 ## Updates
 
-Warble asks once whether it should check for updates automatically. Whatever you choose, you can check at any time with **Check for Updates…** in the menu bar icon's menu. Warble also goes online to find the album cover for a song playing in your browser, since a browser only gives it a frame of the video. That search sends the song's title and artist to Apple's iTunes Search and nothing else, and no other app's song is looked up. When you click the artist on the open notch, Warble looks up the artist: for Spotify it reads the song's page on Spotify's website, and for a YouTube video it asks YouTube for the video's channel.
+Warble asks once whether it should check for updates automatically. Whatever you choose, you can check at any time with **Check for Updates…** in the menu bar icon's menu. [Updates](/docs/updates/) covers how Warble shows and installs a new version. Warble also goes online to find the album cover for a song playing in your browser, since a browser only gives it a frame of the video. That search sends the song's title and artist to Apple's iTunes Search and nothing else, and no other app's song is looked up. When you click the artist on the open notch, Warble looks up the artist: for Spotify it reads the song's page on Spotify's website, and for a YouTube video it asks YouTube for the video's channel.
 
 > [!NOTE]
 > On a display without a notch that has the menu bar, Warble draws a notch of its own at the top of the screen. See [External displays](/docs/external-displays/).

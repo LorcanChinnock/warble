@@ -69,4 +69,4 @@ Right-click the notch, or Control-click it, for a short menu. It starts with the
 
 While a song is on, the menu also has **Copy Song and Artist**, under the app's name, which copies the song's name and artist as one line, such as "Heroes – David Bowie", ready to paste into a message. Extras in the name such as "- Remastered 2009" are left out.
 
-When a new version of Warble is waiting, the menu bar icon shows a small dot, and both menus say **Update to** and the version in place of **Check for Updates…**. Choose it to see what's new and install it. While an update downloads, the same item shows how far it's got, such as **Downloading 0.2.0 (53%)…**, and choosing it shows the download again.
+When a new version of Warble is waiting, the menu bar icon shows a small dot, and both menus say **Update to** and the version in place of **Check for Updates…**. Choose it to see what's new and install it. While an update downloads, the same item shows how far it's got, such as **Downloading 0.2.0 (53%)…**, and choosing it shows the download again. See [Updates](/docs/updates/).

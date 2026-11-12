@@ -214,3 +214,11 @@ section { padding-block: clamp(48px, 8vw, 110px); }
 .prose .callout code { background: rgb(43 33 24 / 0.1); }
 .prose .callout-label { display: inline-block; font: 800 12px/1.6 var(--font) !important; letter-spacing: 0.1em; text-transform: uppercase; background: var(--on-accent); color: #fbf4e4; padding: 2px 11px; border-radius: 999px; }
 .prose p > img:only-child { margin-block: 8px; }
+/* A screenshot of one of Warble's windows, on a pastel panel like the strip behind the app's own notch preview. The
+   window keeps its own corners and casts its shadow through its transparent edges. */
+.prose figure.shot {
+  margin: 28px 0; padding: clamp(16px, 4vw, 32px); border-radius: var(--radius);
+  background: linear-gradient(120deg, color-mix(in srgb, var(--yellow) 42%, #fff), color-mix(in srgb, var(--pink) 30%, #fff) 55%, var(--sky));
+}
+.prose figure.shot img { margin-inline: auto; border-radius: 0; box-shadow: none; filter: drop-shadow(0 0 0.5px rgb(0 0 0 / 0.35)) drop-shadow(0 16px 24px rgb(43 33 24 / 0.28)); }
+.prose figure.shot figcaption { margin-top: 14px; font-size: 15px; line-height: 1.45; color: var(--on-accent); text-align: center; }
