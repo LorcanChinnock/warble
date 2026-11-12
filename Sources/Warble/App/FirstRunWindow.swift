@@ -155,6 +155,7 @@ private struct FirstRunView: View {
                             login
                         }
                         .toggleStyle(.switch)
+                        .controlSize(.mini)
                         .labelsHidden()
                         .accentSwitch()
                         .described(login, loginDetail)
