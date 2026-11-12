@@ -213,8 +213,8 @@ It doesn't ask for the Automation permission that ScriptSource needs. That stays
 | --- | --- | --- | --- |
 | Resting | 244 × 37 | 12 | 25 px cover with corners 6 on the left, the five bars on the right |
 | Open | 310 × 197 | 24 | Padding 43, 16 and 10. Cover 56, title 15 semibold, artist and album 13. Scrub and volume rows 24 tall, controls 30. The glow is two radial gradients of the cover's colours at 45% |
-| Note | 244 × 73 | 16 | "Nothing playing", 13 px medium, secondary grey |
-| Drawn notch | 300 × 24 | 8 | 18 px cover, the title in the middle at 12 px semibold |
+| Note | 244 × 73 | 14 | "Nothing playing", 13 px medium, secondary grey |
+| Drawn notch | 208 × 24 | 8 | 16 px cover, the title in the middle at 11 px medium |
 
 Covers and songs are the ones `scripts/notch-demo.ts` already plays, from `site/public/media/art-*.webp`.
 
@@ -238,7 +238,7 @@ Covers and songs are the ones `scripts/notch-demo.ts` already plays, from `site/
 | Press | 80 ms | Buttons sink 2 px |
 | Squiggle | 600 ms ease-out | Draws in once when its heading enters |
 | Rise | scroll timeline | Sections fade up 24 px as they enter (`animation-timeline: view()`) |
-| Notch | 250 ms, `cubic-bezier(0.3, 0.8, 0.3, 1)` | The app's open curve. Each chapter's notch opens once as it enters |
+| Notch | 250 ms, `cubic-bezier(0.3, 0.8, 0.3, 1)` | The site demo's open curve (`NotchDemo`), close to the app's 0.3 s smooth morph. Each chapter's notch opens once as it enters |
 
 `prefers-reduced-motion: reduce` turns all of it off and leaves 120 ms colour fades. The page needs no script for any of it except the hero's working notch, which stays as `NotchDemo` describes.
 
