@@ -15,10 +15,11 @@ WarbleDev is the dev build of Warble. Run it from Xcode, through the `mcp__plugi
 
 ## Start
 
-1. **Open this checkout's project.** Call `XcodeListWorkspaces`. Use the workspace whose path is the `Warble.xcodeproj` in your current checkout or worktree, never another worktree's. If it isn't listed, call `XcodeOpenWorkspace` with that absolute path, and note that you opened it. Pass its identifier (such as `workspace-7pNMxYHpS1`, not the path, which the run tools reject) as `workspaceIdentifier` to every call below, since other sessions may have their own Warble windows open.
-2. **Pick the scheme.** `XcodeSwitchScheme` to `Warble`, and check `activeDestinationDisplayTitle` is `My Mac`; if not, `XcodeSwitchRunDestination` to it.
-3. **Build.** `BuildProject`. On failure, read `GetBuildLog` (severity `error`) and fix the code before running. `Warble Dev` signing errors mean `scripts/make-dev-cert.sh` hasn't been run; tell the user rather than signing another way.
-4. **Run.** `RunProject`, with `attachDebugger: true` only when you need lldb. It returns once WarbleDev is up. Confirm with `scripts/dev.sh status`: one WarbleDev, running from Xcode's DerivedData.
+1. **Check out the adapter.** A new worktree starts with the `Vendor/mediaremote-adapter` submodule empty, and the build then fails with `Vendor/mediaremote-adapter is empty`. If `git submodule status` starts that line with `-`, run `git submodule update --init` in this checkout first. It's a no-op once the submodule is there.
+2. **Open this checkout's project.** Call `XcodeListWorkspaces`. Use the workspace whose path is the `Warble.xcodeproj` in your current checkout or worktree, never another worktree's. If it isn't listed, call `XcodeOpenWorkspace` with that absolute path, and note that you opened it. Pass its identifier (such as `workspace-7pNMxYHpS1`, not the path, which the run tools reject) as `workspaceIdentifier` to every call below, since other sessions may have their own Warble windows open.
+3. **Pick the scheme.** `XcodeSwitchScheme` to `Warble`, and check `activeDestinationDisplayTitle` is `My Mac`; if not, `XcodeSwitchRunDestination` to it.
+4. **Build.** `BuildProject`. On failure, read `GetBuildLog` (severity `error`) and fix the code before running. `Warble Dev` signing errors mean `scripts/make-dev-cert.sh` hasn't been run; tell the user rather than signing another way.
+5. **Run.** `RunProject`, with `attachDebugger: true` only when you need lldb. It returns once WarbleDev is up. Confirm with `scripts/dev.sh status`: one WarbleDev, running from Xcode's DerivedData.
 
 ## While it runs
 
@@ -35,13 +36,13 @@ When you've finished checking, and before you report back, even when something f
 1. `StopProject` for the workspace.
 2. `scripts/dev.sh stop`. It quits any WarbleDev still running, clears a leftover adapter process, and reopens the installed Warble if the run quit it.
 3. `scripts/dev.sh status` should report no WarbleDev.
-4. If you opened the workspace in step 1 of Start, `XcodeCloseWorkspace` it.
+4. If you opened the workspace in step 2 of Start, `XcodeCloseWorkspace` it.
 
 Don't leave WarbleDev running for the user unless they ask you to; say so in your report if they did.
 
 ## Fallback without the Xcode tools
 
-If the Xcode tools aren't available, or you need launch arguments:
+If the Xcode tools aren't available, or you need launch arguments (check out the adapter first, as in step 1 of Start):
 
 ```bash
 make run                                        # Debug build into build/DerivedData, then the one-copy launch
