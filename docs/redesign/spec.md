@@ -184,6 +184,66 @@ It doesn't ask for the Automation permission that ScriptSource needs. That stays
 
 #433 refreshes the site. It keeps the Warm look ([Website](../architecture/website.md)), with no new tokens. The Settings guide page is rewritten for the tabs, with the new screenshots on a pastel figure panel, and a new Updates page sits beside it under Reference. The panel's gradient mixes the site's own yellow, pink and sky, so it adds no tokens. Screenshots of the app's windows are taken from WarbleDev at 2×, in light only, since the panel looks the same in dark mode as the app's preview strip does.
 
+### Website polish (#458)
+
+#458 brings the site up to Shot's level of finish without taking Shot's look. The boards are in the canvas's last row: the landing page in light and dark, a guide page and the changelog. They draw CSS pixels, and the site uses the same numbers.
+
+**Rules**
+
+1. Keep the Warm look: cream, cocoa, Fraunces for headings, Figtree for text, DM Mono for commands. No new colour tokens.
+2. The notch is the one idea. Each landing chapter shows the real notch in one state at life size, hanging from the top of a screen that fades into the page. No other decorative shapes.
+3. One pink squiggle under one word per heading.
+4. One action per section. The curl command is the hero's and the install panel's only action, on one line, and scrolls sideways rather than wrapping.
+5. Pastel gradients sit behind the notch only, never behind text.
+6. The notch stays pure black in light and dark.
+
+**Screen crop**, the frame every notch hangs from:
+
+| Part | Value |
+| --- | --- |
+| Bezel | `#0A0A0A`, 11 px on the top and sides, outer corners 30 |
+| Screen | Inner corners 19. `linear-gradient(118deg, var(--sky), color-mix(in srgb, var(--pink) 30%, #fff) 55%, color-mix(in srgb, var(--yellow) 42%, #fff))`, the guide figure panel's tints, so it adds no colour. 55% is a stop position |
+| Menu bar | 37 px, white at 30%, system font 13 px. An external display's is 24 px, 12 px text |
+| Fade | A mask from solid at 58% of the crop's height to clear at the bottom, so the screen dissolves into the page |
+| Heights | Hero 300, resting notch and note 190, open card with the speaker list 330, external display 150 |
+
+**Notch**, at the app's own sizes (`NotchLayout`):
+
+| State | Size | Corners | Notes |
+| --- | --- | --- | --- |
+| Resting | 244 × 37 | 12 | 25 px cover with corners 6 on the left, the five bars on the right |
+| Open | 310 × 197 | 24 | Padding 43, 16 and 10. Cover 56, title 16 semibold, artist and album 13. Scrub and volume rows 24 tall, controls 30. The glow is two radial gradients of the cover's colours at 45% |
+| Note | 244 × 73 | 14 | "Nothing playing", 13 px medium, secondary grey |
+| Drawn notch | 208 × 24 | 8 | 16 px cover, the title in the middle at 11 px medium |
+
+Covers and songs are the ones `site/src/scripts/notch-demo.ts` already plays, from `site/public/media/art-*.webp`.
+
+**Type and shape**
+
+| Token | Value |
+| --- | --- |
+| Hero H1 | `clamp(52px, 8vw, 104px)`, Fraunces 800, tracking −0.035 em, line height 0.98 |
+| H1 (guide, changelog) | `clamp(36px, 4.6vw, 56px)` on the guide and `clamp(44px, 5.5vw, 72px)` on the changelog, 800 |
+| H2 | `clamp(34px, 4vw, 48px)`, 800, tracking −0.025 em, and 80 px at most in the install panel |
+| Lede | 20 px, line height 1.5 |
+| Body | 17 px, 500, line height 1.55. Chapter text 18 px. Guide text 16.5 px, line height 1.65 |
+| Chapter number | 30 px yellow disc, Fraunces 800 numeral |
+| Radius | chips 999, command 16, FAQ items and pager 18, changelog cards 22, privacy band 30, install panel 34 |
+| Containers | landing and changelog 1180 px, guide 1320 px |
+
+**Motion** (the boards can't show it)
+
+| Token | Timing | Used for |
+| --- | --- | --- |
+| Press | 80 ms | Buttons sink 2 px |
+| Squiggle | 600 ms ease-out on the hero, scroll timeline below it | The hero's draws in once after load. Every other one draws as its heading scrolls into view, since a timed animation there would need a script |
+| Rise | scroll timeline | Sections fade up 24 px as they enter (`animation-timeline: view()`) |
+| Notch | 250 ms, `cubic-bezier(0.3, 0.8, 0.3, 1)` | The hero's working notch only: the site demo's open curve (`NotchDemo`), close to the app's 0.3 s smooth morph. The chapters' notches are drawn already in their state and only rise with their section |
+
+`prefers-reduced-motion: reduce` turns all of it off and leaves 120 ms colour fades. The page needs no script for any of it except the hero's working notch, which stays as `NotchDemo` describes.
+
+**Decided on the boards:** the hero's caption becomes "This is the real thing. Point at it." The Gatekeeper steps move from the install panel into the FAQ, since the install command doesn't trigger the warning. The install panel's heading is "Play something." with the resting notch hanging from its top edge.
+
 ## Coverage: boards
 
 Each board, the issue that builds it, and where it lands. #436 ticks **QA** after walking the board in the running app in light and dark.
@@ -200,6 +260,9 @@ Each board, the issue that builds it, and where it lands. #436 ticks **QA** afte
 | Menu bar and right-click menus | #431 | `App/WarbleApp.swift`, `App/StatusItem.swift` (#434 replaced `MenuBarExtra`), `Notch/NotchMenu.swift`, `Design/MenuImages.swift`, `App/Updater.swift` (`menuItem`), `WarbleModel/Menu/AppMenu.swift` with its tests, `WarbleCore/App/AppMenuLabel.swift` | ☑ |
 | First-run window | #432 | `App/FirstRunWindow.swift`, `App/AppDelegate.swift`, `App/AppEnvironment.swift`, `App/DockIcon.swift`, `Settings/NotchPreview.swift` (`holdsOpen`), `WarbleModel/FirstRun/FirstRun.swift` with its tests | ☑ |
 | Website › guide › Settings | #433 | `site/src/guide/80-settings.md`, `site/src/guide/85-updates.md` and its card `site/public/og/updates.png`, the figure panel in `site/src/lib/guide.ts` and `site/src/styles/global.css`, `docs/media/settings-notch.png`, `settings-about.png`, `update-offer.png` and `menu-update.png` in place of `settings.png` and `settings-more.png`, links to Updates in `01-get-started.md` and `10-control-playback.md`, `docs/architecture/website.md` | ☑ |
+| Website › landing page (light, dark) | #459 shared parts, #460 landing | `site/src/styles/global.css`, `site/src/layouts/Base.astro`, `site/src/pages/index.astro`, a screen-crop component beside `NotchDemo.astro`, `site/scripts/og.mjs` and `site/public/og.png`, `docs/architecture/website.md` | ☐ #465 |
+| Website › guide page | #462 | `site/src/layouts/Prose.astro`, `site/src/components/GuideSearch.astro`, `site/src/lib/guide.ts`, `docs/architecture/website.md` | ☐ #465 |
+| Website › changelog | #461 | `site/src/pages/changelog/index.astro`, a `site/src/lib/changelog.ts` and release component from Shot's, `docs/architecture/website.md` | ☐ #465 |
 
 The file lists are where the work is expected to land. Each PR corrects its row.
 
