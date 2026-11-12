@@ -1,6 +1,6 @@
 ---
-/** A working copy of the notch on a drawing of a Mac's screen, at the top of its container as the real one sits at the top
- * of the display. It matches the app: the housing is 37 points tall with its corners at the app's ratio, resting adds a wing
+/** A working copy of the notch hanging from the top of a Mac's screen, drawn as the redesign spec's screen crop: a black
+ * bezel, the menu bar and the pastel wallpaper, fading into the page below. It matches the app: the housing is 37 points tall with its corners at the app's ratio, resting adds a wing
  * each side for the art and the play-state bars, and the open card is the housing plus 140 points wide and 160 deep, with the
  * app's own rows, sizes and colours (ExpandedContent, Scrubber, PlaybackControls, VolumeSlider). It opens once by itself a
  * moment after it scrolls into view, then waits for a hover. The song and its art are real.
@@ -11,6 +11,10 @@ const art = '/media/art-moment-apart.webp';
 <div class="demo" data-notch-demo>
   <div class="bezel">
     <div class="screen">
+      <div class="menubar" aria-hidden="true">
+        <span class="items"><b>Music</b><span>File</span><span>Edit</span><span>Song</span><span>View</span><span>Window</span></span>
+        <span class="clock">Thu 12 Nov 09:41</span>
+      </div>
       <div class="notch" data-state="rest" data-playing="true" tabindex="0" aria-label="Warble's notch. Hover, tap or focus it to open.">
         <div class="glow" aria-hidden="true"></div>
         <div class="layer rest" aria-hidden="true">
@@ -49,23 +53,29 @@ const art = '/media/art-moment-apart.webp';
     </div>
   </div>
   <p class="caption">
-    <span class="pointer">Hover to open it in a split second: the song, progress and controls. Click it and the app playing the song comes to the front.</span>
-    <span class="finger">Tap the notch to open it: the song, progress and controls. Tap anywhere else to close it.</span>
+    <span class="pointer">This is the real thing. Point at it.</span>
+    <span class="finger">This is the real thing. Tap it.</span>
   </p>
 </div>
 
 <style>
   .demo { max-width: 980px; margin-inline: auto; }
   .bezel {
-    padding: 10px; border-radius: 34px; background: #2b2118;
-    box-shadow: 0 40px 60px -30px rgb(43 33 24 / 0.45), inset 0 2px 0 rgb(255 255 255 / 0.1);
+    padding: 11px 11px 0; border-radius: 30px 30px 0 0; background: #0a0a0a;
+    -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent);
+    mask-image: linear-gradient(to bottom, #000 58%, transparent);
   }
   .screen {
-    position: relative; overflow: hidden; border-radius: 26px;
-    height: clamp(214px, min(38vw, calc(100svh - 700px)), 430px);
-    background: linear-gradient(160deg, #bce0f2 0%, #fde3ee 55%, #ffe9a8 100%);
+    position: relative; overflow: hidden; border-radius: 19px 19px 0 0; height: 300px;
+    background: linear-gradient(118deg, var(--sky), color-mix(in srgb, var(--pink) 30%, #fff) 55%, color-mix(in srgb, var(--yellow) 42%, #fff));
     color: #2b2118;
   }
+  .menubar {
+    position: absolute; inset: 0 0 auto; height: 37px; display: flex; align-items: center; justify-content: space-between; padding: 0 18px;
+    font: 500 13px/1 -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif; color: rgb(0 0 0 / 0.82); background: rgb(255 255 255 / 0.3);
+  }
+  .menubar .items { display: flex; gap: 18px; }
+  .menubar b { font-weight: 700; }
 
   /* The notch, in the app's own proportions (NotchLayout): the housing, then a wing each side, then the open card. */
   .notch {
@@ -114,7 +124,7 @@ const art = '/media/art-moment-apart.webp';
   .track { display: flex; align-items: center; gap: 10px; padding-left: 10px; }
   .big { flex: none; width: 56px; height: 56px; border-radius: 8px; }
   .lines { display: grid; gap: 2px; min-width: 0; }
-  .lines b { font-size: 15px; font-weight: 600; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lines b { font-size: 16px; font-weight: 600; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .lines span { font-size: 13px; line-height: 1.2; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   .scrub, .volume { display: flex; align-items: center; gap: 8px; height: 24px; }
@@ -155,7 +165,7 @@ const art = '/media/art-moment-apart.webp';
   .volume[data-muted='true'] .speaker.muted { display: block; }
   .output { flex: none; width: 34px; height: 20px; fill: currentColor; }
 
-  .caption { min-height: 3.2em; margin: 22px auto 0; max-width: 620px; text-align: center; font-size: 18px; line-height: 1.45; color: var(--secondary); }
+  .caption { position: relative; min-height: 1.5em; margin: -36px auto 0; max-width: 620px; text-align: center; font-size: 18px; line-height: 1.45; color: var(--secondary); }
 
   .finger { display: none; }
   @media (hover: none) {
@@ -164,9 +174,12 @@ const art = '/media/art-moment-apart.webp';
     .notch { cursor: pointer; }
     .notch:focus-visible { outline: none; }
   }
+  @media (max-width: 900px) {
+    .menubar .items span, .menubar .clock { display: none; }
+  }
   @media (max-width: 700px) {
-    .bezel { padding: 7px; border-radius: 24px; }
-    .screen { border-radius: 18px; }
+    .bezel { padding: 7px 7px 0; border-radius: 24px 24px 0 0; }
+    .screen { border-radius: 16px 16px 0 0; height: 260px; }
   }
   @media (prefers-reduced-motion: no-preference) {
     .bars i { animation: bars 1.1s ease-in-out infinite alternate; }
