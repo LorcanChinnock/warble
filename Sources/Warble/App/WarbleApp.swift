@@ -1,5 +1,6 @@
 import SwiftUI
 import WarbleCore
+import WarbleModel
 
 @main
 struct WarbleApp: App {
@@ -11,47 +12,44 @@ struct WarbleApp: App {
             WarbleMenu(updater: environment.updater, settingsWindow: environment.settingsWindow)
                 .inject(environment)
         } label: {
-            if environment.updater.pendingVersion == nil {
-                Image(nsImage: .menuBarIcon)
-                    .accessibilityLabel(Text(verbatim: "Warble"))
-            } else {
-                Image(systemName: "arrow.down.circle")
-            }
+            // Reads only `pendingVersion`, so a download's progress doesn't redraw the icon.
+            let waiting = environment.updater.pendingVersion != nil
+            Image(nsImage: waiting ? .menuBarIconWithDot : .menuBarIcon)
+                .accessibilityLabel(Text(verbatim: AppMenuLabel.icon(updateWaiting: waiting)))
         }
     }
 }
 
-private extension NSImage {
-    /// The app icon's bars as a template image, so macOS tints it for light and dark menu bars and while the menu is
-    /// open. Drawn on demand, so it's sharp at every scale.
-    static let menuBarIcon: NSImage = {
-        let bars = IconBars.rects(height: 16)
-        let image = NSImage(size: CGSize(width: bars.last!.maxX, height: 16), flipped: false) { _ in
-            for bar in bars {
-                NSBezierPath(roundedRect: bar, xRadius: bar.width / 2, yRadius: bar.width / 2).fill()
-            }
-            return true
-        }
-        image.isTemplate = true
-        return image
-    }()
-}
-
+/// The menu bar menu, in the order `AppMenu` gives. The notch's right-click menu, `NotchMenu`, has the same items.
 private struct WarbleMenu: View {
     let updater: Updater
     let settingsWindow: SettingsWindow
 
     var body: some View {
-        if let version = updater.pendingVersion {
-            Button("Update to \(version)…") { updater.checkForUpdates() }
-        } else {
-            Button("Check for Updates…") { updater.checkForUpdates() }
-                .disabled(!updater.canCheckForUpdates)
+        ForEach(Array(AppMenu.items(update: updater.menuItem).enumerated()), id: \.offset) { _, item in
+            switch item {
+            case .about:
+                Button("About Warble") { settingsWindow.show(.about) }
+            case .update(let update):
+                Button { updater.checkForUpdates() } label: {
+                    if update.hasDot {
+                        Text(verbatim: update.title + " ") + Text(Image(nsImage: .updateDot))
+                    } else {
+                        Text(verbatim: update.title)
+                    }
+                }
+                .disabled(!update.isEnabled)
+            case .settings:
+                Button("Settings…") { settingsWindow.show() }
+                    .keyboardShortcut(",")
+            case .quit:
+                Button("Quit Warble") { NSApp.terminate(nil) }
+                    .keyboardShortcut("q")
+            case .separator:
+                Divider()
+            case .openApp, .copySong:
+                EmptyView()
+            }
         }
-        Button("Settings…") { settingsWindow.show() }
-            .keyboardShortcut(",")
-        Divider()
-        Button("Quit Warble") { NSApp.terminate(nil) }
-            .keyboardShortcut("q")
     }
 }

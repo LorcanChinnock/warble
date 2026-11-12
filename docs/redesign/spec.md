@@ -160,6 +160,12 @@ Under them, centred, in 11 pt secondary text: "Made by Lorcan Chinnock. Free and
 
 **Right-click on the notch:** Open <app> and Copy Song and Artist while a song with a title shows, a separator, then the menu bar menu's items in the same order.
 
+**While an update downloads,** the update item shows its progress, "Downloading 0.2.0 (53%)…", whether or not the update window is open, and opens the window. The window's other states leave the item as Check for Updates… or the waiting update.
+
+- `AppMenu` and `UpdateMenuItem` (WarbleModel, tested) give both menus their items, order and update item, so the two can't drift apart.
+- The menu bar icon's dot is part of the template image, so it takes the menu bar's own colour like the bars, as the board draws it, and the ring is cut out of the image rather than drawn. It sits up and to the right of the short bar: straight above it, the two read as an "i".
+- The menu item's dot is the icon's yellow, 7 pt, with the accent edge in the light appearance only, drawn after the title as an image.
+
 ## First run
 
 #432 builds it: one of the three windows Warble opens on its own (rule 4), shown once, at first launch. It never opens for someone updating from an earlier version; #432 decides how to tell them apart, for example by a stored version or an existing settings key.
@@ -190,7 +196,7 @@ Each board, the issue that builds it, and where it lands. #436 ticks **QA** afte
 | Settings › About, with update status variants | #429 | `Settings/SettingsView.swift`, `App/Updater.swift`, `WarbleModel/Updates/UpdateStatus.swift`, `WarbleCore/App/UpdateStatusLabel.swift` | ☐ |
 | Update window › offer | #430 | `App/Updater.swift`, `App/DockIcon.swift`, `Update/UpdateUserDriver.swift` and `Update/UpdateWindow.swift`, `Design/YellowDefaultButton.swift`, `WarbleModel/Updates/UpdateOffer.swift` and `ReleaseNotes.swift` with their tests, `WarbleCore/App/UpdateWindowLabel.swift`, the release notes in `.github/workflows/release.yml` | ☐ |
 | Update window › other states | #430 | as above, and About's Cancel in `Settings/SettingsView.swift` | ☐ |
-| Menu bar and right-click menus | #431 | `App/WarbleApp.swift`, `Notch/NotchMenu.swift` | ☐ |
+| Menu bar and right-click menus | #431 | `App/WarbleApp.swift`, `Notch/NotchMenu.swift`, `Design/MenuImages.swift`, `App/Updater.swift` (`menuItem`), `WarbleModel/Menu/AppMenu.swift` with its tests, `WarbleCore/App/AppMenuLabel.swift` | ☐ |
 | First-run window | #432 | new window in `Sources/Warble/Settings` or `App`, `App/AppDelegate.swift` | ☐ |
 | Website › guide › Settings | #433 | `site/src/guide/80-settings.md`, new Updates page, `docs/media` | ☐ |
 

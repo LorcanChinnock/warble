@@ -11,7 +11,7 @@ Warble works without changing anything. The things you may want to set are how l
 1. Click the Warble icon in the menu bar, or right-click the notch. You can also Control-click it.
 2. Choose **Settings…**.
 
-The right-click menu also opens the app that's playing, copies the song and artist, checks for updates and quits Warble. Settings is a standard Mac window with three tabs: Notch, General and About. It follows your Mac's light or dark appearance.
+Both menus have the same items: **About Warble**, which opens Settings on its About tab, **Check for Updates…**, **Settings…** and **Quit Warble**. The right-click menu also opens the app that's playing and copies the song and artist. Settings is a standard Mac window with three tabs: Notch, General and About. It follows your Mac's light or dark appearance.
 
 ![The Settings window: Warble's name and version, the notch preview, and the Notch settings for how long a paused song stays and how big the open notch is](../../../docs/media/settings.png)
 

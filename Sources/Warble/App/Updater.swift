@@ -60,6 +60,10 @@ final class Updater: NSObject {
             start()
         }
         #if DEBUG
+        // A dev build has no feed, so a waiting update is made up: the menu bar icon's dot and the menus' item.
+        if UserDefaults.standard.string(forKey: "updateStatusPreview") == "ready" {
+            pendingVersion = "0.2.0"
+        }
         if let preview = UserDefaults.standard.string(forKey: "updateWindowPreview") {
             DispatchQueue.main.async { [driver] in driver?.preview(preview) }
         }
@@ -119,6 +123,21 @@ final class Updater: NSObject {
         return UpdateStatus(hasFeed: isEnabled, isChecking: isChecking, pendingVersion: pendingVersion, lastResult: lastCheckResult, lastCheck: lastCheckDate)
     }
 
+    /// The menus' update item: Check for Updates…, a waiting update, or a download's progress. It reads the update
+    /// window's model, so only the menus read it, and only while they're built; the notch's hover never does.
+    var menuItem: UpdateMenuItem {
+        let model = driver.model
+        let phase = model.phase
+        let downloading = switch phase {
+        case .downloading, .preparing: true
+        default: false
+        }
+        return UpdateMenuItem(
+            pendingVersion: pendingVersion, canCheck: canCheckForUpdates, phase: downloading ? phase : nil,
+            version: model.version, fraction: downloading ? model.download.fraction : nil
+        )
+    }
+
     /// What About's two switches show.
     var switches: UpdateSwitches {
         UpdateSwitches(hasFeed: isEnabled, checksAutomatically: automaticallyChecks, downloadsAutomatically: automaticallyDownloads)
@@ -126,7 +145,7 @@ final class Updater: NSObject {
 
     #if DEBUG
     /// `-updateStatusPreview checking|ready|upToDate|lastChecked|failed|off` shows that status line in a dev build, which
-    /// has no feed and so would only ever show `off`.
+    /// has no feed and so would only ever show `off`. `ready` also shows a waiting update in the menus.
     private static let previewStatus: UpdateStatus? = switch UserDefaults.standard.string(forKey: "updateStatusPreview") {
     case "checking": .checking
     case "ready": .available(version: "0.2.0")
