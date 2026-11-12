@@ -1,35 +1,23 @@
-import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
 import type { APIRoute } from 'astro';
+import { readChangelog, releaseURL } from '../../lib/changelog';
 
-const repo = 'https://github.com/LorcanChinnock/warble';
 const escape = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const labels = { new: 'New', fixed: 'Fix', faster: 'Faster', changed: 'Changed' };
 
-/** One feed item per release in CHANGELOG.md, with its changes as the text. */
+/** One feed item per release in CHANGELOG.md, read by the same parser as /changelog/, with its changes as the text. */
 export const GET: APIRoute = async ({ site }) => {
-  // From the site folder, which builds run in: once bundled, import.meta.url points inside dist/.
-  const changelog = await readFile(resolve(process.cwd(), '../CHANGELOG.md'), 'utf8');
-  const items = changelog
-    .split(/^## /m)
-    .slice(1)
-    .flatMap((section) => {
-      const head = /^\[([^\]]+)\]\([^)]*\) \((\d{4}-\d{2}-\d{2})\)/.exec(section) ?? /^\[?([^\]\s]+)\]? \((\d{4}-\d{2}-\d{2})\)/.exec(section);
-      if (!head) return [];
-      const [, version, date] = head;
-      const changes = section
-        .split('\n')
-        .filter((line) => line.startsWith('* '))
-        .map((line) => line.slice(2).replace(/\s*\(\[#\d+\]\([^)]*\)\)/g, '').replace(/\s*\(\[[0-9a-f]+\]\([^)]*\)\)/g, '').replace(/\[([^\]]+)\]\([^)]*\)/g, '$1').replace(/\*\*/g, ''));
-      const link = `${repo}/releases/tag/v${version}`;
-      return [`    <item>
-      <title>Warble ${escape(version)}</title>
+  const items = (await readChangelog()).slice(0, 30).map((release) => {
+    const link = releaseURL(release.version);
+    const changes = release.entries.map((entry) => `• ${labels[entry.kind]}: ${entry.text}`);
+    const text = [release.summary, ...changes].filter(Boolean).join('\n');
+    return `    <item>
+      <title>Warble ${escape(release.version)}</title>
       <link>${link}</link>
       <guid isPermaLink="true">${link}</guid>
-      <pubDate>${new Date(`${date}T12:00:00Z`).toUTCString()}</pubDate>
-      <description>${escape(changes.map((change) => `• ${change}`).join('\n'))}</description>
-    </item>`];
-    })
-    .slice(0, 30);
+      <pubDate>${new Date(`${release.date}T12:00:00Z`).toUTCString()}</pubDate>
+      <description>${escape(text)}</description>
+    </item>`;
+  });
   return new Response(
     `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
