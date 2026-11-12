@@ -360,9 +360,15 @@ final class UpdateUserDriver: NSObject, SPUUserDriver {
         }
     }
 
+    /// Every way a download ends without Ready, cancelled, failed or the session over, closes the window here, so the
+    /// phase leaves downloading too and the menus' update item goes back to Check for Updates…. Hiding the window
+    /// while it downloads only orders it out and keeps the phase.
     private func closeWindow() {
         window?.orderOut(nil)
         window = nil
+        if model.phase.isDownloading {
+            model.phase = .checking
+        }
         owner?.checkWindowChanged()
     }
 
@@ -395,7 +401,7 @@ final class UpdateUserDriver: NSObject, SPUUserDriver {
 
     #if DEBUG
     /// `-updateWindowPreview offer|checking|downloading|ready|installed` shows the window in that state with made-up
-    /// details, since a dev build has no feed. Its buttons only close it.
+    /// details, since a dev build has no feed. Its buttons only close it, and Cancel while downloading ends the download.
     func preview(_ name: String) {
         let offer = UpdateOffer(version: "0.2.0", build: "200", installedVersion: "0.1.0-beta.14", installedBuild: "114", downloadSize: 6_000_000)
         model.offer = offer
@@ -403,8 +409,10 @@ final class UpdateUserDriver: NSObject, SPUUserDriver {
         model.notes = ReleaseNotes(Self.previewNotes, format: .markdown).since(offer.installedVersion)
         let close: @MainActor () -> Void = { [weak self] in self?.closeWindow() }
         model.actions = UpdateWindowModel.Actions(
-            install: close, remindLater: close, skip: close, cancel: close, hide: close, relaunch: close, installOnQuit: close, later: close
+            install: close, remindLater: close, skip: close, cancel: close, relaunch: close, installOnQuit: close, later: close
         )
+        // Closing the downloading window only hides it, as in a real download, so the menus go on showing its progress.
+        model.actions.hide = { [weak self] in self?.window?.orderOut(nil) }
         switch name {
         case "checking":
             model.phase = .checking

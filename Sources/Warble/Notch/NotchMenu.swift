@@ -1,7 +1,10 @@
 import AppKit
+import WarbleCore
+import WarbleModel
 
-/// What a right-click on any notch offers: the app it follows, copying the song, Settings, updates and Quit, so Warble can be reached and
-/// quit with its menu bar icon off. Built only when it opens, so a resting notch keeps nothing up to date.
+/// What a right-click on any notch offers: the app it follows and copying the song, then the menu bar menu's items in
+/// the same order (`AppMenu`), so Warble can be reached from the notch as well as the menu bar. Built only when it
+/// opens, so a resting notch keeps nothing up to date.
 @MainActor
 enum NotchMenu {
     /// `source` is the bundle identifier of the app that's playing, or while Idle the one that played last. `copyText`
@@ -9,36 +12,60 @@ enum NotchMenu {
     static func make(
         source: String?, copyText: String?, updater: Updater, settingsWindow: SettingsWindow, openApp: @escaping () -> Void
     ) -> NSMenu {
+        let app = source.flatMap { source in NSWorkspace.shared.urlForApplication(withBundleIdentifier: source).map { (source, $0) } }
         let menu = NSMenu()
-        if let source, let app = NSWorkspace.shared.urlForApplication(withBundleIdentifier: source) {
-            let item = ActionItem(title: String(localized: "Open \(name(of: app, bundleIdentifier: source))"), action: openApp)
-            let icon = NSWorkspace.shared.icon(forFile: app.path)
-            icon.size = NSSize(width: 16, height: 16)
-            item.image = icon
-            menu.addItem(item)
+        for item in AppMenu.items(update: updater.menuItem, openApp: app != nil, copySong: copyText != nil) {
+            switch item {
+            case .openApp:
+                guard let (source, url) = app else {
+                    continue
+                }
+                let open = ActionItem(title: String(localized: "Open \(name(of: url, bundleIdentifier: source))"), action: openApp)
+                let icon = NSWorkspace.shared.icon(forFile: url.path)
+                icon.size = NSSize(width: 16, height: 16)
+                open.image = icon
+                menu.addItem(open)
+            case .copySong:
+                guard let copyText else {
+                    continue
+                }
+                menu.addItem(ActionItem(title: String(localized: "Copy Song and Artist")) {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(copyText, forType: .string)
+                })
+            case .about:
+                menu.addItem(ActionItem(title: String(localized: "About Warble")) { settingsWindow.show(.about) })
+            case .update(let update):
+                let check = ActionItem(title: update.title) { updater.checkForUpdates() }
+                if update.hasDot {
+                    check.attributedTitle = titleWithDot(update.title)
+                }
+                check.isEnabled = update.isEnabled
+                menu.addItem(check)
+            case .settings:
+                menu.addItem(ActionItem(title: String(localized: "Settings…"), keyEquivalent: ",") { settingsWindow.show() })
+            case .quit:
+                menu.addItem(ActionItem(title: String(localized: "Quit Warble"), keyEquivalent: "q") { NSApp.terminate(nil) })
+            case .separator:
+                menu.addItem(.separator())
+            }
         }
-        if let copyText {
-            menu.addItem(ActionItem(title: String(localized: "Copy Song and Artist")) {
-                NSPasteboard.general.clearContents()
-                NSPasteboard.general.setString(copyText, forType: .string)
-            })
-        }
-        if !menu.items.isEmpty {
-            menu.addItem(.separator())
-        }
-        menu.addItem(ActionItem(title: String(localized: "Settings…"), keyEquivalent: ",") { settingsWindow.show() })
-        if let version = updater.pendingVersion {
-            menu.addItem(ActionItem(title: String(localized: "Update to \(version)…")) { updater.checkForUpdates() })
-        } else {
-            let item = ActionItem(title: String(localized: "Check for Updates…")) { updater.checkForUpdates() }
-            item.isEnabled = updater.canCheckForUpdates
-            menu.addItem(item)
-        }
-        menu.addItem(.separator())
-        menu.addItem(ActionItem(title: String(localized: "Quit Warble"), keyEquivalent: "q") { NSApp.terminate(nil) })
         // Items keep the enabled state given above rather than asking their targets.
         menu.autoenablesItems = false
         return menu
+    }
+
+    /// The title followed by the accent dot, as the menu bar menu shows a waiting update.
+    private static func titleWithDot(_ title: String) -> NSAttributedString {
+        let font = NSFont.menuFont(ofSize: 0)
+        let text = NSMutableAttributedString(string: title + " ", attributes: [.font: font])
+        let dot = NSTextAttachment()
+        dot.image = .updateDot
+        // Centred on the text's x-height, as the menu bar menu's dot sits.
+        let size = NSImage.updateDot.size
+        dot.bounds = CGRect(x: 0, y: (font.xHeight - size.height) / 2, width: size.width, height: size.height)
+        text.append(NSAttributedString(attachment: dot))
+        return text
     }
 
     /// The running app's name, or else the one Finder shows.
