@@ -63,6 +63,9 @@ struct NotchPreview: View {
     let visibility: VirtualNotchVisibility
     /// Whether the card has the heart for Music's Favourites, which the preview shows on any song.
     let showsFavourite: Bool
+    /// Holds the card open, whatever the pointer does, as the first-run window shows it. Settings leaves it closed until
+    /// the pointer is on it.
+    var holdsOpen = false
     @Environment(PlayerModel.self) private var live
     @State private var preview = PreviewNotch()
     /// When the made-up song started, which its position runs on from.
@@ -119,7 +122,8 @@ struct NotchPreview: View {
     var body: some View {
         let housing = Self.housing
         let showsNotch = visibility != .off && ending != .bareScreen
-        let state: NotchState = ending == .emptyNotch ? (isOpen ? .note : .empty) : (isOpen ? .expanded : .resting)
+        let opened = isOpen || holdsOpen
+        let state: NotchState = ending == .emptyNotch ? (opened ? .note : .empty) : (opened ? .expanded : .resting)
         let size = NotchLayout.frame(state, notch: housing, cardSize: cardSize)?.size ?? housing.size
         let radius = Native.radius(state, notch: housing)
         let shape = UnevenRoundedRectangle(bottomLeadingRadius: radius, bottomTrailingRadius: radius)
@@ -127,7 +131,7 @@ struct NotchPreview: View {
             Self.strip
             Rectangle().fill(.white.opacity(0.3)).frame(height: housing.height * Self.scale).frame(maxHeight: .infinity, alignment: .top)
             Button {
-                guard !isHovering else { return }
+                guard !isHovering, !holdsOpen else { return }
                 isOpen.toggle()
             } label: {
                 ZStack(alignment: .top) {
@@ -161,12 +165,14 @@ struct NotchPreview: View {
                 .contentShape(shape)
             }
             .buttonStyle(.notch)
+            // Held open, a press does nothing, so it takes no keyboard focus; VoiceOver still reads it.
+            .focusable(!holdsOpen)
             .onHover {
                 isHovering = $0
                 isOpen = $0
             }
             .accessibilityLabel(Text("Notch preview"))
-            .accessibilityValue(isOpen ? Text("Open") : Text("Closed"))
+            .accessibilityValue(opened ? Text("Open") : Text("Closed"))
             .accessibilityHint(Text("Shows how the notch looks."))
             // Faded rather than moved, so nothing animates under Reduce Motion.
             .opacity(showsNotch ? 1 : 0)

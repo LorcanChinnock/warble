@@ -21,8 +21,12 @@ final class AppEnvironment {
     let player: PlayerModel
     let hotkeys: HotkeyCenter
     let settingsWindow: SettingsWindow
+    /// Whether this is the first launch of a new install, so the first-run window opens. Read before `Updater` starts
+    /// Sparkle, which stores a key of its own on its first start.
+    let opensFirstRun: Bool
 
     init() {
+        opensFirstRun = FirstRunWindow.opensAtLaunch()
         updater = Updater()
         displays = Displays()
         loginItem = LoginItem()

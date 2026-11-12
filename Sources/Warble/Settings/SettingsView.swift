@@ -102,16 +102,16 @@ struct GeneralTab: View {
         SettingsPage {
             Section("Startup") {
                 let login = Text("Open at login")
-                let loginDetail = loginItem.needsApproval
+                let loginDetail = loginItem.failureDetail ?? (loginItem.needsApproval
                     ? Text("Turned off in System Settings. Turn Warble on in Login Items to open it at login again.")
-                    : Text("Warble opens each time you log in, so it's there after a restart. It's the same switch as System Settings › General › Login Items & Extensions.")
+                    : Text("Warble opens each time you log in, so it's there after a restart. It's the same switch as System Settings › General › Login Items & Extensions."))
                 Toggle(isOn: Binding { loginItem.isEnabled } set: { loginItem.set($0) }) {
                     login
                     loginDetail
                 }
                 .accentSwitch()
                 .described(login, loginDetail)
-                if loginItem.needsApproval {
+                if loginItem.needsApproval || loginItem.failedChange != nil {
                     LabeledContent("Login Items") {
                         Button("Open Login Items…") { SMAppService.openSystemSettingsLoginItems() }
                     }
@@ -442,7 +442,7 @@ private extension SettingsPage where Header == EmptyView {
     }
 }
 
-private extension View {
+extension View {
     /// Names a row whose label has two `Text`s, since such a row reports no VoiceOver name of its own: the title as its
     /// label and the line under it as its hint.
     func described(_ title: Text, _ detail: Text?) -> some View {
