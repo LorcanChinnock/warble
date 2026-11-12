@@ -6,6 +6,9 @@ import WarbleModel
 /// The Notch tab: the preview, and every setting that changes what the notch shows or how it looks.
 struct NotchTab: View {
     @Environment(NotchSettings.self) private var notchSettings
+    /// With keyboard navigation on, focus starts on the first setting rather than on the preview above it, which is a
+    /// demonstration rather than a setting.
+    @FocusState private var focusesPause: Bool
 
     var body: some View {
         @Bindable var settings = notchSettings
@@ -30,6 +33,7 @@ struct NotchTab: View {
                     pauseDetail
                 }
                 .described(pause, pauseDetail)
+                .focused($focusesPause)
             }
 
             Section("Opened notch") {
@@ -39,7 +43,7 @@ struct NotchTab: View {
                     Text("Large").tag(CardSize.large)
                 }
                 .pickerStyle(.segmented)
-                .accentSwitch()
+                .accentSegments()
                 // A one-line row is named by its label, but a grouped form leaves these controls reporting only their
                 // value, so name them outright.
                 .accessibilityLabel(Text("Size"))
@@ -90,6 +94,12 @@ struct NotchTab: View {
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
+        }
+        // Moved once it's shown, since the window would otherwise start on its first key view, the preview. Only with
+        // keyboard navigation on: otherwise nothing in the window takes focus until it's clicked.
+        .onAppear {
+            guard NSApp.isFullKeyboardAccessEnabled else { return }
+            DispatchQueue.main.async { focusesPause = true }
         }
     }
 }
@@ -367,13 +377,17 @@ private struct LinkRow: View {
             openURL(url)
         } label: {
             HStack(spacing: 8) {
+                // The name keeps its width, and a long value wraps beside it, so a name such as mediaremote-adapter
+                // isn't cut short by a long translation of its licence.
                 title
                     .lineLimit(1)
+                    .layoutPriority(1)
                 Spacer(minLength: 0)
                 HStack(spacing: 4) {
                     if let value {
                         value
-                            .fixedSize()
+                            .multilineTextAlignment(.trailing)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     if arrow {
                         Image(systemName: "arrow.up.right")
@@ -450,10 +464,39 @@ extension View {
             .accessibilityHint(detail ?? Text(verbatim: ""))
     }
 
-    /// The icon's yellow on a switch that's on or a chosen segment. It's set on each control rather than as the app's
-    /// accent colour, because the system draws the selected toolbar tab's label in the accent, and text is never yellow.
+    /// The icon's yellow on a switch that's on. It's set on each control rather than as the app's accent colour, because
+    /// the system draws the selected toolbar tab's label in the accent, and text is never yellow. With Increase Contrast
+    /// in the light appearance it's a darker gold, so the switch has a 3:1 boundary against the window.
     func accentSwitch() -> some View {
-        tint(Color.warbleYellow)
+        modifier(AccentSwitch())
+    }
+
+    /// The icon's yellow on the chosen segment. With Increase Contrast it keeps the system's own high-contrast segments
+    /// instead: the yellow is about 1.3:1 against the track, and a gold dark enough for 3:1 turns the label white, which
+    /// is too faint on it.
+    func accentSegments() -> some View {
+        modifier(AccentSegments())
+    }
+}
+
+private struct AccentSwitch: ViewModifier {
+    @Environment(\.colorSchemeContrast) private var contrast
+    @Environment(\.colorScheme) private var colorScheme
+
+    func body(content: Content) -> some View {
+        content.tint(contrast == .increased && colorScheme == .light ? Color.warbleGold : Color.warbleYellow)
+    }
+}
+
+private struct AccentSegments: ViewModifier {
+    @Environment(\.colorSchemeContrast) private var contrast
+
+    func body(content: Content) -> some View {
+        if contrast == .increased {
+            content
+        } else {
+            content.tint(Color.warbleYellow)
+        }
     }
 }
 

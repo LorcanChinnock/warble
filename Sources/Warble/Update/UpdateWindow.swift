@@ -247,7 +247,8 @@ private struct OfferView: View {
     }
 
     /// Skip This Version on the left, then Remind Me Tomorrow and Install and Relaunch. When a long translation leaves
-    /// no room, Skip moves under the other two.
+    /// no room, Skip moves under the other two, and when even those two don't fit side by side, the three stack with the
+    /// default button on top, as a stacked alert's buttons do.
     private var buttons: some View {
         ViewThatFits(in: .horizontal) {
             HStack(spacing: 8) {
@@ -261,6 +262,12 @@ private struct OfferView: View {
                     later
                     install
                 }
+                skip
+            }
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            VStack(alignment: .trailing, spacing: 8) {
+                install
+                later
                 skip
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
