@@ -1,4 +1,5 @@
 import AppKit
+import ServiceManagement
 import SwiftUI
 import WarbleCore
 import WarbleModel
@@ -51,7 +52,16 @@ final class FirstRunWindow {
         let root = FirstRunView(hasNotch: hasNotch) { [weak window] in window?.performClose(nil) }
             .inject(environment)
         let height = NSView.fittingHeight(of: root, width: Self.width)
-        window.contentView = NSView(hosting: root.frame(width: Self.width))
+        // Refits when the content's height changes, as when the switch's line becomes an error, keeping the top edge.
+        let measured = root
+            .fixedSize(horizontal: false, vertical: true)
+            .onGeometryChange(for: CGFloat.self) { $0.size.height.rounded(.up) } action: { [weak window] height in
+                // After SwiftUI's layout pass, never inside it: resizing the window from there throws.
+                DispatchQueue.main.async { window?.fit(height: height) }
+            }
+            .frame(width: Self.width)
+            .frame(maxHeight: .infinity, alignment: .top)
+        window.contentView = NSView(hosting: measured)
         window.setContentSize(NSSize(width: Self.width, height: height))
         closeObserver = NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: window, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated {
@@ -84,6 +94,15 @@ final class FirstRunWindow {
 private final class FirstRunPanel: NSWindow {
     override func cancelOperation(_ sender: Any?) {
         performClose(sender)
+    }
+
+    /// Sets the content's height, keeping the window's top edge where it is.
+    func fit(height: CGFloat) {
+        let content = contentRect(forFrameRect: frame)
+        guard height > 0, height != content.height else { return }
+        var resized = frameRect(forContentRect: NSRect(x: content.minX, y: content.maxY - height, width: content.width, height: height))
+        resized.origin.y = frame.maxY - resized.height
+        setFrame(resized, display: true)
     }
 }
 
@@ -120,24 +139,31 @@ private struct FirstRunView: View {
 
             GroupBox {
                 let login = Text("Open Warble when you log in")
-                let loginDetail = Text("So it's still there after you restart your Mac.")
-                HStack(spacing: 16) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        login
-                        loginDetail
-                            .font(.system(size: 11))
-                            .foregroundStyle(.secondary)
+                let loginDetail = loginItem.failureDetail ?? Text("So it's still there after you restart your Mac.")
+                VStack(spacing: 0) {
+                    HStack(spacing: 16) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            login
+                            loginDetail
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                        }
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityHidden(true)
+                        Spacer(minLength: 0)
+                        Toggle(isOn: Binding { loginItem.isEnabled } set: { loginItem.set($0) }) {
+                            login
+                        }
+                        .toggleStyle(.switch)
+                        .labelsHidden()
+                        .accentSwitch()
+                        .described(login, loginDetail)
                     }
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityHidden(true)
-                    Spacer(minLength: 0)
-                    Toggle(isOn: Binding { loginItem.isEnabled } set: { loginItem.set($0) }) {
-                        login
+                    if loginItem.failedChange != nil {
+                        Button("Open Login Items…") { SMAppService.openSystemSettingsLoginItems() }
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.top, 4)
                     }
-                    .toggleStyle(.switch)
-                    .labelsHidden()
-                    .accentSwitch()
-                    .described(login, loginDetail)
                 }
                 .padding(.horizontal, 4)
                 .padding(.vertical, 4)

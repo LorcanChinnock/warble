@@ -6268,6 +6268,110 @@
         }
       }
     },
+    "Warble couldn't turn this off. Try again, or remove Warble in System Settings › General › Login Items." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble konnte das nicht ausschalten. Versuch es noch einmal oder entferne Warble unter Systemeinstellungen › Allgemein › Anmeldeobjekte."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble no ha podido desactivarlo. Vuelve a intentarlo o quita Warble en Ajustes del Sistema › General › Ítems de inicio."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble n’a pas pu le désactiver. Réessayez, ou retirez Warble dans Réglages Système › Général › Éléments de connexion."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble non è riuscito a disattivarlo. Riprova, oppure rimuovi Warble in Impostazioni di Sistema › Generali › Elementi login."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warbleはこれをオフにできませんでした。もう一度試すか、システム設定 › 一般 › ログイン項目でWarbleを削除してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble이 이 기능을 끄지 못했습니다. 다시 시도하거나 시스템 설정 › 일반 › 로그인 항목에서 Warble을 제거하세요."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Warble não conseguiu desativar isso. Tente de novo ou remova o Warble em Ajustes do Sistema › Geral › Itens de Login."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble 无法关闭此项。请再试一次，或在“系统设置” › “通用” › “登录项”中移除 Warble。"
+          }
+        }
+      }
+    },
+    "Warble couldn't turn this on. Try again, or add Warble in System Settings › General › Login Items." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble konnte das nicht einschalten. Versuch es noch einmal oder füge Warble unter Systemeinstellungen › Allgemein › Anmeldeobjekte hinzu."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble no ha podido activarlo. Vuelve a intentarlo o añade Warble en Ajustes del Sistema › General › Ítems de inicio."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble n’a pas pu l’activer. Réessayez, ou ajoutez Warble dans Réglages Système › Général › Éléments de connexion."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble non è riuscito ad attivarlo. Riprova, oppure aggiungi Warble in Impostazioni di Sistema › Generali › Elementi login."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warbleはこれをオンにできませんでした。もう一度試すか、システム設定 › 一般 › ログイン項目でWarbleを追加してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble이 이 기능을 켜지 못했습니다. 다시 시도하거나 시스템 설정 › 일반 › 로그인 항목에서 Warble을 추가하세요."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Warble não conseguiu ativar isso. Tente de novo ou adicione o Warble em Ajustes do Sistema › Geral › Itens de Login."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warble 无法开启此项。请再试一次，或在“系统设置” › “通用” › “登录项”中添加 Warble。"
+          }
+        }
+      }
+    },
     "Warble is in your notch" : {
       "localizations" : {
         "de" : {
