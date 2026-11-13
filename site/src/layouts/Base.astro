@@ -1,6 +1,5 @@
 ---
 import '../styles/global.css';
-import { latestRelease } from '../lib/release';
 
 interface Props {
   title?: string;
@@ -25,7 +24,6 @@ const {
 const fullTitle = title ? `${title} · Warble` : 'Warble for Mac: your music, in the notch';
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(image, Astro.site);
-const release = await latestRelease();
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const current = (href: string) => {
   const target = href.replace(/\/$/, '') || '/';

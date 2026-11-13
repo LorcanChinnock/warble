@@ -4,7 +4,7 @@ import { lastModified } from '../lib/lastmod.ts';
 import { latestRelease } from '../lib/release.ts';
 
 export const GET: APIRoute = async ({ site }) => {
-  const release = await latestRelease();
+  const release = latestRelease();
   const pages = [
     { path: '/', lastmod: release.date?.slice(0, 10) },
     ...readGuide().map(({ slug, file }) => ({ path: `/docs/${slug}/`, lastmod: lastModified(`src/guide/${file}`) })),
