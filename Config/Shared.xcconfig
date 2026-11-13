@@ -2,7 +2,7 @@
 
 // The version release-please bumps. CURRENT_PROJECT_VERSION is the build number; scripts/bundle.sh sets it to the
 // commit count, so builds from Xcode say 1.
-MARKETING_VERSION = 0.1.0-beta.24 // x-release-please-version
+MARKETING_VERSION = 0.1.0-beta.25 // x-release-please-version
 CURRENT_PROJECT_VERSION = 1
 
 SDKROOT = macosx
