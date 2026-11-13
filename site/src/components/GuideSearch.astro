@@ -130,6 +130,10 @@
       status.textContent = items.length ? '' : `Nothing in the guide matches “${query}”.`;
     };
 
+    // Safari, and Firefox on macOS, don't focus a link that's clicked, so a press on a result would blur the input and
+    // hide the panel before the click lands. Keeping focus in the input while the pointer is on the panel lets it through.
+    box.querySelector('.panel')?.addEventListener('mousedown', (event) => event.preventDefault());
+
     // / focuses the search from anywhere, as on many documentation sites, unless you're already typing somewhere.
     addEventListener('keydown', (event) => {
       if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey) return;
