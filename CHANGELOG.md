@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.0-beta.25](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.24...v0.1.0-beta.25) (2026-11-13)
+
+
+### Features
+
+* **settings:** a life-size preview that stays open ([#470](https://github.com/LorcanChinnock/warble/issues/470)) ([96a7cba](https://github.com/LorcanChinnock/warble/commit/96a7cba87e7bb833a7d4f19d3f2eb382bfa880aa))
+
+
+### Bug Fixes
+
+* **settings:** switch tabs without the lag ([#469](https://github.com/LorcanChinnock/warble/issues/469)) ([9e2a349](https://github.com/LorcanChinnock/warble/commit/9e2a349e4db5c53369b546c818f6a788f74b5f02))
+
 ## [0.1.0-beta.24](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.23...v0.1.0-beta.24) (2026-11-12)
 
 
