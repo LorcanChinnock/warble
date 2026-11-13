@@ -10,6 +10,8 @@ interface Props {
   imageAlt?: string;
   /** Keeps the page out of search results. */
   noindex?: boolean;
+  /** Names the guide beside Warble in the header, on the guide's pages. */
+  guide?: boolean;
 }
 
 const {
@@ -18,6 +20,7 @@ const {
   image = '/og.png',
   imageAlt = 'Your music, in the notch. Warble\'s open notch shows A Moment Apart by ODESZA. Free and open source, for Mac.',
   noindex = false,
+  guide = false,
 } = Astro.props;
 const fullTitle = title ? `${title} · Warble` : 'Warble for Mac: your music, in the notch';
 const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -97,8 +100,10 @@ const footer: { title: string; links: [string, string][] }[] = [
         <a class="brand" href="/" aria-label="Warble home">
           <img src="/icon-256.png" alt="" width="34" height="34" />
           <span>Warble</span>
+          {guide && <span class="guide">guide</span>}
           <span class="beta">Beta</span>
         </a>
+        <slot name="header" />
         <nav class="links" aria-label="Main">
           {nav.map((link) => <a href={link.href} aria-current={current(link.href)}>{link.label}</a>)}
         </nav>

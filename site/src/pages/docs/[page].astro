@@ -13,36 +13,54 @@ const { page, previous, next } = Astro.props;
 const links = pages.map((p) => ({ href: `/docs/${p.slug}/`, title: p.title, current: p === page, group: p.group }));
 ---
 
-<Prose title={page.title} description={page.summary} image={`/og/${page.slug}.png`} imageAlt={`Warble user guide: ${page.title}`} headings={page.headings} pages={links}>
-  <GuideSearch slot="side" />
+<Prose title={page.title} description={page.summary} image={`/og/${page.slug}.png`} imageAlt={`Warble user guide: ${page.title}`} headings={page.headings} pages={links} guide>
+  <GuideSearch slot="header" />
+  <aside class="try" slot="rail" aria-labelledby="try-title">
+    <span class="try-notch" aria-hidden="true"></span>
+    <p id="try-title" class="try-title">Try it now</p>
+    <p>Play a song, then point at your Mac's notch.</p>
+    <a href="/#install">Get Warble</a>
+  </aside>
   <div data-pagefind-body>
     <header class="page-head">
-      <p class="crumb"><a href="/docs/get-started/">User guide</a> <span aria-hidden="true">/</span> <span>{page.group}</span></p>
+      <p class="eyebrow" data-group={page.group}><span>{page.group}</span> · {page.minutes} min read</p>
       <h1>{page.title}</h1>
       <p class="lede">{page.summary}</p>
     </header>
     <Fragment set:html={page.html} />
   </div>
   <nav class="pager" aria-label="More of the guide">
-    {previous ? <a class="prev" href={`/docs/${previous.slug}/`}><span>Previous</span>{previous.title}</a> : <span />}
-    {next ? <a class="next" href={`/docs/${next.slug}/`}><span>Next</span>{next.title}</a> : <span />}
+    {previous ? <a class="prev" href={`/docs/${previous.slug}/`}><span>← Previous</span>{previous.title}</a> : <span />}
+    {next ? <a class="next" href={`/docs/${next.slug}/`}><span>Next →</span>{next.title}</a> : <span />}
   </nav>
 </Prose>
 
 <style is:global>
   .prose .page-head { margin-bottom: 32px; }
-  .prose .crumb { margin: 0 0 14px; font: 800 13px/1.4 var(--font); letter-spacing: 0.1em; text-transform: uppercase; color: var(--secondary); }
-  .prose .crumb a { font-weight: 800; text-decoration: none; }
-  .prose .crumb a:hover { color: var(--fg); text-decoration: underline; text-decoration-color: var(--pink); }
-  .prose .page-head h1 { margin-bottom: 14px; }
+  /* The page's group, with its marker from the sidebar, and how long it takes to read. */
+  .prose .eyebrow { display: flex; align-items: center; gap: 6px; margin: 0 0 10px; font-size: 14px; font-weight: 600; color: var(--secondary); }
+  .prose .eyebrow::before { content: ''; flex: none; width: 9px; height: 9px; margin-right: 2px; border-radius: 3px; background: var(--secondary); }
+  .prose .eyebrow[data-group='Get started']::before { background: var(--yellow); }
+  .prose .eyebrow[data-group='Playback']::before { background: var(--pink); }
+  .prose .eyebrow[data-group='Displays']::before { background: var(--sky); }
+  .prose .eyebrow[data-group='Help']::before { background: none; box-shadow: inset 0 0 0 2px var(--secondary); }
+  .prose .page-head h1 { margin-bottom: 14px; font-size: clamp(36px, 4.6vw, 56px); font-weight: 800; line-height: 1.02; }
   .prose .lede { margin: 0; font-size: clamp(19px, 2.1vw, 23px); line-height: 1.45; color: var(--secondary); max-width: 40em; }
   .prose .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 56px; }
   .prose .pager a {
-    display: grid; gap: 4px; padding: 20px 24px; text-decoration: none; font: 700 24px/1.15 var(--display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.02em;
-    border-radius: var(--radius); background: var(--surface); box-shadow: var(--lift); transition: transform 150ms ease-out;
+    display: grid; gap: 2px; padding: 14px 18px; text-decoration: none; font: 700 17px/1.3 var(--font);
+    border-radius: 18px; background: var(--surface); box-shadow: var(--lift); transition: transform 150ms ease-out;
   }
-  .prose .pager a:hover { transform: translateY(-3px); }
-  .prose .pager span { font: 800 12px/1.4 var(--font); letter-spacing: 0.1em; text-transform: uppercase; color: var(--secondary); }
+  .prose .pager a:hover { transform: translateY(-2px); }
+  .prose .pager span { font-size: 13px; font-weight: 600; color: var(--secondary); }
+
+  /* Under On this page: a black card with a notch at its top, for anyone reading before they've installed Warble. */
+  .try { position: relative; margin-top: 8px; padding: 30px 16px 16px; border-radius: 20px; color: var(--on-notch); background: var(--notch); overflow: hidden; }
+  .try-notch { position: absolute; top: 0; left: 50%; translate: -50% 0; width: 84px; height: 20px; border-radius: 0 0 9px 9px; background: var(--bg); }
+  .try p { margin: 0 0 12px; font-size: 13.5px; line-height: 1.45; color: var(--on-notch-secondary); }
+  .try .try-title { margin-bottom: 4px; font-size: 15px; font-weight: 700; color: var(--on-notch); }
+  @media (max-width: 999px) { .try { display: none; } }
+  .try a { display: block; min-height: 40px; padding: 10px; border-radius: 10px; text-align: center; text-decoration: none; font-size: 14px; font-weight: 700; color: var(--on-accent); background: var(--yellow); }
   .prose .pager .next { text-align: right; }
   @media (max-width: 560px) { .prose .pager { grid-template-columns: 1fr; } .prose .pager .next { text-align: left; } }
   @media (prefers-reduced-motion: reduce) { .prose .pager a { transition: none; } .prose .pager a:hover { transform: none; } }

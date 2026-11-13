@@ -169,6 +169,7 @@ section { padding-block: clamp(48px, 8vw, 110px); }
 .site-header .bar { display: flex; align-items: center; gap: 12px 24px; padding-block: 20px; }
 .brand { display: flex; align-items: center; gap: 10px; font: 700 22px/1 var(--display); font-variation-settings: 'SOFT' 100; text-decoration: none; letter-spacing: -0.01em; }
 .brand img { width: 34px; height: 34px; flex: none; }
+.brand .guide { margin-left: -4px; color: var(--secondary); font-weight: 600; }
 .brand .beta { padding: 4px 7px; font: 700 11px/1 var(--font); letter-spacing: 0.04em; text-transform: uppercase; color: var(--secondary); background: var(--fill); border-radius: 999px; }
 .site-header .links { display: flex; align-items: center; gap: 4px; margin-left: auto; }
 .site-header .links a, .site-header .menu nav a {
@@ -191,6 +192,7 @@ section { padding-block: clamp(48px, 8vw, 110px); }
 }
 .site-header .menu nav a { display: flex; align-items: center; min-height: 44px; border-radius: 10px; }
 @media (max-width: 720px) {
+  .site-header .bar { flex-wrap: wrap; }
   .site-header .links { display: none; }
   .site-header .menu { display: block; }
 }
@@ -250,7 +252,7 @@ section { padding-block: clamp(48px, 8vw, 110px); }
   position: absolute; left: 0; top: 0;
   width: 38px; height: 38px; display: grid; place-items: center;
   font: 700 17px/1 var(--display); font-variation-settings: 'SOFT' 100; font-variant-numeric: tabular-nums;
-  color: var(--yellow); background: var(--notch); border-radius: 50%;
+  color: var(--on-accent); background: var(--yellow); border-radius: 50%;
 }
 .prose ol > li > p { margin: 0; padding-top: 4px; }
 .prose ol > li > :not(p, :first-child) { margin-top: 12px; }
