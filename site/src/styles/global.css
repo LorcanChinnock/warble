@@ -150,6 +150,8 @@ code, kbd { font-family: var(--mono); }
 }
 .copy .button:hover { transform: none; box-shadow: none; }
 .copy .button:active { transform: translateY(2px); box-shadow: none; }
+/* The page's focus ring is cocoa, the bar's own colour in light mode, so the button's is cream. */
+.copy .button:focus-visible { outline-color: var(--on-cmd); }
 .copy .status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 kbd.key, .prose kbd {
@@ -287,9 +289,14 @@ section { padding-block: clamp(48px, 8vw, 110px); }
 @media (prefers-reduced-motion: no-preference) {
   .squig.now path { animation: draw 600ms 300ms ease-out backwards; }
   @supports (animation-timeline: view()) {
-    .squig:not(.now) path { animation: draw linear both; animation-timeline: view(); animation-range: entry 10% cover 30%; }
+    /* The timeline and range sit in their own, more specific rules: the minifier folds an animation-timeline that
+       shares a rule with the animation shorthand into the shorthand, which can't hold it, so browsers dropped the
+       whole declaration and nothing moved. */
+    .squig:not(.now) path { animation: draw linear both; }
+    .squig.squig:not(.now) path { animation-timeline: view(); animation-range: entry 10% cover 30%; }
     /* Sections fade up as they scroll into view. */
-    .rise { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
+    .rise { animation: rise linear both; }
+    .rise.rise { animation-timeline: view(); animation-range: entry 0% entry 35%; }
   }
 }
 @media (prefers-reduced-motion: reduce) {
