@@ -14,6 +14,8 @@ export interface GuidePage {
   summary: string;
   /** The part of the guide it's listed under. */
   group: string;
+  /** About how long the page takes to read, in minutes, at 200 words a minute. */
+  minutes: number;
   html: string;
   headings: { depth: number; slug: string; text: string }[];
 }
@@ -110,11 +112,12 @@ for (const { slug, headings } of rendered) {
 }
 
 /** A guide page, with its links to other sections and its screenshots pointed at the site. */
-export const pages: GuidePage[] = rendered.map(({ slug, title, summary, group, headings, html }) => ({
+export const pages: GuidePage[] = rendered.map(({ slug, title, summary, group, headings, html, markdown }) => ({
   slug,
   title,
   summary,
   group,
+  minutes: Math.max(1, Math.round(markdown.split(/\s+/).filter(Boolean).length / 200)),
   headings,
   html: html
     .replace(/href="#([^"]+)"/g, (match, id) => (anchors[id] ? `href="${anchors[id]}"` : match))
