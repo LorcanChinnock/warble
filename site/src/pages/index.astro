@@ -8,7 +8,7 @@ import Base from '../layouts/Base.astro';
 import player from '../../../docs/media/player.png';
 import { latestRelease } from '../lib/release';
 
-const release = await latestRelease();
+const release = latestRelease();
 const install = 'curl -fsSL https://warble.lorcanchinnock.com/install.sh | bash';
 
 const tracks = {
