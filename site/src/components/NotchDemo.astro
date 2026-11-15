@@ -52,10 +52,6 @@ const art = '/media/art-moment-apart.webp';
       </div>
     </div>
   </div>
-  <p class="caption">
-    <span class="pointer">This is the real thing. Point at it.</span>
-    <span class="finger">This is the real thing. Tap it.</span>
-  </p>
 </div>
 
 <style>
@@ -165,12 +161,7 @@ const art = '/media/art-moment-apart.webp';
   .volume[data-muted='true'] .speaker.muted { display: block; }
   .output { flex: none; width: 34px; height: 20px; fill: currentColor; }
 
-  .caption { position: relative; min-height: 1.5em; margin: -36px auto 0; max-width: 620px; text-align: center; font-size: 18px; line-height: 1.45; color: var(--secondary); }
-
-  .finger { display: none; }
   @media (hover: none) {
-    .pointer { display: none; }
-    .finger { display: inline; }
     .notch { cursor: pointer; }
     .notch:focus-visible { outline: none; }
   }
