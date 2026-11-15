@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0-beta.26](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.25...v0.1.0-beta.26) (2026-11-15)
+
+
+### Bug Fixes
+
+* **settings:** suggest restarting the Mac when Open at login can't change ([#483](https://github.com/LorcanChinnock/warble/issues/483)) ([cef3965](https://github.com/LorcanChinnock/warble/commit/cef39656d7506a383d51e9aef011d5f5e6f57d94)), closes [#482](https://github.com/LorcanChinnock/warble/issues/482)
+
 ## [0.1.0-beta.25](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.24...v0.1.0-beta.25) (2026-11-13)
 
 
