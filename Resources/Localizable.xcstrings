@@ -6320,106 +6320,106 @@
         }
       }
     },
-    "Warble couldn't turn this off. Try again, or remove Warble in System Settings › General › Login Items." : {
+    "Warble couldn't turn this off. Restart your Mac and try again, or remove Warble in System Settings › General › Login Items." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Warble konnte das nicht ausschalten. Versuch es noch einmal oder entferne Warble unter Systemeinstellungen › Allgemein › Anmeldeobjekte."
+            "value" : "Warble konnte das nicht ausschalten. Starte deinen Mac neu und versuch es noch einmal oder entferne Warble unter Systemeinstellungen › Allgemein › Anmeldeobjekte."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Warble no ha podido desactivarlo. Vuelve a intentarlo o quita Warble en Ajustes del Sistema › General › Ítems de inicio."
+            "value" : "Warble no ha podido desactivarlo. Reinicia el Mac y vuelve a intentarlo o quita Warble en Ajustes del Sistema › General › Ítems de inicio."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Warble n’a pas pu le désactiver. Réessayez, ou retirez Warble dans Réglages Système › Général › Éléments de connexion."
+            "value" : "Warble n’a pas pu le désactiver. Redémarrez votre Mac et réessayez, ou retirez Warble dans Réglages Système › Général › Éléments de connexion."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Warble non è riuscito a disattivarlo. Riprova, oppure rimuovi Warble in Impostazioni di Sistema › Generali › Elementi login."
+            "value" : "Warble non è riuscito a disattivarlo. Riavvia il Mac e riprova, oppure rimuovi Warble in Impostazioni di Sistema › Generali › Elementi login."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Warbleはこれをオフにできませんでした。もう一度試すか、システム設定 › 一般 › ログイン項目でWarbleを削除してください。"
+            "value" : "Warbleはこれをオフにできませんでした。Macを再起動してもう一度試すか、システム設定 › 一般 › ログイン項目でWarbleを削除してください。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Warble이 이 기능을 끄지 못했습니다. 다시 시도하거나 시스템 설정 › 일반 › 로그인 항목에서 Warble을 제거하세요."
+            "value" : "Warble이 이 기능을 끄지 못했습니다. Mac을 재시동한 후 다시 시도하거나 시스템 설정 › 일반 › 로그인 항목에서 Warble을 제거하세요."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O Warble não conseguiu desativar isso. Tente de novo ou remova o Warble em Ajustes do Sistema › Geral › Itens de Login."
+            "value" : "O Warble não conseguiu desativar isso. Reinicie o Mac e tente de novo ou remova o Warble em Ajustes do Sistema › Geral › Itens de Login."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Warble 无法关闭此项。请再试一次，或在“系统设置” › “通用” › “登录项”中移除 Warble。"
+            "value" : "Warble 无法关闭此项。请重新启动 Mac 后再试一次，或在“系统设置” › “通用” › “登录项”中移除 Warble。"
           }
         }
       }
     },
-    "Warble couldn't turn this on. Try again, or add Warble in System Settings › General › Login Items." : {
+    "Warble couldn't turn this on. Restart your Mac and try again, or add Warble in System Settings › General › Login Items." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Warble konnte das nicht einschalten. Versuch es noch einmal oder füge Warble unter Systemeinstellungen › Allgemein › Anmeldeobjekte hinzu."
+            "value" : "Warble konnte das nicht einschalten. Starte deinen Mac neu und versuch es noch einmal oder füge Warble unter Systemeinstellungen › Allgemein › Anmeldeobjekte hinzu."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Warble no ha podido activarlo. Vuelve a intentarlo o añade Warble en Ajustes del Sistema › General › Ítems de inicio."
+            "value" : "Warble no ha podido activarlo. Reinicia el Mac y vuelve a intentarlo o añade Warble en Ajustes del Sistema › General › Ítems de inicio."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Warble n’a pas pu l’activer. Réessayez, ou ajoutez Warble dans Réglages Système › Général › Éléments de connexion."
+            "value" : "Warble n’a pas pu l’activer. Redémarrez votre Mac et réessayez, ou ajoutez Warble dans Réglages Système › Général › Éléments de connexion."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Warble non è riuscito ad attivarlo. Riprova, oppure aggiungi Warble in Impostazioni di Sistema › Generali › Elementi login."
+            "value" : "Warble non è riuscito ad attivarlo. Riavvia il Mac e riprova, oppure aggiungi Warble in Impostazioni di Sistema › Generali › Elementi login."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Warbleはこれをオンにできませんでした。もう一度試すか、システム設定 › 一般 › ログイン項目でWarbleを追加してください。"
+            "value" : "Warbleはこれをオンにできませんでした。Macを再起動してもう一度試すか、システム設定 › 一般 › ログイン項目でWarbleを追加してください。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Warble이 이 기능을 켜지 못했습니다. 다시 시도하거나 시스템 설정 › 일반 › 로그인 항목에서 Warble을 추가하세요."
+            "value" : "Warble이 이 기능을 켜지 못했습니다. Mac을 재시동한 후 다시 시도하거나 시스템 설정 › 일반 › 로그인 항목에서 Warble을 추가하세요."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O Warble não conseguiu ativar isso. Tente de novo ou adicione o Warble em Ajustes do Sistema › Geral › Itens de Login."
+            "value" : "O Warble não conseguiu ativar isso. Reinicie o Mac e tente de novo ou adicione o Warble em Ajustes do Sistema › Geral › Itens de Login."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Warble 无法开启此项。请再试一次，或在“系统设置” › “通用” › “登录项”中添加 Warble。"
+            "value" : "Warble 无法开启此项。请重新启动 Mac 后再试一次，或在“系统设置” › “通用” › “登录项”中添加 Warble。"
           }
         }
       }

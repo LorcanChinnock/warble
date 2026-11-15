@@ -42,7 +42,7 @@ These two settings apply only where Warble draws a notch of its own. Your MacBoo
 
 ## General
 
-- **Open at login.** Off at first. Turn it on, and Warble opens each time you log in, so it's there after a restart. It's the same switch as Warble's entry in System Settings › General › Login Items & Extensions, and the same one the window from your first launch offers. If you turn Warble off in System Settings, the text under the switch says so, and **Open Login Items…** takes you there to turn it back on.
+- **Open at login.** Off at first. Turn it on, and Warble opens each time you log in, so it's there after a restart. It's the same switch as Warble's entry in System Settings › General › Login Items & Extensions, and the same one the window from your first launch offers. If you turn Warble off in System Settings, the text under the switch says so, and **Open Login Items…** takes you there to turn it back on. If macOS won't let Warble change the switch, the text under it says so. Restarting your Mac usually fixes that, because the part of macOS that keeps the login items list can get stuck after weeks without a restart.
 - **Help** opens this guide, or its [When nothing shows](/docs/when-nothing-shows/) page, in your browser.
 
 ## About

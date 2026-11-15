@@ -45,8 +45,8 @@ extension LoginItem {
     /// The line under an Open at login switch when macOS refused the last change, in place of its usual description.
     var failureDetail: Text? {
         switch failedChange {
-        case true?: Text("Warble couldn't turn this on. Try again, or add Warble in System Settings › General › Login Items.")
-        case false?: Text("Warble couldn't turn this off. Try again, or remove Warble in System Settings › General › Login Items.")
+        case true?: Text("Warble couldn't turn this on. Restart your Mac and try again, or add Warble in System Settings › General › Login Items.")
+        case false?: Text("Warble couldn't turn this off. Restart your Mac and try again, or remove Warble in System Settings › General › Login Items.")
         case nil: nil
         }
     }
