@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { summaries } from '../data/changelog-summaries';
 
 /**
  * Reads release-please's CHANGELOG.md into releases for /changelog/ and its RSS feed.
@@ -104,7 +105,7 @@ export function parseChangelog(markdown: string): Release[] {
         seen.add(key);
         return true;
       });
-      return [{ version, date, entries: unique, summary: summary.join(' ') || undefined }];
+      return [{ version, date, entries: unique, summary: summary.join(' ') || summaries[version] }];
     });
 }
 
