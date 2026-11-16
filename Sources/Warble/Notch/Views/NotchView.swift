@@ -136,6 +136,9 @@ private struct RecallContent: View {
                     Spacer(minLength: 0)
                     Image(systemName: "play.fill")
                         .font(.system(size: 14))
+                        // White like the player's other controls: without a colour it takes the label colour, which is
+                        // black in Light mode and so vanishes on the black notch.
+                        .foregroundStyle(.white)
                         .frame(width: 32, height: 32)
                 }
                 .padding(.horizontal, 14)
