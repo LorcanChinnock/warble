@@ -193,6 +193,15 @@ struct UpdateView: View {
             }
         }
         .frame(width: model.phase.width)
+        // A drag anywhere outside the controls moves the window, not only its title bar: the short states are mostly
+        // content. A SwiftUI gesture, not an AppKit view, so the buttons above it still take their own clicks.
+        .background {
+            Color.clear
+                .contentShape(Rectangle())
+                .gesture(WindowDragGesture())
+                // The first click on the window while it's in the background drags it too.
+                .allowsWindowActivationEvents(true)
+        }
     }
 }
 
