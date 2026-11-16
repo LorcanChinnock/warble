@@ -56,6 +56,27 @@ private let embedded = """
     #expect(notes.since("v0.1.0-beta.22").versions.map(\.version) == ["0.2.0", "0.1.0-beta.23"])
 }
 
+@Test func releaseNotesForOnePointOhKeepWhatCameAfterTheInstalledBeta() {
+    let notes = ReleaseNotes("""
+    ## [1.0.0](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.27...v1.0.0) (2026-12-01)
+
+
+    ### Bug Fixes
+
+    * **update:** let the update window be dragged from anywhere outside its controls ([#506](https://github.com/LorcanChinnock/warble/issues/506)) ([0237480](https://github.com/LorcanChinnock/warble/commit/0237480))
+
+    ## [0.1.0-beta.27](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.26...v0.1.0-beta.27) (2026-11-16)
+
+
+    ### Bug Fixes
+
+    * **notch:** give VoiceOver the volume as a percentage ([#504](https://github.com/LorcanChinnock/warble/issues/504)) ([0872db4](https://github.com/LorcanChinnock/warble/commit/0872db4))
+    """, format: .markdown)
+    #expect(notes.since("0.1.0-beta.27").versions.map(\.version) == ["1.0.0"])
+    #expect(notes.since("0.1.0-beta.26").versions.map(\.version) == ["1.0.0", "0.1.0-beta.27"])
+    #expect(notes.versions[0].groups == [ReleaseNotes.Group(kind: .fixed, items: ["Let the update window be dragged from anywhere outside its controls"])])
+}
+
 @Test func releaseNotesKeepEveryVersionWhenTheInstalledOneIsOlderThanAll() {
     let notes = ReleaseNotes(embedded, format: .markdown)
     #expect(notes.since("0.1.0-beta.3").versions.count == 3)
