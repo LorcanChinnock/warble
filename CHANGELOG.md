@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0-beta.28](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.27...v0.1.0-beta.28) (2026-11-16)
+
+
+### Bug Fixes
+
+* **update:** let the update window be dragged from anywhere outside its controls ([#506](https://github.com/LorcanChinnock/warble/issues/506)) ([0237480](https://github.com/LorcanChinnock/warble/commit/02374800ac263215f6505a22b9ab82be8195c563))
+
 ## [0.1.0-beta.27](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.26...v0.1.0-beta.27) (2026-11-16)
 
 
