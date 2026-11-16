@@ -36,7 +36,7 @@ A small icon of three bars appears in the menu bar, and a window opens to say th
 
 Move the pointer away and the notch closes again. [Control playback](/docs/control-playback/) covers everything the player does.
 
-When you pause, the song stays in the notch until something else plays. You can make it leave after 10 seconds or a minute instead, in Settings, and Warble then hides behind the camera. When nothing is playing, Warble shows nothing and does nothing until a song starts. If you point at the notch then, a small card shows the last song that played, with a button to play it again, and goes when you move away. Until a song has played since Warble opened, the card says "Nothing playing" instead.
+When you pause, the song stays in the notch until something else plays. You can make it leave after 10 seconds or a minute instead, in Settings, and Warble then hides behind the camera. If you point at the notch then, a small card shows that song, with a button to play it again, and goes when you move away. When no app has a song loaded at all, Warble shows nothing and does nothing until a song starts, and pointing at the notch shows a small "Nothing playing" note.
 
 > [!TIP]
 > If you left the switch off and want it later, it's **Open at login** in **Settings…**, from the menu bar icon, under **General**.
