@@ -2,7 +2,7 @@
   <img src="docs/icon.png" width="128" height="128" alt="Warble app icon">
 </p>
 
-<h1 align="center">Warble <sup>beta</sup></h1>
+<h1 align="center">Warble</h1>
 
 <p align="center">
   Your music, in your Mac's notch.<br>
@@ -10,7 +10,6 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/status-beta-yellow" alt="Beta">
   <img src="https://img.shields.io/badge/macOS-15%2B-black" alt="macOS 15 or later">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="GPL-3.0 license"></a>
   <a href="https://github.com/sponsors/LorcanChinnock"><img src="https://img.shields.io/badge/sponsor-%E2%99%A5-ea4aaa" alt="Sponsor Warble"></a>
@@ -26,8 +25,6 @@
 </p>
 
 Warble shows what's playing in the notch at the top of your Mac's screen. Hover over the notch to see the song, and click it to open the app playing it, then play, pause, skip or switch speakers. When nothing is playing, it stays out of sight, and pointing at the notch brings back the last song so you can play it again.
-
-Warble is in beta: it works, and it's still being built.
 
 ## Install
 

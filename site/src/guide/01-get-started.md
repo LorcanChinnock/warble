@@ -4,7 +4,7 @@ summary: Install Warble, open it for the first time and see what's playing in yo
 group: Get started
 ---
 
-Warble is in beta. You can use it every day, but it's still being built, so things change between versions and a few rough edges remain. It needs macOS 15 or later, and runs on Apple silicon and Intel Macs.
+Warble needs macOS 15 or later, and runs on Apple silicon and Intel Macs.
 
 ## Install Warble
 
