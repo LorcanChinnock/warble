@@ -52,7 +52,7 @@ A title, artist or album that is too long for the card waits a moment after the 
 > [!TIP]
 > Click the album art, the title or anywhere else on the notch's background to bring the app that's playing to the front. For a song playing in Safari, Chrome, Brave, Edge, Arc or Vivaldi, Warble picks the tab it's playing in. The first time, macOS asks whether Warble may control that browser; if you say no, Warble just brings the browser forward.
 >
-> Click the artist to open their page: in Spotify for a Spotify song, and on YouTube for a YouTube video in one of those browsers. For anything else, including Apple Music, Warble can't be sure which artist page is the right one, so the click opens the app instead, as the album art does.
+> Click the artist to open their page: in Spotify for a Spotify song, and on YouTube for a YouTube video in one of those browsers. The first time for Spotify, macOS asks whether Warble may control Spotify, which it needs to find the song. For anything else, including Apple Music, Warble can't be sure which artist page is the right one, so the click opens the app instead, as the album art does.
 
 ## Add a song to your Favourites in Music
 

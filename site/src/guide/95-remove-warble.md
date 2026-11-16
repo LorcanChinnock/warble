@@ -40,12 +40,12 @@ brew uninstall --cask --zap warble
 
 1. If you turned on **Open at login**, open **Settings…** from the Warble icon in the menu bar and turn it off on the **General** tab.
 2. Click the Warble icon in the menu bar and choose **Quit Warble**. If you've hidden the icon, right-click the notch instead.
-3. In Finder, open your Applications folder and drag **Warble** to the Bin.
+3. In Finder, open your Applications folder and drag **Warble** to the Trash.
 
 To clear away the rest too:
 
-1. In Finder, press <kbd>⌘⇧G</kbd>, go to `~/Library/Caches`, and drag the **dev.lorcan.Warble** folder to the Bin.
-2. Then go to `~/Library/Preferences` and drag **dev.lorcan.Warble.plist** to the Bin.
+1. In Finder, press <kbd>⌘⇧G</kbd>, go to `~/Library/Caches`, and drag the **dev.lorcan.Warble** folder to the Trash.
+2. Then go to `~/Library/Preferences` and drag **dev.lorcan.Warble.plist** to the Trash. If `~/Library/Application Support` or `~/Library/HTTPStorages` has anything named **dev.lorcan.Warble**, drag that to the Trash too.
 
 > [!NOTE]
 > If you let Warble control Music or Spotify, it may still be listed in System Settings › Privacy & Security › Automation. Once Warble is gone, that entry does nothing.

@@ -8,7 +8,7 @@ Warble normally shows whatever plays in any app, your browser included. When the
 
 ## Check the basics
 
-- **Is something playing?** A paused song stays in the notch until something else plays, unless you chose 10 seconds or 1 minute in Settings, and with nothing playing the notch is empty. Point at it to see the last song that played, with a play button, or a small "Nothing playing" note if nothing has played since Warble opened.
+- **Is something playing?** A paused song stays in the notch until something else plays, unless you chose 10 seconds or 1 minute in Settings, and with nothing playing the notch is empty. If the paused song has left, point at the notch to see it again, with a play button. If no app has a song loaded, you see a small "Nothing playing" note instead.
 - **Is an app full screen?** The notch on that display hides until you leave full screen.
 - **Is Warble running?** Look for its three-bar icon in the menu bar. If it isn't there, open Warble from your Applications folder. If it's gone after every restart, turn on **Open at login** in **Settings…**, under **General**. It's the same switch the window that opened the first time offered.
 
@@ -29,4 +29,4 @@ While Warble follows Music and Spotify itself, it needs your permission to contr
 3. Play something again.
 
 > [!NOTE]
-> Warble asks for this permission only when it can't read what's playing directly. Most people never see the request.
+> Warble also asks for this permission when it can't read what's playing directly, when you use the heart for a song in Music, and the first time you click the artist of a Spotify song.

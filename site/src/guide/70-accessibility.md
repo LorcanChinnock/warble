@@ -13,7 +13,7 @@ The play/pause, next and previous keys on your keyboard control what's playing, 
 ## Use VoiceOver
 
 - The closed notch reads "Now playing", then the song and the artist, and whether it's playing or paused.
-- In the open notch, every button has a name, and the speaker beside the volume reads **Mute** or **Unmute**. The position and the volume work like any other slider. On the song, the Actions rotor has **Go to the artist**.
+- In the open notch, every button has a name, and the speaker beside the volume reads **Mute** or **Unmute**. The position reads as the time played of the whole song, such as "1:12 of 3:20", and the volume as a percentage, or "Muted". On the song, the Actions rotor has **Go to the artist**.
 
 ## Increase Contrast and Reduce Motion
 

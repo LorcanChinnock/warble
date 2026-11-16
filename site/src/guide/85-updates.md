@@ -47,7 +47,7 @@ The other buttons wait:
 - **Remind Me Tomorrow** offers the version again at the next day's check. Closing the window does the same. It's there only while Warble checks automatically, since otherwise there's no next check.
 - **Skip This Version** stops offering that version. Warble offers the next one when it comes out.
 
-An important fix may come without either button, so it can't be put off.
+An important fix may come without either button, so it can't be put off. If an earlier check already downloaded and unpacked the version, the middle button is **Install on Quit** instead, and an update with nothing to download, only a page to read, has **Learn More…** as its main button.
 
 ## Install updates automatically
 

@@ -13,7 +13,7 @@ Warble works without changing anything. The settings you're most likely to want 
 
 While Settings or the Software Update window is open, Warble has an icon in the Dock and its own menu at the top of the screen, and <kbd>⌘,</kbd> works from there too.
 
-Settings is a standard Mac window with three tabs along the top: Notch, General and About. It opens on Notch, then on whichever tab you last used until Warble quits, and it follows your Mac's light or dark appearance. **About Warble**, at the top of both menus, opens it on the About tab.
+Settings is a standard Mac window with three tabs along the top: Notch, General and About. It opens on Notch, then on whichever tab you last used until Warble quits, and it follows your Mac's light or dark appearance. **About Warble**, in both menus, opens it on the About tab.
 
 ![The Notch tab of Settings: a life-size preview of the notch on a pastel strip, then the settings in three groups, When a song is paused, Opened notch and Displays without a notch](../../../docs/media/settings-notch.png "The Notch tab. Everything under the preview changes the notch, and the preview shows each change.")
 
@@ -43,7 +43,7 @@ These two settings apply only where Warble draws a notch of its own. Your MacBoo
 ## General
 
 - **Open at login.** Off at first. Turn it on, and Warble opens each time you log in, so it's there after a restart. It's the same switch as Warble's entry in System Settings › General › Login Items & Extensions, and the same one the window from your first launch offers. If you turn Warble off in System Settings, the text under the switch says so, and **Open Login Items…** takes you there to turn it back on. If macOS won't let Warble change the switch, the text under it says so. Restarting your Mac usually fixes that, because the part of macOS that keeps the login items list can get stuck after weeks without a restart.
-- **Help** opens this guide, or its [When nothing shows](/docs/when-nothing-shows/) page, in your browser.
+- Under **Help**, **User guide** opens this guide and **If nothing shows in the notch** opens its [When nothing shows](/docs/when-nothing-shows/) page, both in your browser.
 
 ## About
 
