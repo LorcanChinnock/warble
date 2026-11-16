@@ -42,6 +42,8 @@ struct VolumeSlider: View {
             }
             .accessibilityRepresentation {
                 Slider(value: Binding(get: { volume }, set: { set($0) }), in: 0...1) { Text("Volume") }
+                    // VoiceOver reads this, not the slider's raw 0 to 1.
+                    .accessibilityValue(isMuted ? Text("Muted") : Text("\(Int((volume * 100).rounded())) percent"))
             }
         }
         .font(.system(size: 10))
