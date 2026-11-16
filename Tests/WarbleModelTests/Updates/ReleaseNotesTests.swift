@@ -56,6 +56,29 @@ private let embedded = """
     #expect(notes.since("v0.1.0-beta.22").versions.map(\.version) == ["0.2.0", "0.1.0-beta.23"])
 }
 
+@Test func releaseNotesReadAWrittenSummaryAsItsOwnGroup() {
+    // The release workflow puts docs/releases/<version>.md under the version heading, above release-please's groups.
+    let notes = ReleaseNotes("""
+    ## [1.0.0](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.28...v1.0.0) (2026-12-01)
+
+    Warble 1.0 is the first stable release of Warble.
+
+    ### Highlights
+
+    - Settings is a standard Mac window with a life-size preview of the notch
+
+
+    ### Bug Fixes
+
+    * **update:** let the update window be dragged ([#506](https://github.com/LorcanChinnock/warble/issues/506)) ([0237480](https://github.com/LorcanChinnock/warble/commit/0237480))
+    """, format: .markdown)
+    #expect(notes.versions.map(\.version) == ["1.0.0"])
+    #expect(notes.versions[0].groups == [
+        ReleaseNotes.Group(kind: .other("Highlights"), items: ["Settings is a standard Mac window with a life-size preview of the notch"]),
+        ReleaseNotes.Group(kind: .fixed, items: ["Let the update window be dragged"]),
+    ])
+}
+
 @Test func releaseNotesKeepEveryVersionWhenTheInstalledOneIsOlderThanAll() {
     let notes = ReleaseNotes(embedded, format: .markdown)
     #expect(notes.since("0.1.0-beta.3").versions.count == 3)
