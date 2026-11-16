@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.0-beta.27](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.26...v0.1.0-beta.27) (2026-11-16)
+
+
+### Bug Fixes
+
+* **i18n:** translate the 18 strings that showed in English ([#501](https://github.com/LorcanChinnock/warble/issues/501)) ([1bd3ea4](https://github.com/LorcanChinnock/warble/commit/1bd3ea4fa6de4074332ec762071f8353c836d3b6))
+* **notch:** give VoiceOver the volume as a percentage ([#504](https://github.com/LorcanChinnock/warble/issues/504)) ([0872db4](https://github.com/LorcanChinnock/warble/commit/0872db4f26862422519f3df469b2d988fd5fef1d)), closes [#503](https://github.com/LorcanChinnock/warble/issues/503)
+* **notch:** show the play icon on the empty notch's last-song card ([#500](https://github.com/LorcanChinnock/warble/issues/500)) ([a89010d](https://github.com/LorcanChinnock/warble/commit/a89010d38f78446b7c2a5636f81e570149db7572))
+
 ## [0.1.0-beta.26](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.25...v0.1.0-beta.26) (2026-11-15)
 
 
