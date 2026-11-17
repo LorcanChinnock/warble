@@ -62,6 +62,12 @@ private let start = Date(timeIntervalSinceReferenceDate: 800_000_000)
     #expect(offer(stage: .installing).message == .relaunch)
 }
 
+@Test func anOfferOfOnePointOhToABetaShowsBothVersions() {
+    // The build number counts commits, so Sparkle offers 1.0.0 over any beta; the window shows both versions as they are.
+    let release = UpdateOffer(version: "1.0.0", build: "600", installedVersion: "0.1.0-beta.26", installedBuild: "560")
+    #expect(release.versions == ("1.0.0", "0.1.0-beta.26"))
+}
+
 @Test func offerVersionsAddBuildsWhenTheyReadTheSame() {
     #expect(offer().versions == ("0.2.0", "0.1.0-beta.14"))
     let same = UpdateOffer(version: "0.2.0", build: "201", installedVersion: "0.2.0", installedBuild: "200")

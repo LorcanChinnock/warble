@@ -403,7 +403,7 @@ final class UpdateUserDriver: NSObject, SPUUserDriver {
     /// `-updateWindowPreview offer|checking|downloading|ready|installed` shows the window in that state with made-up
     /// details, since a dev build has no feed. Its buttons only close it, and Cancel while downloading ends the download.
     func preview(_ name: String) {
-        let offer = UpdateOffer(version: "0.2.0", build: "200", installedVersion: "0.1.0-beta.14", installedBuild: "114", downloadSize: 6_000_000)
+        let offer = UpdateOffer(version: "1.0.0", build: "600", installedVersion: "0.1.0-beta.27", installedBuild: "580", downloadSize: 6_000_000)
         model.offer = offer
         model.buttons = UpdateOfferButtons(offer: offer, automaticallyChecks: true, allowsAutomaticUpdates: true)
         model.notes = ReleaseNotes(Self.previewNotes, format: .markdown).since(offer.installedVersion)
@@ -424,7 +424,7 @@ final class UpdateUserDriver: NSObject, SPUUserDriver {
         case "ready":
             model.phase = .ready
         case "installed":
-            model.phase = .installedWhileRunning(version: "0.2.0")
+            model.phase = .installedWhileRunning(version: "1.0.0")
         default:
             model.phase = .offer
         }
@@ -432,7 +432,7 @@ final class UpdateUserDriver: NSObject, SPUUserDriver {
     }
 
     private static let previewNotes = """
-    ## [0.2.0](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.15...v0.2.0) (2026-11-20)
+    ## [1.0.0](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.29...v1.0.0) (2026-12-01)
 
     ### Features
 
@@ -444,13 +444,13 @@ final class UpdateUserDriver: NSObject, SPUUserDriver {
 
     * **menu:** the menu bar icon keeps its bars while an update waits ([#431](https://github.com/LorcanChinnock/warble/issues/431))
 
-    ## [0.1.0-beta.15](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.14...v0.1.0-beta.15) (2026-11-12)
+    ## [0.1.0-beta.29](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.28...v0.1.0-beta.29) (2026-11-24)
 
     ### Bug Fixes
 
     * **notch:** the playback bar's ends line up with the volume bar ([#397](https://github.com/LorcanChinnock/warble/issues/397))
 
-    ## [0.1.0-beta.14](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.13...v0.1.0-beta.14) (2026-11-01)
+    ## [0.1.0-beta.28](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.27...v0.1.0-beta.28) (2026-11-16)
 
     ### Features
 
