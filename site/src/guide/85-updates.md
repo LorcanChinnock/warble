@@ -27,7 +27,7 @@ The About tab of Settings shows the version you have, with a line under it:
 
 The menu bar icon keeps its three bars and gains a small dot at its top right. In both menus, **Update to 0.2.0…**, with the new version's number and a yellow dot, takes the place of **Check for Updates…**. Choose it to open the Software Update window.
 
-![Warble's menu bar icon with a small dot at its top right, and its menu open, with About Warble, Update to 0.2.0… and a yellow dot, Settings… and Quit Warble](../../../docs/media/menu-update.png "The dot on the menu bar icon, and the menu item that opens the update.")
+![Warble's menu bar menu open, with About Warble, Update to 1.0.0… and a yellow dot, Settings… and Quit Warble](../../../docs/media/menu-update.png "The menu item that opens the waiting update.")
 
 If you let Warble check automatically, the Software Update window also opens by itself when a check finds a new version. Apart from the window at your first launch and the question about checking, it's the only window Warble opens on its own.
 
@@ -35,7 +35,7 @@ If you let Warble check automatically, the Software Update window also opens by 
 
 The Software Update window says which version is ready and which one you have, how big the download is, and that Warble quits and reopens to finish. Under that is what's new in every version since yours.
 
-![The Software Update window: Warble 0.2.0 is ready, the version you have and the download size, a scrolling list of what's new and fixed in each version, a checkbox to install updates automatically from now on, and the buttons Skip This Version, Remind Me Tomorrow and Install and Relaunch](../../../docs/media/update-offer.png "The Software Update window, with what changed since your version.")
+![The Software Update window: Warble 1.0.0 is ready, the version you have and the download size, a scrolling list of what's new and fixed in each version, a checkbox to install updates automatically from now on, and the buttons Skip This Version, Remind Me Tomorrow and Install and Relaunch](../../../docs/media/update-offer.png "The Software Update window, with what changed since your version.")
 
 1. Click **Install and Relaunch**. The window shows the download's progress and about how long is left.
 2. When the download finishes, click **Relaunch Now**. Warble quits and opens the new version, and your music keeps playing.
