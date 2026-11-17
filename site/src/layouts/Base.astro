@@ -15,9 +15,9 @@ interface Props {
 
 const {
   title,
-  description = 'Music and media controls in your Mac\'s notch. Free and open source.',
+  description = 'Warble shows what\'s playing on your Mac in its notch, from Music, Spotify or a browser, with buttons to play, pause, skip and switch speakers. Free and open source.',
   image = '/og.png',
-  imageAlt = 'Your music, in the notch. Warble\'s open notch shows A Moment Apart by ODESZA. Free and open source, for Mac.',
+  imageAlt = 'Your music, in the notch. Warble\'s notch hangs open from the top of a Mac\'s screen, showing the song Paper Lanterns by Juniper Hale with its position, playback buttons and volume.',
   noindex = false,
   guide = false,
 } = Astro.props;
@@ -66,7 +66,7 @@ const footer: { title: string; links: [string, string][] }[] = [
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {!noindex && <link rel="canonical" href={canonical} />}
     <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#fbf4e4" media="(prefers-color-scheme: light)" />
