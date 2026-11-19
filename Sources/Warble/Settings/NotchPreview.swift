@@ -48,7 +48,7 @@ final class PreviewNotch {
 /// `ExpandedContent`), at life size or scaled down to fit `height`, with the song that's playing or, when nothing is, a
 /// made-up one. It rests as a notch does, with the art, the bars and, when the setting is on, the title, and opens into
 /// the card when the pointer reaches it. It stays open after the pointer leaves, so a setting's change shows without
-/// pointing at it again, and a click on it closes it; its controls do nothing. A change to the title font, the card size
+/// pointing at it again. Only a click closes it, and the pointer reaching it again opens it again. Its controls do nothing. A change to the title font, the card size
 /// or the heart opens a closed card for a couple of seconds to show the change, unless Reduce Motion is on. A change to
 /// the pause or external-display setting pauses the song and, a beat later, ends it as those settings would
 /// (`PreviewEnding`); it holds that end until the pointer leaves the preview, or another setting changes, then plays
@@ -89,9 +89,6 @@ struct NotchPreview: View {
     @State private var pauses = 0
     /// Counts the changes that open the card, so each one closes it after its own wait.
     @State private var peeks = 0
-    /// Set by a click that closes the card, while the pointer is still on the preview, so the shape shrinking under the
-    /// pointer doesn't open it again; the pointer leaving the preview clears it.
-    @State private var closedByClick = false
     /// Whether the preview has keyboard focus, for the outline drawn in the notch's shape in place of the system's
     /// rectangle, which stayed at the old size while the shape morphed.
     @FocusState private var isFocused: Bool
@@ -144,7 +141,6 @@ struct NotchPreview: View {
                 guard !holdsOpen else { return }
                 isPeeking = false
                 morph { isOpen.toggle() }
-                closedByClick = !isOpen
             } label: {
                 ZStack(alignment: .top) {
                     shape.fill(Native.panel)
@@ -201,7 +197,7 @@ struct NotchPreview: View {
             .focused($isFocused)
             .focusEffectDisabled()
             .onHover { inside in
-                guard inside, !closedByClick else { return }
+                guard inside else { return }
                 isPeeking = false
                 morph { isOpen = true }
             }
@@ -229,9 +225,7 @@ struct NotchPreview: View {
                 .allowsHitTesting(false)
         }
         .onHover { inside in
-            guard !inside else { return }
-            closedByClick = false
-            if isPaused { play() }
+            if !inside, isPaused { play() }
         }
         .onChange(of: Inputs(song: song, state: state, showsTitle: showsTitle, cardSize: cardSize, notchFont: notchFont, favourite: favourite, volume: live.volume, isMuted: live.isMuted, outputs: live.outputs, currentOutput: live.currentOutput), initial: true) { feed(state: state) }
         .onChange(of: isOpen) { if isOpen { startedAt = .now } }
