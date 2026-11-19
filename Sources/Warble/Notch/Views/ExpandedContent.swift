@@ -85,6 +85,7 @@ struct ExpandedContent: View {
             PlaybackControls(playback: playback, send: model.player.send)
             Spacer(minLength: 0)
             HStack(spacing: 8) {
+                ZStack(alignment: .leading) {
                 if let kept = model.player.keptOutput {
                     // macOS puts in-ear AirPods back after a switch away from them, which only System Settings can undo.
                     Text("macOS kept the sound on \(kept). Switch in System Settings › Sound instead.")
@@ -93,11 +94,17 @@ struct ExpandedContent: View {
                         .lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: .infinity, minHeight: 24, alignment: .leading)
+                        .transition(.opacity)
                 } else if let volume = model.player.volume {
                     VolumeSlider(volume: model.player.isMuted ? 0 : volume, isMuted: model.player.isMuted, set: model.player.setVolume, toggleMute: model.player.toggleMute)
+                        .transition(.opacity)
                 } else {
                     Spacer(minLength: 0)
                 }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                // A fade, which Reduce Motion keeps, since nothing moves.
+                .animation(Native.statusSymbolSwap, value: model.player.keptOutput != nil)
                 OutputButton(model: model)
                     .frame(width: 34, height: 24)
             }
