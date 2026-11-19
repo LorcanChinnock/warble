@@ -35,3 +35,15 @@ import Testing
 @Test func theContentFinishesFadingInSoonAfterTheShapeHasOpened() {
     #expect(NotchMotion.contentDelay + NotchMotion.contentIn < NotchMotion.morph + 0.1)
 }
+
+@Test func aPressedButtonShrinksQuicklyAndOnlyALittle() {
+    #expect(NotchMotion.pressScale < 1 && NotchMotion.pressScale > 0.8)
+    #expect(NotchMotion.pressDown < 0.12)
+    #expect(NotchMotion.pressNudge > 0 && NotchMotion.pressNudge < 6)
+}
+
+@Test func aReleasedButtonSpringsBackWithAnOvershootAndSettlesWithinTheMorph() {
+    #expect(NotchMotion.pressReleaseDamping < 1)
+    #expect(NotchMotion.pressReleaseResponse < NotchMotion.morph + 0.1)
+    #expect(NotchMotion.symbolSwap <= NotchMotion.morph)
+}
