@@ -89,6 +89,12 @@ struct NotchPreview: View {
     @State private var pauses = 0
     /// Counts the changes that open the card, so each one closes it after its own wait.
     @State private var peeks = 0
+    /// Set by a click that closes the card, while the pointer is still on the preview, so the shape shrinking under the
+    /// pointer doesn't open it again; the pointer leaving the preview clears it.
+    @State private var closedByClick = false
+    /// Whether the preview has keyboard focus, for the outline drawn in the notch's shape in place of the system's
+    /// rectangle, which stayed at the old size while the shape morphed.
+    @FocusState private var isFocused: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// What the preview shows: the song that's playing, or the made-up one, held where it was when the song is paused.
@@ -138,6 +144,7 @@ struct NotchPreview: View {
                 guard !holdsOpen else { return }
                 isPeeking = false
                 isOpen.toggle()
+                closedByClick = !isOpen
             } label: {
                 ZStack(alignment: .top) {
                     shape.fill(Native.panel)
@@ -154,6 +161,19 @@ struct NotchPreview: View {
                                 .transition(ContentTransition())
                         }
                     }
+                    // Plain assignments open and close the card, so under Reduce Motion, where the morph is off, this
+                    // gives its insertion and removal the fade; with motion on, the morph and `ContentTransition` time it.
+                    .transaction(value: state) { if reduceMotion { $0.animation = Native.fade } }
+                    if opened, !holdsOpen {
+                        Text("Click to close")
+                            .font(.system(size: 9, weight: .medium))
+                            .foregroundStyle(Native.secondary)
+                            .opacity(0.6)
+                            .frame(height: housing.height)
+                            .allowsHitTesting(false)
+                            .accessibilityHidden(true)
+                            .transition(ContentTransition())
+                    }
                     RestingContent(playback: song, artwork: preview.player.artwork, notch: housing, model: preview.model)
                         .frame(width: NotchLayout.frame(.resting, notch: housing)?.width)
                         .allowsHitTesting(false)
@@ -168,14 +188,23 @@ struct NotchPreview: View {
                 }
                 .frame(width: size.width, height: size.height, alignment: .top)
                 .mask(alignment: .top) { shape.frame(width: size.width, height: size.height) }
+                .overlay(alignment: .top) {
+                    if isFocused {
+                        shape.stroke(Color.accentColor, lineWidth: 3)
+                            .frame(width: size.width, height: size.height)
+                            .allowsHitTesting(false)
+                    }
+                }
                 .contentShape(shape)
             }
             .buttonStyle(.notch)
             // Held open, a press does nothing, so it takes no keyboard focus; VoiceOver still reads it. Otherwise it takes
             // focus as a button does, only while keyboard navigation is on, rather than on every click and window open.
             .focusable(!holdsOpen, interactions: .activate)
+            .focused($isFocused)
+            .focusEffectDisabled()
             .onHover { inside in
-                guard inside else { return }
+                guard inside, !closedByClick else { return }
                 isPeeking = false
                 isOpen = true
             }
@@ -206,7 +235,9 @@ struct NotchPreview: View {
                 .allowsHitTesting(false)
         }
         .onHover { inside in
-            if !inside, isPaused { play() }
+            guard !inside else { return }
+            closedByClick = false
+            if isPaused { play() }
         }
         .onChange(of: Inputs(song: song, state: state, showsTitle: showsTitle, cardSize: cardSize, notchFont: notchFont, favourite: favourite, volume: live.volume, isMuted: live.isMuted, outputs: live.outputs, currentOutput: live.currentOutput), initial: true) { feed(state: state) }
         .onChange(of: isOpen) { if isOpen { startedAt = .now } }
