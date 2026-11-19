@@ -54,7 +54,7 @@ private struct ContentID: Hashable {
 
 /// How a state's content comes and goes while the shape morphs: in a moment after the shape starts to grow, so the shape
 /// uncovers it, and out quickly, before the shape closes over it.
-private struct ContentTransition: Transition {
+struct ContentTransition: Transition {
     func body(content: Content, phase: TransitionPhase) -> some View {
         content
             .opacity(phase.isIdentity ? 1 : 0)

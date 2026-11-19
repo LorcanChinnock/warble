@@ -141,32 +141,33 @@ struct NotchPreview: View {
             } label: {
                 ZStack(alignment: .top) {
                     shape.fill(Native.panel)
-                    // With Reduce Motion only the content fades; the shape changes at once, as the notch's does.
+                    // Each state's content comes and goes as the real notch's does (`ContentTransition`): in a moment
+                    // after the shape starts to grow, so it isn't cut off by a shape still too small for it, and out
+                    // quickly before the shape closes over it. With Reduce Motion only the content fades; the shape
+                    // changes at once, as the notch's does.
                     // Only while open, so its scrubber's timeline isn't ticking behind a closed notch.
                     ZStack {
                         if state == .expanded {
                             cardContent(song)
                                 .scaleEffect(cardSize.scale, anchor: .top)
                                 .frame(width: size.width, height: size.height, alignment: .top)
-                                .transition(.opacity)
+                                .transition(ContentTransition())
                         }
                     }
-                    .animation(Native.fade, value: state)
                     RestingContent(playback: song, artwork: preview.player.artwork, notch: housing, model: preview.model)
                         .frame(width: NotchLayout.frame(.resting, notch: housing)?.width)
                         .allowsHitTesting(false)
                         .opacity(state == .resting ? 1 : 0)
-                        .animation(Native.fade, value: state)
+                        .animation(state == .resting ? Native.contentIn : Native.contentOut, value: state)
                     NoteContent(notch: housing)
                         .frame(width: size.width, height: size.height)
                         .allowsHitTesting(false)
                         .accessibilityHidden(true)
                         .opacity(state == .note ? 1 : 0)
-                        .animation(Native.fade, value: state)
+                        .animation(state == .note ? Native.contentIn : Native.contentOut, value: state)
                 }
                 .frame(width: size.width, height: size.height, alignment: .top)
                 .mask(alignment: .top) { shape.frame(width: size.width, height: size.height) }
-                .animation(reduceMotion ? nil : Native.morph, value: state)
                 .contentShape(shape)
             }
             .buttonStyle(.notch)
@@ -193,6 +194,9 @@ struct NotchPreview: View {
             // Laid out at full size and drawn smaller, so the real views keep their proportions.
             .scaleEffect(scale, anchor: .top)
             .frame(width: size.width * scale, height: size.height * scale, alignment: .top)
+            // Outside the frame that sizes the notch on the strip, so the shape and its place there morph together. Inside
+            // it, the frame jumped to the new size at once and the centred notch shifted sideways before the shape moved.
+            .animation(reduceMotion ? nil : Native.morph, value: state)
         }
         .frame(height: height)
         .clipShape(RoundedRectangle(cornerRadius: Self.radius, style: .continuous))
