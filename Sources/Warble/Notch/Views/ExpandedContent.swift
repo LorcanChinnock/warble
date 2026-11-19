@@ -9,14 +9,25 @@ struct ExpandedContent: View {
     let playback: PlaybackState
     let artwork: NSImage?
     let model: NotchModel
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    /// The tile's width: a wide thumbnail grows it sideways, up to a limit, and the text moves over to make room.
+    private var tileWidth: CGFloat {
+        artwork.map { min(100, max(56, 56 * $0.size.width / max($0.size.height, 1))) } ?? 56
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 10) {
                 Button(action: model.player.openApp) {
-                    // A wide thumbnail grows the tile sideways, up to a limit, and the text moves over to make room.
-                    Artwork(image: artwork)
-                        .frame(width: artwork.map { min(100, max(56, 56 * $0.size.width / max($0.size.height, 1))) } ?? 56, height: 56)
+                    // New art replaces the old in place, which shrinks away as the new settles in.
+                    ZStack {
+                        Artwork(image: artwork)
+                            .id(artwork.map(ObjectIdentifier.init))
+                            .transition(ArtTransition(reduceMotion: reduceMotion))
+                    }
+                    .animation(reduceMotion ? Native.trackArtFade : Native.trackArtIn, value: artwork.map(ObjectIdentifier.init))
+                    .frame(width: tileWidth, height: 56)
                         .hoverWash(RoundedRectangle(cornerRadius: 8, style: .continuous))
                 }
                 .buttonStyle(.notch)
@@ -24,16 +35,22 @@ struct ExpandedContent: View {
                 .fixedSize()
                 .accessibilityLabel(model.player.appName.map { Text("Open \($0)") } ?? Text("Open the app that's playing"))
                 VStack(alignment: .leading, spacing: 2) {
-                    MarqueeLine(text: playback.title, font: Native.titleFont(model.player.notchFont, size: 16, weight: .semibold), tint: model.player.tint, isPlaying: playback.isPlaying)
-                        // Room for the heart, which sits over the end of the line.
-                        .padding(.trailing, model.player.favourite == nil ? 0 : FavouriteButton.size)
+                    TrackLine(key: playback.title, index: 0) {
+                        MarqueeLine(text: playback.title, font: Native.titleFont(model.player.notchFont, size: 16, weight: .semibold), tint: model.player.tint, isPlaying: playback.isPlaying)
+                            // Room for the heart, which sits over the end of the line.
+                            .padding(.trailing, model.player.favourite == nil ? 0 : FavouriteButton.size)
+                    }
                     if let artist = playback.artist {
-                        MarqueeLine(text: artist, font: .systemFont(ofSize: 13), isSecondary: true, isPlaying: playback.isPlaying)
-                            .contentShape(Rectangle())
-                            .onTapGesture { model.player.openArtist() }
+                        TrackLine(key: artist, index: 1) {
+                            MarqueeLine(text: artist, font: .systemFont(ofSize: 13), isSecondary: true, isPlaying: playback.isPlaying)
+                                .contentShape(Rectangle())
+                                .onTapGesture { model.player.openArtist() }
+                        }
                     }
                     if let album = playback.album {
-                        MarqueeLine(text: album, font: .systemFont(ofSize: 13), isSecondary: true, isPlaying: playback.isPlaying)
+                        TrackLine(key: album, index: 2) {
+                            MarqueeLine(text: album, font: .systemFont(ofSize: 13), isSecondary: true, isPlaying: playback.isPlaying)
+                        }
                     }
                 }
                 // A click on the title or album opens the app too, as the art does, and one on the artist their page; the
@@ -57,6 +74,9 @@ struct ExpandedContent: View {
                 }
                 Spacer(minLength: 0)
             }
+            // On the row, not the tile, so the text beside the tile slides over as it changes width rather than
+            // jumping there first. The art and each line keep their own keyed animations inside it.
+            .animation(reduceMotion ? nil : Native.trackTileWidth, value: tileWidth)
             // The art lines up with where a short elapsed time starts, which is right-aligned in a 34 pt column.
             .padding(.leading, 10)
             Spacer(minLength: 0)
@@ -85,5 +105,49 @@ struct ExpandedContent: View {
         .padding(.horizontal, 16)
         .padding(.top, 6)
         .padding(.bottom, 10)
+    }
+}
+
+/// New art for the open card: the old art fades and shrinks a touch, and the new art starts a touch small and settles
+/// into place with a small spring overshoot. The card's padding has room for the overshoot. With Reduce Motion it only fades.
+private struct ArtTransition: Transition {
+    let reduceMotion: Bool
+
+    func body(content: Content, phase: TransitionPhase) -> some View {
+        content
+            .opacity(phase.isIdentity ? 1 : 0)
+            .scaleEffect(phase.isIdentity || reduceMotion ? 1 : NotchMotion.trackArtScale)
+            .animation(phase == .didDisappear ? Native.trackArtOut : (reduceMotion ? Native.trackArtFade : Native.trackArtIn), value: phase)
+    }
+}
+
+/// One line of the track's text. When `key` changes, the old line fades out where it is and the new one slides up into
+/// place, `index` lines down starting after the one above. The ZStack keeps both in the same place, so the card doesn't
+/// reflow while they overlap.
+private struct TrackLine<Content: View>: View {
+    let key: String
+    let index: Int
+    @ViewBuilder let content: Content
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        ZStack(alignment: .leading) {
+            content
+                .id(key)
+                .transition(LineTransition(index: index, reduceMotion: reduceMotion))
+        }
+        .animation(reduceMotion ? Native.trackArtFade : Native.trackLineOut, value: key)
+    }
+}
+
+private struct LineTransition: Transition {
+    let index: Int
+    let reduceMotion: Bool
+
+    func body(content: Content, phase: TransitionPhase) -> some View {
+        content
+            .opacity(phase.isIdentity ? 1 : 0)
+            .offset(y: phase == .willAppear && !reduceMotion ? NotchMotion.trackLineOffset : 0)
+            .animation(phase == .didDisappear ? Native.trackLineOut : (reduceMotion ? Native.trackArtFade : Native.trackLineIn(index, reduceMotion: false)), value: phase)
     }
 }

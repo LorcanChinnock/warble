@@ -70,4 +70,19 @@ enum Native {
     static let glowChangeDuration = 0.6
     /// The solid border drawn instead of the glow while Increase Contrast is on.
     static let contrastBorder: CGFloat = 2
+
+    /// The old art leaving when the track changes under the open card: a quick fade as it shrinks a little.
+    static let trackArtOut = Animation.easeIn(duration: NotchMotion.trackArtOut)
+    /// The new art settling in with a small overshoot. Only for content inside the card, never the notch's shape.
+    static let trackArtIn = Animation.spring(duration: NotchMotion.trackArtSpringDuration, bounce: NotchMotion.trackArtSpringBounce)
+    /// The new art's fade, which is all it does with Reduce Motion on.
+    static let trackArtFade = Animation.easeOut(duration: NotchMotion.trackArtIn)
+    /// The art tile gliding to a new width, with no bounce.
+    static let trackTileWidth = Animation.smooth(duration: NotchMotion.trackTileWidth)
+    /// A line of text sliding in for a new track, `index` lines down, after the one above it.
+    static func trackLineIn(_ index: Int, reduceMotion: Bool) -> Animation {
+        .easeOut(duration: NotchMotion.trackLineIn).delay(NotchMotion.trackLineStart(index, reduceMotion: reduceMotion))
+    }
+    /// The old line of text fading out.
+    static let trackLineOut = Animation.easeIn(duration: NotchMotion.trackLineOut)
 }
