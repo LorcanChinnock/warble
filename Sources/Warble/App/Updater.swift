@@ -14,8 +14,8 @@ private let log = Logger.warble("update")
 @MainActor
 @Observable
 final class Updater: NSObject {
-    /// Set while a scheduled check has found an update the user hasn't looked at yet. A menu bar app's
-    /// update window can open behind other windows, so the menu offers it too.
+    /// Set while a scheduled check has found an update the user hasn't looked at yet. The window opens on top, but it
+    /// can be covered or closed before it's read, so the menu offers it too.
     private(set) var pendingVersion: String?
     private(set) var canCheckForUpdates = false
     /// Set from the moment Sparkle starts a check, scheduled or asked for, until it finds an update or nothing or fails.
@@ -165,7 +165,7 @@ final class Updater: NSObject {
         driver.cancelCheck()
     }
 
-    /// The window offered a version. A scheduled check's offer can open behind other windows, so the menu offers it too.
+    /// The window offered a version. A scheduled check's offer can be missed, so the menu offers it too.
     func updateShown(version: String, userInitiated: Bool) {
         if !userInitiated {
             pendingVersion = version

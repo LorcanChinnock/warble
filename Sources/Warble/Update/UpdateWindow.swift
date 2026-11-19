@@ -98,9 +98,9 @@ final class UpdateWindow: NSWindow, NSWindowDelegate {
         let height = NSView.fittingHeight(of: UpdateView(model: model), width: width)
         super.init(contentRect: NSRect(x: 0, y: 0, width: width, height: height), styleMask: [.titled, .closable], backing: .buffered, defer: false)
         title = String(localized: "Software Update")
-        // A normal level, like Sparkle's window: an update offered while you work can sit behind other windows, and the
-        // menu offers it again.
-        level = .normal
+        // Floating, so an update offered while you work opens on top of other windows, other apps' included, even while
+        // Warble isn't the active app. The menu still offers it again.
+        level = .floating
         hidesOnDeactivate = false
         isReleasedWhenClosed = false
         collectionBehavior = [.moveToActiveSpace, .fullScreenAuxiliary]
@@ -143,22 +143,12 @@ final class UpdateWindow: NSWindow, NSWindowDelegate {
                 NSApp.activate()
             }
         } else {
-            orderFront(nil)
+            // On top, other apps' windows included, without making Warble active or the window key.
+            orderFrontRegardless()
         }
         NSAccessibility.post(element: NSApp as Any, notification: .announcementRequested, userInfo: [
             .announcement: model.title, .priority: NSAccessibilityPriorityLevel.high.rawValue,
         ])
-    }
-
-    /// Puts the window behind the others, for an update a scheduled check found while you were busy in another of
-    /// Warble's windows.
-    func presentBehind() {
-        DockIcon.show(for: .update)
-        if !shownOnce {
-            shownOnce = true
-            center()
-        }
-        orderBack(nil)
     }
 
     override func orderOut(_ sender: Any?) {
