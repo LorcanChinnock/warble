@@ -69,4 +69,15 @@ public enum NotchMotion {
     public static func trackLineStart(_ index: Int, reduceMotion: Bool = false) -> TimeInterval {
         reduceMotion ? 0 : trackLineDelay + Double(index) * trackLineStagger
     }
+    /// How small a playback button gets, as a fraction of its size, while it's held down.
+    public static let pressScale = 0.88
+    /// How far, in points, previous and next slide toward their skip direction while held down.
+    public static let pressNudge: Double = 3
+    /// How long a button takes to shrink once pressed. It's quick so the press reads as the click itself.
+    public static let pressDown: TimeInterval = 0.08
+    /// The spring a pressed button returns on, as its response in seconds and its damping. Under 1 so it overshoots a little.
+    public static let pressReleaseResponse: TimeInterval = 0.32
+    public static let pressReleaseDamping = 0.55
+    /// How long the play and pause symbols take to swap.
+    public static let symbolSwap: TimeInterval = 0.3
 }

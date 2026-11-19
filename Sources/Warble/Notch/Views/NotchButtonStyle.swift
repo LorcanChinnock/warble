@@ -2,19 +2,46 @@ import AppKit
 import Carbon.HIToolbox
 import SwiftUI
 import WarbleCore
+import WarbleModel
 
 /// A plain button that Space or Return also presses while it has the focus ring, with Keyboard navigation on. A plain
 /// SwiftUI button takes the focus but not the key, which would fall through to the notch's own keys (`NotchKey`).
+///
+/// With `pressNudge` set it also gives the press a visual answer (see `PressFeedback`). Only the playback controls opt
+/// in; the other users, the volume and favourite buttons and the Settings preview, keep the hover wash alone: the
+/// preview is a picture of the notch and shouldn't react, and the small icons elsewhere gain little from a bounce.
 struct NotchButtonStyle: PrimitiveButtonStyle {
+    /// Nil for no press effect, otherwise how far the label slides sideways while held (0 for none, negative for left).
+    var pressNudge: CGFloat?
+
     func makeBody(configuration: Configuration) -> some View {
         Button(action: configuration.trigger) { configuration.label }
-            .buttonStyle(.plain)
+            .buttonStyle(PressFeedback(nudge: pressNudge))
             .pressedByKeyboard(configuration.trigger)
     }
 }
 
+/// Plain, or with the press effect. It only restyles the label from `isPressed`, so the action still runs on the click
+/// exactly as a plain button's does.
+private struct PressFeedback: ButtonStyle {
+    let nudge: CGFloat?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func makeBody(configuration: Configuration) -> some View {
+        let pressed = configuration.isPressed && nudge != nil
+        configuration.label
+            .scaleEffect(pressed && !reduceMotion ? NotchMotion.pressScale : 1)
+            .offset(x: pressed && !reduceMotion ? nudge ?? 0 : 0)
+            // With Reduce Motion nothing moves; the label only dims a little while held.
+            .opacity(pressed && reduceMotion ? 0.7 : 1)
+            .animation(pressed ? Native.pressDown : (reduceMotion ? Native.fade : Native.pressRelease), value: pressed)
+    }
+}
+
 extension PrimitiveButtonStyle where Self == NotchButtonStyle {
-    static var notch: NotchButtonStyle { NotchButtonStyle() }
+    static var notch: NotchButtonStyle { NotchButtonStyle(pressNudge: nil) }
+    /// The notch style plus a press-down scale and, with `nudge`, a slide in the skip direction.
+    static func notchPress(nudge: CGFloat = 0) -> NotchButtonStyle { NotchButtonStyle(pressNudge: nudge) }
 }
 
 extension View {
