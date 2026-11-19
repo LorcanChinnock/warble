@@ -65,3 +65,21 @@ enum Native {
     /// The solid border drawn instead of the glow while Increase Contrast is on.
     static let contrastBorder: CGFloat = 2
 }
+
+// MARK: - Small delights
+
+extension Native {
+    /// The heart swelling when it's liked, quick and bouncy. It settles back with `heartSettle`, and unliking only uses that.
+    static let heartPop = Animation.spring(duration: NotchMotion.heartPopUp, bounce: 0.5)
+    static let heartSettle = Animation.spring(duration: NotchMotion.heartSettle, bounce: 0.45)
+    /// The heart scaling and fading in beside the title.
+    static let heartIn = Animation.spring(duration: NotchMotion.heartAppear, bounce: 0.25)
+    /// The on-dot under shuffle and repeat scaling in and out.
+    static let dotChange = Animation.spring(duration: NotchMotion.dotChange, bounce: 0.3)
+    /// The note and the play-again card rising into place, slow to settle with no overshoot.
+    static func rise(delay: TimeInterval) -> Animation {
+        .timingCurve(0.2, 0.9, 0.3, 1, duration: NotchMotion.rise).delay(delay)
+    }
+    /// The play icon changing size under the pointer.
+    static let playHover = Animation.spring(duration: NotchMotion.playHover, bounce: 0.3)
+}

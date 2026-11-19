@@ -2,11 +2,13 @@ import AppKit
 import Carbon.HIToolbox
 import SwiftUI
 import WarbleCore
+import WarbleModel
 
 /// Previous, play or pause, and next in the middle, with shuffle and repeat either side when the app reports them.
 struct PlaybackControls: View {
     let playback: PlaybackState
     let send: (PlaybackCommand) -> Void
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         // Shuffle and repeat sit at the edges, over the middle three, so those stay centred whichever shows.
@@ -42,13 +44,19 @@ struct PlaybackControls: View {
             Image(systemName: symbol)
                 .font(.system(size: size, weight: .semibold))
                 .foregroundStyle(on == false ? AnyShapeStyle(Native.secondary) : AnyShapeStyle(.white))
+                // A mode's symbol gives a small bounce when it changes, including repeat's change to "once".
+                .symbolEffect(.bounce, options: .nonRepeating, value: on == nil || reduceMotion ? "" : "\(symbol)\(on == true)")
                 .frame(width: 30, height: 30)
                 .overlay(alignment: .bottom) {
-                    if on == true {
-                        Circle().fill(.white)
-                            .frame(width: 3, height: 3)
-                            .padding(.bottom, 2)
+                    ZStack {
+                        if on == true {
+                            Circle().fill(.white)
+                                .frame(width: 3, height: 3)
+                                .transition(reduceMotion ? .opacity : .scale(scale: NotchMotion.dotScale).combined(with: .opacity))
+                        }
                     }
+                    .animation(reduceMotion ? Native.fade : Native.dotChange, value: on == true)
+                    .padding(.bottom, 2)
                 }
                 .hoverWash(Circle())
                 .contentShape(Rectangle())

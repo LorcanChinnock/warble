@@ -9,6 +9,7 @@ struct ExpandedContent: View {
     let playback: PlaybackState
     let artwork: NSImage?
     let model: NotchModel
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(spacing: 0) {
@@ -50,10 +51,14 @@ struct ExpandedContent: View {
                 // Over the text rather than in it, so it's a button of its own, outside the text's click and VoiceOver
                 // element. Centred on the title's line, which is about 20 points tall.
                 .overlay(alignment: .topTrailing) {
-                    if let favourite = model.player.favourite {
-                        FavouriteButton(isFavourite: favourite, tint: model.player.tint, toggle: model.player.toggleFavourite)
-                            .offset(x: 4, y: -3)
+                    Group {
+                        if let favourite = model.player.favourite {
+                            FavouriteButton(isFavourite: favourite, tint: model.player.tint, toggle: model.player.toggleFavourite)
+                                .favouriteAppears(reduceMotion: reduceMotion)
+                                .offset(x: 4, y: -3)
+                        }
                     }
+                    .animation(reduceMotion ? Native.fade : Native.heartIn, value: model.player.favourite != nil)
                 }
                 Spacer(minLength: 0)
             }
