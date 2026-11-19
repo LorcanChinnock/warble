@@ -9,6 +9,8 @@ import WarbleCore
 struct OutputButton: View {
     let model: NotchModel
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
         let playing = model.player.outputs.first { $0.id == model.player.currentOutput }
         ZStack {
@@ -16,6 +18,8 @@ struct OutputButton: View {
             Image(systemName: playing?.symbol ?? "hifispeaker")
                 .font(.system(size: 12))
                 .foregroundStyle(Native.secondary)
+                .contentTransition(reduceMotion ? .identity : .symbolEffect(.replace))
+                .animation(reduceMotion ? nil : Native.symbolSwap, value: playing?.symbol)
                 .allowsHitTesting(false)
                 .accessibilityHidden(true)
         }

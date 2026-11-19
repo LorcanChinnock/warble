@@ -64,4 +64,9 @@ enum Native {
     static let glowChangeDuration = 0.6
     /// The solid border drawn instead of the glow while Increase Contrast is on.
     static let contrastBorder: CGFloat = 2
+
+    /// The volume bar easing to a volume set by the scroll wheel, a key or mute. Dragging bypasses it so the bar stays under the pointer.
+    static let volumeEase = Animation.easeOut(duration: NotchMotion.volumeEase)
+    /// The speaker and output symbols swapping, and the volume bar and the kept-output note cross-fading.
+    static let symbolSwap = Animation.easeInOut(duration: NotchMotion.symbolSwap)
 }

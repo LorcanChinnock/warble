@@ -35,3 +35,8 @@ import Testing
 @Test func theContentFinishesFadingInSoonAfterTheShapeHasOpened() {
     #expect(NotchMotion.contentDelay + NotchMotion.contentIn < NotchMotion.morph + 0.1)
 }
+
+@Test func volumeAndSpeakerChangesAreShorterThanTheMorph() {
+    #expect(NotchMotion.volumeEase < NotchMotion.morph)
+    #expect(NotchMotion.symbolSwap < NotchMotion.morph)
+}

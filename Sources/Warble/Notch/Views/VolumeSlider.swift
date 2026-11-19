@@ -11,12 +11,18 @@ struct VolumeSlider: View {
     let set: (Double) -> Void
     let toggleMute: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    /// True while the pointer is on the bar, when the fill follows it at once instead of easing.
+    @State private var isDragging = false
+
     var body: some View {
         HStack(spacing: 8) {
             Button(action: toggleMute) {
                 Image(systemName: isMuted ? "speaker.slash.fill" : "speaker.fill")
                     // The wash reaches 6 pt past the symbol on each side, into the gap before the bar, so the symbol stays
                     // right-aligned in its column, under where a short elapsed time ends.
+                    .contentTransition(reduceMotion ? .identity : .symbolEffect(.replace))
+                    .animation(reduceMotion ? nil : Native.symbolSwap, value: isMuted)
                     .padding(.horizontal, 6)
                     .frame(height: 24)
                     .contentShape(Rectangle())
@@ -31,13 +37,18 @@ struct VolumeSlider: View {
                 ZStack(alignment: .leading) {
                     Capsule().fill(Native.track)
                     Capsule().fill(.white).frame(width: width * volume)
+                        .animation(isDragging || reduceMotion ? nil : Native.volumeEase, value: volume)
                 }
                 .frame(height: 4)
                 .frame(maxHeight: .infinity)
                 .contentShape(Rectangle())
                 .gesture(
                     DragGesture(minimumDistance: 0)
-                        .onChanged { set(min(max($0.location.x / width, 0), 1)) }
+                        .onChanged {
+                            isDragging = true
+                            set(min(max($0.location.x / width, 0), 1))
+                        }
+                        .onEnded { _ in isDragging = false }
                 )
             }
             .accessibilityRepresentation {

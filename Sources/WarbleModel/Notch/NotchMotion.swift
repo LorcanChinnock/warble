@@ -39,4 +39,10 @@ public enum NotchMotion {
         guard count > 0 else { return 0 }
         return reduceMotion ? 0 : barDelay(count - 1) + barRise
     }
+
+    /// How long the volume bar takes to ease to a volume set by the scroll wheel, a key or mute. A drag skips it.
+    public static let volumeEase: TimeInterval = 0.18
+    /// How long the speaker and output symbols take to swap, and the volume bar and the "macOS kept the sound" note to
+    /// cross-fade.
+    public static let symbolSwap: TimeInterval = 0.2
 }
