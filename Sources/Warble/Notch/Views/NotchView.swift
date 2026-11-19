@@ -1,6 +1,7 @@
 import AppKit
 import Carbon.HIToolbox
 import SwiftUI
+import WarbleModel
 import WarbleCore
 
 struct NotchView: View {
@@ -97,13 +98,17 @@ private struct NotchContent: View {
 /// What an empty notch says when the pointer is on it: one line under the housing, with no controls.
 struct NoteContent: View {
     let notch: CGRect
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var risen = false
 
     var body: some View {
         Text("Nothing playing")
             .font(.system(size: 13, weight: .medium))
             .foregroundStyle(Native.secondary)
+            .offset(y: risen || reduceMotion ? 0 : NotchMotion.riseDistance)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(.top, notch.height)
+            .onAppear { rise($risen, reduceMotion: reduceMotion, index: 0) }
     }
 }
 
@@ -113,6 +118,10 @@ struct NoteContent: View {
 private struct RecallContent: View {
     let notch: CGRect
     let player: PlayerModel
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    /// Whether each part (art, text, play icon) has risen into place yet.
+    @State private var risen = [false, false, false]
+    @State private var hovering = false
 
     var body: some View {
         if let track = player.lastPlayed {
@@ -121,6 +130,7 @@ private struct RecallContent: View {
                     Artwork(image: player.lastArtwork, radius: 6, symbolSize: 18)
                         .frame(width: 40, height: 40)
                         .opacity(Native.dimmed)
+                        .offset(y: lift(0))
                     VStack(alignment: .leading, spacing: 2) {
                         Text(track.title)
                             .font(Font(Native.titleFont(player.notchFont, size: 13, weight: .semibold)))
@@ -133,6 +143,7 @@ private struct RecallContent: View {
                                 .lineLimit(1)
                         }
                     }
+                    .offset(y: lift(1))
                     Spacer(minLength: 0)
                     Image(systemName: "play.fill")
                         .font(.system(size: 14))
@@ -140,7 +151,12 @@ private struct RecallContent: View {
                         // black in Light mode and so vanishes on the black notch.
                         .foregroundStyle(.white)
                         .frame(width: 32, height: 32)
+                        .scaleEffect(hovering && !reduceMotion ? NotchMotion.playHoverScale : 1)
+                        .animation(Native.playHover, value: hovering)
+                        .offset(y: lift(2))
                 }
+                .onHover { hovering = $0 }
+                .onAppear { for index in risen.indices { rise($risen[index], reduceMotion: reduceMotion, index: index) } }
                 .padding(.horizontal, 14)
                 .frame(maxHeight: .infinity)
                 .contentShape(Rectangle())
@@ -150,5 +166,19 @@ private struct RecallContent: View {
             .accessibilityLabel(Text("Play \(track.title) again"))
             .padding(.top, notch.height)
         }
+    }
+}
+
+/// Starts a rise into place for the part at `index` of a card that has just appeared, or does nothing but show it with
+/// Reduce Motion, since the card's own fade is all that moves then.
+@MainActor private func rise(_ risen: Binding<Bool>, reduceMotion: Bool, index: Int) {
+    guard !reduceMotion else { risen.wrappedValue = true; return }
+    withAnimation(Native.rise(delay: NotchMotion.recallDelay(index))) { risen.wrappedValue = true }
+}
+
+extension RecallContent {
+    /// How far below its place the part at `index` is, until it has risen.
+    fileprivate func lift(_ index: Int) -> CGFloat {
+        risen[index] || reduceMotion ? 0 : NotchMotion.riseDistance
     }
 }
