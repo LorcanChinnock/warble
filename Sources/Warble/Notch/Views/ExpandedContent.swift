@@ -84,7 +84,7 @@ struct ExpandedContent: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 // A fade, which Reduce Motion keeps, since nothing moves.
-                .animation(Native.symbolSwap, value: model.player.keptOutput != nil)
+                .animation(Native.statusSymbolSwap, value: model.player.keptOutput != nil)
                 OutputButton(model: model)
                     .frame(width: 34, height: 24)
             }

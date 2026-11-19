@@ -44,5 +44,5 @@ public enum NotchMotion {
     public static let volumeEase: TimeInterval = 0.18
     /// How long the speaker and output symbols take to swap, and the volume bar and the "macOS kept the sound" note to
     /// cross-fade.
-    public static let symbolSwap: TimeInterval = 0.2
+    public static let statusSymbolSwap: TimeInterval = 0.2
 }

@@ -19,7 +19,7 @@ struct OutputButton: View {
                 .font(.system(size: 12))
                 .foregroundStyle(Native.secondary)
                 .contentTransition(reduceMotion ? .identity : .symbolEffect(.replace))
-                .animation(reduceMotion ? nil : Native.symbolSwap, value: playing?.symbol)
+                .animation(reduceMotion ? nil : Native.statusSymbolSwap, value: playing?.symbol)
                 .allowsHitTesting(false)
                 .accessibilityHidden(true)
         }

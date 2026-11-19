@@ -38,5 +38,5 @@ import Testing
 
 @Test func volumeAndSpeakerChangesAreShorterThanTheMorph() {
     #expect(NotchMotion.volumeEase < NotchMotion.morph)
-    #expect(NotchMotion.symbolSwap < NotchMotion.morph)
+    #expect(NotchMotion.statusSymbolSwap < NotchMotion.morph)
 }

@@ -68,5 +68,5 @@ enum Native {
     /// The volume bar easing to a volume set by the scroll wheel, a key or mute. Dragging bypasses it so the bar stays under the pointer.
     static let volumeEase = Animation.easeOut(duration: NotchMotion.volumeEase)
     /// The speaker and output symbols swapping, and the volume bar and the kept-output note cross-fading.
-    static let symbolSwap = Animation.easeInOut(duration: NotchMotion.symbolSwap)
+    static let statusSymbolSwap = Animation.easeInOut(duration: NotchMotion.statusSymbolSwap)
 }

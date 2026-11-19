@@ -22,7 +22,7 @@ struct VolumeSlider: View {
                     // The wash reaches 6 pt past the symbol on each side, into the gap before the bar, so the symbol stays
                     // right-aligned in its column, under where a short elapsed time ends.
                     .contentTransition(reduceMotion ? .identity : .symbolEffect(.replace))
-                    .animation(reduceMotion ? nil : Native.symbolSwap, value: isMuted)
+                    .animation(reduceMotion ? nil : Native.statusSymbolSwap, value: isMuted)
                     .padding(.horizontal, 6)
                     .frame(height: 24)
                     .contentShape(Rectangle())
