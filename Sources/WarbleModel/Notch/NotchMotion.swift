@@ -39,4 +39,34 @@ public enum NotchMotion {
         guard count > 0 else { return 0 }
         return reduceMotion ? 0 : barDelay(count - 1) + barRise
     }
+
+    /// How long the old art takes to fade and shrink when the track changes under the open card.
+    public static let trackArtOut: TimeInterval = 0.18
+    /// How long the new art takes to fade in once it arrives; the spring that settles it runs a little longer.
+    public static let trackArtIn: TimeInterval = 0.25
+    /// How small the old art ends and the new art starts, as a fraction of its size.
+    public static let trackArtScale = 0.9
+    /// The spring that settles the new art: its duration, and how much it overshoots (0 is none). The overshoot is a few
+    /// percent of a 56 pt tile, which the card's padding has room for.
+    public static let trackArtSpringDuration: TimeInterval = 0.45
+    public static let trackArtSpringBounce = 0.3
+    /// How long the tile takes to glide to a new width, so the text beside it slides rather than jumps.
+    public static let trackTileWidth: TimeInterval = 0.3
+
+    /// The title starts to slide in this long after the track changes; the artist and album follow, one `trackLineStagger` apart.
+    public static let trackLineDelay: TimeInterval = 0.05
+    /// The gap between one line of text starting to slide in and the next.
+    public static let trackLineStagger: TimeInterval = 0.05
+    /// How long each line takes to slide in.
+    public static let trackLineIn: TimeInterval = 0.28
+    /// How long the old line takes to fade out, all lines together.
+    public static let trackLineOut: TimeInterval = 0.12
+    /// How far below its place a line starts, in points.
+    public static let trackLineOffset = 8.0
+
+    /// How long after the track changes the line at `index` (0 the title, 1 the artist, 2 the album) starts to slide in.
+    /// With Reduce Motion they all fade in at once.
+    public static func trackLineStart(_ index: Int, reduceMotion: Bool = false) -> TimeInterval {
+        reduceMotion ? 0 : trackLineDelay + Double(index) * trackLineStagger
+    }
 }
