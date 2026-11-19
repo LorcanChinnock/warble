@@ -54,6 +54,12 @@ enum Native {
     /// same curve (`PlayStateBars`).
     static let artIn = Animation.timingCurve(0.2, 0.9, 0.3, 1, duration: NotchMotion.artGrow).delay(NotchMotion.artDelay)
 
+    /// A playback button shrinking as it's pressed, and springing back past its size on release.
+    static let pressDown = Animation.easeOut(duration: NotchMotion.pressDown)
+    static let pressRelease = Animation.spring(response: NotchMotion.pressReleaseResponse, dampingFraction: NotchMotion.pressReleaseDamping)
+    /// The play and pause symbols swapping, with a little bounce.
+    static let symbolSwap = Animation.bouncy(duration: NotchMotion.symbolSwap)
+
     /// The expanded card's glow in the artwork's colours, the one exception to the black, rises from its bottom corners
     /// and fades out before the top, so the top edge still merges with the housing.
     static let glowOpacity = 0.45
