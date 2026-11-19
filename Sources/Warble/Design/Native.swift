@@ -54,6 +54,12 @@ enum Native {
     /// same curve (`PlayStateBars`).
     static let artIn = Animation.timingCurve(0.2, 0.9, 0.3, 1, duration: NotchMotion.artGrow).delay(NotchMotion.artDelay)
 
+    /// A playback button shrinking as it's pressed, and springing back past its size on release.
+    static let pressDown = Animation.easeOut(duration: NotchMotion.pressDown)
+    static let pressRelease = Animation.spring(response: NotchMotion.pressReleaseResponse, dampingFraction: NotchMotion.pressReleaseDamping)
+    /// The play and pause symbols swapping, with a little bounce.
+    static let symbolSwap = Animation.bouncy(duration: NotchMotion.symbolSwap)
+
     /// The expanded card's glow in the artwork's colours, the one exception to the black, rises from its bottom corners
     /// and fades out before the top, so the top edge still merges with the housing.
     static let glowOpacity = 0.45
@@ -64,6 +70,25 @@ enum Native {
     static let glowChangeDuration = 0.6
     /// The solid border drawn instead of the glow while Increase Contrast is on.
     static let contrastBorder: CGFloat = 2
+
+    /// The old art leaving when the track changes under the open card: a quick fade as it shrinks a little.
+    static let trackArtOut = Animation.easeIn(duration: NotchMotion.trackArtOut)
+    /// The new art settling in with a small overshoot. Only for content inside the card, never the notch's shape.
+    static let trackArtIn = Animation.spring(duration: NotchMotion.trackArtSpringDuration, bounce: NotchMotion.trackArtSpringBounce)
+    /// The new art's fade, which is all it does with Reduce Motion on.
+    static let trackArtFade = Animation.easeOut(duration: NotchMotion.trackArtIn)
+    /// The art tile gliding to a new width, with no bounce.
+    static let trackTileWidth = Animation.smooth(duration: NotchMotion.trackTileWidth)
+    /// A line of text sliding in for a new track, `index` lines down, after the one above it.
+    static func trackLineIn(_ index: Int, reduceMotion: Bool) -> Animation {
+        .easeOut(duration: NotchMotion.trackLineIn).delay(NotchMotion.trackLineStart(index, reduceMotion: reduceMotion))
+    }
+    /// The old line of text fading out.
+    static let trackLineOut = Animation.easeIn(duration: NotchMotion.trackLineOut)
+    /// The volume bar easing to a volume set by the scroll wheel, a key or mute. Dragging bypasses it so the bar stays under the pointer.
+    static let volumeEase = Animation.easeOut(duration: NotchMotion.volumeEase)
+    /// The speaker and output symbols swapping, and the volume bar and the kept-output note cross-fading.
+    static let statusSymbolSwap = Animation.easeInOut(duration: NotchMotion.statusSymbolSwap)
 }
 
 // MARK: - Small delights

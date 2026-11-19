@@ -30,11 +30,16 @@ public final class SystemVolume: VolumeControl {
         hardware.uint32(hardware.defaultOutput(), .mute).map { $0 != 0 } ?? false
     }
 
-    /// Sets the volume, and unmutes above silence as the volume keys do.
+    /// Sets the volume, muting at silence and unmuting above it, as the volume keys do. It's shared by a drag on the
+    /// volume bar, a scroll over the notch and VoiceOver's slider, so each turns the speaker's line on at zero.
     public func set(_ volume: Double) {
         let output = hardware.defaultOutput()
-        hardware.set(output, .volume, float: Float32(min(max(volume, 0), 1)))
-        if volume > 0, isMuted, hardware.isSettable(output, .mute) {
+        let clamped = min(max(volume, 0), 1)
+        hardware.set(output, .volume, float: Float32(clamped))
+        guard hardware.isSettable(output, .mute) else { return }
+        if clamped == 0, !isMuted {
+            hardware.set(output, .mute, uint32: 1)
+        } else if clamped > 0, isMuted {
             hardware.set(output, .mute, uint32: 0)
         }
     }

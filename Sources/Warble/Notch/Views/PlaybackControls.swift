@@ -14,11 +14,11 @@ struct PlaybackControls: View {
         // Shuffle and repeat sit at the edges, over the middle three, so those stay centred whichever shows.
         ZStack {
             HStack(spacing: 12) {
-                control("backward.fill", size: 16) { send(.previousTrack) }
+                control("backward.fill", size: 16, nudge: -NotchMotion.pressNudge) { send(.previousTrack) }
                     .accessibilityLabel("Previous track")
                 control(playback.isPlaying ? "pause.fill" : "play.fill", size: 22) { send(.togglePlayPause) }
                     .accessibilityLabel(playback.isPlaying ? "Pause" : "Play")
-                control("forward.fill", size: 16) { send(.nextTrack) }
+                control("forward.fill", size: 16, nudge: NotchMotion.pressNudge) { send(.nextTrack) }
                     .accessibilityLabel("Next track")
             }
             HStack(spacing: 0) {
@@ -39,10 +39,12 @@ struct PlaybackControls: View {
 
     /// A white symbol on a target at least 30 points square. A mode that's on (`on`) is white with a dot under it, and one
     /// that's off grey without, so the dot says which, not only the colour.
-    private func control(_ symbol: String, size: CGFloat, on: Bool? = nil, action: @escaping () -> Void) -> some View {
+    private func control(_ symbol: String, size: CGFloat, on: Bool? = nil, nudge: CGFloat = 0, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: symbol)
                 .font(.system(size: size, weight: .semibold))
+                .contentTransition(reduceMotion ? .identity : .symbolEffect(.replace))
+                .animation(reduceMotion ? nil : Native.symbolSwap, value: symbol)
                 .foregroundStyle(on == false ? AnyShapeStyle(Native.secondary) : AnyShapeStyle(.white))
                 // A mode's symbol gives a small bounce when it changes, including repeat's change to "once".
                 .symbolEffect(.bounce, options: .nonRepeating, value: on == nil || reduceMotion ? "" : "\(symbol)\(on == true)")
@@ -61,6 +63,6 @@ struct PlaybackControls: View {
                 .hoverWash(Circle())
                 .contentShape(Rectangle())
         }
-        .buttonStyle(.notch)
+        .buttonStyle(.notchPress(nudge: nudge))
     }
 }
