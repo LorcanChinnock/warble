@@ -36,6 +36,30 @@ import Testing
     #expect(NotchMotion.contentDelay + NotchMotion.contentIn < NotchMotion.morph + 0.1)
 }
 
+@Test func trackChangeLinesSlideInOneAfterAnotherAndTogetherWithReduceMotion() {
+  let starts = (0..<3).map { NotchMotion.trackLineStart($0) }
+  #expect(starts == starts.sorted() && Set(starts).count == 3)
+  #expect((0..<3).allSatisfy { NotchMotion.trackLineStart($0, reduceMotion: true) == 0 })
+}
+
+@Test func trackChangeArtShrinksBackAndItsOvershootStaysSmall() {
+  #expect(NotchMotion.trackArtScale < 1 && NotchMotion.trackArtScale > 0.8)
+  #expect(NotchMotion.trackArtSpringBounce > 0 && NotchMotion.trackArtSpringBounce < 0.4)
+  #expect(NotchMotion.trackLineOut < NotchMotion.trackLineIn)
+}
+
+@Test func aPressedButtonShrinksQuicklyAndOnlyALittle() {
+    #expect(NotchMotion.pressScale < 1 && NotchMotion.pressScale > 0.8)
+    #expect(NotchMotion.pressDown < 0.12)
+    #expect(NotchMotion.pressNudge > 0 && NotchMotion.pressNudge < 6)
+}
+
+@Test func aReleasedButtonSpringsBackWithAnOvershootAndSettlesWithinTheMorph() {
+    #expect(NotchMotion.pressReleaseDamping < 1)
+    #expect(NotchMotion.pressReleaseResponse < NotchMotion.morph + 0.1)
+    #expect(NotchMotion.symbolSwap <= NotchMotion.morph)
+}
+
 @Test func volumeAndSpeakerChangesAreShorterThanTheMorph() {
     #expect(NotchMotion.volumeEase < NotchMotion.morph)
     #expect(NotchMotion.statusSymbolSwap < NotchMotion.morph)
