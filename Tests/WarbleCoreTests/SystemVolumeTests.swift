@@ -115,11 +115,31 @@ func settingTheVolumeKeepsItBetweenZeroAndOne(requested: Double, applied: Float3
 }
 
 @MainActor
-@Test func settingSilenceLeavesTheMuteSwitchAlone() {
+@Test func settingSilenceKeepsAMutedOutputMuted() {
     let hardware = FakeHardware()
     hardware.addOutput(10, muted: true)
     SystemVolume(hardware: hardware).set(0)
     #expect(hardware.uint32s[.init(object: 10, property: .mute)] == 1)
+}
+
+@MainActor
+@Test(arguments: [0.0, -0.2])
+func settingSilenceMutes(requested: Double) {
+    let hardware = FakeHardware()
+    hardware.addOutput(10)
+    SystemVolume(hardware: hardware).set(requested)
+    #expect(hardware.uint32s[.init(object: 10, property: .mute)] == 1)
+    #expect(hardware.floats[.init(object: 10, property: .volume)] == 0)
+}
+
+@MainActor
+@Test func settingSilenceOnAnOutputWithNoMuteSwitchOnlySetsTheVolume() {
+    let hardware = FakeHardware()
+    hardware.addOutput(10)
+    hardware.settable.remove(.init(object: 10, property: .mute))
+    SystemVolume(hardware: hardware).set(0)
+    #expect(hardware.uint32s[.init(object: 10, property: .mute)] == 0)
+    #expect(hardware.floats[.init(object: 10, property: .volume)] == 0)
 }
 
 @MainActor

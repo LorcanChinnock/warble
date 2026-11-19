@@ -59,3 +59,8 @@ import Testing
     #expect(NotchMotion.pressReleaseResponse < NotchMotion.morph + 0.1)
     #expect(NotchMotion.symbolSwap <= NotchMotion.morph)
 }
+
+@Test func volumeAndSpeakerChangesAreShorterThanTheMorph() {
+    #expect(NotchMotion.volumeEase < NotchMotion.morph)
+    #expect(NotchMotion.statusSymbolSwap < NotchMotion.morph)
+}

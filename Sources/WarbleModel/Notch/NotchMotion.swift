@@ -80,4 +80,9 @@ public enum NotchMotion {
     public static let pressReleaseDamping = 0.55
     /// How long the play and pause symbols take to swap.
     public static let symbolSwap: TimeInterval = 0.3
+    /// How long the volume bar takes to ease to a volume set by the scroll wheel, a key or mute. A drag skips it.
+    public static let volumeEase: TimeInterval = 0.18
+    /// How long the speaker and output symbols take to swap, and the volume bar and the "macOS kept the sound" note to
+    /// cross-fade.
+    public static let statusSymbolSwap: TimeInterval = 0.2
 }
