@@ -27,6 +27,8 @@ The About tab of Settings shows the version you have, with a line under it:
 
 The menu bar icon keeps its three bars and gains a small dot at its top right. In both menus, **Update to 0.2.0…**, with the new version's number and a yellow dot, takes the place of **Check for Updates…**. Choose it to open the Software Update window.
 
+When the daily check finds a new version, the Software Update window also opens by itself, on top of your other windows. It doesn't take the keyboard from what you're typing in, and if you close it, the menu item brings it back.
+
 ![Warble's menu bar menu open, with About Warble, Update to 1.0.0… and a yellow dot, Settings… and Quit Warble](../../../docs/media/menu-update.png "The menu item that opens the waiting update.")
 
 If you let Warble check automatically, the Software Update window also opens by itself when a check finds a new version. Apart from the window at your first launch and the question about checking, it's the only window Warble opens on its own.
