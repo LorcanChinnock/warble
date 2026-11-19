@@ -39,7 +39,7 @@ While the pointer is over the bar, the time at that point shows just above it, s
 
 ![Dragging along the volume bar](../../../docs/media/volume.gif)
 
-To mute, click the speaker at the left end of the volume bar. It shows a line through it while your Mac is muted, and the bar drops to empty. Click it again to unmute at the volume you had before.
+To mute, click the speaker at the left end of the volume bar. It shows a line through it while your Mac is muted, and the bar drops to empty. Click it again to unmute at the volume you had before. Dragging or scrolling the volume all the way down mutes your Mac too, as its volume keys do, and turning it back up unmutes it.
 
 ## Move through the song or skip with a trackpad
 
