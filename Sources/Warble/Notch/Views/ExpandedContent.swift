@@ -28,8 +28,6 @@ struct ExpandedContent: View {
                     }
                     .animation(reduceMotion ? Native.trackArtFade : Native.trackArtIn, value: artwork.map(ObjectIdentifier.init))
                     .frame(width: tileWidth, height: 56)
-                    // The tile glides to a new width, so the text beside it slides over rather than jumping.
-                    .animation(reduceMotion ? nil : Native.trackTileWidth, value: tileWidth)
                         .hoverWash(RoundedRectangle(cornerRadius: 8, style: .continuous))
                 }
                 .buttonStyle(.notch)
@@ -76,6 +74,9 @@ struct ExpandedContent: View {
                 }
                 Spacer(minLength: 0)
             }
+            // On the row, not the tile, so the text beside the tile slides over as it changes width rather than
+            // jumping there first. The art and each line keep their own keyed animations inside it.
+            .animation(reduceMotion ? nil : Native.trackTileWidth, value: tileWidth)
             // The art lines up with where a short elapsed time starts, which is right-aligned in a 34 pt column.
             .padding(.leading, 10)
             Spacer(minLength: 0)
