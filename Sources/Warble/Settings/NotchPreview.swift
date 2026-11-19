@@ -48,7 +48,7 @@ final class PreviewNotch {
 /// `ExpandedContent`), at life size or scaled down to fit `height`, with the song that's playing or, when nothing is, a
 /// made-up one. It rests as a notch does, with the art, the bars and, when the setting is on, the title, and opens into
 /// the card when the pointer reaches it. It stays open after the pointer leaves, so a setting's change shows without
-/// pointing at it again, and a click on it closes it; its controls do nothing. A change to the title font, the card size
+/// pointing at it again. Only a click closes it, and the pointer reaching it again opens it again. Its controls do nothing. A change to the title font, the card size
 /// or the heart opens a closed card for a couple of seconds to show the change, unless Reduce Motion is on. A change to
 /// the pause or external-display setting pauses the song and, a beat later, ends it as those settings would
 /// (`PreviewEnding`); it holds that end until the pointer leaves the preview, or another setting changes, then plays
@@ -89,6 +89,9 @@ struct NotchPreview: View {
     @State private var pauses = 0
     /// Counts the changes that open the card, so each one closes it after its own wait.
     @State private var peeks = 0
+    /// Whether the preview has keyboard focus, for the outline drawn in the notch's shape in place of the system's
+    /// rectangle, which stayed at the old size while the shape morphed.
+    @FocusState private var isFocused: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// What the preview shows: the song that's playing, or the made-up one, held where it was when the song is paused.
@@ -137,46 +140,66 @@ struct NotchPreview: View {
             Button {
                 guard !holdsOpen else { return }
                 isPeeking = false
-                isOpen.toggle()
+                morph { isOpen.toggle() }
             } label: {
                 ZStack(alignment: .top) {
                     shape.fill(Native.panel)
-                    // With Reduce Motion only the content fades; the shape changes at once, as the notch's does.
+                    // Each state's content comes and goes as the real notch's does (`ContentTransition`): in a moment
+                    // after the shape starts to grow, so it isn't cut off by a shape still too small for it, and out
+                    // quickly before the shape closes over it. With Reduce Motion only the content fades; the shape
+                    // changes at once, as the notch's does.
                     // Only while open, so its scrubber's timeline isn't ticking behind a closed notch.
                     ZStack {
                         if state == .expanded {
                             cardContent(song)
                                 .scaleEffect(cardSize.scale, anchor: .top)
                                 .frame(width: size.width, height: size.height, alignment: .top)
-                                .transition(.opacity)
+                                .transition(ContentTransition())
                         }
                     }
-                    .animation(Native.fade, value: state)
+                    if opened, !holdsOpen {
+                        Text("Click to close")
+                            .font(.system(size: 9, weight: .medium))
+                            .foregroundStyle(Native.secondary)
+                            .opacity(0.6)
+                            .frame(height: housing.height)
+                            .allowsHitTesting(false)
+                            .accessibilityHidden(true)
+                            .transition(ContentTransition())
+                    }
                     RestingContent(playback: song, artwork: preview.player.artwork, notch: housing, model: preview.model)
                         .frame(width: NotchLayout.frame(.resting, notch: housing)?.width)
                         .allowsHitTesting(false)
                         .opacity(state == .resting ? 1 : 0)
-                        .animation(Native.fade, value: state)
+                        .animation(state == .resting ? Native.contentIn : Native.contentOut, value: state)
                     NoteContent(notch: housing)
                         .frame(width: size.width, height: size.height)
                         .allowsHitTesting(false)
                         .accessibilityHidden(true)
                         .opacity(state == .note ? 1 : 0)
-                        .animation(Native.fade, value: state)
+                        .animation(state == .note ? Native.contentIn : Native.contentOut, value: state)
                 }
                 .frame(width: size.width, height: size.height, alignment: .top)
                 .mask(alignment: .top) { shape.frame(width: size.width, height: size.height) }
-                .animation(reduceMotion ? nil : Native.morph, value: state)
+                .overlay(alignment: .top) {
+                    if isFocused {
+                        shape.stroke(Color.accentColor, lineWidth: 3)
+                            .frame(width: size.width, height: size.height)
+                            .allowsHitTesting(false)
+                    }
+                }
                 .contentShape(shape)
             }
             .buttonStyle(.notch)
             // Held open, a press does nothing, so it takes no keyboard focus; VoiceOver still reads it. Otherwise it takes
             // focus as a button does, only while keyboard navigation is on, rather than on every click and window open.
             .focusable(!holdsOpen, interactions: .activate)
+            .focused($isFocused)
+            .focusEffectDisabled()
             .onHover { inside in
                 guard inside else { return }
                 isPeeking = false
-                isOpen = true
+                morph { isOpen = true }
             }
             .accessibilityLabel(Text("Notch preview"))
             .accessibilityValue(opened ? Text("Open") : Text("Closed"))
@@ -187,7 +210,7 @@ struct NotchPreview: View {
             .allowsHitTesting(showsNotch)
             .accessibilityHidden(!showsNotch)
             .onChange(of: showsNotch) {
-                isOpen = false
+                morph { isOpen = false }
                 isPeeking = false
             }
             // Laid out at full size and drawn smaller, so the real views keep their proportions.
@@ -214,13 +237,20 @@ struct NotchPreview: View {
         .onChange(of: showsFavourite) { peek() }
         .task(id: pauses) {
             guard isPaused, (try? await Task.sleep(for: PreviewEnding.beat)) != nil else { return }
-            ending = PreviewEnding(pauseDelay: pauseDelay, visibility: visibility)
+            morph { ending = PreviewEnding(pauseDelay: pauseDelay, visibility: visibility) }
         }
         .task(id: peeks) {
             guard peeks > 0, (try? await Task.sleep(for: Self.peekLength)) != nil, isPeeking else { return }
             isPeeking = false
-            isOpen = false
+            morph { isOpen = false }
         }
+    }
+
+    /// Opens, closes or ends the notch in one explicit transaction, as `NotchSurface` does: the morph, or the fade under
+    /// Reduce Motion. An implicit animation keyed on the state let a click's own transaction time the frames that place
+    /// the notch on the strip differently from its shape, so after a click the notch slid in sideways.
+    private func morph(_ change: () -> Void) {
+        withAnimation(reduceMotion ? Native.fade : Native.morph, change)
     }
 
     /// How long a change that opens a closed card leaves it open, unless the pointer reaches it.
@@ -262,16 +292,18 @@ struct NotchPreview: View {
     private func peek() {
         play()
         guard !reduceMotion, visibility != .off, !isOpen else { return }
-        isOpen = true
+        morph { isOpen = true }
         isPeeking = true
         peeks += 1
     }
 
     /// Pauses the song, which ends a beat later. With the virtual notch off there's no notch to pause, so it plays.
     private func pause() {
-        isOpen = false
+        morph {
+            isOpen = false
+            ending = nil
+        }
         isPeeking = false
-        ending = nil
         pausedAt = .now
         isPaused = visibility != .off
         pauses += 1
@@ -279,7 +311,7 @@ struct NotchPreview: View {
 
     private func play() {
         isPaused = false
-        ending = nil
+        morph { ending = nil }
         pauses += 1
     }
 
