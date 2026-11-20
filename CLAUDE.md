@@ -28,11 +28,14 @@ What this means in practice:
 ```bash
 make test                         # WarbleModel and WarbleCore unit tests (Swift Testing)
 make test-linux                   # WarbleModel tests in Docker on Linux, as CI runs them
+make coverage                     # line coverage per file for WarbleModel and WarbleCore, lowest first (not a gate)
+make test-install                 # site/public/install.sh against a fake release (test-uninstall: uninstall.sh)
 make perf                         # PerfTests alone: the timed paths with budgets in docs/performance.md
 make lint                         # scripts/lint.sh: bans patterns that caused bugs (see below); on macOS also scripts/strings.sh --check
 make strings                      # sync Resources/Localizable.xcstrings with the strings the build extracted
 make build                        # Debug build of the app, as Xcode's Build does
 make bundle                       # archive a universal Release build/WarbleDev.app only
+make dist                         # the only build of Warble.app with the Sparkle feed (release.yml runs it)
 make run                          # without Xcode: Debug build, quit other copies, launch (APP_ARGS=… for the app)
 make stop                         # quit WarbleDev and reopen the installed Warble if a run quit it
 cd site && npm run dev            # the website (see site/README.md)
@@ -43,7 +46,7 @@ make test ONLY='WarbleModelTests/notchSitsBetweenTheMenuBarAreas()'   # one test
 - Build settings live in `Config/*.xcconfig`, never in the project file: `Shared.xcconfig` (version, signing, Swift), `Debug`/`Release`, and one per target. `Config/Local.xcconfig`, which git ignores, takes personal overrides. Folders are synchronised, so a new Swift file in `Sources/` or `Tests/` needs no project edit.
 - `PerfTests` run only when `WARBLE_PERF` is set, which `Tests/Perf.xctestplan` (`make perf`) does, so ⌘U and `make test` skip them. Xcode 27 doesn't apply a test plan's selected or skipped tests to Swift Testing suites, so don't rely on them.
 - Signing uses the `Warble Dev` certificate from `scripts/make-dev-cert.sh`, so permissions such as Automation survive rebuilds. Without it, `scripts/xcodebuild.sh` signs ad hoc and warns.
-- Logs: `/usr/bin/log stream --predicate 'subsystem == "dev.lorcan.Warble.dev"'` for WarbleDev, `dev.lorcan.Warble` for a release (in zsh, plain `log` is a builtin). Use `Logger.warble("category")` from `Sources/Warble/Log.swift`.
+- Logs: `/usr/bin/log stream --predicate 'subsystem == "dev.lorcan.Warble.dev"'` for WarbleDev, `dev.lorcan.Warble` for a release (in zsh, plain `log` is a builtin). Use `Logger.warble("category")` from `Sources/Warble/App/Log.swift`.
 
 ## Running and testing locally
 
@@ -83,11 +86,9 @@ Claude Code loads only this file, so read a feature's note before you change tha
 | [Motion](docs/architecture/motion.md) | changing how the notch moves between states |
 | [Website](docs/architecture/website.md) | changing `site/` or the user guide |
 | [Performance](docs/architecture/performance.md) | changing anything on the hover, expand or play/pause path, or adding a timer |
-| [Redesign spec](docs/redesign/spec.md) | working on any issue under #425, the redesign of Settings, updates, menus, first run and the website, or under #458, the website polish |
-
 ## Rules enforced by `make lint`
 
-- Use `NSView(hosting:)`, never `NSHostingView(rootView:)`/`NSHostingController`; a plain hosting view crashes when content changes under a visible window. `HostingView.swift`, which defines the helper, is exempt.
+- Use `NSView(hosting:)`, never `NSHostingView(rootView:)`/`NSHostingController`; a plain hosting view crashes when content changes under a visible window. `Design/HostingView.swift`, which defines the helper, is exempt.
 - Don't use `onTapGesture(count: 2)` next to a single tap; every single click waits out the double-click interval. Use one `onTapGesture` and read `NSApp.currentEvent?.clickCount`.
 - WarbleModel and its tests import only Foundation, Synchronization and Testing, plus CoreGraphics inside `#if canImport(CoreGraphics)`.
 - Every `runs-on: macos-*` needs a `# macOS: <reason>` comment on the line above.
@@ -96,7 +97,7 @@ Claude Code loads only this file, so read a feature's note before you change tha
 
 The repository is public, so GitHub's runners are free, but the free plan runs only 5 macOS jobs at once, so macOS runs can queue (`.github/workflows/ci.yml`):
 - Every PR runs two required checks. `linux` is `scripts/lint.sh` and WarbleModel's tests, which keeps WarbleModel portable. `macos` is skipped, which counts as a pass, when the PR changes only `site/`, `docs/` or top-level Markdown files; otherwise it builds the app, checks the strings catalog, compiles for Intel, and runs every test except `PerfTests`, which it runs only on the release PR and on PRs labelled `performance` (adding the label alone doesn't start a run); its job summary then has a table of every budget's timing. The tests run through `scripts/ci-test.sh`, which samples the test process when no test has started or ended for five minutes, prints crash reports when the run fails, and keeps the `.xcresult` as an artifact to open in Xcode. On the release PR, `macos` also builds the release configuration, as `make dist` does. On push to `main`, `warm-cache.yml` only builds, to save the Linux build cache PRs restore.
-- A third check, `adapter`, isn't required. It builds both apps, runs the adapter's own test in each, and launches `WarbleDev.app` for a few seconds (`scripts/smoke-test.sh`), so a bad entitlement, a missing resource or a Sparkle misconfiguration fails a PR rather than the release.
+- A third check, `adapter`, isn't required. It builds both apps, runs the adapter's own test in each, and launches `WarbleDev.app` for a few seconds (`scripts/smoke-test.sh`), so a bad entitlement, a missing resource or a Sparkle misconfiguration fails a PR rather than the release. `adapter-macos-15`, also optional, runs those builds' adapter test on macOS 15, the oldest Warble supports.
 - release-please opens its release PR as the repository's GitHub App (`release.yml`), so its runs start without approval. The repository has auto-merge turned on only for `dependabot-automerge.yml`, which enables it on Dependabot's patch and minor PRs (not major bumps, Sparkle or the adapter submodule) so they merge once `linux` and `macos` pass. An admin merges the release PR by hand once its checks pass.
 - `release.yml` runs `make test` on the tagged commit before it signs anything, because a `docs:`, `test:` or `ci:` commit merged after the release PR's checks can change what's released.
 - release-please updates the release PR only for commits that change the changelog, so after a `test:`, `ci:` or `docs:` fix to a failed gate, run `gh pr update-branch <release PR>` to gate it again.
