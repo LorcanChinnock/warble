@@ -1,5 +1,5 @@
 import { createMarkdownProcessor } from '@astrojs/markdown-remark';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { visit } from 'unist-util-visit';
 import { readGuide } from './guide-files.ts';
@@ -42,6 +42,51 @@ function rehypeCallouts() {
     });
 }
 
+/** A WebP's size in pixels, read from its header (lossy, lossless or extended). */
+function webpSize(path: string): [number, number] | undefined {
+  const b = readFileSync(path);
+  const chunk = b.toString('ascii', 12, 16);
+  if (chunk === 'VP8X') return [1 + b.readUIntLE(24, 3), 1 + b.readUIntLE(27, 3)];
+  if (chunk === 'VP8 ') return [b.readUInt16LE(26) & 0x3fff, b.readUInt16LE(28) & 0x3fff];
+  if (chunk === 'VP8L') {
+    const bits = b.readUInt32LE(21);
+    return [1 + (bits & 0x3fff), 1 + ((bits >> 14) & 0x3fff)];
+  }
+}
+
+/**
+ * Keeps the guide's screenshots and clips sharp on a Retina screen. Screenshots are taken at 2×, so each shows at half
+ * its pixel size, the window's own size, with the size given up front so nothing moves. A GIF plays as the looping
+ * clip `npm run media` makes from its 2× recording, when there is one; the Markdown keeps pointing at the GIF, which
+ * GitHub shows.
+ */
+function rehypeMedia() {
+  return (tree: any) =>
+    visit(tree, 'element', (node: any) => {
+      if (node.tagName !== 'img') return;
+      const file = /docs\/media\/([^/]+)$/.exec(node.properties.src ?? '')?.[1];
+      if (!file) return;
+      if (file.endsWith('.png')) {
+        const png = readFileSync(resolve(process.cwd(), '../docs/media', file));
+        node.properties.width = png.readUInt32BE(16) / 2;
+        node.properties.height = png.readUInt32BE(20) / 2;
+        return;
+      }
+      const name = file.replace(/\.gif$/, '');
+      const poster = resolve(process.cwd(), 'public/media', `${name}.webp`);
+      if (name === file || !existsSync(poster)) return;
+      const size = webpSize(poster);
+      const label = node.properties.alt ?? '';
+      node.tagName = 'video';
+      node.properties = {
+        className: ['loop'], autoPlay: true, muted: true, loop: true, playsInline: true, disablePictureInPicture: true,
+        preload: 'none', poster: `/media/${name}.webp`, ariaLabel: label,
+        ...(size && { width: Math.round(size[0] / 2), height: Math.round(size[1] / 2) }),
+      };
+      node.children = ['webm', 'mp4'].map((type) => ({ type: 'element', tagName: 'source', properties: { src: `/media/${name}.${type}`, type: `video/${type}` }, children: [] }));
+    });
+}
+
 /**
  * Turns a paragraph holding only an image with a title, `![alt](file.png "Caption")`, into a figure on the pastel panel
  * the app's own preview sits on, with the title as its caption. Screenshots of Warble's windows use it; GitHub shows
@@ -56,13 +101,6 @@ function rehypeFigures() {
       const caption = img?.properties?.title;
       if (!caption) return;
       delete img.properties.title;
-      // Screenshots are taken at 2×, so show them at the window's own size, and give the size up front so nothing moves.
-      const file = /docs\/media\/([^/]+\.png)$/.exec(img.properties.src ?? '')?.[1];
-      if (file) {
-        const png = readFileSync(resolve(process.cwd(), '../docs/media', file));
-        img.properties.width = png.readUInt32BE(16) / 2;
-        img.properties.height = png.readUInt32BE(20) / 2;
-      }
       node.tagName = 'figure';
       node.properties = { className: ['shot'] };
       node.children = [img, { type: 'element', tagName: 'figcaption', properties: {}, children: [{ type: 'text', value: caption }] }];
@@ -91,7 +129,7 @@ function rehypeCopyCommands() {
 }
 
 const processor = await createMarkdownProcessor({
-  rehypePlugins: [rehypeRepoLinks, rehypeCallouts, rehypeCopyCommands, rehypeFigures],
+  rehypePlugins: [rehypeRepoLinks, rehypeCallouts, rehypeCopyCommands, rehypeMedia, rehypeFigures],
   shikiConfig: { themes: { light: 'github-light', dark: 'github-dark' } },
 });
 
