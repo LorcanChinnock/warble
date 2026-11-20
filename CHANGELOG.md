@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.1.0-beta.29](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.28...v0.1.0-beta.29) (2026-11-20)
+
+
+### Features
+
+* **notch:** animate the card when the track changes ([#522](https://github.com/LorcanChinnock/warble/issues/522)) ([23d4baa](https://github.com/LorcanChinnock/warble/commit/23d4baa22a312df3264476c86358a97f702f8c2d))
+* **notch:** ease volume changes and speaker switches ([#519](https://github.com/LorcanChinnock/warble/issues/519)) ([27dc037](https://github.com/LorcanChinnock/warble/commit/27dc037fa4d1b13a8c3a1c5d5759bc6c3f3aab69))
+* **notch:** give play, pause and skip a springy press ([#520](https://github.com/LorcanChinnock/warble/issues/520)) ([84c2d5a](https://github.com/LorcanChinnock/warble/commit/84c2d5a8fdb073f7f7d8bcecf00d7828ffa50f08))
+* **notch:** pop the heart and bring the empty and play-again cards in ([#521](https://github.com/LorcanChinnock/warble/issues/521)) ([d92af19](https://github.com/LorcanChinnock/warble/commit/d92af193ed92fe3addc96088cb68fded818aeb39))
+
+
+### Bug Fixes
+
+* **settings:** open and close the notch preview as the real notch does ([#527](https://github.com/LorcanChinnock/warble/issues/527)) ([6ec29a9](https://github.com/LorcanChinnock/warble/commit/6ec29a9ee81fef7c3dc95d3484eebe0e66493925))
+* **updates:** open the update window on top of other windows ([#529](https://github.com/LorcanChinnock/warble/issues/529)) ([fc8ea14](https://github.com/LorcanChinnock/warble/commit/fc8ea14e1712c262594c72bbb8a66fd19e3cd67a))
+* **volume:** mute when the volume is turned all the way down ([#525](https://github.com/LorcanChinnock/warble/issues/525)) ([25d3dce](https://github.com/LorcanChinnock/warble/commit/25d3dcebf441df48789b99af303cd5f15942363d))
+
 ## [0.1.0-beta.28](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.27...v0.1.0-beta.28) (2026-11-16)
 
 
