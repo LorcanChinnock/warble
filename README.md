@@ -10,6 +10,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/LorcanChinnock/warble/releases/latest"><img src="https://img.shields.io/github/v/release/LorcanChinnock/warble?include_prereleases&label=download" alt="Latest release"></a>
   <img src="https://img.shields.io/badge/status-beta-yellow" alt="Beta">
   <img src="https://img.shields.io/badge/macOS-15%2B-black" alt="macOS 15 or later">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="GPL-3.0 license"></a>
@@ -17,7 +18,9 @@
 </p>
 
 <p align="center">
+  <a href="https://warble.lorcanchinnock.com/#install"><b>Download</b></a> ·
   <a href="https://warble.lorcanchinnock.com">Website</a> ·
+  <a href="https://warble.lorcanchinnock.com/docs/get-started/">User guide</a> ·
   <a href="CHANGELOG.md">Changelog</a>
 </p>
 
