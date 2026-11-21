@@ -42,8 +42,6 @@ enum NotchMenu {
                     NSPasteboard.general.clearContents()
                     NSPasteboard.general.setString(copyText, forType: .string)
                 })
-            case .about:
-                menu.addItem(ActionItem(title: String(localized: "About Warble")) { settingsWindow.show(.about) })
             case .update(let update):
                 let check = ActionItem(title: update.title) { updater.checkForUpdates() }
                 if update.hasDot {

@@ -13,7 +13,7 @@ Warble works without changing anything. The settings you're most likely to want 
 
 While Settings or the Software Update window is open, Warble has an icon in the Dock and its own menu at the top of the screen, and <kbd>⌘,</kbd> works from there too.
 
-Settings is a standard Mac window with three tabs along the top: Notch, General and About. It opens on Notch, then on whichever tab you last used until Warble quits, and it follows your Mac's light or dark appearance. **About Warble**, in both menus, opens it on the About tab.
+Settings is a standard Mac window with three tabs along the top: Notch, General and About. It opens on Notch, then on whichever tab you last used until Warble quits, and it follows your Mac's light or dark appearance.
 
 ![The Notch tab of Settings: a life-size preview of the notch on a pastel strip, then the settings in three groups, When a song is paused, Opened notch and Displays without a notch](../../../docs/media/settings-notch.png "The Notch tab. Everything under the preview changes the notch, and the preview shows each change.")
 
