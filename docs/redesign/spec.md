@@ -155,7 +155,7 @@ Under them, centred, in 11 pt secondary text: "Made by Lorcan Chinnock. Free and
 
 #431 builds both menus. Only the menus change; the notch doesn't.
 
-**Menu bar menu,** in this order: About Warble, Check for Updates…, a separator, Settings… ⌘,, a separator, Quit Warble ⌘Q. About Warble opens Settings on the About tab.
+**Menu bar menu,** in this order: Settings… ⌘,, Check for Updates…, a separator, Quit Warble ⌘Q. There's no About Warble: Settings' About tab is one click away.
 
 **While an update waits,** the menu bar icon keeps its bars and gains a 6 pt dot at its top right, with a 1.5 pt ring in the menu bar's colour, in place of today's `arrow.down.circle`. "Update to 0.2.0…" with an accent dot replaces Check for Updates… and opens the update window. The icon's VoiceOver name becomes "Warble, update available".
 

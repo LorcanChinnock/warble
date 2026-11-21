@@ -65,7 +65,7 @@ Warble checks the song each time you open the notch, so a song you favourite in 
 
 ## The notch menu
 
-Right-click the notch, or Control-click it, for a short menu. It starts with the app that's playing, such as **Open Spotify**, and then has the same items as the menu bar icon's menu, in the same order: **About Warble**, **Check for Updates…**, **Settings…** and **Quit Warble**.
+Right-click the notch, or Control-click it, for a short menu. It starts with the app that's playing, such as **Open Spotify**, and then has the same items as the menu bar icon's menu, in the same order: **Settings…**, **Check for Updates…** and **Quit Warble**.
 
 While a song is on, the menu also has **Copy Song and Artist**, under the app's name, which copies the song's name and artist as one line, such as "Heroes – David Bowie", ready to paste into a message. Extras in the name such as "- Remastered 2009" are left out.
 

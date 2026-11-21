@@ -6,8 +6,6 @@ public enum AppMenuItem: Equatable, Sendable {
     case openApp
     /// "Copy Song and Artist", while the notch shows a song with a title. Right-click menu only.
     case copySong
-    /// "About Warble", which opens Settings on the About tab.
-    case about
     /// Check for Updates…, or what an update under way says instead.
     case update(UpdateMenuItem)
     /// "Settings… ⌘,".
@@ -70,13 +68,13 @@ public enum UpdateMenuItem: Equatable, Sendable {
     }
 }
 
-/// What Warble's menus hold and in what order, in the conventional macOS order: About Warble, Check for Updates…,
-/// Settings… and Quit Warble, each group between separators. The notch's right-click menu puts the song's own items
-/// first, then the same items in the same order.
+/// What Warble's menus hold and in what order: Settings… and Check for Updates…, then Quit Warble after a separator.
+/// There's no About Warble, since Settings' About tab is one click away. The notch's right-click menu puts the song's
+/// own items first, then the same items in the same order.
 public enum AppMenu {
     /// The menu bar menu.
     public static func items(update: UpdateMenuItem) -> [AppMenuItem] {
-        [.about, .update(update), .separator, .settings, .separator, .quit]
+        [.settings, .update(update), .separator, .quit]
     }
 
     /// The notch's right-click menu. `openApp` is whether the app the notch follows can be opened; `copySong` whether

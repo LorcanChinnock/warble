@@ -19,16 +19,16 @@ final class SettingsWindow {
     weak var environment: AppEnvironment?
     static let width: CGFloat = 600
 
-    /// Opens Settings, on `tab` if given, or else on the tab it last showed.
-    func show(_ tab: SettingsTab? = nil) {
+    /// Opens Settings on the tab it last showed.
+    func show() {
         guard let environment else { return }
         let window = window ?? makeWindow()
         let isNew = window.contentViewController == nil
         if isNew {
             window.contentViewController = makeTabs(environment)
         }
-        if let tabs = window.contentViewController as? NSTabViewController, isNew || tab != nil {
-            tabs.selectedTabViewItemIndex = (tab ?? lastTab).rawValue
+        if let tabs = window.contentViewController as? NSTabViewController, isNew {
+            tabs.selectedTabViewItemIndex = lastTab.rawValue
         }
         if isNew {
             window.center()

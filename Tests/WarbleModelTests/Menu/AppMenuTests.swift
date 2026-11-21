@@ -6,8 +6,8 @@ private func update(pending: String? = nil, canCheck: Bool = true, phase: Update
     UpdateMenuItem(pendingVersion: pending, canCheck: canCheck, phase: phase, version: "0.2.0", fraction: fraction)
 }
 
-@Test func theMenuBarMenuIsInTheConventionalOrder() {
-    #expect(AppMenu.items(update: .check(enabled: true)) == [.about, .update(.check(enabled: true)), .separator, .settings, .separator, .quit])
+@Test func theMenuBarMenuPutsSettingsFirstAndHasNoAbout() {
+    #expect(AppMenu.items(update: .check(enabled: true)) == [.settings, .update(.check(enabled: true)), .separator, .quit])
 }
 
 @Test func theRightClickMenuPutsTheSongFirstThenTheMenuBarMenu() {
