@@ -54,6 +54,8 @@ const footer: { title: string; links: [string, string][] }[] = [
       ['GitHub', 'https://github.com/LorcanChinnock/warble'],
       ['Privacy', '/privacy/'],
       ['Sponsor', '/sponsor'],
+      ['Press kit', '/press/'],
+      ['Shot, by the same maker', 'https://shot.lorcanchinnock.com'],
     ],
   },
 ];
@@ -130,6 +132,7 @@ const footer: { title: string; links: [string, string][] }[] = [
               <span>Warble</span>
             </a>
             <p>What's playing, in your Mac's notch. Free and open source under the <a href="https://github.com/LorcanChinnock/warble/blob/main/LICENSE">GPL-3.0 license</a>.</p>
+            <p>Like Warble? A star on <a href="https://github.com/LorcanChinnock/warble">GitHub</a> helps other people find it.</p>
           </div>
           {footer.map((column) => (
             <nav aria-labelledby={`footer-${column.title.toLowerCase()}`}>

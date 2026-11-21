@@ -1,0 +1,51 @@
+---
+import Prose from '../../layouts/Prose.astro';
+import { latestRelease } from '../../lib/release';
+
+const release = latestRelease();
+const media = 'https://github.com/LorcanChinnock/warble/raw/main/docs/media';
+const shots: [string, string][] = [
+  ['skip.gif', 'The notch opening on hover, then skipping to the next track'],
+  ['play-pause.gif', 'Pausing and playing from the notch'],
+  ['volume.gif', 'Changing the volume'],
+  ['scrub.gif', 'Moving through a song'],
+  ['player.png', 'The open notch'],
+  ['speakers.png', 'Switching speakers'],
+  ['settings-notch.png', 'Settings, with a live preview of the notch'],
+];
+---
+
+<Prose title="Press kit" description="A short description of Warble, the facts, its icon and screenshots, free to use when you write about it.">
+  <h1>Warble press kit</h1>
+  <p class="lede">Writing about Warble, or putting it in a video? Use anything on this page. You don't need to ask first.</p>
+
+  <h2>In one line</h2>
+  <p>Warble is a free, open-source Mac app that shows what's playing in the notch and controls it, with no account, no cloud and no analytics.</p>
+
+  <h2>In a paragraph</h2>
+  <p>Hover over your Mac's notch and Warble shows the song that's playing, on a soft glow in the album art's colours, with buttons to play, pause, skip, change the volume and switch speakers. It works with Apple Music, Spotify, podcast apps and video in the browser. On a Mac without a notch, or on an external display, it draws a notch of its own. When nothing is playing, Warble draws nothing and uses no CPU. It's made by one developer, Lorcan Chinnock, and is free software under the GPL-3.0 license.</p>
+
+  <h2>Facts</h2>
+  <ul>
+    <li><strong>Price:</strong> free, with no ads and no paid tier.</li>
+    <li><strong>Platform:</strong> macOS 15 or later, on Apple silicon or Intel.</li>
+    <li><strong>Latest version:</strong> {release.version}, in beta.</li>
+    <li><strong>Languages:</strong> English, German, Spanish, French, Italian, Japanese, Korean, Brazilian Portuguese and Simplified Chinese.</li>
+    <li><strong>Privacy:</strong> no account, no cloud and no analytics. See the <a href="/privacy/">privacy page</a>.</li>
+    <li><strong>Source code:</strong> <a href="https://github.com/LorcanChinnock/warble">github.com/LorcanChinnock/warble</a></li>
+    <li><strong>Install:</strong> <code>curl -fsSL https://warble.lorcanchinnock.com/install.sh | bash</code>, or see <a href="/#install">Install</a>.</li>
+  </ul>
+
+  <h2>Icon</h2>
+  <p><a href="https://github.com/LorcanChinnock/warble/raw/main/docs/icon.png">Download the icon (PNG)</a>. Please don't change its colours or shape.</p>
+
+  <h2>Screenshots and recordings</h2>
+  <p>Every picture plays made-up songs with generated album art, so they're free to publish.</p>
+  <ul>
+    {shots.map(([file, label]) => <li><a href={`${media}/${file}`}>{label}</a> ({file.endsWith('.gif') ? 'GIF' : 'PNG'})</li>)}
+  </ul>
+  <p>More are in the <a href="https://github.com/LorcanChinnock/warble/tree/main/docs/media">media folder on GitHub</a>.</p>
+
+  <h2>Contact</h2>
+  <p>Questions, or need something that isn't here? Get in touch through <a href="https://lorcanchinnock.com">lorcanchinnock.com</a>, or open a <a href="https://github.com/LorcanChinnock/warble/issues">GitHub issue</a>.</p>
+</Prose>
