@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0-beta.30](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.29...v0.1.0-beta.30) (2026-11-21)
+
+
+### Features
+
+* **menu:** drop About Warble and put Check for Updates under Settings ([#540](https://github.com/LorcanChinnock/warble/issues/540)) ([9733afd](https://github.com/LorcanChinnock/warble/commit/9733afd195b844bff81512230c99727479175a8e))
+
 ## [0.1.0-beta.29](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.28...v0.1.0-beta.29) (2026-11-20)
 
 
