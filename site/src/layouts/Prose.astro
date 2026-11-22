@@ -22,7 +22,7 @@ const side = pages.length > 0 || Astro.slots.has('side');
   <slot name="header" slot="header" />
   <div id="top" class={`wrap doc ${side ? 'with-side' : ''} ${toc.length > 0 ? 'with-toc' : ''}`}>
     {side && (
-      <aside class="side">
+      <aside class="side" aria-label="Guide">
         <slot name="side" />
         {pages.length > 0 && (
           <nav class="pages" aria-label="Guide pages">

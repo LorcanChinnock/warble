@@ -30,7 +30,7 @@ const { label, height, app = 'Music', external = false } = Astro.props;
     mask-image: linear-gradient(to bottom, #000 58%, transparent);
   }
   .glass {
-    position: relative; overflow: hidden; border-radius: 19px 19px 0 0;
+    position: relative; overflow: hidden; border-radius: 19px 19px 0 0; container-type: inline-size;
     background: linear-gradient(118deg, var(--sky), color-mix(in srgb, var(--pink) 30%, #fff) 55%, color-mix(in srgb, var(--yellow) 42%, #fff));
   }
   .menubar {
