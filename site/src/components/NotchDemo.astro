@@ -15,7 +15,7 @@ const art = '/media/art-moment-apart.webp';
         <span class="items"><b>Music</b><span>File</span><span>Edit</span><span>Song</span><span>View</span><span>Window</span></span>
         <span class="clock">Thu 12 Nov 09:41</span>
       </div>
-      <div class="notch" data-state="rest" data-playing="true" tabindex="0" aria-label="Warble's notch. Hover, tap or focus it to open.">
+      <div class="notch" role="group" data-state="rest" data-playing="true" tabindex="0" aria-label="Warble's notch. Hover, tap or focus it to open.">
         <div class="glow" aria-hidden="true"></div>
         <div class="layer rest" aria-hidden="true">
           <span class="wing"><img class="small" src={art} alt="" width="25" height="25" /></span>
@@ -137,6 +137,9 @@ const art = '/media/art-moment-apart.webp';
     display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 8px;
     background: none; color: #fff; cursor: pointer; transition: background 150ms, transform 120ms;
   }
+  /* The buttons are drawn at the app's 30pt; the 12pt gaps let each one take a 42 × 44 touch. */
+  .controls button { position: relative; }
+  .controls button::before { content: ''; position: absolute; inset: -7px -6px; }
   .controls button:hover { background: rgb(255 255 255 / 0.12); }
   .controls button:active { transform: scale(0.9); }
   .controls button:focus-visible { outline: 2px solid #fff; }

@@ -119,6 +119,15 @@ const glow = track && `--glow-a: ${track.glow[0]}; --glow-b: ${track.glow[1]}`;
   .output { width: 34px; height: 20px; }
   .output.laptop { fill: none; stroke: #fff; stroke-width: 1.6; stroke-linejoin: round; }
 
+  /* On a small phone the crop is narrower than the open card, so the card and its speaker list shrink together,
+     both around the top centre of the screen. */
+  .open { transform-origin: 50% 0; }
+  .speakers { transform-origin: 81px -206px; }
+  @container (max-width: 325px) { .open, .speakers { scale: 0.93; } }
+  @container (max-width: 303px) { .open, .speakers { scale: 0.86; } }
+  @container (max-width: 282px) { .open, .speakers { scale: 0.8; } }
+  @container (max-width: 263px) { .open, .speakers { scale: 0.74; } }
+
   .speakers {
     position: absolute; left: calc(50% - 81px); top: 206px; width: 236px; padding: 5px; box-sizing: border-box;
     border-radius: 10px; background: rgb(44 44 46 / 0.97); box-shadow: 0 0 0 0.5px rgb(255 255 255 / 0.16), 0 14px 34px rgb(0 0 0 / 0.38);

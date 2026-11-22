@@ -36,8 +36,8 @@ function rehypeCallouts() {
       const match = text?.type === 'text' && /^\[!(\w+)\]\s*/.exec(text.value);
       if (!match || !callouts[match[1]]) return;
       text.value = text.value.slice(match[0].length);
-      node.tagName = 'aside';
-      node.properties = { className: ['callout', match[1].toLowerCase()] };
+      node.tagName = 'div';
+      node.properties = { className: ['callout', match[1].toLowerCase()], role: 'note' };
       node.children.unshift({ type: 'element', tagName: 'p', properties: { className: ['callout-label'] }, children: [{ type: 'text', value: callouts[match[1]] }] });
     });
 }
@@ -121,7 +121,7 @@ function rehypeCopyCommands() {
       node.tagName = 'div';
       node.properties = { className: ['copy', 'card'] };
       node.children = [
-        { type: 'element', tagName: 'code', properties: {}, children: [{ type: 'text', value: command }] },
+        { type: 'element', tagName: 'code', properties: { tabIndex: 0 }, children: [{ type: 'text', value: command }] },
         { type: 'element', tagName: 'button', properties: { type: 'button', className: ['button', 'small', 'quiet'], dataCopy: command }, children: [{ type: 'text', value: 'Copy' }] },
         { type: 'element', tagName: 'span', properties: { className: ['status'], ariaLive: 'polite' }, children: [] },
       ];

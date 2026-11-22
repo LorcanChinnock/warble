@@ -194,9 +194,16 @@ section { padding-block: clamp(48px, 8vw, 110px); }
 }
 .site-header .menu nav a { display: flex; align-items: center; min-height: 44px; border-radius: 10px; }
 @media (max-width: 720px) {
-  .site-header .bar { flex-wrap: wrap; }
+  .site-header .bar { flex-wrap: wrap; column-gap: 12px; }
   .site-header .links { display: none; }
   .site-header .menu { display: block; }
+}
+
+/* "Warble guide" and Menu don't fit side by side on a small phone, so the name takes the first row and Menu sits beside the search. */
+@media (max-width: 374px) {
+  .site-header .bar:has(.guide-search:not([hidden])) .brand { flex-basis: 100%; }
+  .site-header .bar:has(.guide-search:not([hidden])) .guide-search { flex: 1 1 0; }
+  .site-header .bar:has(.guide-search:not([hidden])) .menu { order: 4; margin-left: 0; }
 }
 
 /* Footer: the name and licence, then three columns of links, then the maker's mark. */
@@ -209,6 +216,11 @@ section { padding-block: clamp(48px, 8vw, 110px); }
 .site-footer nav { flex: 1 1 140px; display: grid; align-content: start; gap: 9px; font-size: 15px; }
 .site-footer nav h2 { margin: 4px 0 3px; font: 700 14px/1.3 var(--font); letter-spacing: 0; color: var(--fg); }
 .site-footer nav a { text-decoration: none; color: var(--secondary); }
+@media (max-width: 720px) {
+  .site-footer nav { gap: 0; }
+  .site-footer nav h2 { margin-bottom: 4px; }
+  .site-footer nav a { padding-block: 6px; }
+}
 .site-footer nav a:hover { color: var(--fg); }
 .site-footer .credit { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 34px 0 0; padding-top: 20px; border-top: 1px solid var(--hairline); font-size: 14px; font-weight: 600; color: var(--secondary); }
 
@@ -236,7 +248,9 @@ section { padding-block: clamp(48px, 8vw, 110px); }
 .prose ul > li { position: relative; margin: 0; padding-left: 28px; }
 .prose ul > li::before { content: ""; position: absolute; left: 4px; top: 0.7em; width: 10px; height: 10px; border-radius: 50%; background: var(--pink); }
 .prose strong { font-weight: 800; }
-.prose code { font-size: 0.86em; font-weight: 500; padding: 0.1em 0.4em; background: var(--fill-strong); border-radius: 6px; }
+/* A long address in running text, like the source code link, breaks rather than widening the page on a phone. */
+.prose a { overflow-wrap: anywhere; }
+.prose code { font-size: 0.86em; font-weight: 500; padding: 0.1em 0.4em; background: var(--fill-strong); border-radius: 6px; overflow-wrap: anywhere; }
 .prose pre { padding: 18px 20px; overflow-x: auto; border-radius: 20px; background: var(--surface) !important; box-shadow: var(--lift); }
 .prose pre code { padding: 0; background: none; }
 /* Shiki writes both themes; dark mode swaps to the dark one. */
