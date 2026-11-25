@@ -1789,58 +1789,6 @@
         }
       }
     },
-    "Heart for Music's Favourites" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Herz für Favoriten in Musik"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Corazón para Favoritos de Música"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cœur pour les favoris de Musique"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuore per i Preferiti di Musica"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "“ミュージック”のお気に入り用ハート"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "음악 앱 즐겨찾기용 하트"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Coração para Favoritos do Música"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "“音乐”喜爱的爱心"
-          }
-        }
-      }
-    },
     "Help" : {
       "localizations" : {
         "de" : {
@@ -7879,58 +7827,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "歌曲暂停时"
-          }
-        }
-      }
-    },
-    "While Music plays, a heart beside the title adds the song to your Favourites." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Während Musik spielt, fügt ein Herz neben dem Titel den Song deinen Favoriten hinzu."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mientras Música reproduce, un corazón junto al título añade la canción a tus Favoritos."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pendant la lecture dans Musique, un cœur à côté du titre ajoute le morceau à vos favoris."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mentre Musica è in riproduzione, un cuore accanto al titolo aggiunge il brano ai tuoi Preferiti."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "“ミュージック”の再生中、タイトル横のハートで曲をお気に入りに追加できます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "음악 앱이 재생 중일 때 제목 옆 하트를 누르면 노래를 즐겨찾기에 추가합니다."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enquanto o Música toca, um coração ao lado do título adiciona a música aos seus Favoritos."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "“音乐”播放时，标题旁的爱心可将歌曲添加到喜爱中。"
           }
         }
       }

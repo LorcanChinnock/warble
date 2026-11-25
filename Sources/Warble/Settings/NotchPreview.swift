@@ -48,8 +48,8 @@ final class PreviewNotch {
 /// `ExpandedContent`), at life size or scaled down to fit `height`, with the song that's playing or, when nothing is, a
 /// made-up one. It rests as a notch does, with the art, the bars and, when the setting is on, the title, and opens into
 /// the card when the pointer reaches it. It stays open after the pointer leaves, so a setting's change shows without
-/// pointing at it again. Only a click closes it, and the pointer reaching it again opens it again. Its controls do nothing. A change to the title font, the card size
-/// or the heart opens a closed card for a couple of seconds to show the change, unless Reduce Motion is on. A change to
+/// pointing at it again. Only a click closes it, and the pointer reaching it again opens it again. Its controls do nothing. A change to the title font or the card size
+/// opens a closed card for a couple of seconds to show the change, unless Reduce Motion is on. A change to
 /// the pause or external-display setting pauses the song and, a beat later, ends it as those settings would
 /// (`PreviewEnding`); it holds that end until the pointer leaves the preview, or another setting changes, then plays
 /// again. Nothing else in it moves by itself.
@@ -63,8 +63,6 @@ struct NotchPreview: View {
     let cardSize: CardSize
     /// With the virtual notch off there is none, so the screen is bare.
     let visibility: VirtualNotchVisibility
-    /// Whether the card has the heart for Music's Favourites, which the preview shows on any song.
-    let showsFavourite: Bool
     /// Holds the card open, whatever the pointer does, as the first-run window shows it. Settings leaves it closed until
     /// the pointer is on it.
     var holdsOpen = false
@@ -101,11 +99,9 @@ struct NotchPreview: View {
         return isPaused ? shown.playing(false, at: pausedAt) : shown
     }
 
-    /// The card's heart with the switch on: the live song's own when it's a Music favourite, and otherwise an outline, the
-    /// made-up song's included.
+    /// The live card's heart, so it shows only for a Music song, as on the notch. The made-up song has none.
     private var favourite: Bool? {
-        guard showsFavourite else { return nil }
-        return live.showsPlayback && live.favourite == true
+        live.showsPlayback ? live.favourite : nil
     }
 
     private static let housing = CGRect(x: 0, y: 0, width: VirtualNotch.width, height: 24)
@@ -234,7 +230,6 @@ struct NotchPreview: View {
         .onChange(of: showsTitle) { play() }
         .onChange(of: notchFont) { peek() }
         .onChange(of: cardSize) { peek() }
-        .onChange(of: showsFavourite) { peek() }
         .task(id: pauses) {
             guard isPaused, (try? await Task.sleep(for: PreviewEnding.beat)) != nil else { return }
             morph { ending = PreviewEnding(pauseDelay: pauseDelay, visibility: visibility) }

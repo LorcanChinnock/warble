@@ -86,7 +86,6 @@ The preview (`NotchPreview`, see [Settings](../architecture/settings.md)) on the
 | When a song is paused | Stay visible after pausing | How long a paused song stays before the notch goes quiet. | Pop-up: 10 seconds, 1 minute, Always | Always |
 | Opened notch | Size | none | Segmented: Small, Default, Large | Default |
 | Opened notch | Song title font | none | Pop-up: Default, Rounded, Mono | Default |
-| Opened notch | Heart for Music's Favourites | While Music plays, a heart beside the title adds the song to your Favourites. | Switch | Off |
 | Displays without a notch | Show a notch | On an external display, or with the lid closed, Warble draws one. | Pop-up: Only when playing, Always, Off | Only when playing |
 | Displays without a notch | Song title in the notch | The middle of the notch shows the title and artist. | Switch | On |
 

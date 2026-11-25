@@ -29,4 +29,4 @@ While Warble follows Music and Spotify itself, it needs your permission to contr
 3. Play something again.
 
 > [!NOTE]
-> Warble also asks for this permission when it can't read what's playing directly, when you use the heart for a song in Music, and the first time you click the artist of a Spotify song.
+> Warble also asks for this permission when it can't read what's playing directly, the first time you open the notch on a Music song (to show its heart), and the first time you click the artist of a Spotify song.
