@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.0-beta.31](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.30...v0.1.0-beta.31) (2026-11-25)
+
+
+### Features
+
+* **menu:** a setting to hide the menu bar icon ([#553](https://github.com/LorcanChinnock/warble/issues/553)) ([49c1a09](https://github.com/LorcanChinnock/warble/commit/49c1a0942cbf05f152ee249072581518142f24db))
+* **notch:** show the heart for Music's Favourites without a setting ([#555](https://github.com/LorcanChinnock/warble/issues/555)) ([e84bdd9](https://github.com/LorcanChinnock/warble/commit/e84bdd9ab62cecce8feaf8f72bf82373cb91a9b1))
+
 ## [0.1.0-beta.30](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.29...v0.1.0-beta.30) (2026-11-21)
 
 
