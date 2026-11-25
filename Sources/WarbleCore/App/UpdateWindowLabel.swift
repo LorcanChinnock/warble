@@ -55,6 +55,11 @@ public enum UpdateWindowLabel {
         String(localized: "Warble \(version) is downloaded")
     }
 
+    /// "Installing Warble 0.2.0", while Warble quits to put the new version in.
+    public static func installingTitle(version: String) -> String {
+        String(localized: "Installing Warble \(version)")
+    }
+
     /// "Warble 0.2.0 is installed", when another installer replaced the running copy.
     public static func installedTitle(version: String) -> String {
         String(localized: "Warble \(version) is installed")

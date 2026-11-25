@@ -46,6 +46,15 @@ enum Native {
     static let morph = Animation.smooth(duration: NotchMotion.morph)
     /// The content's cross-fade between states, which is all that moves while Reduce Motion is on.
     static let fade = Animation.easeInOut(duration: 0.2)
+
+    /// The update window rising a few points into place as it fades in the first time, as Shot's does: a short
+    /// overshoot, then it settles.
+    static let windowArrive: TimeInterval = 0.24
+    static var windowArriveCurve: CAMediaTimingFunction { CAMediaTimingFunction(controlPoints: 0.34, 1.4, 0.64, 1) }
+    /// How far below its place it starts.
+    static let windowRise: CGFloat = 8
+    /// With Reduce Motion it only fades in, over this.
+    static let windowFade: TimeInterval = 0.12
     /// A state's content fading in, once the growing shape has started to uncover it.
     static let contentIn = Animation.easeInOut(duration: NotchMotion.contentIn).delay(NotchMotion.contentDelay)
     /// A state's content fading out, quickly, ahead of the shape closing over it.

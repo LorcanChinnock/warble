@@ -109,3 +109,27 @@ private let embedded = """
     #expect(ReleaseNotes.format(mimeType: "text/plain", pathExtension: "html") == .plainText)
     #expect(ReleaseNotes.format(mimeType: "text/html", pathExtension: "html") == .html)
 }
+
+@Test func releaseNotesCountTheLinesTheWindowLists() {
+    let one = ReleaseNotes("## 0.2.0\n\n### Bug Fixes\n\n* one", format: .markdown)
+    #expect(!one.showsVersions)
+    #expect(one.rows == 2)
+    #expect(!one.scrolls)
+
+    let untitled = ReleaseNotes("- one\n- two", format: .plainText)
+    #expect(untitled.rows == 2)
+
+    let three = ReleaseNotes(embedded, format: .markdown)
+    #expect(three.showsVersions)
+    let changes = three.versions.flatMap(\.groups).reduce(0) { $0 + $1.items.count }
+    let groups = three.versions.flatMap(\.groups).count
+    #expect(three.rows == 3 + groups + changes)
+}
+
+@Test func releaseNotesScrollOnlyPastTenLines() {
+    let ten = ReleaseNotes((1...9).map { "- change \($0)" }.joined(separator: "\n") + "\n- last", format: .plainText)
+    #expect(ten.rows == ReleaseNotes.scrollingRows)
+    #expect(!ten.scrolls)
+    let eleven = ReleaseNotes((1...11).map { "- change \($0)" }.joined(separator: "\n"), format: .plainText)
+    #expect(eleven.scrolls)
+}
