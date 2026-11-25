@@ -37,12 +37,11 @@ If you let Warble check automatically, the Software Update window also opens by 
 
 The Software Update window says which version is ready and which one you have, how big the download is, and that Warble quits and reopens to finish. Under that is what's new in every version since yours.
 
-![The Software Update window: Warble 1.0.0 is ready, the version you have and the download size, a scrolling list of what's new and fixed in each version, a checkbox to install updates automatically from now on, and the buttons Skip This Version, Remind Me Tomorrow and Install and Relaunch](../../../docs/media/update-offer.png "The Software Update window, with what changed since your version.")
+![The Software Update window: Warble 1.0.0 is ready, the version you have and the download size, a list of what's new and fixed in each version, a checkbox to install updates automatically from now on, and the buttons Skip This Version, Remind Me Tomorrow and Install and Relaunch](../../../docs/media/update-offer.png "The Software Update window, with what changed since your version.")
 
-1. Click **Install and Relaunch**. The window shows the download's progress and about how long is left.
-2. When the download finishes, click **Relaunch Now**. Warble quits and opens the new version, and your music keeps playing.
+Click **Install and Relaunch**. The window shows the download's progress and about how long is left. When the download finishes, Warble quits and opens the new version by itself, and your music keeps playing.
 
-You can close the window while it downloads. The download carries on, and the menu item shows how far it's got, such as **Downloading 0.2.0 (53%)…**. Choose it to see the window again. If you click **Later** instead of **Relaunch Now**, the new version installs the next time Warble quits.
+You can close the window while it downloads. The download carries on, and the menu item shows how far it's got, such as **Downloading 0.2.0 (53%)…**. Choose it to see the window again. It comes back by itself just before Warble relaunches.
 
 The other buttons wait:
 

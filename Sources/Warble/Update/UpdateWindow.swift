@@ -52,8 +52,10 @@ final class UpdateWindowModel {
             offer.map(UpdateWindowLabel.offerTitle) ?? ""
         case .downloading, .preparing:
             UpdateWindowLabel.downloadingTitle(version: version)
-        case .ready, .installing:
+        case .ready:
             UpdateWindowLabel.readyTitle(version: version)
+        case .installing:
+            UpdateWindowLabel.installingTitle(version: version)
         case .installedWhileRunning(let version):
             UpdateWindowLabel.installedTitle(version: version)
         }
@@ -86,25 +88,33 @@ final class UpdateWindowModel {
     }
 }
 
-/// Warble's own Software Update window, in place of Sparkle's: a standard window with only the close button, which fits
-/// its content as the update moves from the check to the offer, the download and the relaunch.
-final class UpdateWindow: NSWindow, NSWindowDelegate {
+/// Warble's own Software Update window, in place of Sparkle's: a borderless card, as Shot's is, drawn with the system's
+/// colours, fonts and controls. It floats on top, drags from anywhere outside its controls, and fits its content as the
+/// update moves from the check to the offer, the download and the relaunch.
+final class UpdateWindow: NSWindow {
     let model: UpdateWindowModel
     private var shownOnce = false
+
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
 
     init(model: UpdateWindowModel) {
         self.model = model
         let width = model.phase.width
         let height = NSView.fittingHeight(of: UpdateView(model: model), width: width)
-        super.init(contentRect: NSRect(x: 0, y: 0, width: width, height: height), styleMask: [.titled, .closable], backing: .buffered, defer: false)
+        super.init(contentRect: NSRect(x: 0, y: 0, width: width, height: height), styleMask: [.borderless], backing: .buffered, defer: false)
         title = String(localized: "Software Update")
+        setAccessibilitySubrole(.dialog)
         // Floating, so an update offered while you work opens on top of other windows, other apps' included, even while
         // Warble isn't the active app. The menu still offers it again.
         level = .floating
         hidesOnDeactivate = false
         isReleasedWhenClosed = false
         collectionBehavior = [.moveToActiveSpace, .fullScreenAuxiliary]
-        delegate = self
+        // The card draws its own rounded background, and the shadow follows it.
+        isOpaque = false
+        backgroundColor = .clear
+        hasShadow = true
         let content = UpdateView(model: model)
             .fixedSize(horizontal: false, vertical: true)
             .onGeometryChange(for: CGSize.self) { $0.size } action: { [weak self] size in
@@ -115,24 +125,39 @@ final class UpdateWindow: NSWindow, NSWindowDelegate {
         contentView = NSView(hosting: content)
     }
 
-    /// The close button does what the state's Later or Cancel does, so closing never leaves Sparkle waiting.
-    func windowShouldClose(_ sender: NSWindow) -> Bool {
-        model.close()
-        return false
-    }
-
+    /// Esc, and ⌘W from the app menu, do what the state's Later or Cancel does, so closing never leaves Sparkle waiting.
     override func cancelOperation(_ sender: Any?) {
         model.close()
     }
 
-    /// Brings the window forward. The first time, it's centred, as standard windows open. It takes a Dock icon while
-    /// it's open, as Settings does.
+    override func performClose(_ sender: Any?) {
+        model.close()
+    }
+
+    /// Borderless, so AppKit would turn off File › Close (⌘W) for want of a close button.
+    override func validateUserInterfaceItem(_ item: any NSValidatedUserInterfaceItem) -> Bool {
+        if item.action == #selector(performClose(_:)) {
+            return true
+        }
+        return super.validateUserInterfaceItem(item)
+    }
+
+    /// Brings the window forward. The first time, it's centred on the screen with the pointer and rises a few points as
+    /// it fades in, or only fades with Reduce Motion. It takes a Dock icon while it's open, as Settings does.
     func present(activating: Bool) {
         DockIcon.show(for: .update)
-        if !shownOnce {
+        if shownOnce {
+            bringForward(activating: activating)
+        } else {
             shownOnce = true
-            center()
+            arrive(activating: activating)
         }
+        NSAccessibility.post(element: NSApp as Any, notification: .announcementRequested, userInfo: [
+            .announcement: model.title, .priority: NSAccessibilityPriorityLevel.high.rawValue,
+        ])
+    }
+
+    private func bringForward(activating: Bool) {
         if activating {
             NSApp.activate()
             makeKeyAndOrderFront(nil)
@@ -146,9 +171,25 @@ final class UpdateWindow: NSWindow, NSWindowDelegate {
             // On top, other apps' windows included, without making Warble active or the window key.
             orderFrontRegardless()
         }
-        NSAccessibility.post(element: NSApp as Any, notification: .announcementRequested, userInfo: [
-            .announcement: model.title, .priority: NSAccessibilityPriorityLevel.high.rawValue,
-        ])
+    }
+
+    private func arrive(activating: Bool) {
+        // Let the content take its height first, so the frame below has it.
+        contentView?.layoutSubtreeIfNeeded()
+        let resting = centred(frame.size)
+        let reduced = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+        alphaValue = 0
+        setFrame(reduced ? resting : resting.offsetBy(dx: 0, dy: -Native.windowRise), display: true)
+        bringForward(activating: activating)
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = reduced ? Native.windowFade : Native.windowArrive
+            context.timingFunction = reduced ? CAMediaTimingFunction(name: .easeOut) : Native.windowArriveCurve
+            animator().alphaValue = 1
+            // Only the origin moves, so a height the content asks for meanwhile isn't undone.
+            if !reduced {
+                animator().setFrameOrigin(resting.origin)
+            }
+        }
     }
 
     override func orderOut(_ sender: Any?) {
@@ -156,25 +197,36 @@ final class UpdateWindow: NSWindow, NSWindowDelegate {
         DockIcon.hide(for: .update)
     }
 
+    private func centred(_ size: NSSize) -> NSRect {
+        let pointer = NSEvent.mouseLocation
+        let screen = (NSScreen.screens.first { $0.frame.contains(pointer) } ?? NSScreen.main ?? NSScreen.screens[0]).visibleFrame
+        return NSRect(x: (screen.midX - size.width / 2).rounded(), y: (screen.midY - size.height / 2).rounded(), width: size.width, height: size.height)
+    }
+
     /// Takes the size the content needs, keeping the top edge and the middle where they are, so the buttons swapping
     /// for a progress bar never makes the title jump.
     private func fit(_ size: CGSize) {
         let wanted = NSSize(width: size.width.rounded(.up), height: size.height.rounded(.up))
-        let current = contentRect(forFrameRect: frame).size
-        guard wanted.width > 0, wanted.height > 0, wanted != current else {
+        guard wanted.width > 0, wanted.height > 0, wanted != frame.size else {
             return
         }
-        var next = frameRect(forContentRect: NSRect(origin: .zero, size: wanted))
-        next.origin = NSPoint(x: (frame.midX - next.width / 2).rounded(), y: frame.maxY - next.height)
-        setFrame(next, display: true)
+        let resting = shownOnce ? frame : centred(frame.size)
+        setFrame(NSRect(x: (resting.midX - wanted.width / 2).rounded(), y: resting.maxY - wanted.height, width: wanted.width, height: wanted.height), display: true)
+        invalidateShadow()
     }
 }
 
-/// The window's content: the offer with its release notes, or one of the short states with a smaller icon.
+/// The window's content: the offer with its release notes, or one of the short states with a smaller icon, on a
+/// rounded card of the window background with a hairline edge.
 struct UpdateView: View {
     @Bindable var model: UpdateWindowModel
+    @Environment(\.colorSchemeContrast) private var contrast
+
+    static let radius: CGFloat = 16
 
     var body: some View {
+        let shape = RoundedRectangle(cornerRadius: Self.radius)
+        let increased = contrast == .increased
         Group {
             if model.phase == .offer, let offer = model.offer {
                 OfferView(model: model, offer: offer)
@@ -183,10 +235,9 @@ struct UpdateView: View {
             }
         }
         .frame(width: model.phase.width)
-        // A drag anywhere outside the controls moves the window, not only its title bar: the short states are mostly
-        // content. SwiftUI gestures, not an AppKit view, so the buttons and anything selectable keep their own clicks
-        // and drags. This one covers the icon and headings, which sit in front of the background below and would
-        // otherwise take the drag.
+        // The card has no title bar, so a drag anywhere outside the controls moves it. SwiftUI gestures, not an AppKit
+        // view, so the buttons and anything selectable keep their own clicks and drags. This one covers the icon and
+        // headings, which sit in front of the background below and would otherwise take the drag.
         .gesture(WindowDragGesture())
         // The gaps between them, with no content shape above, reach this one.
         .background {
@@ -196,6 +247,13 @@ struct UpdateView: View {
                 // The first click on the window while it's in the background drags it too.
                 .allowsWindowActivationEvents(true)
         }
+        .background(Color(nsColor: .windowBackgroundColor), in: shape)
+        .clipShape(shape)
+        .overlay {
+            shape.strokeBorder(increased ? Color.primary.opacity(0.6) : Color(nsColor: .separatorColor), lineWidth: increased ? 1 : 0.5)
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(Text(verbatim: model.title))
     }
 }
 
@@ -220,7 +278,7 @@ private struct OfferView: View {
     let offer: UpdateOffer
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top, spacing: 16) {
                 AppIcon(size: 56)
                 VStack(alignment: .leading, spacing: 4) {
@@ -234,19 +292,24 @@ private struct OfferView: View {
                 .padding(.top, 2)
                 .fixedSize(horizontal: false, vertical: true)
             }
+            .padding(.horizontal, 24)
+            .padding(.top, 20)
+            .padding(.bottom, 16)
             if !model.notes.isEmpty {
-                NotesBox(notes: model.notes, version: offer.versions.new)
+                NotesBand(notes: model.notes, version: offer.versions.new)
             }
-            if model.buttons?.showsAutomaticInstall == true {
-                Toggle("Install updates automatically from now on", isOn: $model.installsAutomatically)
-                    .toggleStyle(.checkbox)
-                    .help(String(localized: "New versions download by themselves and install the next time Warble quits. You can turn this off in Settings › About."))
+            VStack(alignment: .leading, spacing: 14) {
+                if model.buttons?.showsAutomaticInstall == true {
+                    Toggle("Install updates automatically from now on", isOn: $model.installsAutomatically)
+                        .toggleStyle(.checkbox)
+                        .help(String(localized: "New versions download by themselves and install the next time Warble quits. You can turn this off in Settings › About."))
+                }
+                buttons
             }
-            buttons
+            .padding(.horizontal, 24)
+            .padding(.top, 14)
+            .padding(.bottom, 20)
         }
-        .padding(.horizontal, 24)
-        .padding(.top, 8)
-        .padding(.bottom, 20)
     }
 
     /// Skip This Version on the left, then Remind Me Tomorrow and Install and Relaunch. When a long translation leaves
@@ -313,38 +376,53 @@ private struct OfferView: View {
     }
 }
 
-/// The release notes in a 230 pt box that scrolls, as a text view sits in a window: each version since the installed
-/// one, newest first, with its groups and changes.
-private struct NotesBox: View {
+/// The release notes on a lightly filled band between hairlines, across the card: each version since the
+/// installed one, newest first, with its groups and changes. It takes the list's height, and only a long list stops at
+/// 230 points and scrolls, since a scroll view has no height of its own to give the card.
+private struct NotesBand: View {
     let notes: ReleaseNotes
     let version: String
+    @Environment(\.colorSchemeContrast) private var contrast
 
     var body: some View {
-        let showsVersions = notes.versions.count > 1
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                ForEach(Array(notes.versions.enumerated()), id: \.offset) { _, release in
-                    VStack(alignment: .leading, spacing: 10) {
-                        if showsVersions, let version = release.version {
-                            Text(verbatim: version)
-                                .font(.system(size: 13, weight: .bold))
-                                .accessibilityAddTraits(.isHeader)
-                        }
-                        ForEach(Array(release.groups.enumerated()), id: \.offset) { _, group in
-                            GroupList(group: group)
-                        }
+        let list = VStack(alignment: .leading, spacing: 12) {
+            ForEach(Array(notes.versions.enumerated()), id: \.offset) { _, release in
+                VStack(alignment: .leading, spacing: 10) {
+                    if notes.showsVersions, let version = release.version {
+                        Text(verbatim: version)
+                            .font(.system(size: 13, weight: .bold))
+                            .accessibilityAddTraits(.isHeader)
+                    }
+                    ForEach(Array(release.groups.enumerated()), id: \.offset) { _, group in
+                        GroupList(group: group)
                     }
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
         }
-        .frame(height: 230)
-        .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 8))
-        .overlay { RoundedRectangle(cornerRadius: 8).strokeBorder(Color(nsColor: .separatorColor), lineWidth: 1) }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 24)
+        .padding(.vertical, 12)
+
+        Group {
+            if notes.scrolls {
+                ScrollView { list }
+                    .frame(height: 230)
+            } else {
+                list
+            }
+        }
+        .background { Rectangle().fill(Color(nsColor: .quaternarySystemFill)) }
+        .overlay(alignment: .top) { divider }
+        .overlay(alignment: .bottom) { divider }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text(verbatim: UpdateWindowLabel.notesName(version: version)))
+    }
+
+    private var divider: some View {
+        Rectangle()
+            .fill(contrast == .increased ? Color.primary.opacity(0.6) : Color(nsColor: .separatorColor))
+            .frame(height: 1)
+            .accessibilityHidden(true)
     }
 }
 
@@ -373,8 +451,8 @@ private struct GroupList: View {
     }
 }
 
-/// Checking, downloading, ready and installed: the smaller icon beside a title, a line or a progress bar, and the
-/// buttons on the right.
+/// Checking, downloading, ready, installing and installed: the smaller icon beside a title, a line or a progress bar,
+/// and the buttons on the right.
 private struct StepView: View {
     let model: UpdateWindowModel
 
@@ -399,9 +477,7 @@ private struct StepView: View {
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 6)
-        .padding(.bottom, 18)
+        .padding(20)
     }
 
     @ViewBuilder private var detail: some View {
@@ -453,19 +529,18 @@ private struct StepView: View {
         case .checking, .downloading, .preparing:
             Button("Cancel") { model.actions.cancel() }
                 .disabled(!model.canCancel)
-        case .ready, .installing:
+        case .ready:
             HStack(spacing: 8) {
                 Button("Later") { model.actions.installOnQuit() }
                     .help(String(localized: "Install the new version the next time Warble quits"))
                 DefaultButton("Relaunch Now") { model.actions.relaunch() }
             }
-            .disabled(model.phase == .installing)
         case .installedWhileRunning:
             HStack(spacing: 8) {
                 Button("Later") { model.actions.later() }
                 DefaultButton("Relaunch") { model.actions.relaunch() }
             }
-        case .offer:
+        case .offer, .installing:
             EmptyView()
         }
     }

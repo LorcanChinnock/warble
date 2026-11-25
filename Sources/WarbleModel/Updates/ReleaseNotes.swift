@@ -55,6 +55,28 @@ public struct ReleaseNotes: Equatable, Sendable {
         versions.allSatisfy { $0.groups.isEmpty }
     }
 
+    /// Whether the update window names each version, which it does only when there's more than one.
+    public var showsVersions: Bool {
+        versions.count > 1
+    }
+
+    /// The lines the update window lists: each version's number while it shows them, each group's heading, and each
+    /// change.
+    public var rows: Int {
+        versions.reduce(0) { count, version in
+            let heading = showsVersions && version.version != nil ? 1 : 0
+            return count + heading + version.groups.reduce(0) { $0 + ($1.kind == .untitled ? 0 : 1) + $1.items.count }
+        }
+    }
+
+    /// The list takes its own height up to this many lines, and past it stops growing and scrolls, so a release with one
+    /// change never sits in a tall empty box.
+    public static let scrollingRows = 10
+
+    public var scrolls: Bool {
+        rows > Self.scrollingRows
+    }
+
     /// The format Sparkle gives for an item's notes (`sparkle:format`): "markdown", "plain-text", or HTML by default.
     public static func format(sparkle: String?) -> Format {
         switch sparkle {

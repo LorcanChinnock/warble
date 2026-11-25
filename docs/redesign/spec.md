@@ -60,7 +60,7 @@ System fonts at fixed sizes.
 | Window | Width | Notes |
 | --- | --- | --- |
 | Settings | 600 | Height fits the tab, and the window animates between tabs as standard preferences windows do. Content inset 24 × 20 |
-| Update window | 540 for the offer, about 500 for the other states | Release notes in a 230 pt scrolling box |
+| Update window | 540 for the offer, about 500 for the other states | Release notes take their own height up to 10 lines, and past that stop at 230 pt and scroll |
 | First run | 500 | Content inset 28 |
 
 | Part | Value |
@@ -131,21 +131,22 @@ Under them, centred, in 11 pt secondary text: "Made by Lorcan Chinnock. Free and
 
 ## Update window
 
-#430 builds it: Warble's own Sparkle user driver, ported from Shot's `UpdateUserDriver` (LorcanChinnock/shot#1228) and drawn with system controls. The window is titled "Software Update", with the close button only. The update's status, the offer and the release-notes parsing live in WarbleModel, with tests. Sparkle's standard alerts still handle the first question about checking automatically, "You're up to date" and errors.
+#430 builds it: Warble's own Sparkle user driver, ported from Shot's `UpdateUserDriver` (LorcanChinnock/shot#1228) and drawn with system controls. #557 made it a borderless card, as Shot's is: the window background with a 16 pt radius and a hairline edge, floating on top, dragged from anywhere outside its controls, and rising 8 pt as it fades in the first time (only fading with Reduce Motion). Esc and ⌘W close it as the close button did. Its accessibility title is still "Software Update". The update's status, the offer and the release-notes parsing live in WarbleModel, with tests. Sparkle's standard alerts still handle the first question about checking automatically, "You're up to date" and errors.
 
 | State | When | Title | Text | Buttons |
 | --- | --- | --- | --- | --- |
 | Offer | A check finds an update | Warble 0.2.0 is ready | You have 0.1.0-beta.14. The download is 6 MB, and Warble quits and reopens to finish, which takes a few seconds. | Skip This Version (left), Remind Me Tomorrow, Install and Relaunch (default) |
 | Checking | Only after Check for Updates…; a scheduled check never shows it | Checking for updates… | none | Cancel |
 | Downloading | After Install and Relaunch | Downloading Warble 0.2.0 | A progress bar, then "3.2 of 6.0 MB" and "About 5 seconds left" | Cancel |
-| Ready to relaunch | The download finishes | Warble 0.2.0 is downloaded | Warble quits and reopens to finish. Your music keeps playing. | Later, Relaunch Now (default) |
+| Ready to relaunch | The download finishes after an automatic download, or Warble didn't quit when asked | Warble 0.2.0 is downloaded | Warble quits and reopens to finish. Your music keeps playing. | Later, Relaunch Now (default) |
+| Installing | Install and Relaunch's download is ready, or Relaunch Now | Installing Warble 0.2.0, with a spinner | Warble quits and reopens to finish. Your music keeps playing. | none |
 | Installed while running | Another installer replaced Warble while it ran | Warble 0.2.0 is installed | It was installed while this copy was running. Relaunch to start using it. | Later, Relaunch (default) |
 
-- The offer shows the release notes for every version since the installed one, in a scrolling box, and under it a checkbox, "Install updates automatically from now on". It turns on the same setting as About's Install updates automatically, which is where it's turned off again.
+- The offer shows the release notes for every version since the installed one, on a lightly filled band across the card between hairlines, and under it a checkbox, "Install updates automatically from now on". It turns on the same setting as About's Install updates automatically, which is where it's turned off again.
 - Closing the window while it downloads keeps the download going, and the menu shows its progress.
 - Later on Ready installs the update the next time Warble quits.
 - Installed while running replaces the `NSAlert` that was in `Updater.offerRelaunch(installed:)`.
-- Install and Relaunch downloads, then shows Ready, rather than relaunching as soon as the download is ready as Shot's window does.
+- Install and Relaunch installs and relaunches as soon as the download is ready, as Shot's window does, since you already chose to. #430 first stopped at Ready to ask again, and #557 dropped that.
 - The release notes are the last 10 GitHub releases' bodies, which the release workflow embeds in the feed, cut at the installed version. Features show as New, Bug Fixes as Fixed and Performance Improvements as Faster. #430 added this, since the feed carried only the newest release's notes.
 - Remind Me Tomorrow waits for the next daily check, so it's hidden while Check for updates automatically is off, and a critical update has neither it nor Skip This Version, as in Sparkle. Closing the offer is Remind Me Tomorrow, closing Checking is Cancel, and closing Installed while running is Later.
 - The window takes a Dock icon while it's open, as Settings does, so it can come to the front from the menu bar.

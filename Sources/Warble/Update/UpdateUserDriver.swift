@@ -13,7 +13,8 @@ private let log = Logger.warble("update")
 ///
 /// Every choice means what it meant in Sparkle's window: Skip This Version never offers that version again, Remind Me
 /// Tomorrow asks at the next scheduled check, closing the offer is Remind Me Tomorrow, and a critical update can't be put
-/// off. Closing the window while it downloads only hides it.
+/// off. Closing the window while it downloads only hides it. One difference, as in Shot: Install and Relaunch installs as
+/// soon as the download is ready, where Sparkle asked a second time, since you already chose to.
 @MainActor
 final class UpdateUserDriver: NSObject, SPUUserDriver {
     private let standard: SPUStandardUserDriver
@@ -28,6 +29,8 @@ final class UpdateUserDriver: NSObject, SPUUserDriver {
     private var cancellation: (() -> Void)?
     private var installReply: ((SPUUserUpdateChoice) -> Void)?
     private var retryTermination: (() -> Void)?
+    /// Install and Relaunch was pressed in this session, so the ready step installs without asking again.
+    private var choseInstall = false
     private var receivedAttention = false
     private var opportuneTime = ContinuousClock.now
     private var observers: [NSObjectProtocol] = []
@@ -85,6 +88,7 @@ final class UpdateUserDriver: NSObject, SPUUserDriver {
         item = appcastItem
         choiceReply = reply
         cancellation = nil
+        choseInstall = false
         receivedAttention = false
         let offer = Self.offer(appcastItem, state: state)
         model.offer = offer
@@ -160,8 +164,17 @@ final class UpdateUserDriver: NSObject, SPUUserDriver {
         model.phase = .preparing(progress)
     }
 
-    /// The download is ready. The window says so, even if it was closed while downloading, and Relaunch Now installs it.
+    /// The download is ready. After Install and Relaunch it installs at once. Otherwise the window says so, even if it was
+    /// closed while downloading, and Relaunch Now installs it.
     func showReady(toInstallAndRelaunch reply: @escaping (SPUUserUpdateChoice) -> Void) {
+        if choseInstall {
+            log.notice("Update ready; installing and relaunching as chosen")
+            model.phase = .installing
+            // A download whose window was closed shows it again, so Warble never quits without saying why.
+            showIfHidden()
+            reply(.install)
+            return
+        }
         installReply = reply
         model.phase = .ready
         promptWindow().present(activating: false)
@@ -202,6 +215,7 @@ final class UpdateUserDriver: NSObject, SPUUserDriver {
         cancellation = nil
         installReply = nil
         retryTermination = nil
+        choseInstall = false
         receivedAttention = false
         item = nil
         // Sparkle ends the session right after `Updater` stops it to offer a relaunch, so that offer stays.
@@ -267,6 +281,7 @@ final class UpdateUserDriver: NSObject, SPUUserDriver {
             choose(.dismiss)
             return
         }
+        choseInstall = true
         switch offer.stage {
         case .notDownloaded:
             model.download = UpdateDownloadProgress()
