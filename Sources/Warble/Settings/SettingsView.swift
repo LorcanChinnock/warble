@@ -14,7 +14,7 @@ struct NotchTab: View {
         @Bindable var settings = notchSettings
         SettingsPage {
             VStack(alignment: .leading, spacing: 8) {
-                NotchPreview(showsTitle: settings.showsVirtualTitle, notchFont: settings.notchFont, pauseDelay: settings.pauseDelay, cardSize: settings.cardSize, visibility: settings.virtualVisibility, showsFavourite: settings.showsFavourite)
+                NotchPreview(showsTitle: settings.showsVirtualTitle, notchFont: settings.notchFont, pauseDelay: settings.pauseDelay, cardSize: settings.cardSize, visibility: settings.virtualVisibility)
                 Text("Point at the preview to open it, and click it to close it. Its buttons don't control your music.")
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
@@ -54,15 +54,6 @@ struct NotchTab: View {
                     Text("Mono").tag(NotchFont.monospaced)
                 }
                 .accessibilityLabel(Text("Song title font"))
-
-                let heart = Text("Heart for Music's Favourites")
-                let heartDetail = Text("While Music plays, a heart beside the title adds the song to your Favourites.")
-                Toggle(isOn: $settings.showsFavourite) {
-                    heart
-                    heartDetail
-                }
-                .accentSwitch()
-                .described(heart, heartDetail)
             }
 
             Section {

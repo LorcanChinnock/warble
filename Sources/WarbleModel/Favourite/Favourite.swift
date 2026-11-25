@@ -1,7 +1,7 @@
 import Foundation
 
-/// The heart on the open card, which adds the song Music is playing to the listener's Favourites or takes it out. It's
-/// off until Settings turns it on, and only Music has it: no other player lets Warble read or set a like
+/// The heart on the open card, which adds the song Music is playing to the listener's Favourites or takes it out. Only
+/// Music has it, with no setting: no other player lets Warble read or set a like
 /// (docs/spikes/likes.md). It reads Music's `favorited` once each time the card opens on a track, with no timer, and a
 /// click shows the change at once and sets it, as a play/pause click does. A track whose `favorited` can't be read or set
 /// has no heart.
@@ -39,8 +39,6 @@ public struct Favourite: Feature {
         }
     }
 
-    /// Whether Settings has turned the heart on. It starts off.
-    public internal(set) var isEnabled = false
     /// The track `isFavourited` is about, or `nil` before the first answer.
     var track: Track?
     /// Whether `track` is a favourite, or `nil` when Music couldn't say, which hides the heart.
@@ -57,18 +55,12 @@ public struct Favourite: Feature {
 
     mutating func reduce(_ action: AppAction, shared: SharedState, at now: Date) -> [AppEffect] {
         switch action {
-        case .favouriteHeartChanged(let on):
-            // The count of questions goes on, so an answer still on its way from before is never taken for a new one.
-            isEnabled = on
-            track = nil
-            isFavourited = nil
-            readWhileOpen = nil
         case .favouriteAnswered(let value, let ask):
-            guard isEnabled, ask.number == asked, ask.track == Track(shared.playback) else { return [] }
+            guard ask.number == asked, ask.track == Track(shared.playback) else { return [] }
             track = ask.track
             isFavourited = value
         case .toggleFavourite:
-            guard isEnabled, let current = Track(shared.playback), current == track, let favourited = isFavourited else { return [] }
+            guard let current = Track(shared.playback), current == track, let favourited = isFavourited else { return [] }
             // Shown at once; the answer, what Music has after the set, replaces it, and a read still on its way is dropped.
             isFavourited = !favourited
             asked += 1
@@ -82,7 +74,7 @@ public struct Favourite: Feature {
     /// Reads `favorited` when the player's card opens on a Music track, or the track changes while it's open, and asks
     /// nothing while it's closed. `cardOpen` is whether any notch shows the player's card.
     mutating func follow(_ shared: SharedState, cardOpen: Bool) -> [AppEffect] {
-        guard isEnabled, cardOpen, shared.showsPlayback, let current = Track(shared.playback) else {
+        guard cardOpen, shared.showsPlayback, let current = Track(shared.playback) else {
             if !cardOpen { readWhileOpen = nil }
             return []
         }
@@ -92,10 +84,10 @@ public struct Favourite: Feature {
         return [.readFavourite(Ask(track: current, number: asked))]
     }
 
-    /// Whether the heart over `shared.playback` is filled, or `nil` when there's no heart: it's off, another player is
-    /// playing, or Music hasn't answered for this track or couldn't.
+    /// Whether the heart over `shared.playback` is filled, or `nil` when there's no heart: another player is playing, or
+    /// Music hasn't answered for this track or couldn't.
     func shown(_ shared: SharedState) -> Bool? {
-        guard isEnabled, let current = Track(shared.playback), current == track else { return nil }
+        guard let current = Track(shared.playback), current == track else { return nil }
         return isFavourited
     }
 }
