@@ -50,8 +50,6 @@ public enum AppAction: Equatable, Sendable {
     case cardSizeChanged(CardSize)
     /// Settings chose the face of the notch's title.
     case fontChanged(NotchFont)
-    /// Settings turned the heart for Music's Favourites on or off.
-    case favouriteHeartChanged(Bool)
     /// A click on the heart: add the song to Music's Favourites, or take it out.
     case toggleFavourite
     /// What Music said about a song's `favorited` after `ask`: whether it's a favourite, or `nil` when it couldn't say.

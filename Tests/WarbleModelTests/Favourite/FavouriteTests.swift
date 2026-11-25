@@ -13,17 +13,14 @@ private func ask(_ number: Int, _ title: String = "Song") -> Favourite.Ask {
     Favourite.Ask(track: Favourite.Track(title: title, artist: "Artist", album: "Album"), number: number)
 }
 
-/// A notch with `playing` on it, the heart on unless `heart` is false, and the effects of everything after it.
+/// A notch with `playing` on it, and the effects of everything after it.
 private struct Run {
     var state = AppState()
     var effects: [AppEffect] = []
     var now = start
 
-    init(playing: PlaybackState? = song(), heart: Bool = true) {
+    init(playing: PlaybackState? = song()) {
         send(.housingsChanged([notch]))
-        if heart {
-            send(.favouriteHeartChanged(true))
-        }
         if let playing {
             send(.playbackReported(playing))
         }
@@ -56,14 +53,6 @@ private struct Run {
     var reads: [Favourite.Ask] {
         effects.compactMap { if case .readFavourite(let ask) = $0 { ask } else { nil } }
     }
-}
-
-@Test func theHeartStartsOffAndAsksMusicNothing() {
-    var run = Run(heart: false)
-    run.open()
-    #expect(run.state.notchState("built-in") == .expanded)
-    #expect(run.reads.isEmpty)
-    #expect(run.state.favourite == nil)
 }
 
 @Test func openingTheCardOnAMusicSongReadsItOnce() {
@@ -181,20 +170,6 @@ private struct Run {
     run.send(.playbackReported(song("Next")))
     run.send(.favouriteAnswered(true, ask(1)))
     #expect(run.state.favourite == nil)
-}
-
-@Test func turningTheHeartOffHidesItAndDropsAnswersOnTheirWay() {
-    var run = Run()
-    run.open()
-    run.send(.favouriteAnswered(true, ask(1)))
-    run.send(.favouriteHeartChanged(false))
-    #expect(run.state.favourite == nil)
-    run.send(.favouriteAnswered(true, ask(1)))
-    #expect(run.state.favourite == nil)
-    // Turned on again with the card open, it reads the song afresh.
-    run.effects = []
-    run.send(.favouriteHeartChanged(true))
-    #expect(run.reads.count == 1)
 }
 
 @Test func withNothingPlayingTheHeartAsksNothing() {

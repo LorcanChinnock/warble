@@ -41,7 +41,7 @@ public struct AppState: Equatable, Sendable {
     public internal(set) var currentOutput: UInt32?
     /// The last switch of output, which explains itself when macOS puts the old output back.
     public internal(set) var outputSwitch = OutputSwitch()
-    /// The heart for Music's Favourites, which Settings turns on.
+    /// The heart for Music's Favourites, on the card whenever Music plays.
     public internal(set) var favourites = Favourite()
     /// Whether the open card's heart is filled, or `nil` when the card has no heart.
     public var favourite: Bool? { favourites.shown(shared) }

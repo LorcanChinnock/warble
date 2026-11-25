@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 import WarbleModel
 
-/// The heart beside the title on the open card, while Music is playing and Settings has it on. A favourite is a filled
+/// The heart beside the title on the open card, while Music is playing. A favourite is a filled
 /// heart in the title's colour, and anything else an outline in grey, so the shape says which, not only the colour.
 struct FavouriteButton: View {
     let isFavourite: Bool

@@ -80,7 +80,9 @@ private struct Run {
 @Test func escapeIsTakenOnlyWhileAnOpenNotchHasThePointer() {
     var run = Run()
     run.hover("built-in")
-    #expect(run.effects == [.watchClicksOutside(true), .takeEscape(true), .followVolume(true)])
+    // Music is playing, so the open card also reads the song's heart.
+    let read = AppEffect.readFavourite(Favourite.Ask(track: Favourite.Track(title: "Song", artist: "Artist"), number: 1))
+    #expect(run.effects == [.watchClicksOutside(true), .takeEscape(true), .followVolume(true), read])
     run.effects = []
     run.send(.menu(display: "built-in", open: true))
     #expect(run.effects == [.takeEscape(false)])
