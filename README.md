@@ -51,7 +51,7 @@ It needs macOS 15 or later, on Apple silicon or Intel. To remove Warble, run `cu
 - **Calm by default.** A paused song stays until something else plays, or for 10 seconds or a minute if you choose that in Settings. Once it leaves, pointing at the notch brings that song back on a small card with a play button, kept in memory only. When nothing is playing, it hides behind the notch and uses no CPU.
 - **Every Mac.** A main display without a notch, on a Mac without one or an external display, gets a notch Warble draws at the top.
 - **For everyone.** Works with VoiceOver, and follows Increase Contrast and Reduce Motion.
-- **Little to set up.** The first time you open Warble, a short window shows what it does and offers to open it at login. Settings is a standard Mac window with tabs. Its Notch tab has a live preview of the notch above the settings that change it, and its About tab shows your version and whether you're up to date. Right-click the notch, or use the menu bar icon, for Settings, updates and Quit.
+- **Little to set up.** The first time you open Warble, a short window shows what it does and offers to open it at login. Settings is a standard Mac window with tabs. Its Notch tab has a live preview of the notch above the settings that change it, and its About tab shows your version and whether you're up to date. Right-click the notch, or use the menu bar icon, for Settings, updates and Quit. You can hide the icon in Settings if you'd rather not see it.
 - **Updates itself.** Warble checks once a day if you agree, and a small dot on the menu bar icon shows when a new version is ready. Its update window lists what changed since your version, and installing takes a few seconds while your music keeps playing.
 
 <p align="center">

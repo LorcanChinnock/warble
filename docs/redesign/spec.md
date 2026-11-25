@@ -99,6 +99,7 @@ The settings and their `UserDefaults` keys don't change, only their labels and p
 | Group | Row | Description | Control |
 | --- | --- | --- | --- |
 | Startup | Open at login | Warble opens each time you log in, so it's there after a restart. It's the same switch as System Settings › General › Login Items & Extensions. | Switch, from `LoginItem` |
+| Menu bar | Show menu bar icon | With it off, open Warble again from Finder or Spotlight, or right-click the notch, to get to Settings. The icon comes back while an update is waiting. | Switch, from `MenuBarIconSetting` |
 | Help | User guide | none | Link row showing `warble.lorcanchinnock.com` and an arrow, opening `/docs/` |
 | Help | If nothing shows in the notch | none | Link row, opening `/docs/when-nothing-shows/` |
 

@@ -1,32 +1,45 @@
 import AppKit
 import Observation
 import WarbleCore
+import WarbleModel
 
 /// Warble's icon in the menu bar and the menu it opens. It's AppKit rather than SwiftUI's `MenuBarExtra`, because that
 /// menu's items work out their own VoiceOver names, so a waiting update's item read its dot out as U+FFFC. `NotchMenu`
 /// fills the menu, as it fills the notch's right-click menu, each time it opens, so the two can't drift apart and a
-/// closed menu keeps nothing up to date.
+/// closed menu keeps nothing up to date. Settings › General can hide it, and so can ⌘-dragging it off the menu bar, which
+/// turns that switch off.
 @MainActor
 final class StatusItem: NSObject, NSMenuDelegate {
     private let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let menu = NSMenu()
     private let updater: Updater
+    private let setting: MenuBarIconSetting
     private let settingsWindow: SettingsWindow
+    private var removal: NSKeyValueObservation?
 
-    init(updater: Updater, settingsWindow: SettingsWindow) {
+    init(updater: Updater, setting: MenuBarIconSetting, settingsWindow: SettingsWindow) {
         self.updater = updater
+        self.setting = setting
         self.settingsWindow = settingsWindow
         super.init()
         menu.delegate = self
         item.menu = menu
+        item.behavior = .removalAllowed
         showIcon()
+        removal = item.observe(\.isVisible) { [weak self] _, _ in
+            MainActor.assumeIsolated {
+                guard let self, !self.item.isVisible else { return }
+                setting.isShown = false
+            }
+        }
     }
 
-    /// The bars, with a dot while an update waits. Reads only `pendingVersion`, so a download's progress doesn't redraw
-    /// the icon.
+    /// The bars, with a dot while an update waits, or nothing while hidden. Reads only `pendingVersion`, so a download's
+    /// progress doesn't redraw the icon.
     private func showIcon() {
         withObservationTracking {
             let waiting = updater.pendingVersion != nil
+            item.isVisible = MenuBarIcon.isVisible(shown: setting.isShown, updateWaiting: waiting)
             item.button?.image = waiting ? .menuBarIconWithDot : .menuBarIcon
             item.button?.setAccessibilityLabel(AppMenuLabel.icon(updateWaiting: waiting))
         } onChange: { [weak self] in

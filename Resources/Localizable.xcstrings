@@ -2777,6 +2777,58 @@
         }
       }
     },
+    "Menu bar" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menüleiste"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Barra de menús"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Barre des menus"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Barra dei menu"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メニューバー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "메뉴 막대"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Barra de menus"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "菜单栏"
+          }
+        }
+      }
+    },
     "Mono" : {
       "localizations" : {
         "de" : {
@@ -5333,6 +5385,58 @@
         }
       }
     },
+    "Show menu bar icon" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Symbol in der Menüleiste anzeigen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar el icono en la barra de menús"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher l’icône dans la barre des menus"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra l’icona nella barra dei menu"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メニューバーにアイコンを表示"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "메뉴 막대에 아이콘 표시"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar o ícone na barra de menus"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在菜单栏中显示图标"
+          }
+        }
+      }
+    },
     "Shows how the notch looks." : {
       "localizations" : {
         "de" : {
@@ -7827,6 +7931,58 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "“音乐”播放时，标题旁的爱心可将歌曲添加到喜爱中。"
+          }
+        }
+      }
+    },
+    "With it off, open Warble again from Finder or Spotlight, or right-click the notch, to get to Settings. The icon comes back while an update is waiting." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ist es aus, öffne Warble erneut im Finder oder mit Spotlight oder klicke mit der rechten Maustaste auf die Notch, um zu den Einstellungen zu gelangen. Während ein Update wartet, ist das Symbol wieder da."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si está desactivado, vuelve a abrir Warble desde el Finder o Spotlight, o haz clic derecho en el notch, para ir a los ajustes. El icono vuelve mientras haya una actualización pendiente."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si l’option est désactivée, rouvrez Warble depuis le Finder ou Spotlight, ou faites un clic droit sur l’encoche, pour accéder aux réglages. L’icône revient tant qu’une mise à jour est en attente."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se è disattivato, apri di nuovo Warble dal Finder o da Spotlight, oppure fai clic destro sul notch, per accedere alle impostazioni. L’icona torna finché c’è un aggiornamento in attesa."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オフのときは、FinderかSpotlightからWarbleをもう一度開くか、ノッチを右クリックすると設定を開けます。アップデートが待機している間はアイコンが表示されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "끈 경우 Finder나 Spotlight에서 Warble을 다시 열거나 노치를 오른쪽 클릭하면 설정으로 이동할 수 있습니다. 업데이트가 대기 중인 동안에는 아이콘이 다시 나타납니다."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Com ele desativado, abra o Warble de novo pelo Finder ou pelo Spotlight, ou clique com o botão direito no notch, para ir aos ajustes. O ícone volta enquanto houver uma atualização pendente."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭后，可从“访达”或“聚焦”再次打开 Warble，或右键点按刘海，以前往设置。有更新等待安装时，图标会重新出现。"
           }
         }
       }

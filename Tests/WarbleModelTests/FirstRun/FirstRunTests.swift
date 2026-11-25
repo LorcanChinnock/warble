@@ -16,7 +16,7 @@ import Testing
 }
 
 @Test func theFirstRunWindowStaysShutForSomeoneUpdatingWithASavedSetting() {
-    for key in ["virtualTitle", "pauseDelay", "virtualNotch", "cardSize", "notchFont", "favouriteHeart"] {
+    for key in ["virtualTitle", "pauseDelay", "virtualNotch", "cardSize", "notchFont", "favouriteHeart", MenuBarIcon.shownKey] {
         #expect(!FirstRun.opens(storedKeys: [key]), "\(key)")
     }
 }

@@ -11,6 +11,8 @@ Warble works without changing anything. The settings you're most likely to want 
 1. Click Warble's icon in the menu bar, or right-click the notch. You can also Control-click it.
 2. Choose **Settings…**, or press <kbd>⌘,</kbd> while the menu is open.
 
+You can also open Warble again from your Applications folder, Finder or Spotlight, and Settings opens. That's the way back if you've hidden the menu bar icon.
+
 While Settings or the Software Update window is open, Warble has an icon in the Dock and its own menu at the top of the screen, and <kbd>⌘,</kbd> works from there too.
 
 Settings is a standard Mac window with three tabs along the top: Notch, General and About. It opens on Notch, then on whichever tab you last used until Warble quits, and it follows your Mac's light or dark appearance.
@@ -43,6 +45,7 @@ These two settings apply only where Warble draws a notch of its own. Your MacBoo
 ## General
 
 - **Open at login.** Off at first. Turn it on, and Warble opens each time you log in, so it's there after a restart. It's the same switch as Warble's entry in System Settings › General › Login Items & Extensions, and the same one the window from your first launch offers. If you turn Warble off in System Settings, the text under the switch says so, and **Open Login Items…** takes you there to turn it back on. If macOS won't let Warble change the switch, the text under it says so. Restarting your Mac usually fixes that, because the part of macOS that keeps the login items list can get stuck after weeks without a restart.
+- **Show menu bar icon.** On at first. Turn it off to take Warble's icon out of the menu bar. You can also hold <kbd>⌘</kbd> and drag the icon off the menu bar, which turns this switch off. With the icon hidden, right-click the notch or open Warble again to get to Settings. The icon comes back by itself while an update is waiting, with its dot, so you still see the update, and goes again once you've answered it.
 - Under **Help**, **User guide** opens this guide and **If nothing shows in the notch** opens its [When nothing shows](/docs/when-nothing-shows/) page, both in your browser.
 
 ## About
