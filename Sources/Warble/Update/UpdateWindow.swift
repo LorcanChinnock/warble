@@ -134,6 +134,14 @@ final class UpdateWindow: NSWindow {
         model.close()
     }
 
+    /// Borderless, so AppKit would turn off File › Close (⌘W) for want of a close button.
+    override func validateUserInterfaceItem(_ item: any NSValidatedUserInterfaceItem) -> Bool {
+        if item.action == #selector(performClose(_:)) {
+            return true
+        }
+        return super.validateUserInterfaceItem(item)
+    }
+
     /// Brings the window forward. The first time, it's centred on the screen with the pointer and rises a few points as
     /// it fades in, or only fades with Reduce Motion. It takes a Dock icon while it's open, as Settings does.
     func present(activating: Bool) {
