@@ -95,9 +95,10 @@ struct NotchTab: View {
     }
 }
 
-/// The General tab: whether Warble opens at login, and where to find help.
+/// The General tab: whether Warble opens at login, whether its icon is in the menu bar, and where to find help.
 struct GeneralTab: View {
     @Environment(LoginItem.self) private var loginItem
+    @Environment(MenuBarIconSetting.self) private var menuBarIcon
 
     var body: some View {
         SettingsPage {
@@ -117,6 +118,16 @@ struct GeneralTab: View {
                         Button("Open Login Items…") { SMAppService.openSystemSettingsLoginItems() }
                     }
                 }
+            }
+            Section("Menu bar") {
+                let icon = Text("Show menu bar icon")
+                let iconDetail = Text("With it off, open Warble again from Finder or Spotlight, or right-click the notch, to get to Settings. The icon comes back while an update is waiting.")
+                Toggle(isOn: Bindable(menuBarIcon).isShown) {
+                    icon
+                    iconDetail
+                }
+                .accentSwitch()
+                .described(icon, iconDetail)
             }
             Section("Help") {
                 LinkRow(Text("User guide"), value: Text(verbatim: "warble.lorcanchinnock.com"), url: Site.guide)

@@ -22,6 +22,7 @@ public enum FirstRun {
         "cardSize",
         "notchFont",
         "favouriteHeart",
+        MenuBarIcon.shownKey,
     ]
 
     /// Whether the window opens, given the keys Warble has stored.

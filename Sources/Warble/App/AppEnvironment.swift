@@ -16,6 +16,7 @@ final class AppEnvironment {
     let updater: Updater
     let displays: Displays
     let loginItem: LoginItem
+    let menuBarIcon: MenuBarIconSetting
     let notchSettings: NotchSettings
     /// What's playing and its controls, shared by every notch and read by Settings' preview.
     let player: PlayerModel
@@ -30,6 +31,7 @@ final class AppEnvironment {
         updater = Updater()
         displays = Displays()
         loginItem = LoginItem()
+        menuBarIcon = MenuBarIconSetting()
         hotkeys = HotkeyCenter()
         store = Store(state: AppState(), clock: SystemClock(), scheduler: TimerScheduler())
         let store = store
@@ -55,6 +57,7 @@ extension View {
         self
             .environment(environment.updater)
             .environment(environment.loginItem)
+            .environment(environment.menuBarIcon)
             .environment(environment.notchSettings)
             .environment(environment.player)
     }

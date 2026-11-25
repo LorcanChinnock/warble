@@ -20,7 +20,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // To see the notch without playing anything, turn on `-notchPreviewState resting` in the Warble scheme's
         // arguments, or run `make run APP_ARGS='-notchPreviewState resting'`, and hover or click it to open it; the
         // argument lasts only for that launch.
-        statusItem = StatusItem(updater: environment.updater, settingsWindow: environment.settingsWindow)
+        statusItem = StatusItem(
+            updater: environment.updater, setting: environment.menuBarIcon, settingsWindow: environment.settingsWindow
+        )
         let store = environment.store
         let runner = environment.runner
         let preview = Self.preview
@@ -87,8 +89,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.fallback = fallback
     }
 
-    /// Opening Warble again from Finder or Spotlight brings back a menu bar icon that was turned off, so it can always
-    /// be reached, and opens Settings.
+    /// Opening Warble again from Finder or Spotlight opens Settings, the way back when the menu bar icon is hidden.
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         environment.settingsWindow.show()
         return false

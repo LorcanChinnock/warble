@@ -23,7 +23,7 @@ In Settings, **Show a notch**, under Displays without a notch, sets when a notch
 
 - **Only when playing.** The first choice. The notch appears when something plays. It goes when the app stops, or when a paused song leaves after the time set in **Stay visible after pausing**, which is never by default.
 - **Always.** After that, an empty black notch stays at the top of the display, with nothing in it. Point at it and a small "Nothing playing" note opens, as on a MacBook's own notch, so it never feels broken.
-- **Off.** Warble draws no notch of its own, so a display without a notch shows nothing. Settings is still in the menu bar icon's menu, so you can turn it back on.
+- **Off.** Warble draws no notch of its own, so a display without a notch shows nothing. Settings is still in the menu bar icon's menu, so you can turn it back on. If you've hidden the icon too, open Warble again from your Applications folder or Spotlight to get to Settings.
 
 This only applies to a notch Warble draws, never your MacBook's own.
 
