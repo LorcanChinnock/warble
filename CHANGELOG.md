@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0-beta.32](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.31...v0.1.0-beta.32) (2026-11-25)
+
+
+### Bug Fixes
+
+* **update:** match Shot's update window: one confirmation, notes that fit, a floating card ([#558](https://github.com/LorcanChinnock/warble/issues/558)) ([258fe78](https://github.com/LorcanChinnock/warble/commit/258fe788fbeb4b35301c2e1f1503dd84414bcb16))
+
 ## [0.1.0-beta.31](https://github.com/LorcanChinnock/warble/compare/v0.1.0-beta.30...v0.1.0-beta.31) (2026-11-25)
 
 
